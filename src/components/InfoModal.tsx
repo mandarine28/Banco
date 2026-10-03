@@ -26,6 +26,37 @@ export function InfoModal({ content, onClose }: Props) {
   );
 }
 
+type ConfirmProps = {
+  visible: boolean;
+  title: string;
+  message: string;
+  confirmLabel: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+};
+
+/** Fenêtre de confirmation à deux boutons. */
+export function ConfirmModal({ visible, title, message, confirmLabel, onConfirm, onCancel }: ConfirmProps) {
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
+      <Pressable style={styles.backdrop} onPress={onCancel} accessibilityLabel="Annuler">
+        <Pressable style={styles.card} onPress={() => {}}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.message}>{message}</Text>
+          <View style={styles.actions}>
+            <Pressable onPress={onCancel} accessibilityRole="button" style={[styles.button, styles.secondary]}>
+              <Text style={[styles.buttonLabel, styles.secondaryLabel]}>ANNULER</Text>
+            </Pressable>
+            <Pressable onPress={onConfirm} accessibilityRole="button" style={[styles.button, styles.danger]}>
+              <Text style={styles.buttonLabel}>{confirmLabel}</Text>
+            </Pressable>
+          </View>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+}
+
 /** Petite pastille « i » placée en exposant d'un libellé. */
 export function InfoBadge({ onPress, label }: { onPress: () => void; label: string }) {
   return (
@@ -70,6 +101,25 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     backgroundColor: colors.teal,
+  },
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  secondary: {
+    alignSelf: 'auto',
+    backgroundColor: colors.white,
+    borderWidth: 2,
+    borderColor: colors.lavender,
+  },
+  secondaryLabel: {
+    color: colors.purple,
+  },
+  danger: {
+    alignSelf: 'auto',
+    backgroundColor: colors.pink,
   },
   buttonLabel: {
     color: colors.white,
