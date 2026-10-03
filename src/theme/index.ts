@@ -21,6 +21,10 @@ export const colors = {
   yellowShadow: '#B07E22',
 
   orange: '#FBB040',
+  orangeShadow: '#F7CF9A',
+  pinkSoft: '#F7A1BF',
+  muted: '#9A9A9A',
+  labelOnPurple: '#F3E2FF',
 } as const;
 
 export const fonts = {

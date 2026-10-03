@@ -1,0 +1,93 @@
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { colors, fonts } from '@/theme';
+
+export type InfoContent = { title: string; message: string };
+
+type Props = {
+  content: InfoContent | null;
+  onClose: () => void;
+};
+
+/** Fenêtre d'explication (remplace Alert, qui ne s'affiche pas sur le web). */
+export function InfoModal({ content, onClose }: Props) {
+  return (
+    <Modal visible={content !== null} transparent animationType="fade" onRequestClose={onClose}>
+      <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Fermer">
+        <Pressable style={styles.card} onPress={() => {}}>
+          <Text style={styles.title}>{content?.title}</Text>
+          <Text style={styles.message}>{content?.message}</Text>
+          <Pressable onPress={onClose} accessibilityRole="button" style={styles.button}>
+            <Text style={styles.buttonLabel}>OK</Text>
+          </Pressable>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+}
+
+/** Petite pastille « i » placée en exposant d'un libellé. */
+export function InfoBadge({ onPress, label }: { onPress: () => void; label: string }) {
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`À propos : ${label}`} hitSlop={10}>
+      <View style={styles.badge}>
+        <Text style={styles.badgeLabel}>i</Text>
+      </View>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    backgroundColor: 'rgba(40,0,70,0.55)',
+  },
+  card: {
+    width: '100%',
+    maxWidth: 400,
+    gap: 14,
+    padding: 24,
+    borderRadius: 28,
+    backgroundColor: colors.white,
+  },
+  title: {
+    color: colors.purple,
+    fontFamily: fonts.display,
+    fontSize: 22,
+  },
+  message: {
+    color: colors.black,
+    fontFamily: fonts.bodyRegular,
+    fontSize: 16,
+    lineHeight: 23,
+  },
+  button: {
+    alignSelf: 'flex-end',
+    paddingHorizontal: 26,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: colors.teal,
+  },
+  buttonLabel: {
+    color: colors.white,
+    fontFamily: fonts.display,
+    fontSize: 17,
+  },
+  badge: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.lavender,
+  },
+  badgeLabel: {
+    color: colors.white,
+    fontFamily: fonts.body,
+    fontSize: 15,
+    lineHeight: 18,
+  },
+});

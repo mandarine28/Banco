@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 
+import { GameSettingsProvider } from '@/state/gameSettings';
 import { colors } from '@/theme';
 
 export default function RootLayout() {
@@ -20,9 +21,9 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <GameSettingsProvider>
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
-    </>
+    </GameSettingsProvider>
   );
 }

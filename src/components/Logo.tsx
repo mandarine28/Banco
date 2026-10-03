@@ -3,6 +3,10 @@ import Svg, { Circle, Defs, G, LinearGradient, Path, Rect, Stop, Text } from 're
 import { appName } from '@/config/app';
 import { colors, fonts } from '@/theme';
 
+/** Contour de l'ampoule (repère du logo : centre du globe en 275, 135). */
+export const BULB_PATH =
+  'M275 70 C239 70 210 99 210 135 C210 165 232 182 246 205 C252 216 254 226 254 236 L296 236 C296 226 298 216 304 205 C318 182 340 165 340 135 C340 99 311 70 275 70 Z';
+
 const VIEW_W = 380;
 const VIEW_H = 600;
 const TEAL = '#3CC8BC';
@@ -49,10 +53,7 @@ export function Logo({ width }: Props) {
         <Spark x={270} y={22} angle={8} />
         <Spark x={204} y={60} angle={-38} />
         <Spark x={346} y={60} angle={52} />
-        <Path
-          d="M275 70 C239 70 210 99 210 135 C210 165 232 182 246 205 C252 216 254 226 254 236 L296 236 C296 226 298 216 304 205 C318 182 340 165 340 135 C340 99 311 70 275 70 Z"
-          fill="url(#bulb)"
-        />
+        <Path d={BULB_PATH} fill="url(#bulb)" />
         <Text
           x={275}
           y={168}
