@@ -17,7 +17,7 @@ const infos = {
   modes: {
     title: 'Modes de jeu',
     message:
-      "Classique : une équipe tente de trouver les 9 réponses d'une question avant la fin du chrono, pendant qu'une autre équipe tient le téléphone et valide.\n\nStreak : mode supplémentaire à débloquer.",
+      "Classique : les équipes misent sur le nombre de réponses qu'elles pourront citer sur un thème. La plus haute mise répond en 60 secondes, l'adversaire tient le téléphone et valide.\n\nStreak : mode supplémentaire à débloquer.",
   },
   packs: {
     title: 'Packs de questions',

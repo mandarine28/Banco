@@ -1,13 +1,14 @@
 import type { Question } from './types';
 
 // Questions d'exemple, à remplacer par la vraie base de questions.
+// `subject` complète « CITEZ <mise> … » : l'intitulé affiché dépend de la mise.
 // Réponses classées de la plus citée à la moins citée (estimation) :
 // les 27 premières s'affichent en boutons, la recherche parcourt toute la liste.
 export const questions: Question[] = [
   {
     id: 'pizzas',
     theme: 'cuisine',
-    prompt: 'CITEZ 9 TYPES DE PIZZAS',
+    subject: 'TYPES DE PIZZAS',
     answers: [
       'MARGHERITA', 'REINE', '4 FROMAGES', 'CALZONE', 'ROYALE', 'HAWAÏENNE', 'VÉGÉTARIENNE',
       'NAPOLITAINE', 'CHORIZO', 'ORIENTALE', 'SAVOYARDE', 'CHÈVRE MIEL', 'BOLOGNAISE', 'CARBONARA',
@@ -19,7 +20,7 @@ export const questions: Question[] = [
   {
     id: 'fromages',
     theme: 'cuisine',
-    prompt: 'CITEZ 9 FROMAGES FRANÇAIS',
+    subject: 'FROMAGES FRANÇAIS',
     answers: [
       'CAMEMBERT', 'BRIE', 'ROQUEFORT', 'COMTÉ', 'EMMENTAL', 'RACLETTE', 'REBLOCHON', 'BEAUFORT',
       'MUNSTER', 'CANTAL', 'MORBIER', 'CHÈVRE', 'TOMME DE SAVOIE', 'SAINT-NECTAIRE', 'MAROILLES',
@@ -32,7 +33,7 @@ export const questions: Question[] = [
   {
     id: 'fruits-rouges',
     theme: 'cuisine',
-    prompt: 'CITEZ 9 FRUITS ROUGES OU ROSES',
+    subject: 'FRUITS ROUGES OU ROSES',
     answers: [
       'FRAISE', 'FRAMBOISE', 'CERISE', 'GROSEILLE', 'PASTÈQUE', 'GRENADE', 'POMME', 'PRUNE', 'RAISIN',
       'PAMPLEMOUSSE', 'PÊCHE', 'NECTARINE', 'FIGUE', 'LITCHI', 'CANNEBERGE', 'PITAYA', 'GOYAVE',
@@ -43,7 +44,7 @@ export const questions: Question[] = [
   {
     id: 'sports-ballon',
     theme: 'sport',
-    prompt: 'CITEZ 9 SPORTS QUI SE JOUENT AVEC UN BALLON',
+    subject: 'SPORTS QUI SE JOUENT AVEC UN BALLON',
     answers: [
       'FOOTBALL', 'BASKET', 'RUGBY', 'HANDBALL', 'VOLLEY', 'BEACH-VOLLEY', 'WATER-POLO',
       'FOOTBALL AMÉRICAIN', 'FUTSAL', 'BALLON PRISONNIER', 'BEACH SOCCER', 'RUGBY À 7', 'BASKET 3X3',
@@ -55,7 +56,7 @@ export const questions: Question[] = [
   {
     id: 'jo-ete',
     theme: 'sport',
-    prompt: 'CITEZ 9 SPORTS DES JEUX OLYMPIQUES D’ÉTÉ',
+    subject: 'SPORTS DES JEUX OLYMPIQUES D’ÉTÉ',
     answers: [
       'ATHLÉTISME', 'NATATION', 'JUDO', 'FOOTBALL', 'BASKETBALL', 'TENNIS', 'CYCLISME', 'GYMNASTIQUE',
       'BOXE', 'HANDBALL', 'VOLLEY-BALL', 'ESCRIME', 'RUGBY À 7', 'TENNIS DE TABLE', 'BADMINTON',
@@ -67,7 +68,7 @@ export const questions: Question[] = [
   {
     id: 'capitales-europe',
     theme: 'geographie',
-    prompt: 'CITEZ 9 CAPITALES EUROPÉENNES',
+    subject: 'CAPITALES EUROPÉENNES',
     answers: [
       'PARIS', 'LONDRES', 'ROME', 'MADRID', 'BERLIN', 'BRUXELLES', 'LISBONNE', 'AMSTERDAM', 'VIENNE',
       'ATHÈNES', 'BERNE', 'DUBLIN', 'PRAGUE', 'VARSOVIE', 'BUDAPEST', 'STOCKHOLM', 'OSLO',
@@ -80,7 +81,7 @@ export const questions: Question[] = [
   {
     id: 'pays-afrique',
     theme: 'geographie',
-    prompt: 'CITEZ 9 PAYS D’AFRIQUE',
+    subject: 'PAYS D’AFRIQUE',
     answers: [
       'MAROC', 'ALGÉRIE', 'TUNISIE', 'SÉNÉGAL', 'ÉGYPTE', 'CÔTE D’IVOIRE', 'CAMEROUN', 'AFRIQUE DU SUD',
       'MALI', 'NIGERIA', 'MADAGASCAR', 'KENYA', 'CONGO', 'RD CONGO', 'GHANA', 'ÉTHIOPIE', 'GABON',
@@ -94,7 +95,7 @@ export const questions: Question[] = [
   {
     id: 'films-disney',
     theme: 'cinema',
-    prompt: 'CITEZ 9 FILMS D’ANIMATION DISNEY',
+    subject: 'FILMS D’ANIMATION DISNEY',
     answers: [
       'LE ROI LION', 'LA REINE DES NEIGES', 'ALADDIN', 'BLANCHE-NEIGE', 'LA BELLE ET LA BÊTE',
       'LA PETITE SIRÈNE', 'CENDRILLON', 'MULAN', 'VAIANA', 'RAIPONCE', 'LE LIVRE DE LA JUNGLE', 'BAMBI',
@@ -110,7 +111,7 @@ export const questions: Question[] = [
   {
     id: 'super-heros',
     theme: 'cinema',
-    prompt: 'CITEZ 9 SUPER-HÉROS',
+    subject: 'SUPER-HÉROS',
     answers: [
       'SPIDER-MAN', 'BATMAN', 'SUPERMAN', 'IRON MAN', 'CAPTAIN AMERICA', 'HULK', 'THOR', 'WONDER WOMAN',
       'WOLVERINE', 'BLACK PANTHER', 'FLASH', 'AQUAMAN', 'BLACK WIDOW', 'DOCTOR STRANGE', 'DEADPOOL',
@@ -124,7 +125,7 @@ export const questions: Question[] = [
   {
     id: 'animaux-savane',
     theme: 'animaux',
-    prompt: 'CITEZ 9 ANIMAUX DE LA SAVANE',
+    subject: 'ANIMAUX DE LA SAVANE',
     answers: [
       'LION', 'ÉLÉPHANT', 'GIRAFE', 'ZÈBRE', 'HYÈNE', 'GUÉPARD', 'RHINOCÉROS', 'HIPPOPOTAME', 'GNOU',
       'PHACOCHÈRE', 'LÉOPARD', 'BUFFLE', 'AUTRUCHE', 'GAZELLE', 'ANTILOPE', 'IMPALA', 'CROCODILE',
@@ -136,7 +137,7 @@ export const questions: Question[] = [
   {
     id: 'races-chiens',
     theme: 'animaux',
-    prompt: 'CITEZ 9 RACES DE CHIENS',
+    subject: 'RACES DE CHIENS',
     answers: [
       'LABRADOR', 'BERGER ALLEMAND', 'CANICHE', 'CHIHUAHUA', 'GOLDEN RETRIEVER', 'BOULEDOGUE FRANÇAIS',
       'HUSKY', 'YORKSHIRE', 'TECKEL', 'BEAGLE', 'JACK RUSSELL', 'BERGER AUSTRALIEN', 'BORDER COLLIE',
@@ -150,7 +151,7 @@ export const questions: Question[] = [
   {
     id: 'instruments',
     theme: 'musique',
-    prompt: 'CITEZ 9 INSTRUMENTS DE MUSIQUE',
+    subject: 'INSTRUMENTS DE MUSIQUE',
     answers: [
       'PIANO', 'GUITARE', 'BATTERIE', 'VIOLON', 'TROMPETTE', 'SAXOPHONE', 'FLÛTE', 'HARPE',
       'ACCORDÉON', 'VIOLONCELLE', 'CLARINETTE', 'CONTREBASSE', 'BASSE', 'TROMBONE', 'HARMONICA',

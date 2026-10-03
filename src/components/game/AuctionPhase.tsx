@@ -29,7 +29,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
     <>
       <Card style={styles.card}>
         <ThemeHeader state={state} />
-        <Text style={styles.question}>COMBIEN DE RÉPONSES SUR 9 POUVEZ-VOUS TROUVER ?</Text>
+        <Text style={styles.question}>COMBIEN DE RÉPONSES POUVEZ-VOUS CITER EN 60 SECONDES ?</Text>
 
         <View style={styles.current}>
           <Text style={styles.currentLabel}>MISE ACTUELLE</Text>

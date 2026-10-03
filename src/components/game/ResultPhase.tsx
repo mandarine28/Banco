@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Card, CardDivider } from '@/components/Card';
 import { TeamName } from '@/components/game/TeamName';
-import { contract, currentQuestion, type GameState, isSuccess, opponent } from '@/game/engine';
+import { contract, currentPrompt, currentQuestion, type GameState, isSuccess, opponent } from '@/game/engine';
 import { colors, fonts } from '@/theme';
 
 export function ResultPhase({ state }: { state: GameState }) {
@@ -33,7 +33,7 @@ export function ResultPhase({ state }: { state: GameState }) {
       </Card>
 
       <Card>
-        <Text style={styles.prompt}>{question.prompt}</Text>
+        <Text style={styles.prompt}>{currentPrompt(state)}</Text>
         {state.found.map((label) => (
           <View key={label}>
             <CardDivider />

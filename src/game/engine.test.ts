@@ -9,6 +9,9 @@ import {
   canPass,
   contract,
   createGame,
+  currentPrompt,
+  currentQuestion,
+  MAX_BID,
   gameReducer,
   minimumBid,
   opponent,
@@ -36,10 +39,10 @@ const play = (state: GameState, ...actions: GameAction[]) => actions.reduce(game
 const find = (count: number): GameAction[] =>
   Array.from({ length: count }, (_, i) => ({ type: 'TOGGLE_ANSWER', label: `RÉPONSE ${i}` }));
 
-test('chaque question a au moins 27 réponses, sans doublon', () => {
+test('chaque question a au moins 27 réponses (plus que la mise max), sans doublon', () => {
   for (const q of questions) {
-    assert.ok(q.theme, q.id);
-    assert.ok(q.answers.length >= SUGGESTION_COUNT, `${q.id} : ${q.answers.length} réponses`);
+    assert.ok(q.theme && q.subject && !/^CITEZ/i.test(q.subject), q.id);
+    assert.ok(q.answers.length >= Math.max(SUGGESTION_COUNT, MAX_BID), `${q.id} : ${q.answers.length} réponses`);
     const keys = q.answers.map(normalize);
     const dupes = keys.filter((k, i) => keys.indexOf(k) !== i);
     assert.deepEqual(dupes, [], `${q.id} : doublons`);
@@ -105,10 +108,14 @@ test('l’ouvreur doit miser, puis chacun surenchérit ou passe', () => {
   assert.equal(opponent(s), 0);
 });
 
-test('miser 9 termine l’enchère immédiatement', () => {
-  const s = play(createGame(two, 1, questions, seeded(4)), { type: 'BID', amount: 9 });
+test('la mise peut dépasser 9 ; la mise maximale termine l’enchère', () => {
+  let s = play(createGame(two, 1, questions, seeded(4)), { type: 'BID', amount: 12 });
+  assert.equal(s.phase, 'auction');
+  assert.equal(minimumBid(s), 13);
+  s = play(s, { type: 'BID', amount: MAX_BID + 5 });
   assert.equal(s.phase, 'ready');
-  assert.deepEqual(contract(s), { team: 0, amount: 9 });
+  assert.deepEqual(contract(s), { team: 1, amount: MAX_BID });
+  assert.equal(currentPrompt(s), `CITEZ ${MAX_BID} ${currentQuestion(s).subject}`);
 });
 
 test('réussite : l’équipe empoche sa mise dès qu’elle l’atteint', () => {

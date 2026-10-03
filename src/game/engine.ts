@@ -2,7 +2,8 @@ import type { Question } from '../data/types';
 
 export const TURN_SECONDS = 60;
 export const MIN_BID = 1;
-export const MAX_BID = 9;
+/** Mise maximale : l'atteindre clôt l'enchère. Chaque question a au moins 27 réponses en base. */
+export const MAX_BID = 20;
 
 export type GameTeam = { name: string; color: string };
 
@@ -102,6 +103,9 @@ export function createGame(
 }
 
 export const currentQuestion = (state: GameState) => state.plan[state.round];
+
+/** Intitulé affiché une fois l'enchère remportée : « CITEZ 14 SUPER-HÉROS ». */
+export const currentPrompt = (state: GameState) => `CITEZ ${contract(state).amount} ${currentQuestion(state).subject}`;
 
 /** Mise minimale pour l'équipe dont c'est le tour d'enchérir. */
 export const minimumBid = (state: GameState) => (state.auction.highest?.amount ?? MIN_BID - 1) + 1;

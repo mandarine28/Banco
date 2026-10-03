@@ -4,7 +4,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, useWindowDim
 
 import { Card } from '@/components/Card';
 import { normalize, searchAnswers, suggestions } from '@/game/answers';
-import { contract, currentQuestion, type GameState, remaining } from '@/game/engine';
+import { contract, currentPrompt, currentQuestion, type GameState, remaining } from '@/game/engine';
 import { searchWikipedia, type WikiResult } from '@/services/wikipedia';
 import { colors, fonts } from '@/theme';
 
@@ -50,7 +50,7 @@ export function PlayPhase({ state, onToggle, onAdjust, onWebSearch }: Props) {
   };
 
   // Recherche web avec le thème de la question pour cibler les résultats.
-  const context = question.prompt.replace(/^CITEZ \d+ /i, '');
+  const context = question.subject;
   const searchWeb = () => onWebSearch(`${query.trim()} ${context}`);
 
   const checkWikipedia = async () => {
@@ -89,7 +89,7 @@ export function PlayPhase({ state, onToggle, onAdjust, onWebSearch }: Props) {
       </Card>
 
       <Card style={styles.questionCard}>
-        <Text style={styles.prompt}>{question.prompt}</Text>
+        <Text style={styles.prompt}>{currentPrompt(state)}</Text>
       </Card>
 
       <View style={styles.search}>

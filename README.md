@@ -43,7 +43,7 @@ la barre de recherche parcourt toute la liste (accents, casse et tirets ignorés
 {
   id: 'super-heros',
   theme: 'cinema',
-  prompt: 'CITEZ 9 SUPER-HÉROS',
+  subject: 'SUPER-HÉROS', // affiché « CITEZ <mise> SUPER-HÉROS »
   answers: ['SPIDER-MAN', 'BATMAN', 'SUPERMAN', /* … */],
 }
 ```
