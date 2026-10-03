@@ -1,15 +1,16 @@
 import { router } from 'expo-router';
-import { useEffect, useReducer, useState } from 'react';
+import { useReducer, useState } from 'react';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
-import { IntroPhase } from '@/components/game/IntroPhase';
+import { AuctionPhase } from '@/components/game/AuctionPhase';
 import { PlayPhase } from '@/components/game/PlayPhase';
+import { ReadyPhase } from '@/components/game/ReadyPhase';
 import { ResultPhase } from '@/components/game/ResultPhase';
 import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal } from '@/components/InfoModal';
 import { LabelButton, NextButton } from '@/components/PillButton';
 import { questions } from '@/data/questions';
-import { createGame, gameReducer, type GameTeam, isLastTurn, TURN_SECONDS } from '@/game/engine';
+import { contract, createGame, gameReducer, type GameTeam, isLastRound, TURN_SECONDS } from '@/game/engine';
 import { useCountdown } from '@/hooks/useCountdown';
 import { useGameSettings } from '@/state/gameSettings';
 import { colors, teamColors } from '@/theme';
@@ -28,7 +29,6 @@ export default function GameScreen() {
       key={gameId}
       teams={teams}
       roundCount={settings.roundCount}
-      sameTheme={settings.sameThemePerRound}
       onReplay={() => setGameId((id) => id + 1)}
     />
   );
@@ -37,38 +37,52 @@ export default function GameScreen() {
 type GameProps = {
   teams: GameTeam[];
   roundCount: number;
-  sameTheme: boolean;
   onReplay: () => void;
 };
 
 type Confirm = 'quit' | 'skip' | null;
 
-function Game({ teams, roundCount, sameTheme, onReplay }: GameProps) {
-  const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, sameTheme, questions));
+function Game({ teams, roundCount, onReplay }: GameProps) {
+  const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, questions));
   const [confirm, setConfirm] = useState<Confirm>(null);
   const remainingMs = useCountdown(state.phase === 'play', TURN_SECONDS, () =>
     dispatch({ type: 'END_TURN', reason: 'time' }),
   );
 
   // Le chrono peut finir pendant que la confirmation « Terminer le tour » est ouverte.
-  useEffect(() => {
-    if (state.phase !== 'play') setConfirm((c) => (c === 'skip' ? null : c));
-  }, [state.phase]);
+  const [phase, setPhase] = useState(state.phase);
+  if (phase !== state.phase) {
+    setPhase(state.phase);
+    if (confirm === 'skip') setConfirm(null);
+  }
 
   const goHome = () => router.dismissTo('/');
-  const team = state.teams[state.turn];
-  const banner = state.phase === 'final' ? { label: 'FIN DE LA PARTIE', color: colors.pink } : { label: team.name, color: team.color };
+  // Bandeau : l'équipe qui enchérit, puis celle qui a remporté l'enchère.
+  const bannerTeam =
+    state.phase === 'auction' || state.phase === 'final' ? state.teams[state.auction.current] : state.teams[contract(state).team];
+  const banner =
+    state.phase === 'final'
+      ? { label: 'FIN DE LA PARTIE', color: colors.pink }
+      : { label: bannerTeam.name, color: bannerTeam.color };
 
   const footer =
     state.phase === 'play' ? (
       <NextButton accessibilityLabel="Terminer le tour" onPress={() => setConfirm('skip')} />
     ) : state.phase === 'result' ? (
-      <LabelButton label={isLastTurn(state) ? 'RÉSULTATS' : 'SUIVANT'} onPress={() => dispatch({ type: 'NEXT' })} />
+      <LabelButton label={isLastRound(state) ? 'RÉSULTATS' : 'SUIVANT'} onPress={() => dispatch({ type: 'NEXT' })} />
     ) : undefined;
 
   return (
     <GameLayout banner={banner} onHome={() => (state.phase === 'final' ? goHome() : setConfirm('quit'))} footer={footer}>
-      {state.phase === 'intro' ? <IntroPhase state={state} onStart={() => dispatch({ type: 'START_TURN' })} /> : null}
+      {state.phase === 'auction' ? (
+        <AuctionPhase
+          key={`${state.round}-${state.auction.current}`}
+          state={state}
+          onBid={(amount) => dispatch({ type: 'BID', amount })}
+          onPass={() => dispatch({ type: 'PASS' })}
+        />
+      ) : null}
+      {state.phase === 'ready' ? <ReadyPhase state={state} onStart={() => dispatch({ type: 'START_TURN' })} /> : null}
       {state.phase === 'play' ? (
         <PlayPhase
           state={state}
@@ -93,7 +107,7 @@ function Game({ teams, roundCount, sameTheme, onReplay }: GameProps) {
       <ConfirmModal
         visible={confirm === 'skip'}
         title="Terminer le tour ?"
-        message="Les réponses validées jusqu’ici sont comptées."
+        message="Si la mise n’est pas atteinte, elle revient à l’adversaire."
         confirmLabel="TERMINER"
         onCancel={() => setConfirm(null)}
         onConfirm={() => {

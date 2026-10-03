@@ -14,7 +14,6 @@ export type GameSettings = {
   mode: GameMode;
   teamCount: number;
   roundCount: number;
-  sameThemePerRound: boolean;
   teams: Team[];
 };
 
@@ -22,7 +21,6 @@ type GameSettingsContextValue = GameSettings & {
   setMode: (mode: GameMode) => void;
   setTeamCount: (count: number) => void;
   setRoundCount: (count: number) => void;
-  setSameThemePerRound: (value: boolean) => void;
   setTeams: (teams: Team[]) => void;
 };
 
@@ -30,7 +28,6 @@ const defaults: GameSettings = {
   mode: 'classique',
   teamCount: 2,
   roundCount: 5,
-  sameThemePerRound: false,
   teams: [],
 };
 
@@ -47,7 +44,6 @@ export function GameSettingsProvider({ children }: { children: ReactNode }) {
       setMode: (mode) => setSettings((s) => ({ ...s, mode })),
       setTeamCount: (count) => setSettings((s) => ({ ...s, teamCount: clamp(count, TEAM_LIMITS) })),
       setRoundCount: (count) => setSettings((s) => ({ ...s, roundCount: clamp(count, ROUND_LIMITS) })),
-      setSameThemePerRound: (value) => setSettings((s) => ({ ...s, sameThemePerRound: value })),
       setTeams: (teams) => setSettings((s) => ({ ...s, teams })),
     }),
     [settings],

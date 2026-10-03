@@ -9,17 +9,12 @@ import { InfoBadge, type InfoContent, InfoModal } from '@/components/InfoModal';
 import { NextButton, PriceButton } from '@/components/PillButton';
 import { ScreenLayout } from '@/components/ScreenLayout';
 import { Stepper } from '@/components/Stepper';
-import { Toggle } from '@/components/Toggle';
 import { TotaleOffer } from '@/components/TotaleOffer';
 import { offers, purchaseUnavailable } from '@/config/shop';
 import { ROUND_LIMITS, TEAM_LIMITS, useGameSettings } from '@/state/gameSettings';
 import { colors, fonts } from '@/theme';
 
 const infos = {
-  sameTheme: {
-    title: 'Même thème / round',
-    message: "Activé : dans un même round, toutes les équipes reçoivent une question du même thème.",
-  },
   jokers: {
     title: 'Jokers',
     message: 'Des aides à utiliser pendant la partie, à débloquer.',
@@ -67,14 +62,6 @@ export default function MatchSettingsScreen() {
               <MaterialCommunityIcons name="tune-variant" size={30} color={colors.white} />
             </View>
           </Pressable>
-        </Row>
-        <CardDivider />
-        <Row label="MÊME THÈME / ROUND" onInfo={() => setInfo(infos.sameTheme)}>
-          <Toggle
-            accessibilityLabel="Même thème par round"
-            value={settings.sameThemePerRound}
-            onChange={settings.setSameThemePerRound}
-          />
         </Row>
         <CardDivider />
         <Row label="JOKERS" icon={<JesterHat width={46} />} onInfo={() => setInfo(infos.jokers)}>

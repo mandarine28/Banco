@@ -6,17 +6,24 @@ import { useEffect, useRef, useState } from 'react';
  */
 export function useCountdown(active: boolean, seconds: number, onEnd: () => void) {
   const [remaining, setRemaining] = useState(seconds * 1000);
+  const [wasActive, setWasActive] = useState(active);
   const onEndRef = useRef(onEnd);
-  onEndRef.current = onEnd;
+
+  // Réinitialisation pendant le rendu quand le chrono (re)démarre ou s'arrête.
+  if (active !== wasActive) {
+    setWasActive(active);
+    setRemaining(seconds * 1000);
+  }
 
   useEffect(() => {
-    if (!active) {
-      setRemaining(seconds * 1000);
-      return;
-    }
+    onEndRef.current = onEnd;
+  });
+
+  useEffect(() => {
+    if (!active) return;
     const deadline = Date.now() + seconds * 1000;
     let ended = false;
-    const tick = () => {
+    const id = setInterval(() => {
       const left = Math.max(0, deadline - Date.now());
       setRemaining(left);
       if (left === 0 && !ended) {
@@ -24,8 +31,7 @@ export function useCountdown(active: boolean, seconds: number, onEnd: () => void
         clearInterval(id);
         onEndRef.current();
       }
-    };
-    const id = setInterval(tick, 100);
+    }, 100);
     return () => clearInterval(id);
   }, [active, seconds]);
 

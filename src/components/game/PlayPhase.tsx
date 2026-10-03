@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-na
 
 import { Card, CardDivider } from '@/components/Card';
 import { SevenSegment } from '@/components/SevenSegment';
-import { currentQuestion, type GameState, TURN_SECONDS } from '@/game/engine';
+import { contract, currentQuestion, type GameState, TURN_SECONDS } from '@/game/engine';
 import { colors, fonts } from '@/theme';
 
 type Props = {
@@ -17,6 +17,7 @@ const WARNING_SECONDS = 10;
 export function PlayPhase({ state, remainingMs, onToggle }: Props) {
   const { height } = useWindowDimensions();
   const question = currentQuestion(state);
+  const { amount } = contract(state);
   const seconds = Math.ceil(remainingMs / 1000);
   const timerColor = seconds <= WARNING_SECONDS ? colors.pink : colors.orange;
   const progress = remainingMs / (TURN_SECONDS * 1000);
@@ -32,6 +33,9 @@ export function PlayPhase({ state, remainingMs, onToggle }: Props) {
     <Card>
       <View style={styles.header}>
         <Text style={styles.prompt}>{question.prompt}</Text>
+        <Text style={styles.goal} accessibilityLabel={`${state.found.length} réponses trouvées sur ${amount} misées`}>
+          {state.found.length}/{amount} RÉPONSE{amount > 1 ? 'S' : ''}
+        </Text>
       </View>
 
       <View style={styles.timer} accessibilityLabel={`${seconds} secondes restantes`}>
@@ -52,14 +56,13 @@ export function PlayPhase({ state, remainingMs, onToggle }: Props) {
               onPress={() => onToggle(index)}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: found }}
-              accessibilityLabel={`${answer.label}, ${answer.points} point${answer.points > 1 ? 's' : ''}`}
+              accessibilityLabel={answer.label}
               style={[styles.row, { height: rowHeight }, found && styles.rowFound]}
             >
               <Text style={[styles.answer, found && styles.textFound]} numberOfLines={1}>
                 {answer.label}
               </Text>
-              {found ? <MaterialCommunityIcons name="check-bold" size={20} color={colors.white} /> : null}
-              <Text style={[styles.points, found && styles.textFound]}>{answer.points}</Text>
+              {found ? <MaterialCommunityIcons name="check-bold" size={22} color={colors.white} /> : null}
             </Pressable>
           </View>
         );
@@ -81,6 +84,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 19,
     textAlign: 'center',
+  },
+  goal: {
+    marginTop: 8,
+    color: colors.purple,
+    fontFamily: fonts.display,
+    fontSize: 22,
   },
   timer: {
     flexDirection: 'row',
@@ -118,13 +127,6 @@ const styles = StyleSheet.create({
   },
   answer: {
     flex: 1,
-    color: colors.black,
-    fontFamily: fonts.body,
-    fontSize: 16,
-  },
-  points: {
-    minWidth: 18,
-    textAlign: 'right',
     color: colors.black,
     fontFamily: fonts.body,
     fontSize: 16,

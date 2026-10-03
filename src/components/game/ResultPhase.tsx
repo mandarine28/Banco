@@ -2,29 +2,30 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Card, CardDivider } from '@/components/Card';
-import { currentQuestion, type EndReason, type GameState, turnPoints } from '@/game/engine';
+import { TeamName } from '@/components/game/TeamName';
+import { contract, currentQuestion, type GameState, isSuccess, opponent } from '@/game/engine';
 import { colors, fonts } from '@/theme';
-
-const headlines: Record<EndReason, string> = {
-  time: 'TEMPS ÉCOULÉ !',
-  complete: 'SANS FAUTE !',
-  skip: 'TOUR TERMINÉ',
-};
 
 export function ResultPhase({ state }: { state: GameState }) {
   const question = currentQuestion(state);
-  const team = state.teams[state.turn];
-  const points = turnPoints(state);
+  const { team, amount } = contract(state);
+  const success = isSuccess(state);
+  const answering = state.teams[team];
+  const winner = state.teams[success ? team : opponent(state)];
+  const headline = success ? 'BANCO !' : state.endReason === 'time' ? 'TEMPS ÉCOULÉ !' : 'ABANDON';
 
   return (
     <>
       <Card style={styles.summary}>
-        <Text style={styles.headline}>{headlines[state.endReason ?? 'skip']}</Text>
-        <Text style={[styles.points, { color: team.color }]}>
-          +{points} POINT{points > 1 ? 'S' : ''}
+        <Text style={[styles.headline, { color: success ? colors.tealDark : colors.pink }]}>{headline}</Text>
+        <Text style={styles.detail}>
+          <TeamName team={answering} /> A TROUVÉ {state.found.length}/{amount} RÉPONSE{amount > 1 ? 'S' : ''}
         </Text>
-        <Text style={styles.count}>
-          {state.found.length}/{question.answers.length} RÉPONSES TROUVÉES
+        <Text style={[styles.points, { color: winner.color }]}>
+          +{amount} POINT{amount > 1 ? 'S' : ''}
+        </Text>
+        <Text style={styles.detail}>
+          POUR <TeamName team={winner} />
         </Text>
       </Card>
 
@@ -34,21 +35,20 @@ export function ResultPhase({ state }: { state: GameState }) {
           .map((answer, index) => ({ answer, index }))
           .sort((a, b) => a.answer.label.localeCompare(b.answer.label, 'fr'))
           .map(({ answer, index }) => {
-          const found = state.found.includes(index);
-          return (
-            <View key={index}>
-              <CardDivider />
-              <View style={styles.row}>
-                <MaterialCommunityIcons
-                  name={found ? 'check-circle' : 'close-circle-outline'}
-                  size={20}
-                  color={found ? colors.tealDark : colors.muted}
-                />
-                <Text style={[styles.answer, styles.grow, !found && styles.missed]}>{answer.label}</Text>
-                <Text style={[styles.answer, !found && styles.missed]}>{answer.points}</Text>
+            const found = state.found.includes(index);
+            return (
+              <View key={index}>
+                <CardDivider />
+                <View style={styles.row}>
+                  <MaterialCommunityIcons
+                    name={found ? 'check-circle' : 'close-circle-outline'}
+                    size={20}
+                    color={found ? colors.tealDark : colors.muted}
+                  />
+                  <Text style={[styles.answer, !found && styles.missed]}>{answer.label}</Text>
+                </View>
               </View>
-            </View>
-          );
+            );
           })}
       </Card>
 
@@ -76,18 +76,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   headline: {
-    color: colors.purple,
     fontFamily: fonts.display,
-    fontSize: 28,
+    fontSize: 32,
+  },
+  detail: {
+    color: colors.black,
+    fontFamily: fonts.body,
+    fontSize: 15,
+    textAlign: 'center',
   },
   points: {
     fontFamily: fonts.display,
     fontSize: 44,
-  },
-  count: {
-    color: colors.black,
-    fontFamily: fonts.body,
-    fontSize: 15,
   },
   prompt: {
     color: colors.black,
@@ -105,12 +105,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   answer: {
+    flex: 1,
     color: colors.black,
     fontFamily: fonts.body,
     fontSize: 15,
-  },
-  grow: {
-    flex: 1,
   },
   missed: {
     color: colors.muted,

@@ -4,8 +4,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components/Card';
 import { GameButton } from '@/components/GameButton';
 import { TeamName } from '@/components/game/TeamName';
-import { themeById } from '@/data/themes';
-import { currentQuestion, type GameState, holderIndex } from '@/game/engine';
+import { ThemeHeader } from '@/components/game/ThemeHeader';
+import { contract, type GameState, opponent } from '@/game/engine';
 import { colors, fonts } from '@/theme';
 
 type Props = {
@@ -13,28 +13,19 @@ type Props = {
   onStart: () => void;
 };
 
-export function IntroPhase({ state, onStart }: Props) {
-  const question = currentQuestion(state);
-  const theme = themeById(question.theme);
-  const answering = state.teams[state.turn];
-  const holder = state.teams[holderIndex(state)];
+export function ReadyPhase({ state, onStart }: Props) {
+  const { team, amount } = contract(state);
+  const answering = state.teams[team];
+  const holder = state.teams[opponent(state)];
 
   return (
     <>
       <Card style={styles.card}>
-        <View style={styles.round}>
-          {theme ? (
-            <MaterialCommunityIcons
-              name={theme.icon as keyof typeof MaterialCommunityIcons.glyphMap}
-              size={30}
-              color={colors.orange}
-            />
-          ) : null}
-          <Text style={styles.roundLabel}>
-            ROUND {state.round + 1}/{state.roundCount}
-          </Text>
-        </View>
-        <Text style={styles.prompt}>{question.prompt}</Text>
+        <ThemeHeader state={state} />
+        <Text style={styles.goal}>
+          <TeamName team={answering} /> DOIT TROUVER{'\n'}
+          <Text style={styles.amount}>{amount}</Text> RÉPONSE{amount > 1 ? 'S' : ''}
+        </Text>
         <Text style={styles.go}>C’EST PARTI!</Text>
         <View style={styles.button}>
           <GameButton
@@ -53,10 +44,15 @@ export function IntroPhase({ state, onStart }: Props) {
         <View style={styles.phone}>
           <MaterialCommunityIcons name="cellphone-text" size={44} color={colors.white} />
         </View>
-        <Text style={styles.whoText}>
-          <TeamName team={holder} /> TIENT L’APPAREIL.{'\n'}
-          <TeamName team={answering} /> RÉPOND À LA QUESTION.
-        </Text>
+        <View style={styles.whoTexts}>
+          <Text style={styles.whoText}>
+            <TeamName team={holder} /> TIENT L’APPAREIL.{'\n'}
+            <TeamName team={answering} /> RÉPOND À LA QUESTION.
+          </Text>
+          <Text style={styles.stakes}>
+            Réussite : +{amount} pour {answering.name}. Échec : +{amount} pour {holder.name}.
+          </Text>
+        </View>
       </Card>
     </>
   );
@@ -65,26 +61,22 @@ export function IntroPhase({ state, onStart }: Props) {
 const styles = StyleSheet.create({
   card: {
     alignItems: 'center',
-    gap: 34,
+    gap: 26,
     paddingTop: 22,
-    paddingBottom: 34,
+    paddingBottom: 30,
     paddingHorizontal: 20,
   },
-  round: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  roundLabel: {
-    color: colors.purple,
-    fontFamily: fonts.display,
-    fontSize: 24,
-  },
-  prompt: {
+  goal: {
     color: colors.black,
     fontFamily: fonts.body,
     fontSize: 19,
+    lineHeight: 30,
     textAlign: 'center',
+  },
+  amount: {
+    color: colors.pink,
+    fontFamily: fonts.display,
+    fontSize: 30,
   },
   go: {
     color: colors.purple,
@@ -114,11 +106,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.lavender,
   },
-  whoText: {
+  whoTexts: {
     flex: 1,
+    gap: 6,
+  },
+  whoText: {
     color: colors.black,
     fontFamily: fonts.body,
     fontSize: 15,
     lineHeight: 24,
+  },
+  stakes: {
+    color: colors.muted,
+    fontFamily: fonts.bodyRegular,
+    fontSize: 13,
   },
 });

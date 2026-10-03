@@ -4,8 +4,17 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { questions } from '../data/questions.ts';
-import { createGame, currentQuestion, gameReducer, holderIndex, planQuestions, ranking } from './engine.ts';
-import type { GameState } from './engine.ts';
+import {
+  canPass,
+  contract,
+  createGame,
+  gameReducer,
+  minimumBid,
+  opponent,
+  planQuestions,
+  ranking,
+} from './engine.ts';
+import type { GameAction, GameState } from './engine.ts';
 
 // Générateur pseudo-aléatoire déterministe pour des tests reproductibles.
 function seeded(seed: number) {
@@ -15,72 +24,111 @@ function seeded(seed: number) {
   };
 }
 
-const teams = [
+const two = [
   { name: 'ÉQUIPE 1', color: '#FBB040' },
   { name: 'ÉQUIPE 2', color: '#16D3C3' },
 ];
+const three = [...two, { name: 'ÉQUIPE 3', color: '#F21F66' }];
 
-test('chaque question d’exemple a 9 réponses et des points entre 1 et 5', () => {
+const play = (state: GameState, ...actions: GameAction[]) => actions.reduce(gameReducer, state);
+const find = (count: number): GameAction[] =>
+  Array.from({ length: count }, (_, index) => ({ type: 'TOGGLE_ANSWER', index }));
+
+test('chaque question d’exemple a 9 réponses et un thème', () => {
   for (const q of questions) {
     assert.equal(q.answers.length, 9, q.id);
-    for (const a of q.answers) assert.ok(a.points >= 1 && a.points <= 5, `${q.id} / ${a.label}`);
+    assert.ok(q.theme, q.id);
   }
   assert.equal(new Set(questions.map((q) => q.id)).size, questions.length, 'identifiants uniques');
 });
 
-test('le plan ne répète pas de question tant que la base suffit', () => {
-  const plan = planQuestions(questions, 2, 5, false, seeded(1));
-  const ids = plan.flat().map((q) => q.id);
-  assert.equal(ids.length, 10);
-  assert.equal(new Set(ids).size, 10);
+test('une question par round, sans répétition tant que la base suffit', () => {
+  const plan = planQuestions(questions, 5, seeded(1));
+  assert.equal(plan.length, 5);
+  assert.equal(new Set(plan.map((q) => q.id)).size, 5);
+  assert.equal(planQuestions(questions.slice(0, 2), 5, seeded(2)).length, 5);
 });
 
-test('le plan réutilise des questions quand la base est épuisée', () => {
-  const plan = planQuestions(questions.slice(0, 3), 4, 3, false, seeded(2));
-  assert.equal(plan.flat().length, 12);
+test('l’ouvreur doit miser, puis chacun surenchérit ou passe', () => {
+  let s = createGame(two, 3, questions, seeded(3));
+  assert.equal(s.phase, 'auction');
+  assert.equal(s.auction.current, 0);
+  assert.equal(canPass(s), false);
+  assert.equal(gameReducer(s, { type: 'PASS' }), s, 'passer à l’ouverture est refusé');
+
+  s = play(s, { type: 'BID', amount: 3 });
+  assert.equal(s.auction.current, 1);
+  assert.equal(minimumBid(s), 4);
+  s = play(s, { type: 'BID', amount: 2 }); // trop bas : ramené au minimum
+  assert.deepEqual(s.auction.highest, { team: 1, amount: 4 });
+  s = play(s, { type: 'PASS' });
+  assert.equal(s.phase, 'ready');
+  assert.deepEqual(contract(s), { team: 1, amount: 4 });
+  assert.equal(opponent(s), 0);
 });
 
-test('avec « même thème », un round partage un seul thème', () => {
-  const plan = planQuestions(questions, 2, 4, true, seeded(3));
-  for (const round of plan) assert.equal(new Set(round.map((q) => q.theme)).size, 1);
+test('miser 9 termine l’enchère immédiatement', () => {
+  const s = play(createGame(two, 1, questions, seeded(4)), { type: 'BID', amount: 9 });
+  assert.equal(s.phase, 'ready');
+  assert.deepEqual(contract(s), { team: 0, amount: 9 });
 });
 
-test('un tour : validation, annulation, points et fin au chrono', () => {
-  let s: GameState = createGame(teams, 2, false, questions, seeded(4));
-  assert.equal(holderIndex(s), 1);
-  s = gameReducer(s, { type: 'START_TURN' });
-  s = gameReducer(s, { type: 'TOGGLE_ANSWER', index: 0 });
-  s = gameReducer(s, { type: 'TOGGLE_ANSWER', index: 1 });
-  s = gameReducer(s, { type: 'TOGGLE_ANSWER', index: 1 });
-  assert.deepEqual(s.found, [0]);
-  s = gameReducer(s, { type: 'END_TURN', reason: 'time' });
+test('réussite : l’équipe empoche sa mise dès qu’elle l’atteint', () => {
+  let s = play(createGame(two, 1, questions, seeded(5)), { type: 'BID', amount: 3 }, { type: 'PASS' });
+  s = play(s, { type: 'START_TURN' }, ...find(3));
   assert.equal(s.phase, 'result');
-  assert.equal(s.scores[0], currentQuestion(s).answers[0].points);
-  assert.equal(s.endReason, 'time');
+  assert.equal(s.endReason, 'reached');
+  assert.deepEqual(s.scores, [3, 0]);
 });
 
-test('trouver les 9 réponses termine le tour', () => {
-  let s = gameReducer(createGame(teams, 1, false, questions, seeded(5)), { type: 'START_TURN' });
-  for (let i = 0; i < 9; i++) s = gameReducer(s, { type: 'TOGGLE_ANSWER', index: i });
-  assert.equal(s.phase, 'result');
-  assert.equal(s.endReason, 'complete');
-  assert.equal(s.scores[0], currentQuestion(s).answers.reduce((n, a) => n + a.points, 0));
+test('échec : la mise va à l’adversaire', () => {
+  let s = play(createGame(two, 1, questions, seeded(6)), { type: 'BID', amount: 5 }, { type: 'PASS' });
+  s = play(s, { type: 'START_TURN' }, ...find(4), { type: 'END_TURN', reason: 'time' });
+  assert.deepEqual(s.scores, [0, 5]);
 });
 
-test('enchaînement des tours puis fin de partie', () => {
-  let s = createGame(teams, 2, false, questions, seeded(6));
-  const visited: string[] = [];
+test('une réponse annulée ne compte plus', () => {
+  let s = play(createGame(two, 1, questions, seeded(7)), { type: 'BID', amount: 2 }, { type: 'PASS' });
+  s = play(s, { type: 'START_TURN' }, { type: 'TOGGLE_ANSWER', index: 0 }, { type: 'TOGGLE_ANSWER', index: 0 });
+  assert.deepEqual(s.found, []);
+  assert.equal(s.phase, 'play');
+});
+
+test('à 3 équipes, l’adversaire est la dernière équipe dépassée', () => {
+  // L'équipe 1 ouvre à 2, l'équipe 2 monte à 3, l'équipe 3 passe, l'équipe 1 monte à 5, l'équipe 2 passe.
+  let s = play(
+    createGame(three, 1, questions, seeded(8)),
+    { type: 'BID', amount: 2 },
+    { type: 'BID', amount: 3 },
+    { type: 'PASS' },
+    { type: 'BID', amount: 5 },
+    { type: 'PASS' },
+  );
+  assert.equal(s.phase, 'ready');
+  assert.deepEqual(contract(s), { team: 0, amount: 5 });
+  assert.equal(opponent(s), 1);
+  s = play(s, { type: 'START_TURN' }, { type: 'END_TURN', reason: 'skip' });
+  assert.deepEqual(s.scores, [0, 5, 0]);
+});
+
+test('si personne ne surenchérit, l’adversaire est l’équipe suivante', () => {
+  const s = play(createGame(three, 1, questions, seeded(9)), { type: 'BID', amount: 1 }, { type: 'PASS' }, { type: 'PASS' });
+  assert.equal(s.phase, 'ready');
+  assert.equal(opponent(s), 1);
+});
+
+test('l’ouverture tourne à chaque round, puis fin de partie', () => {
+  let s = createGame(two, 3, questions, seeded(10));
+  const openers: number[] = [];
   while (s.phase !== 'final') {
-    visited.push(`${s.round}-${s.turn}`);
-    s = gameReducer(s, { type: 'START_TURN' });
-    s = gameReducer(s, { type: 'END_TURN', reason: 'skip' });
-    s = gameReducer(s, { type: 'NEXT' });
+    openers.push(s.auction.current);
+    s = play(s, { type: 'BID', amount: 1 }, { type: 'PASS' }, { type: 'START_TURN' }, { type: 'END_TURN', reason: 'skip' }, { type: 'NEXT' });
   }
-  assert.deepEqual(visited, ['0-0', '0-1', '1-0', '1-1']);
+  assert.deepEqual(openers, [0, 1, 0]);
 });
 
 test('classement avec ex aequo', () => {
-  const s = { ...createGame([...teams, { name: 'ÉQUIPE 3', color: '#F21F66' }], 1, false, questions), scores: [5, 9, 5] };
+  const s = { ...createGame(three, 1, questions), scores: [5, 9, 5] };
   assert.deepEqual(
     ranking(s).map((r) => [r.index, r.rank]),
     [

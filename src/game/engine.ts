@@ -1,24 +1,41 @@
 import type { Question } from '../data/types';
 
 export const TURN_SECONDS = 60;
-export const ANSWERS_PER_QUESTION = 9;
+export const MIN_BID = 1;
+export const MAX_BID = 9;
 
 export type GameTeam = { name: string; color: string };
 
-export type Phase = 'intro' | 'play' | 'result' | 'final';
+/**
+ * Déroulé d'un round :
+ * - `auction` : seul le thème est affiché, les équipes surenchérissent ou passent ;
+ * - `ready`   : l'enchère est remportée, l'équipe s'apprête à répondre ;
+ * - `play`    : question révélée, chrono lancé ;
+ * - `result`  : mise gagnée ou cédée à l'adversaire.
+ */
+export type Phase = 'auction' | 'ready' | 'play' | 'result' | 'final';
 
-/** Raison de fin d'un tour : chrono à zéro, 9 réponses trouvées, ou tour passé. */
-export type EndReason = 'time' | 'complete' | 'skip';
+/** Raison de fin d'un tour : chrono à zéro, mise atteinte, ou tour abandonné. */
+export type EndReason = 'time' | 'reached' | 'skip';
+
+export type Auction = {
+  /** Équipe qui doit surenchérir ou passer. */
+  current: number;
+  /** Plus haute mise : nombre de réponses que l'équipe s'engage à trouver. */
+  highest: { team: number; amount: number } | null;
+  /** Dernière équipe dépassée par la plus haute mise : c'est l'adversaire du tour. */
+  outbid: number | null;
+  passed: boolean[];
+};
 
 export type GameState = {
   teams: GameTeam[];
   roundCount: number;
-  /** Questions prévues pour chaque tour : plan[round][équipe]. */
-  plan: Question[][];
+  /** Une question par round ; son thème est annoncé pendant l'enchère. */
+  plan: Question[];
   round: number;
-  /** Index de l'équipe qui répond pendant ce tour. */
-  turn: number;
   phase: Phase;
+  auction: Auction;
   /** Index (dans question.answers) des réponses validées pendant le tour. */
   found: number[];
   scores: number[];
@@ -26,6 +43,8 @@ export type GameState = {
 };
 
 export type GameAction =
+  | { type: 'BID'; amount: number }
+  | { type: 'PASS' }
   | { type: 'START_TURN' }
   | { type: 'TOGGLE_ANSWER'; index: number }
   | { type: 'END_TURN'; reason: EndReason }
@@ -42,76 +61,69 @@ function shuffle<T>(items: readonly T[], random: Random): T[] {
   return copy;
 }
 
-/**
- * Attribue une question à chaque tour, sans répétition tant que la base le permet.
- * Avec `sameTheme`, toutes les équipes d'un même round reçoivent une question du même thème.
- */
-export function planQuestions(
-  questions: readonly Question[],
-  teamCount: number,
-  roundCount: number,
-  sameTheme: boolean,
-  random: Random = Math.random,
-): Question[][] {
+/** Une question par round, sans répétition tant que la base le permet. */
+export function planQuestions(questions: readonly Question[], roundCount: number, random: Random = Math.random) {
   if (questions.length === 0) throw new Error('Aucune question disponible');
-
-  let pool = shuffle(questions, random);
-  const take = (accept: (q: Question) => boolean): Question => {
-    // Base épuisée : on recommence avec toutes les questions.
-    if (!pool.some(accept)) pool = shuffle(questions, random);
-    const index = pool.findIndex(accept);
-    const picked = index === -1 ? pool[0] : pool[index];
-    pool = pool.filter((q) => q !== picked);
-    return picked;
-  };
-
-  const plan: Question[][] = [];
+  const plan: Question[] = [];
+  let pool: Question[] = [];
   for (let round = 0; round < roundCount; round++) {
-    if (sameTheme) {
-      const counts = new Map<string, number>();
-      for (const q of pool) counts.set(q.theme, (counts.get(q.theme) ?? 0) + 1);
-      const candidates = [...counts].filter(([, n]) => n >= teamCount).map(([theme]) => theme);
-      const theme = candidates.length > 0 ? candidates[Math.floor(random() * candidates.length)] : null;
-      plan.push(Array.from({ length: teamCount }, () => take((q) => theme === null || q.theme === theme)));
-    } else {
-      plan.push(Array.from({ length: teamCount }, () => take(() => true)));
-    }
+    if (pool.length === 0) pool = shuffle(questions, random);
+    plan.push(pool.pop() as Question);
   }
   return plan;
+}
+
+/** L'enchère d'un round est ouverte par chaque équipe à tour de rôle. */
+function openAuction(teamCount: number, round: number): Auction {
+  return { current: round % teamCount, highest: null, outbid: null, passed: Array(teamCount).fill(false) };
 }
 
 export function createGame(
   teams: GameTeam[],
   roundCount: number,
-  sameTheme: boolean,
   questions: readonly Question[],
   random: Random = Math.random,
 ): GameState {
   return {
     teams,
     roundCount,
-    plan: planQuestions(questions, teams.length, roundCount, sameTheme, random),
+    plan: planQuestions(questions, roundCount, random),
     round: 0,
-    turn: 0,
-    phase: 'intro',
+    phase: 'auction',
+    auction: openAuction(teams.length, 0),
     found: [],
     scores: teams.map(() => 0),
     endReason: null,
   };
 }
 
-export const currentQuestion = (state: GameState) => state.plan[state.round][state.turn];
+export const currentQuestion = (state: GameState) => state.plan[state.round];
 
-/** L'équipe suivante tient le téléphone et valide les réponses. */
-export const holderIndex = (state: GameState) => (state.turn + 1) % state.teams.length;
+/** Mise minimale pour l'équipe dont c'est le tour d'enchérir. */
+export const minimumBid = (state: GameState) => (state.auction.highest?.amount ?? MIN_BID - 1) + 1;
 
-export function turnPoints(state: GameState): number {
-  const { answers } = currentQuestion(state);
-  return state.found.reduce((sum, i) => sum + answers[i].points, 0);
+/** Le premier à parler doit ouvrir l'enchère : il ne peut pas passer. */
+export const canPass = (state: GameState) => state.auction.highest !== null;
+
+/** Équipe qui répond (plus haute mise) et la mise à atteindre. */
+export function contract(state: GameState) {
+  const { highest } = state.auction;
+  if (!highest) throw new Error('Enchère non terminée');
+  return highest;
 }
 
-export const isLastTurn = (state: GameState) =>
-  state.round === state.roundCount - 1 && state.turn === state.teams.length - 1;
+/**
+ * Adversaire du tour : l'équipe que la plus haute mise a dépassée en dernier.
+ * Elle tient l'appareil, valide les réponses et récupère la mise en cas d'échec.
+ */
+export function opponent(state: GameState): number {
+  const { team } = contract(state);
+  return state.auction.outbid ?? (team + 1) % state.teams.length;
+}
+
+export const isSuccess = (state: GameState) => state.found.length >= contract(state).amount;
+
+export const isLastRound = (state: GameState) => state.round === state.roundCount - 1;
 
 /** Classement : équipes triées par score décroissant, avec le rang (ex aequo partagés). */
 export function ranking(state: GameState) {
@@ -121,10 +133,47 @@ export function ranking(state: GameState) {
   return sorted.map((entry) => ({ ...entry, rank: sorted.findIndex((e) => e.score === entry.score) + 1 }));
 }
 
+function nextBidder(auction: Auction): number {
+  const n = auction.passed.length;
+  for (let step = 1; step <= n; step++) {
+    const candidate = (auction.current + step) % n;
+    if (!auction.passed[candidate]) return candidate;
+  }
+  return auction.current;
+}
+
+/** L'enchère s'arrête quand une seule équipe reste en lice ou que la mise maximale est atteinte. */
+function settle(state: GameState, auction: Auction): GameState {
+  const remaining = auction.passed.filter((p) => !p).length;
+  if (auction.highest && (remaining <= 1 || auction.highest.amount >= MAX_BID)) {
+    return { ...state, auction, phase: 'ready' };
+  }
+  return { ...state, auction: { ...auction, current: nextBidder(auction) } };
+}
+
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
+    case 'BID': {
+      if (state.phase !== 'auction') return state;
+      const amount = Math.min(MAX_BID, Math.max(minimumBid(state), Math.round(action.amount)));
+      if (amount < minimumBid(state)) return state;
+      const { auction } = state;
+      return settle(state, {
+        ...auction,
+        highest: { team: auction.current, amount },
+        outbid: auction.highest ? auction.highest.team : auction.outbid,
+      });
+    }
+
+    case 'PASS': {
+      if (state.phase !== 'auction' || !canPass(state)) return state;
+      const passed = [...state.auction.passed];
+      passed[state.auction.current] = true;
+      return settle(state, { ...state.auction, passed });
+    }
+
     case 'START_TURN':
-      if (state.phase !== 'intro') return state;
+      if (state.phase !== 'ready') return state;
       return { ...state, phase: 'play', found: [], endReason: null };
 
     case 'TOGGLE_ANSWER': {
@@ -133,7 +182,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ? state.found.filter((i) => i !== action.index)
         : [...state.found, action.index];
       const next = { ...state, found };
-      return found.length === currentQuestion(state).answers.length ? endTurn(next, 'complete') : next;
+      return found.length >= contract(state).amount ? endTurn(next, 'reached') : next;
     }
 
     case 'END_TURN':
@@ -142,13 +191,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'NEXT': {
       if (state.phase !== 'result') return state;
-      if (isLastTurn(state)) return { ...state, phase: 'final' };
-      const lastTeam = state.turn === state.teams.length - 1;
+      if (isLastRound(state)) return { ...state, phase: 'final' };
+      const round = state.round + 1;
       return {
         ...state,
-        phase: 'intro',
-        round: lastTeam ? state.round + 1 : state.round,
-        turn: lastTeam ? 0 : state.turn + 1,
+        round,
+        phase: 'auction',
+        auction: openAuction(state.teams.length, round),
         found: [],
         endReason: null,
       };
@@ -156,8 +205,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
   }
 }
 
+/** Réussite : l'équipe empoche sa mise. Échec : l'adversaire la récupère. */
 function endTurn(state: GameState, reason: EndReason): GameState {
+  const { team, amount } = contract(state);
   const scores = [...state.scores];
-  scores[state.turn] += turnPoints(state);
+  scores[isSuccess(state) ? team : opponent(state)] += amount;
   return { ...state, phase: 'result', scores, endReason: reason };
 }
