@@ -36,8 +36,10 @@ export type GameState = {
   round: number;
   phase: Phase;
   auction: Auction;
-  /** Index (dans question.answers) des réponses validées pendant le tour. */
-  found: number[];
+  /** Réponses validées en touchant leur bouton (libellés de la base ou saisis à la main). */
+  found: string[];
+  /** Réponses comptées pendant le tour (boutons et compteur manuel), de 0 à la mise. */
+  progress: number;
   scores: number[];
   endReason: EndReason | null;
 };
@@ -46,7 +48,8 @@ export type GameAction =
   | { type: 'BID'; amount: number }
   | { type: 'PASS' }
   | { type: 'START_TURN' }
-  | { type: 'TOGGLE_ANSWER'; index: number }
+  | { type: 'TOGGLE_ANSWER'; label: string }
+  | { type: 'ADJUST'; delta: 1 | -1 }
   | { type: 'END_TURN'; reason: EndReason }
   | { type: 'NEXT' };
 
@@ -92,6 +95,7 @@ export function createGame(
     phase: 'auction',
     auction: openAuction(teams.length, 0),
     found: [],
+    progress: 0,
     scores: teams.map(() => 0),
     endReason: null,
   };
@@ -121,7 +125,10 @@ export function opponent(state: GameState): number {
   return state.auction.outbid ?? (team + 1) % state.teams.length;
 }
 
-export const isSuccess = (state: GameState) => state.found.length >= contract(state).amount;
+export const isSuccess = (state: GameState) => state.progress >= contract(state).amount;
+
+/** Réponses encore à trouver pour atteindre la mise. */
+export const remaining = (state: GameState) => Math.max(0, contract(state).amount - state.progress);
 
 export const isLastRound = (state: GameState) => state.round === state.roundCount - 1;
 
@@ -174,15 +181,22 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'START_TURN':
       if (state.phase !== 'ready') return state;
-      return { ...state, phase: 'play', found: [], endReason: null };
+      return { ...state, phase: 'play', found: [], progress: 0, endReason: null };
 
     case 'TOGGLE_ANSWER': {
       if (state.phase !== 'play') return state;
-      const found = state.found.includes(action.index)
-        ? state.found.filter((i) => i !== action.index)
-        : [...state.found, action.index];
-      const next = { ...state, found };
-      return found.length >= contract(state).amount ? endTurn(next, 'reached') : next;
+      const already = state.found.includes(action.label);
+      const next = already
+        ? { ...state, found: state.found.filter((l) => l !== action.label), progress: Math.max(0, state.progress - 1) }
+        : { ...state, found: [...state.found, action.label], progress: state.progress + 1 };
+      return isSuccess(next) ? endTurn(next, 'reached') : next;
+    }
+
+    case 'ADJUST': {
+      if (state.phase !== 'play') return state;
+      const progress = Math.min(contract(state).amount, Math.max(0, state.progress + action.delta));
+      const next = { ...state, progress };
+      return isSuccess(next) ? endTurn(next, 'reached') : next;
     }
 
     case 'END_TURN':
@@ -199,6 +213,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         phase: 'auction',
         auction: openAuction(state.teams.length, round),
         found: [],
+        progress: 0,
         endReason: null,
       };
     }

@@ -12,6 +12,9 @@ export function ResultPhase({ state }: { state: GameState }) {
   const success = isSuccess(state);
   const answering = state.teams[team];
   const winner = state.teams[success ? team : opponent(state)];
+  // Réponses comptées avec le compteur sans toucher de bouton.
+  const manual = Math.max(0, state.progress - state.found.length);
+  const missed = question.answers.filter((a) => !state.found.includes(a)).slice(0, 9);
   const headline = success ? 'BANCO !' : state.endReason === 'time' ? 'TEMPS ÉCOULÉ !' : 'ABANDON';
 
   return (
@@ -19,7 +22,7 @@ export function ResultPhase({ state }: { state: GameState }) {
       <Card style={styles.summary}>
         <Text style={[styles.headline, { color: success ? colors.tealDark : colors.pink }]}>{headline}</Text>
         <Text style={styles.detail}>
-          <TeamName team={answering} /> A TROUVÉ {state.found.length}/{amount} RÉPONSE{amount > 1 ? 'S' : ''}
+          <TeamName team={answering} /> A TROUVÉ {Math.min(state.progress, amount)}/{amount} RÉPONSE{amount > 1 ? 'S' : ''}
         </Text>
         <Text style={[styles.points, { color: winner.color }]}>
           +{amount} POINT{amount > 1 ? 'S' : ''}
@@ -31,25 +34,29 @@ export function ResultPhase({ state }: { state: GameState }) {
 
       <Card>
         <Text style={styles.prompt}>{question.prompt}</Text>
-        {question.answers
-          .map((answer, index) => ({ answer, index }))
-          .sort((a, b) => a.answer.label.localeCompare(b.answer.label, 'fr'))
-          .map(({ answer, index }) => {
-            const found = state.found.includes(index);
-            return (
-              <View key={index}>
-                <CardDivider />
-                <View style={styles.row}>
-                  <MaterialCommunityIcons
-                    name={found ? 'check-circle' : 'close-circle-outline'}
-                    size={20}
-                    color={found ? colors.tealDark : colors.muted}
-                  />
-                  <Text style={[styles.answer, !found && styles.missed]}>{answer.label}</Text>
-                </View>
-              </View>
-            );
-          })}
+        {state.found.map((label) => (
+          <View key={label}>
+            <CardDivider />
+            <View style={styles.row}>
+              <MaterialCommunityIcons name="check-circle" size={20} color={colors.tealDark} />
+              <Text style={styles.answer}>{label}</Text>
+            </View>
+          </View>
+        ))}
+        {manual > 0 ? (
+          <View>
+            <CardDivider />
+            <View style={styles.row}>
+              <MaterialCommunityIcons name="counter" size={20} color={colors.tealDark} />
+              <Text style={styles.answer}>
+                {manual} RÉPONSE{manual > 1 ? 'S' : ''} COMPTÉE{manual > 1 ? 'S' : ''} AU COMPTEUR
+              </Text>
+            </View>
+          </View>
+        ) : null}
+        <CardDivider />
+        <Text style={styles.missedTitle}>RÉPONSES FRÉQUENTES NON CITÉES</Text>
+        <Text style={styles.missedList}>{missed.join(' · ')}</Text>
       </Card>
 
       <Card>
@@ -110,8 +117,22 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 15,
   },
-  missed: {
+  missedTitle: {
+    paddingTop: 14,
+    paddingHorizontal: 18,
     color: colors.muted,
+    fontFamily: fonts.body,
+    fontSize: 12,
+    letterSpacing: 1,
+  },
+  missedList: {
+    paddingTop: 4,
+    paddingBottom: 16,
+    paddingHorizontal: 18,
+    color: colors.black,
+    fontFamily: fonts.bodyRegular,
+    fontSize: 14,
+    lineHeight: 21,
   },
   dot: {
     width: 16,

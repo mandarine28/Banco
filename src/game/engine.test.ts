@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { questions } from '../data/questions.ts';
+import { normalize, searchAnswers, suggestions, SUGGESTION_COUNT } from './answers.ts';
 import {
   canPass,
   contract,
@@ -13,6 +14,7 @@ import {
   opponent,
   planQuestions,
   ranking,
+  remaining,
 } from './engine.ts';
 import type { GameAction, GameState } from './engine.ts';
 
@@ -32,14 +34,50 @@ const three = [...two, { name: 'ÉQUIPE 3', color: '#F21F66' }];
 
 const play = (state: GameState, ...actions: GameAction[]) => actions.reduce(gameReducer, state);
 const find = (count: number): GameAction[] =>
-  Array.from({ length: count }, (_, index) => ({ type: 'TOGGLE_ANSWER', index }));
+  Array.from({ length: count }, (_, i) => ({ type: 'TOGGLE_ANSWER', label: `RÉPONSE ${i}` }));
 
-test('chaque question d’exemple a 9 réponses et un thème', () => {
+test('chaque question a au moins 27 réponses, sans doublon', () => {
   for (const q of questions) {
-    assert.equal(q.answers.length, 9, q.id);
     assert.ok(q.theme, q.id);
+    assert.ok(q.answers.length >= SUGGESTION_COUNT, `${q.id} : ${q.answers.length} réponses`);
+    const keys = q.answers.map(normalize);
+    const dupes = keys.filter((k, i) => keys.indexOf(k) !== i);
+    assert.deepEqual(dupes, [], `${q.id} : doublons`);
   }
   assert.equal(new Set(questions.map((q) => q.id)).size, questions.length, 'identifiants uniques');
+});
+
+test('la recherche ignore accents, casse et ponctuation, préfixes en premier', () => {
+  const heroes = questions.find((q) => q.id === 'super-heros')!;
+  assert.deepEqual(searchAnswers(heroes, 'spiderman'), ['SPIDER-MAN']);
+  assert.ok(searchAnswers(heroes, 'man').includes('BATMAN'));
+  assert.deepEqual(searchAnswers(heroes, '   '), []);
+  const cheese = questions.find((q) => q.id === 'fromages')!;
+  assert.deepEqual(searchAnswers(cheese, 'epoisses'), ['ÉPOISSES']);
+  assert.equal(searchAnswers(cheese, 'co')[0], 'COMTÉ');
+});
+
+test('les boutons gardent visibles les réponses validées hors du top', () => {
+  const q = questions[0];
+  const deep = q.answers[q.answers.length - 1];
+  const list = suggestions(q, [deep, 'SAISIE LIBRE']);
+  assert.equal(list.length, SUGGESTION_COUNT + 2);
+  assert.ok(list.includes(deep) && list.includes('SAISIE LIBRE'));
+  assert.equal(suggestions(q, [q.answers[0]]).length, SUGGESTION_COUNT);
+});
+
+test('compteur manuel : décompte depuis la mise, sans dépasser la mise', () => {
+  let s = play(createGame(two, 1, questions, seeded(11)), { type: 'BID', amount: 3 }, { type: 'PASS' }, { type: 'START_TURN' });
+  assert.equal(remaining(s), 3);
+  s = play(s, { type: 'ADJUST', delta: -1 });
+  assert.equal(remaining(s), 3, 'le + ne dépasse pas la mise');
+  s = play(s, { type: 'ADJUST', delta: 1 }, { type: 'TOGGLE_ANSWER', label: 'X' });
+  assert.equal(remaining(s), 1);
+  s = play(s, { type: 'TOGGLE_ANSWER', label: 'X' });
+  assert.equal(remaining(s), 2, 'annuler un bouton rend la réponse');
+  s = play(s, { type: 'ADJUST', delta: 1 }, { type: 'ADJUST', delta: 1 });
+  assert.equal(s.phase, 'result');
+  assert.equal(s.endReason, 'reached');
 });
 
 test('une question par round, sans répétition tant que la base suffit', () => {
@@ -89,7 +127,7 @@ test('échec : la mise va à l’adversaire', () => {
 
 test('une réponse annulée ne compte plus', () => {
   let s = play(createGame(two, 1, questions, seeded(7)), { type: 'BID', amount: 2 }, { type: 'PASS' });
-  s = play(s, { type: 'START_TURN' }, { type: 'TOGGLE_ANSWER', index: 0 }, { type: 'TOGGLE_ANSWER', index: 0 });
+  s = play(s, { type: 'START_TURN' }, { type: 'TOGGLE_ANSWER', label: 'A' }, { type: 'TOGGLE_ANSWER', label: 'A' });
   assert.deepEqual(s.found, []);
   assert.equal(s.phase, 'play');
 });

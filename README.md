@@ -26,21 +26,24 @@ npm test             # tests de la logique de jeu
    réponses (1 à 9) qu'elle s'engage à trouver, ou passe (elle sort alors de l'enchère).
    L'équipe qui ouvre doit miser ; l'ouverture tourne à chaque round. Une mise de 9 clôt l'enchère.
 2. **Réponse** : la question est révélée, l'équipe qui a la plus haute mise a 60 s.
-   L'adversaire (dernière équipe surenchérie) tient l'appareil et valide les réponses.
+   L'adversaire (dernière équipe surenchérie) tient l'appareil : le compteur part de la mise
+   et descend à chaque bonne réponse (boutons de réponses connues, recherche dans la base,
+   vérification Wikipédia, ou « − » pour une réponse hors base).
 3. **Score** : mise atteinte = l'équipe gagne sa mise en points ; sinon l'adversaire la récupère.
 
 ## Ajouter des questions
 
 Les questions sont dans `src/data/questions.ts` (les actuelles sont des exemples).
-Chaque question a un thème (`src/data/themes.ts`), un intitulé et exactement 9 réponses,
-chacune avec ses points (1 = évidente, 5 = rare ; non utilisés par le score actuel).
-`npm test` vérifie le format.
+Chaque question a un thème (`src/data/themes.ts`), un intitulé et la liste des réponses
+acceptées, **de la plus citée à la moins citée** : les 27 premières s'affichent en boutons,
+la barre de recherche parcourt toute la liste (accents, casse et tirets ignorés).
+`npm test` vérifie le format (27 réponses minimum, pas de doublon).
 
 ```ts
 {
-  id: 'pizzas',
-  theme: 'cuisine',
-  prompt: 'CITEZ 9 TYPES DE PIZZAS',
-  answers: [{ label: 'MARGHERITA', points: 1 }, /* … 9 réponses */],
+  id: 'super-heros',
+  theme: 'cinema',
+  prompt: 'CITEZ 9 SUPER-HÉROS',
+  answers: ['SPIDER-MAN', 'BATMAN', 'SUPERMAN', /* … */],
 }
 ```

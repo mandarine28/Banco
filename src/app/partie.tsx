@@ -6,9 +6,10 @@ import { AuctionPhase } from '@/components/game/AuctionPhase';
 import { PlayPhase } from '@/components/game/PlayPhase';
 import { ReadyPhase } from '@/components/game/ReadyPhase';
 import { ResultPhase } from '@/components/game/ResultPhase';
+import { TimerBar } from '@/components/game/TimerBar';
 import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal } from '@/components/InfoModal';
-import { LabelButton, NextButton } from '@/components/PillButton';
+import { LabelButton } from '@/components/PillButton';
 import { questions } from '@/data/questions';
 import { contract, createGame, gameReducer, type GameTeam, isLastRound, TURN_SECONDS } from '@/game/engine';
 import { useCountdown } from '@/hooks/useCountdown';
@@ -67,7 +68,7 @@ function Game({ teams, roundCount, onReplay }: GameProps) {
 
   const footer =
     state.phase === 'play' ? (
-      <NextButton accessibilityLabel="Terminer le tour" onPress={() => setConfirm('skip')} />
+      <TimerBar remainingMs={remainingMs} onSkip={() => setConfirm('skip')} />
     ) : state.phase === 'result' ? (
       <LabelButton label={isLastRound(state) ? 'RÉSULTATS' : 'SUIVANT'} onPress={() => dispatch({ type: 'NEXT' })} />
     ) : undefined;
@@ -86,8 +87,8 @@ function Game({ teams, roundCount, onReplay }: GameProps) {
       {state.phase === 'play' ? (
         <PlayPhase
           state={state}
-          remainingMs={remainingMs}
-          onToggle={(index) => dispatch({ type: 'TOGGLE_ANSWER', index })}
+          onToggle={(label) => dispatch({ type: 'TOGGLE_ANSWER', label })}
+          onAdjust={(delta) => dispatch({ type: 'ADJUST', delta })}
         />
       ) : null}
       {state.phase === 'result' ? <ResultPhase state={state} /> : null}

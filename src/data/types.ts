@@ -1,15 +1,12 @@
-export type Answer = {
-  label: string;
-  /** Points rapportés : 1 pour une réponse évidente, jusqu'à 5 pour une réponse rare. */
-  points: number;
-};
-
 export type Question = {
   id: string;
   theme: string;
   prompt: string;
-  /** Exactement 9 réponses. */
-  answers: Answer[];
+  /**
+   * Réponses acceptées, de la plus citée à la moins citée.
+   * Les premières s'affichent en boutons ; la recherche parcourt toute la liste.
+   */
+  answers: string[];
 };
 
 export type Theme = {
