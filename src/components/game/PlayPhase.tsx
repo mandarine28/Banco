@@ -12,6 +12,8 @@ type Props = {
   state: GameState;
   onToggle: (label: string) => void;
   onAdjust: (delta: 1 | -1) => void;
+  /** Lance une recherche web (le chrono est mis en pause par l'écran de partie). */
+  onWebSearch: (query: string) => void;
 };
 
 const MAX_WIDTH = 500;
@@ -24,7 +26,7 @@ type WikiState =
   | { status: 'done'; result: WikiResult | null }
   | { status: 'error' };
 
-export function PlayPhase({ state, onToggle, onAdjust }: Props) {
+export function PlayPhase({ state, onToggle, onAdjust, onWebSearch }: Props) {
   const { width } = useWindowDimensions();
   const question = currentQuestion(state);
   const { amount } = contract(state);
@@ -47,10 +49,13 @@ export function PlayPhase({ state, onToggle, onAdjust }: Props) {
     if (searching) updateQuery('');
   };
 
+  // Recherche web avec le thème de la question pour cibler les résultats.
+  const context = question.prompt.replace(/^CITEZ \d+ /i, '');
+  const searchWeb = () => onWebSearch(`${query.trim()} ${context}`);
+
   const checkWikipedia = async () => {
     setWiki({ status: 'loading' });
     try {
-      const context = question.prompt.replace(/^CITEZ \d+ /i, '');
       setWiki({ status: 'done', result: await searchWikipedia(query.trim(), context) });
     } catch {
       setWiki({ status: 'error' });
@@ -101,9 +106,20 @@ export function PlayPhase({ state, onToggle, onAdjust }: Props) {
           style={styles.searchInput}
         />
         {query ? (
-          <Pressable onPress={() => updateQuery('')} accessibilityRole="button" accessibilityLabel="Effacer" hitSlop={8}>
-            <MaterialCommunityIcons name="close-circle" size={20} color={colors.muted} />
-          </Pressable>
+          <>
+            <Pressable onPress={() => updateQuery('')} accessibilityRole="button" accessibilityLabel="Effacer" hitSlop={8}>
+              <MaterialCommunityIcons name="close-circle" size={20} color={colors.muted} />
+            </Pressable>
+            <Pressable
+              onPress={searchWeb}
+              accessibilityRole="button"
+              accessibilityLabel="Chercher sur Google (met le chrono en pause)"
+              hitSlop={8}
+              style={styles.webButton}
+            >
+              <MaterialCommunityIcons name="google" size={18} color={colors.white} />
+            </Pressable>
+          </>
         ) : null}
       </View>
 
@@ -112,7 +128,8 @@ export function PlayPhase({ state, onToggle, onAdjust }: Props) {
           <Text style={styles.missingText}>« {query.trim().toUpperCase()} » n’est pas dans la base.</Text>
           <View style={styles.missingActions}>
             <ActionChip label="VALIDER QUAND MÊME" tone="teal" onPress={() => toggle(query.trim().toUpperCase())} />
-            <ActionChip label="VÉRIFIER SUR WIKIPÉDIA" tone="purple" onPress={checkWikipedia} />
+            <ActionChip label="CHERCHER SUR GOOGLE" tone="purple" onPress={searchWeb} />
+            <ActionChip label="WIKIPÉDIA" tone="purple" onPress={checkWikipedia} />
           </View>
           {wiki.status === 'loading' ? <ActivityIndicator color={colors.purple} /> : null}
           {wiki.status === 'error' ? (
@@ -249,7 +266,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     height: 48,
-    paddingHorizontal: 16,
+    paddingLeft: 16,
+    paddingRight: 8,
     borderRadius: 24,
     backgroundColor: colors.white,
     borderWidth: 3,
@@ -262,6 +280,14 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontFamily: fonts.body,
     fontSize: 16,
+  },
+  webButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.purple,
   },
   missing: {
     gap: 12,

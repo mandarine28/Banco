@@ -57,6 +57,30 @@ export function ConfirmModal({ visible, title, message, confirmLabel, onConfirm,
   );
 }
 
+type PauseProps = {
+  visible: boolean;
+  secondsLeft: number;
+  onResume: () => void;
+};
+
+/** Chrono suspendu (recherche web en cours) : reprise à la main par les joueurs. */
+export function PauseModal({ visible, secondsLeft, onResume }: PauseProps) {
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onResume}>
+      <View style={styles.backdrop}>
+        <View style={[styles.card, styles.pauseCard]}>
+          <Text style={styles.title}>CHRONO EN PAUSE</Text>
+          <Text style={styles.pauseTime}>{secondsLeft} s</Text>
+          <Text style={[styles.message, styles.centered]}>Vérifiez la réponse, puis reprenez la partie.</Text>
+          <Pressable onPress={onResume} accessibilityRole="button" style={[styles.button, styles.resume]}>
+            <Text style={styles.buttonLabel}>REPRENDRE</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
 /** Petite pastille « i » placée en exposant d'un libellé. */
 export function InfoBadge({ onPress, label }: { onPress: () => void; label: string }) {
   return (
@@ -101,6 +125,21 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     backgroundColor: colors.teal,
+  },
+  pauseCard: {
+    alignItems: 'center',
+  },
+  pauseTime: {
+    color: colors.orange,
+    fontFamily: fonts.display,
+    fontSize: 48,
+  },
+  centered: {
+    textAlign: 'center',
+  },
+  resume: {
+    alignSelf: 'center',
+    paddingHorizontal: 36,
   },
   actions: {
     flexDirection: 'row',

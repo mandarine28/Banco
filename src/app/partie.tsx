@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import * as WebBrowser from 'expo-web-browser';
 import { useReducer, useState } from 'react';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
@@ -8,7 +9,7 @@ import { ReadyPhase } from '@/components/game/ReadyPhase';
 import { ResultPhase } from '@/components/game/ResultPhase';
 import { TimerBar } from '@/components/game/TimerBar';
 import { GameLayout } from '@/components/GameLayout';
-import { ConfirmModal } from '@/components/InfoModal';
+import { ConfirmModal, PauseModal } from '@/components/InfoModal';
 import { LabelButton } from '@/components/PillButton';
 import { questions } from '@/data/questions';
 import { contract, createGame, gameReducer, type GameTeam, isLastRound, TURN_SECONDS } from '@/game/engine';
@@ -46,7 +47,9 @@ type Confirm = 'quit' | 'skip' | null;
 function Game({ teams, roundCount, onReplay }: GameProps) {
   const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, questions));
   const [confirm, setConfirm] = useState<Confirm>(null);
-  const remainingMs = useCountdown(state.phase === 'play', TURN_SECONDS, () =>
+  // Chrono suspendu pendant une recherche web, jusqu'à ce que les joueurs reprennent.
+  const [paused, setPaused] = useState(false);
+  const remainingMs = useCountdown(state.phase === 'play', paused, TURN_SECONDS, () =>
     dispatch({ type: 'END_TURN', reason: 'time' }),
   );
 
@@ -54,10 +57,18 @@ function Game({ teams, roundCount, onReplay }: GameProps) {
   const [phase, setPhase] = useState(state.phase);
   if (phase !== state.phase) {
     setPhase(state.phase);
+    setPaused(false);
     if (confirm === 'skip') setConfirm(null);
   }
 
   const goHome = () => router.dismissTo('/');
+
+  const searchWeb = (query: string) => {
+    setPaused(true);
+    WebBrowser.openBrowserAsync(`https://www.google.com/search?q=${encodeURIComponent(query)}`).catch(() => {
+      // Navigateur indisponible : la pause reste affichée, les joueurs reprennent à la main.
+    });
+  };
   // Bandeau : l'équipe qui enchérit, puis celle qui a remporté l'enchère.
   const bannerTeam =
     state.phase === 'auction' || state.phase === 'final' ? state.teams[state.auction.current] : state.teams[contract(state).team];
@@ -89,11 +100,17 @@ function Game({ teams, roundCount, onReplay }: GameProps) {
           state={state}
           onToggle={(label) => dispatch({ type: 'TOGGLE_ANSWER', label })}
           onAdjust={(delta) => dispatch({ type: 'ADJUST', delta })}
+          onWebSearch={searchWeb}
         />
       ) : null}
       {state.phase === 'result' ? <ResultPhase state={state} /> : null}
       {state.phase === 'final' ? <FinalPhase state={state} onReplay={onReplay} onHome={goHome} /> : null}
 
+      <PauseModal
+        visible={paused && state.phase === 'play'}
+        secondsLeft={Math.ceil(remainingMs / 1000)}
+        onResume={() => setPaused(false)}
+      />
       <ConfirmModal
         visible={confirm === 'quit'}
         title="Quitter la partie ?"
