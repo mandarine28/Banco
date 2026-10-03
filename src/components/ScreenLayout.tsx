@@ -18,6 +18,13 @@ type Props = {
   onBack?: () => void;
 };
 
+// Taille du titre pour qu'il tienne sur une ligne (adjustsFontSizeToFit n'existe pas sur le web).
+// 0,64 : largeur moyenne d'une capitale Quicksand Bold rapportée à la taille de police.
+function titleSize(title: string, width: number) {
+  const available = width - 36 - 34 - 12;
+  return Math.min(30, available / (title.length * 0.64));
+}
+
 /** Écran standard : en-tête blanc avec retour et titre, fond violet dégradé. */
 export function ScreenLayout({ title, children, footer, onBack = () => router.back() }: Props) {
   const { width: windowWidth, height } = useWindowDimensions();
@@ -37,13 +44,17 @@ export function ScreenLayout({ title, children, footer, onBack = () => router.ba
               <MaterialCommunityIcons name="arrow-left" size={24} color={colors.white} />
             </View>
           </Pressable>
-          <Text style={[styles.title, { fontSize: Math.min(width * 0.068, 30) }]} numberOfLines={1} adjustsFontSizeToFit>
+          <Text style={[styles.title, { fontSize: titleSize(title, width) }]} numberOfLines={1}>
             {title}
           </Text>
         </View>
         <View style={styles.band} />
 
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           {children}
         </ScrollView>
 

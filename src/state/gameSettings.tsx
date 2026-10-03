@@ -2,6 +2,11 @@ import { createContext, type ReactNode, useContext, useMemo, useState } from 're
 
 export type GameMode = 'classique' | 'streak';
 
+export type Team = {
+  name: string;
+  color: string;
+};
+
 export const TEAM_LIMITS = { min: 2, max: 4 } as const;
 export const ROUND_LIMITS = { min: 1, max: 10 } as const;
 
@@ -10,6 +15,7 @@ export type GameSettings = {
   teamCount: number;
   roundCount: number;
   sameThemePerRound: boolean;
+  teams: Team[];
 };
 
 type GameSettingsContextValue = GameSettings & {
@@ -17,6 +23,7 @@ type GameSettingsContextValue = GameSettings & {
   setTeamCount: (count: number) => void;
   setRoundCount: (count: number) => void;
   setSameThemePerRound: (value: boolean) => void;
+  setTeams: (teams: Team[]) => void;
 };
 
 const defaults: GameSettings = {
@@ -24,6 +31,7 @@ const defaults: GameSettings = {
   teamCount: 2,
   roundCount: 5,
   sameThemePerRound: false,
+  teams: [],
 };
 
 const clamp = (value: number, { min, max }: { min: number; max: number }) => Math.min(max, Math.max(min, value));
@@ -40,6 +48,7 @@ export function GameSettingsProvider({ children }: { children: ReactNode }) {
       setTeamCount: (count) => setSettings((s) => ({ ...s, teamCount: clamp(count, TEAM_LIMITS) })),
       setRoundCount: (count) => setSettings((s) => ({ ...s, roundCount: clamp(count, ROUND_LIMITS) })),
       setSameThemePerRound: (value) => setSettings((s) => ({ ...s, sameThemePerRound: value })),
+      setTeams: (teams) => setSettings((s) => ({ ...s, teams })),
     }),
     [settings],
   );

@@ -26,6 +26,27 @@ export function PriceButton({ price, onPress, width = 84 }: PriceProps) {
   );
 }
 
+type LabelProps = {
+  label: string;
+  onPress: () => void;
+};
+
+/** Bouton turquoise avec libellé (ex. « SUIVANT »). */
+export function LabelButton({ label, onPress }: LabelProps) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.95 : 1 }] })}
+    >
+      <LinearGradient colors={[colors.teal, colors.tealDark]} style={[styles.pill, styles.labelPill]}>
+        <Text style={styles.label}>{label}</Text>
+      </LinearGradient>
+    </Pressable>
+  );
+}
+
 type NextProps = {
   onPress: () => void;
   accessibilityLabel?: string;
@@ -62,6 +83,17 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontFamily: fonts.display,
     fontSize: 16,
+  },
+  labelPill: {
+    height: 52,
+    paddingHorizontal: 22,
+    borderRadius: 26,
+  },
+  label: {
+    color: colors.white,
+    fontFamily: fonts.display,
+    fontSize: 28,
+    letterSpacing: 0.5,
   },
   next: {
     width: 104,

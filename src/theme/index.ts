@@ -25,7 +25,11 @@ export const colors = {
   pinkSoft: '#F7A1BF',
   muted: '#9A9A9A',
   labelOnPurple: '#F3E2FF',
+  inputPlaceholder: '#EEDCFB',
 } as const;
+
+/** Couleurs proposées aux équipes, dans l'ordre d'attribution par défaut. */
+export const teamColors = ['#FBB040', '#16D3C3', '#F21F66', '#4FB3FF'] as const;
 
 export const fonts = {
   // Titres et boutons : police arrondie.
