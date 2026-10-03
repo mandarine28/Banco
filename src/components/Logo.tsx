@@ -1,5 +1,6 @@
 import Svg, { Circle, Defs, G, LinearGradient, Path, Rect, Stop, Text } from 'react-native-svg';
 
+import { appName } from '@/config/app';
 import { colors, fonts } from '@/theme';
 
 const VIEW_W = 380;
@@ -26,7 +27,7 @@ export function Logo({ width }: Props) {
   const height = (width * VIEW_H) / VIEW_W;
 
   return (
-    <Svg width={width} height={height} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} accessibilityLabel="Devineuf">
+    <Svg width={width} height={height} viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} accessibilityLabel={appName}>
       <Defs>
         <LinearGradient id="bulb" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0" stopColor="#FFD86B" />
@@ -82,7 +83,7 @@ export function Logo({ width }: Props) {
         fill="url(#title)"
         textAnchor="middle"
       >
-        Devineuf
+        {appName}
       </Text>
     </Svg>
   );
