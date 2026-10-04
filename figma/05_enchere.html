@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=390">
+<title>Banco – Enchère</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#7A14B8;display:flex;justify-content:center;font-family:'Quicksand',sans-serif}
+.screen{width:390px;height:844px;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(180deg,#7A14B8 0%,#B867F2 60%,#7A14B8 100%)}
+.top{display:flex;align-items:center;gap:12px;padding:52px 14px 12px}
+.home-btn{width:42px;height:42px;border-radius:21px;background:#A64BE8;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 3px 0 #5B0FA0}
+.banner-base{flex:1;border-radius:12px;background:white;padding-bottom:3px}
+.banner{height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#FBB040}
+.banner-label{color:white;font-weight:700;font-size:22px;letter-spacing:.5px}
+.scroll{flex:1;padding:4px 14px 20px;display:flex;flex-direction:column;gap:18px}
+.card{background:white;border-radius:20px;padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.theme-row{display:flex;align-items:center;gap:10px;align-self:stretch}
+.theme-dot{width:14px;height:14px;border-radius:7px;background:#FBB040}
+.theme-name{font-family:'Roboto',sans-serif;font-weight:700;font-size:15px;color:#111;flex:1}
+.theme-round{color:#9A9A9A;font-family:'Roboto',sans-serif;font-weight:500;font-size:13px}
+.question{font-family:'Roboto',sans-serif;font-weight:700;font-size:15px;color:#111;text-align:center}
+.mise-row{display:flex;flex-direction:column;align-items:center;gap:2px}
+.mise-label{color:#9A9A9A;font-family:'Roboto',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px}
+.mise-val{font-weight:700;font-size:26px;color:#111}
+.turn-text{font-family:'Roboto',sans-serif;font-weight:700;font-size:15px;color:#111;text-align:center}
+.turn-team{color:#FBB040}
+.stepper{display:flex;align-items:center;gap:14px}
+.step-btn{width:44px;height:44px;border-radius:22px;border:3px solid;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;background:white}
+.step-val{font-weight:700;font-size:40px;min-width:44px;text-align:center}
+.btns{align-self:stretch;display:flex;flex-direction:column;gap:12px;padding:0 12px}
+.gbtn-wrap{border-radius:16px;padding-bottom:4px}
+.gbtn-wrap.pink{background:#8C1B47}
+.gbtn-wrap.yellow{background:#B07E22}
+.gbtn-inner{height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:20px}
+.gbtn-wrap.pink .gbtn-inner{background:#EA1E63;color:white}
+.gbtn-wrap.yellow .gbtn-inner{background:#FDD54C;color:#111}
+.teams-card{background:white;border-radius:20px;overflow:hidden}
+.team-row{display:flex;align-items:center;gap:12px;min-height:50px;padding:0 18px}
+.dot{width:16px;height:16px;border-radius:8px}
+.team-name{flex:1;font-family:'Roboto',sans-serif;font-weight:700;font-size:16px;color:#111}
+.status{color:#A64BE8;font-weight:700;font-size:15px}
+.divider{height:1px;background:#F0E6FF;margin:0 16px}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="top">
+    <div class="home-btn">🏠</div>
+    <div class="banner-base">
+      <div class="banner"><span class="banner-label">ÉQUIPE 1</span></div>
+    </div>
+    <div style="width:30px"></div>
+  </div>
+  <div class="scroll">
+    <div class="card">
+      <div class="theme-row">
+        <div class="theme-dot"></div>
+        <div class="theme-name">ANIMAUX</div>
+        <div class="theme-round">ROUND 1 · MANCHE 1</div>
+      </div>
+      <div class="question">COMBIEN DE RÉPONSES POUVEZ-VOUS CITER EN 60 SECONDES ?</div>
+      <div class="mise-row">
+        <div class="mise-label">MISE ACTUELLE</div>
+        <div class="mise-val" style="color:#9A9A9A">AUCUNE</div>
+      </div>
+      <div class="turn-text">À <span class="turn-team">ÉQUIPE 1</span> D'OUVRIR LES ENCHÈRES</div>
+      <div class="stepper">
+        <div class="step-btn" style="border-color:#FBB040;color:#FBB040">−</div>
+        <div class="step-val" style="color:#FBB040">5</div>
+        <div class="step-btn" style="border-color:#FBB040;color:#FBB040">+</div>
+      </div>
+      <div class="btns">
+        <div class="gbtn-wrap pink"><div class="gbtn-inner">🔨 MISER 5</div></div>
+        <div class="gbtn-wrap yellow"><div class="gbtn-inner">✋ PASSER</div></div>
+      </div>
+    </div>
+    <div class="teams-card">
+      <div class="team-row">
+        <div class="dot" style="background:#FBB040"></div>
+        <div class="team-name">ÉQUIPE 1</div>
+        <div class="status">DOIT PARLER</div>
+      </div>
+      <div class="divider"></div>
+      <div class="team-row" style="opacity:.4">
+        <div class="dot" style="background:#16D3C3"></div>
+        <div class="team-name">ÉQUIPE 2</div>
+        <div class="status">EN LICE</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

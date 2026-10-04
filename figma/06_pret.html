@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=390">
+<title>Banco – Prêt à jouer</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#7A14B8;display:flex;justify-content:center;font-family:'Quicksand',sans-serif}
+.screen{width:390px;height:844px;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(180deg,#7A14B8 0%,#B867F2 60%,#7A14B8 100%)}
+.top{display:flex;align-items:center;gap:12px;padding:52px 14px 12px}
+.home-btn{width:42px;height:42px;border-radius:21px;background:#A64BE8;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 3px 0 #5B0FA0}
+.banner-base{flex:1;border-radius:12px;background:white;padding-bottom:3px}
+.banner{height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.banner-label{color:white;font-weight:700;font-size:22px}
+.scroll{flex:1;padding:4px 14px 20px;display:flex;flex-direction:column;gap:18px}
+.card{background:white;border-radius:20px;padding:22px 20px 30px;display:flex;flex-direction:column;align-items:center;gap:26px}
+.theme-row{display:flex;align-items:center;gap:10px;align-self:stretch}
+.theme-dot{width:14px;height:14px;border-radius:7px}
+.theme-name{font-family:'Roboto',sans-serif;font-weight:700;font-size:15px;color:#111;flex:1}
+.theme-round{color:#9A9A9A;font-family:'Roboto',sans-serif;font-weight:500;font-size:13px}
+.goal{font-family:'Roboto',sans-serif;font-weight:700;font-size:19px;color:#111;text-align:center;line-height:1.6}
+.goal-amount{color:#EA1E63;font-weight:700;font-size:30px}
+.go{font-weight:700;font-size:46px;color:#A64BE8;text-align:center}
+.btn-area{align-self:stretch;padding:0 20px}
+.gbtn-wrap{border-radius:16px;padding-bottom:4px;background:#8C1B47}
+.gbtn-inner{height:56px;border-radius:14px;background:#EA1E63;display:flex;align-items:center;justify-content:center;gap:10px;color:white;font-weight:700;font-size:22px}
+.who-card{background:white;border-radius:20px;padding:12px;display:flex;align-items:center;gap:14px}
+.phone-bubble{width:76px;height:76px;border-radius:38px;background:#CD94F0;display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
+.who-texts{flex:1;display:flex;flex-direction:column;gap:6px}
+.who-text{font-family:'Roboto',sans-serif;font-weight:700;font-size:15px;color:#111;line-height:1.6}
+.who-team{color:#16D3C3}
+.who-team2{color:#FBB040}
+.stakes{font-family:'Roboto',sans-serif;font-weight:500;font-size:13px;color:#9A9A9A}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="top">
+    <div class="home-btn">🏠</div>
+    <div class="banner-base">
+      <div class="banner" style="background:#FBB040"><span class="banner-label">ÉQUIPE 1</span></div>
+    </div>
+    <div style="width:30px"></div>
+  </div>
+  <div class="scroll">
+    <div class="card">
+      <div class="theme-row">
+        <div class="theme-dot" style="background:#FBB040"></div>
+        <div class="theme-name">ANIMAUX</div>
+        <div class="theme-round">ROUND 1 · MANCHE 1</div>
+      </div>
+      <div class="goal"><span class="who-team2">ÉQUIPE 1</span> DOIT TROUVER<br><span class="goal-amount">7</span> RÉPONSES</div>
+      <div class="go">C'EST PARTI!</div>
+      <div class="btn-area">
+        <div class="gbtn-wrap"><div class="gbtn-inner">▶ JOUER</div></div>
+      </div>
+    </div>
+    <div style="flex:1;min-height:8px"></div>
+    <div class="who-card">
+      <div class="phone-bubble">📱</div>
+      <div class="who-texts">
+        <div class="who-text"><span class="who-team">ÉQUIPE 2</span> TIENT L'APPAREIL.<br><span class="who-team2">ÉQUIPE 1</span> RÉPOND À LA QUESTION.</div>
+        <div class="stakes">Réussite : +7 pour Équipe 1. Échec : +7 pour Équipe 2.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

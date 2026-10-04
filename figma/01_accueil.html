@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390">
+<title>Banco – Accueil</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #7A14B8; display: flex; justify-content: center; font-family: 'Quicksand', sans-serif; }
+.screen { width: 390px; height: 844px; overflow: hidden; position: relative; }
+.bg { position: absolute; inset: 0; background: linear-gradient(180deg, #7A14B8 0%, #B867F2 52%, #7A14B8 100%); }
+.burst { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); width: 320px; height: 260px;
+  background: radial-gradient(ellipse 200px 160px at 50% 70%, rgba(251,176,64,0.22) 0%, transparent 70%); }
+.rel { position: relative; width: 100%; height: 100%; }
+
+.btn-settings {
+  position: absolute; top: 52px; right: 18px;
+  width: 50px; height: 50px; border-radius: 25px;
+  background: #A64BE8; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 0 #5B0FA0;
+}
+.icon-cog { font-size: 24px; color: white; }
+
+.logo-area { position: absolute; top: 100px; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.logo-banco { font-weight: 700; font-size: 76px; color: white; letter-spacing: 8px; text-shadow: 0 5px 0 #4B0090; line-height: 1; }
+.logo-tagline { font-weight: 600; font-size: 13px; color: #F3E2FF; letter-spacing: 3.5px; }
+
+.lets-go { position: absolute; top: 320px; left: 0; right: 0; text-align: center; font-weight: 700; font-size: 34px; color: #EA1E63; letter-spacing: 1px; }
+
+.nav-btns { position: absolute; top: 488px; left: 66px; right: 66px; display: flex; flex-direction: column; gap: 13px; }
+.gbtn-wrap { border-radius: 16px; padding-bottom: 4px; }
+.gbtn-wrap.pink { background: #8C1B47; }
+.gbtn-wrap.teal { background: #1C8277; }
+.gbtn-wrap.yellow { background: #B07E22; }
+.gbtn-inner {
+  height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 12px;
+  font-weight: 700; font-size: 22px; letter-spacing: 0.5px;
+}
+.gbtn-wrap.pink .gbtn-inner { background: #EA1E63; color: white; }
+.gbtn-wrap.teal .gbtn-inner { background: #5BE5D6; color: white; }
+.gbtn-wrap.yellow .gbtn-inner { background: #FDD54C; color: #111111; }
+
+.socials { position: absolute; bottom: 26px; left: 0; right: 0; display: flex; justify-content: center; gap: 20px; }
+.soc { width: 40px; height: 40px; border-radius: 20px; background: rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center; font-size: 17px; color: #A64BE8; }
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="bg"></div>
+  <div class="burst"></div>
+  <div class="rel">
+
+    <div class="btn-settings"><span class="icon-cog">⚙</span></div>
+
+    <div class="logo-area">
+      <div class="logo-banco">BANCO</div>
+      <div class="logo-tagline">DEVINEZ · PARIEZ · GAGNEZ</div>
+    </div>
+
+    <div class="lets-go">LET'S GO!</div>
+
+    <div class="nav-btns">
+      <div class="gbtn-wrap pink">
+        <div class="gbtn-inner">▶&nbsp; JOUER</div>
+      </div>
+      <div class="gbtn-wrap teal">
+        <div class="gbtn-inner">🛒&nbsp; BOUTIQUE</div>
+      </div>
+      <div class="gbtn-wrap yellow">
+        <div class="gbtn-inner">📜&nbsp; RÈGLES</div>
+      </div>
+    </div>
+
+    <div class="socials">
+      <div class="soc">ℹ</div>
+      <div class="soc" style="color:white;background:rgba(255,255,255,0.2)">💬</div>
+      <div class="soc" style="color:white;background:rgba(255,255,255,0.2)">📷</div>
+      <div class="soc" style="color:white;background:rgba(255,255,255,0.2);font-weight:700;font-family:serif">f</div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

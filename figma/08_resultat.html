@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=390">
+<title>Banco – Résultat du tour</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#7A14B8;display:flex;justify-content:center;font-family:'Quicksand',sans-serif}
+.screen{width:390px;height:844px;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(180deg,#7A14B8 0%,#B867F2 60%,#7A14B8 100%)}
+.top{display:flex;align-items:center;gap:12px;padding:52px 14px 12px}
+.home-btn{width:42px;height:42px;border-radius:21px;background:#A64BE8;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 3px 0 #5B0FA0}
+.banner-base{flex:1;border-radius:12px;background:white;padding-bottom:3px}
+.banner{height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#FBB040}
+.scroll{flex:1;padding:4px 14px 16px;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.card{background:white;border-radius:20px}
+.summary{padding:22px 16px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.headline{font-weight:700;font-size:32px}
+.detail{font-family:'Roboto',sans-serif;font-weight:700;font-size:15px;color:#111;text-align:center}
+.points{font-weight:700;font-size:44px}
+.answers-card{padding-bottom:8px}
+.prompt{font-family:'Roboto',sans-serif;font-weight:700;font-size:16px;color:#111;text-align:center;padding:14px 16px}
+.answer-row{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 18px}
+.ans-text{font-family:'Roboto',sans-serif;font-weight:700;font-size:15px;color:#111}
+.missed-title{padding:14px 18px 4px;color:#9A9A9A;font-family:'Roboto',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px}
+.missed-list{padding:0 18px 16px;font-family:'Roboto',sans-serif;font-weight:500;font-size:14px;color:#111;line-height:1.6}
+.scores-card{overflow:hidden}
+.score-row{display:flex;align-items:center;gap:12px;min-height:50px;padding:0 18px}
+.dot{width:16px;height:16px;border-radius:8px}
+.team-name{flex:1;font-family:'Roboto',sans-serif;font-weight:700;font-size:16px;color:#111}
+.score-val{font-weight:700;font-size:20px;color:#111}
+.divider{height:1px;background:#F0E6FF;margin:0 16px}
+.footer{padding:6px 16px 28px;display:flex;justify-content:flex-end}
+.next-label-btn{height:52px;border-radius:26px;background:linear-gradient(90deg,#5BE5D6,#15B1A1);border:2px solid #1C8277;padding:0 22px;display:flex;align-items:center;color:white;font-weight:700;font-size:26px;letter-spacing:.5px}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="top">
+    <div class="home-btn">🏠</div>
+    <div class="banner-base"><div class="banner"><span style="color:white;font-weight:700;font-size:22px">ÉQUIPE 1</span></div></div>
+    <div style="width:30px"></div>
+  </div>
+  <div class="scroll">
+    <div class="card summary">
+      <div class="headline" style="color:#15B1A1">BANCO !</div>
+      <div class="detail">ÉQUIPE 1 A TROUVÉ 7/7 RÉPONSES</div>
+      <div class="points" style="color:#FBB040">+7 POINTS</div>
+      <div class="detail">POUR ÉQUIPE 1</div>
+    </div>
+    <div class="card answers-card">
+      <div class="prompt">Citez des animaux mammifères qui vivent dans l'océan.</div>
+      <div class="divider"></div>
+      <div class="answer-row"><span style="color:#15B1A1;font-size:18px">✓</span><span class="ans-text">DAUPHIN</span></div>
+      <div class="divider"></div>
+      <div class="answer-row"><span style="color:#15B1A1;font-size:18px">✓</span><span class="ans-text">BALEINE</span></div>
+      <div class="divider"></div>
+      <div class="answer-row"><span style="color:#15B1A1;font-size:18px">✓</span><span class="ans-text">ORQUE</span></div>
+      <div class="divider"></div>
+      <div class="missed-title">RÉPONSES FRÉQUENTES NON CITÉES</div>
+      <div class="missed-list">PHOQUE · MORSE · LOUTRE · DUGONG · LAMANTIN</div>
+    </div>
+    <div class="card scores-card">
+      <div class="score-row">
+        <div class="dot" style="background:#FBB040"></div>
+        <div class="team-name">ÉQUIPE 1</div>
+        <div class="score-val">7</div>
+      </div>
+      <div class="divider"></div>
+      <div class="score-row">
+        <div class="dot" style="background:#16D3C3"></div>
+        <div class="team-name">ÉQUIPE 2</div>
+        <div class="score-val">0</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><div class="next-label-btn">SUIVANT</div></div>
+</div>
+</body></html>

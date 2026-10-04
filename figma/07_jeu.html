@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=390">
+<title>Banco – Phase de jeu</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#7A14B8;display:flex;justify-content:center;font-family:'Quicksand',sans-serif}
+.screen{width:390px;height:844px;overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(180deg,#7A14B8 0%,#B867F2 60%,#7A14B8 100%)}
+.top{display:flex;align-items:center;gap:12px;padding:52px 14px 12px}
+.home-btn{width:42px;height:42px;border-radius:21px;background:#A64BE8;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 3px 0 #5B0FA0}
+.banner-base{flex:1;border-radius:12px;background:white;padding-bottom:3px}
+.banner{height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.scroll{flex:1;padding:4px 14px 0;display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.card{background:white;border-radius:20px}
+.counter-card{padding:10px 16px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.counter-row{display:flex;align-items:center;gap:28px}
+.cnt-btn{width:54px;height:54px;border-radius:27px;border:3px solid;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;background:white}
+.cnt-val{font-weight:700;font-size:72px;line-height:1.1;min-width:70px;text-align:center}
+.cnt-caption{color:#9A9A9A;font-family:'Roboto',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px}
+.question-card{padding:20px 16px;text-align:center;font-family:'Roboto',sans-serif;font-weight:700;font-size:19px;color:#111}
+.search-bar{background:white;border-radius:24px;border:3px solid #CD94F0;height:48px;padding:0 8px 0 16px;display:flex;align-items:center;gap:8px}
+.search-icon{font-size:20px;color:#A64BE8}
+.search-placeholder{flex:1;font-family:'Roboto',sans-serif;font-weight:500;font-size:16px;color:#9A9A9A}
+.grid{display:flex;flex-wrap:wrap;gap:8px}
+.chip{height:40px;border-radius:20px;background:white;display:flex;align-items:center;justify-content:center;padding:0 6px;font-family:'Roboto',sans-serif;font-weight:700;font-size:12px;color:#111;flex:0 0 calc(33.33% - 6px)}
+.chip.found{background:#15B1A1;color:white}
+/* Timer bar */
+.timer-area{padding:6px 16px 28px;display:flex;align-items:center;gap:12px}
+.timer-track{flex:1;height:18px;border-radius:9px;background:rgba(255,255,255,0.25);overflow:hidden}
+.timer-fill{height:100%;border-radius:9px;background:linear-gradient(90deg,#5BE5D6,#EA1E63);width:62%}
+.skip-btn{width:42px;height:42px;border-radius:21px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;color:white;font-size:18px}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="top">
+    <div class="home-btn">🏠</div>
+    <div class="banner-base">
+      <div class="banner" style="background:#FBB040"><span style="color:white;font-weight:700;font-size:22px">ÉQUIPE 1</span></div>
+    </div>
+    <div style="width:30px"></div>
+  </div>
+  <div class="scroll">
+    <div class="card counter-card">
+      <div class="counter-row">
+        <div class="cnt-btn" style="border-color:#FBB040;color:#FBB040">−</div>
+        <div class="cnt-val" style="color:#FBB040">4</div>
+        <div class="cnt-btn" style="border-color:#FBB040;color:#FBB040">+</div>
+      </div>
+      <div class="cnt-caption">RÉPONSES À TROUVER SUR 7</div>
+    </div>
+    <div class="card question-card">Citez des animaux mammifères qui vivent dans l'océan.</div>
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <span class="search-placeholder">Vérifier une réponse…</span>
+    </div>
+    <div class="grid">
+      <div class="chip found">DAUPHIN</div>
+      <div class="chip found">BALEINE</div>
+      <div class="chip found">ORQUE</div>
+      <div class="chip">PHOQUE</div>
+      <div class="chip">MORSE</div>
+      <div class="chip">LOUTRE</div>
+      <div class="chip">DUGONG</div>
+      <div class="chip">LAMANTIN</div>
+      <div class="chip">NARVAL</div>
+    </div>
+  </div>
+  <div class="timer-area">
+    <div class="timer-track"><div class="timer-fill"></div></div>
+    <div class="skip-btn">⏭</div>
+  </div>
+</div>
+</body></html>
