@@ -62,28 +62,34 @@ type StepperRowProps = {
 };
 
 function StepperRow({ label, value, min, max, onChange }: StepperRowProps) {
+  const atMin = value <= min;
+  const atMax = value >= max;
   return (
     <View style={styles.settingRow}>
       <Text style={styles.rowLabel}>{label}</Text>
       <View style={styles.stepper}>
         <Pressable
           onPress={() => onChange(Math.max(min, value - 1))}
+          disabled={atMin}
           hitSlop={12}
           accessibilityRole="button"
           accessibilityLabel={`Diminuer ${label}`}
+          accessibilityState={{ disabled: atMin }}
         >
-          <Text style={styles.stepperBtn}>-</Text>
+          <Text style={[styles.stepperBtn, atMin && styles.stepperBtnDisabled]}>-</Text>
         </Pressable>
         <View style={styles.stepperBadge}>
           <Text style={styles.stepperValue}>{value}</Text>
         </View>
         <Pressable
           onPress={() => onChange(Math.min(max, value + 1))}
+          disabled={atMax}
           hitSlop={12}
           accessibilityRole="button"
           accessibilityLabel={`Augmenter ${label}`}
+          accessibilityState={{ disabled: atMax }}
         >
-          <Text style={styles.stepperBtn}>+</Text>
+          <Text style={[styles.stepperBtn, atMax && styles.stepperBtnDisabled]}>+</Text>
         </Pressable>
       </View>
     </View>
@@ -283,10 +289,13 @@ const styles = StyleSheet.create({
   },
   stepperBtn: {
     fontFamily: fonts.displayMedium,
-    fontSize: 24,
-    color: colors.pink,
-    width: 16,
+    fontSize: 32,
+    color: colors.purpleDeep,
+    width: 24,
     textAlign: 'center',
+  },
+  stepperBtnDisabled: {
+    opacity: 0.25,
   },
   stepperBadge: {
     backgroundColor: colors.purpleDeep,

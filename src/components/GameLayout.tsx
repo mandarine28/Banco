@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import type { ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { useState } from 'react';
+import { Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
@@ -21,14 +22,19 @@ type Props = {
   onHome: () => void;
   children: ReactNode;
   footer?: ReactNode;
+  /** Désactive le ScrollView externe — utiliser quand l'enfant gère son propre scroll (ex. PlayPhase). */
+  scrollDisabled?: boolean;
+  /** Rendu au niveau écran, par-dessus tout le contenu. Utiliser pour les overlays non-bloquants (ex. PauseModal). */
+  overlay?: ReactNode;
 };
 
-export function GameLayout({ onHome, children, footer }: Props) {
+export function GameLayout({ onHome, children, footer, scrollDisabled = false, overlay }: Props) {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
   const iconSize = Math.min(width * 0.09, 36);
   const settingsSize = Math.min(width * 0.08, 32);
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   return (
     <View style={styles.page}>
@@ -41,9 +47,10 @@ export function GameLayout({ onHome, children, footer }: Props) {
             styles.header,
             { paddingTop: insets.top + 14, paddingHorizontal: width * 0.06 },
           ]}
+          onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
         >
           <Pressable
-            onPress={onHome}
+            onPress={() => { Keyboard.dismiss(); onHome(); }}
             hitSlop={10}
             accessibilityRole="button"
             accessibilityLabel="Retour"
@@ -68,18 +75,39 @@ export function GameLayout({ onHome, children, footer }: Props) {
           </Pressable>
         </View>
 
-        {/* Zone de contenu — flexGrow:1 permet aux phases de remplir toute la hauteur */}
-        <ScrollView
-          style={styles.scrollArea}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {children}
-        </ScrollView>
+        {/* Zone principale : KAV pour le contenu + footer fixe EN DEHORS du KAV */}
+        <View style={styles.keyboardArea}>
+          <KeyboardAvoidingView
+            style={styles.kavContent}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={headerHeight}
+          >
+            {scrollDisabled ? (
+              <View style={[styles.scrollArea, styles.scrollContent]}>
+                {children}
+              </View>
+            ) : (
+              <ScrollView
+                style={styles.scrollArea}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+              >
+                {children}
+              </ScrollView>
+            )}
+          </KeyboardAvoidingView>
 
-        {footer ? (
-          <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 16, 32) }]}>
-            {footer}
+          {footer ? (
+            <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 16, 32) }]}>
+              {footer}
+            </View>
+          ) : null}
+        </View>
+
+        {/* Overlay au-dessus de tout le contenu — dernier enfant = z-order max */}
+        {overlay ? (
+          <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+            {overlay}
           </View>
         ) : null}
       </View>
@@ -103,6 +131,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingBottom: 8,
+  },
+  keyboardArea: {
+    flex: 1,
+  },
+  kavContent: {
+    flex: 1,
   },
   scrollArea: {
     flex: 1,

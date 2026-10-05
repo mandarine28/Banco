@@ -1,153 +1,222 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Card, CardDivider } from '@/components/Card';
-import { TeamName } from '@/components/game/TeamName';
-import { contract, currentPrompt, currentQuestion, type GameState, isSuccess, opponent } from '@/game/engine';
+import { contract, currentQuestion, type GameState, isSuccess, opponent } from '@/game/engine';
 import { colors, fonts } from '@/theme';
 
-export function ResultPhase({ state }: { state: GameState }) {
+// Même lookup que AuctionPhase / PlayPhase
+const BADGE_TEXT_COLOR: Record<string, string> = { '#FB0ED4': colors.cream };
+
+type Props = {
+  state: GameState;
+  onNext: () => void;
+  isLastRound: boolean;
+};
+
+export function ResultPhase({ state, onNext, isLastRound }: Props) {
+  const insets = useSafeAreaInsets();
   const question = currentQuestion(state);
   const { team, amount } = contract(state);
   const success = isSuccess(state);
-  const answering = state.teams[team];
-  const winner = state.teams[success ? team : opponent(state)];
-  // Réponses comptées avec le compteur sans toucher de bouton.
-  const manual = Math.max(0, state.progress - state.found.length);
-  const missed = question.answers.filter((a) => !state.found.includes(a)).slice(0, 9);
-  const headline = success ? 'BANCO !' : state.endReason === 'time' ? 'TEMPS ÉCOULÉ !' : 'ABANDON';
+  const winnerIdx = success ? team : opponent(state);
+
+  const subject = question.subject.charAt(0).toUpperCase() + question.subject.slice(1).toLowerCase();
+
+  // Toutes les réponses de la question + éventuelles réponses "validées quand même"
+  const allAnswers = [
+    ...question.answers,
+    ...state.found.filter((a) => !question.answers.includes(a)),
+  ];
 
   return (
-    <>
-      <Card style={styles.summary}>
-        <Text style={[styles.headline, { color: success ? colors.tealDark : colors.pink }]}>{headline}</Text>
-        <Text style={styles.detail}>
-          <TeamName team={answering} /> A TROUVÉ {Math.min(state.progress, amount)}/{amount} RÉPONSE{amount > 1 ? 'S' : ''}
-        </Text>
-        <Text style={[styles.points, { color: winner.color }]}>
-          +{amount} POINT{amount > 1 ? 'S' : ''}
-        </Text>
-        <Text style={styles.detail}>
-          POUR <TeamName team={winner} />
-        </Text>
-      </Card>
+    <View style={styles.wrapper}>
+      {/* ─── Zone bleue : sujet + grille réponses ─── */}
+      <Text style={styles.questionText}>{subject}</Text>
 
-      <Card>
-        <Text style={styles.prompt}>{currentPrompt(state)}</Text>
-        {state.found.map((label) => (
-          <View key={label}>
-            <CardDivider />
-            <View style={styles.row}>
-              <MaterialCommunityIcons name="check-circle" size={20} color={colors.tealDark} />
-              <Text style={styles.answer}>{label}</Text>
-            </View>
-          </View>
-        ))}
-        {manual > 0 ? (
-          <View>
-            <CardDivider />
-            <View style={styles.row}>
-              <MaterialCommunityIcons name="counter" size={20} color={colors.tealDark} />
-              <Text style={styles.answer}>
-                {manual} RÉPONSE{manual > 1 ? 'S' : ''} COMPTÉE{manual > 1 ? 'S' : ''} AU COMPTEUR
+      <ScrollView
+        style={styles.chipsScroll}
+        contentContainerStyle={styles.chipsGrid}
+        showsVerticalScrollIndicator={false}
+      >
+        {allAnswers.map((answer) => {
+          const found = state.found.includes(answer);
+          const label = answer.charAt(0).toUpperCase() + answer.slice(1).toLowerCase();
+          return (
+            <View key={answer} style={[styles.chip, found ? styles.chipFound : styles.chipMissed]}>
+              <Text style={[styles.chipLabel, found ? styles.chipLabelFound : styles.chipLabelMissed]}>
+                {label}
               </Text>
             </View>
-          </View>
-        ) : null}
-        <CardDivider />
-        <Text style={styles.missedTitle}>RÉPONSES FRÉQUENTES NON CITÉES</Text>
-        <Text style={styles.missedList}>{missed.join(' · ')}</Text>
-      </Card>
+          );
+        })}
+      </ScrollView>
 
-      <Card>
-        {state.teams.map((t, i) => (
-          <View key={t.name + i}>
-            {i > 0 ? <CardDivider /> : null}
-            <View style={styles.row}>
-              <View style={[styles.dot, { backgroundColor: t.color }]} />
-              <Text style={styles.teamName}>{t.name}</Text>
-              <Text style={styles.score}>{state.scores[i]}</Text>
-            </View>
+      {/* ─── Panel crème (même DA que AuctionPhase) ─── */}
+      <View style={[styles.creamPanel, { paddingBottom: Math.max(insets.bottom + 30, 48) }]}>
+        <View style={styles.teamsList}>
+          {state.teams.map((t, i) => {
+            const isWinner = i === winnerIdx;
+            const badgeTextColor = BADGE_TEXT_COLOR[t.color] ?? colors.purpleDeep;
+            return (
+              <View key={t.name + String(i)} style={styles.teamRow}>
+                {/* Badge équipe — même style que AuctionPhase teamNameBadge */}
+                <View style={[styles.teamBadge, { backgroundColor: t.color }]}>
+                  <Text style={[styles.teamBadgeText, { color: badgeTextColor }]} numberOfLines={1}>
+                    {t.name}
+                  </Text>
+                </View>
+                <View style={styles.scoreGroup}>
+                  {isWinner ? (
+                    <Text style={styles.scoreDelta}>+{amount}</Text>
+                  ) : null}
+                  <Text style={styles.teamScore}>{state.scores[i]}</Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+
+        {/* Bouton outlined — même DA que le bouton PASSER de AuctionPhase */}
+        <Pressable
+          onPress={onNext}
+          accessibilityRole="button"
+          accessibilityLabel={isLastRound ? 'Résultats finaux' : 'Manche suivante'}
+          style={({ pressed }) => [styles.btnWrap, pressed && { opacity: 0.85 }]}
+        >
+          <View style={styles.btnInner}>
+            <Text style={styles.btnText}>
+              {isLastRound ? 'RÉSULTATS' : 'MANCHE SUIVANTE'}
+            </Text>
           </View>
-        ))}
-      </Card>
-    </>
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  summary: {
+  wrapper: {
+    flex: 1,
+    paddingTop: 4,
+  },
+
+  // ── Zone bleue ──
+  questionText: {
+    fontFamily: fonts.display,
+    fontSize: 24,
+    lineHeight: 31,
+    color: colors.cream,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+  },
+  chipsScroll: {
+    flex: 1,
+  },
+  chipsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    paddingHorizontal: 24,
+    paddingBottom: 16,
+  },
+
+  // Chips — mêmes valeurs que PlayPhase
+  chip: {
+    borderWidth: 1,
+    borderColor: colors.cream,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  chipFound: {
+    backgroundColor: '#fef1cc',
+  },
+  chipMissed: {
+    backgroundColor: '#4883e5',
+  },
+  chipLabel: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 18,
+  },
+  chipLabelFound: {
+    color: colors.purpleDeep,
+  },
+  chipLabelMissed: {
+    color: colors.cream,
+  },
+
+  // ── Panel crème — même DA que AuctionPhase creamPanel ──
+  creamPanel: {
+    backgroundColor: colors.cream,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    paddingTop: 40,
+    paddingHorizontal: 24,
+    gap: 36,
     alignItems: 'center',
-    gap: 6,
-    paddingVertical: 22,
-    paddingHorizontal: 16,
   },
-  headline: {
-    fontFamily: fonts.display,
-    fontSize: 32,
+  teamsList: {
+    width: '100%',
+    gap: 16,
   },
-  detail: {
-    color: colors.black,
-    fontFamily: fonts.body,
-    fontSize: 15,
-    textAlign: 'center',
-  },
-  points: {
-    fontFamily: fonts.display,
-    fontSize: 44,
-  },
-  prompt: {
-    color: colors.black,
-    fontFamily: fonts.body,
-    fontSize: 16,
-    textAlign: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  row: {
+  teamRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    minHeight: 44,
-    paddingHorizontal: 18,
+    gap: 16,
   },
-  answer: {
+
+  // Badge équipe — même DA que AuctionPhase teamNameBadge
+  teamBadge: {
     flex: 1,
-    color: colors.black,
-    fontFamily: fonts.body,
-    fontSize: 15,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
-  missedTitle: {
-    paddingTop: 14,
-    paddingHorizontal: 18,
-    color: colors.muted,
-    fontFamily: fonts.body,
-    fontSize: 12,
-    letterSpacing: 1,
+  teamBadgeText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 18,
   },
-  missedList: {
-    paddingTop: 4,
-    paddingBottom: 16,
-    paddingHorizontal: 18,
-    color: colors.black,
-    fontFamily: fonts.bodyRegular,
-    fontSize: 14,
-    lineHeight: 21,
+  scoreGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
-  dot: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-  },
-  teamName: {
-    flex: 1,
-    color: colors.black,
-    fontFamily: fonts.body,
+  scoreDelta: {
+    fontFamily: fonts.displayMedium,
     fontSize: 16,
+    color: colors.pink, // '#fb940e' orange accent
   },
-  score: {
-    color: colors.black,
-    fontFamily: fonts.display,
+  teamScore: {
+    fontFamily: fonts.displayMedium,
     fontSize: 20,
+    color: colors.purpleDeep,
+    minWidth: 32,
+    textAlign: 'right',
+  },
+
+  // Bouton outlined — même DA que AuctionPhase btnPasserWrap / btnPasserInner
+  btnWrap: {
+    width: '100%',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: colors.purpleDeep,
+    shadowColor: colors.purpleDeep,
+    shadowOffset: { width: -1, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 3,
+  },
+  btnInner: {
+    backgroundColor: '#fffbf5',
+    borderRadius: 14,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 51,
+  },
+  btnText: {
+    fontFamily: fonts.display,
+    fontSize: 24,
+    color: colors.purpleDeep,
   },
 });

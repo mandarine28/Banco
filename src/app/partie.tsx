@@ -1,18 +1,18 @@
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useReducer, useState } from 'react';
+import { Keyboard } from 'react-native';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
 import { AuctionPhase } from '@/components/game/AuctionPhase';
+import { CounterFooter } from '@/components/game/CounterFooter';
 import { PlayPhase } from '@/components/game/PlayPhase';
 import { ReadyPhase } from '@/components/game/ReadyPhase';
 import { ResultPhase } from '@/components/game/ResultPhase';
-import { TimerBar } from '@/components/game/TimerBar';
 import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal, PauseModal } from '@/components/InfoModal';
-import { LabelButton } from '@/components/PillButton';
 import { questions } from '@/data/questions';
-import { contract, createGame, gameReducer, type GameTeam, isLastRound, TURN_SECONDS } from '@/game/engine';
+import { contract, createGame, gameReducer, type GameTeam, isLastRound, remaining, TURN_SECONDS } from '@/game/engine';
 import { useCountdown } from '@/hooks/useCountdown';
 import { useGameSettings } from '@/state/gameSettings';
 import { colors, teamColors } from '@/theme';
@@ -65,9 +65,9 @@ function Game({ teams, roundCount, onReplay }: GameProps) {
 
   const searchWeb = (query: string) => {
     setPaused(true);
-    WebBrowser.openBrowserAsync(`https://www.google.com/search?q=${encodeURIComponent(query)}`).catch(() => {
-      // Navigateur indisponible : la pause reste affichée, les joueurs reprennent à la main.
-    });
+    // isPaused=true → PlayPhase blur son TextInput immédiatement, avant que le
+    // navigateur s'ouvre. Quand le navigateur se ferme, le champ est déjà blurred.
+    WebBrowser.openBrowserAsync(`https://www.google.com/search?q=${encodeURIComponent(query)}`).catch(() => {});
   };
   // Bandeau : l'équipe qui enchérit, puis celle qui a remporté l'enchère.
   const bannerTeam =
@@ -79,17 +79,25 @@ function Game({ teams, roundCount, onReplay }: GameProps) {
 
   const footer =
     state.phase === 'play' ? (
-      paused ? (
-        <LabelButton label="REPRENDRE LE CHRONO" onPress={() => setPaused(false)} />
-      ) : (
-        <TimerBar remainingMs={remainingMs} onSkip={() => setConfirm('skip')} />
-      )
-    ) : state.phase === 'result' ? (
-      <LabelButton label={isLastRound(state) ? 'RÉSULTATS' : 'SUIVANT'} onPress={() => dispatch({ type: 'NEXT' })} />
+      <CounterFooter
+        left={remaining(state)}
+        amount={contract(state).amount}
+        onAdjust={(delta) => dispatch({ type: 'ADJUST', delta })}
+      />
     ) : undefined;
 
   return (
-    <GameLayout banner={banner} onHome={() => (state.phase === 'final' ? goHome() : setConfirm('quit'))} footer={footer}>
+    <GameLayout
+      banner={banner}
+      onHome={() => (state.phase === 'final' ? goHome() : setConfirm('quit'))}
+      footer={footer}
+      scrollDisabled={state.phase === 'play' || state.phase === 'result'}
+      overlay={
+        paused && state.phase === 'play' ? (
+          <PauseModal visible onResume={() => setPaused(false)} />
+        ) : undefined
+      }
+    >
       {state.phase === 'auction' ? (
         <AuctionPhase
           key={`${state.round}-${state.auction.current}`}
@@ -102,19 +110,22 @@ function Game({ teams, roundCount, onReplay }: GameProps) {
       {state.phase === 'play' ? (
         <PlayPhase
           state={state}
+          remainingMs={remainingMs}
           onToggle={(label) => dispatch({ type: 'TOGGLE_ANSWER', label })}
-          onAdjust={(delta) => dispatch({ type: 'ADJUST', delta })}
           onWebSearch={searchWeb}
+          onSkip={() => setConfirm('skip')}
+          isPaused={paused}
         />
       ) : null}
-      {state.phase === 'result' ? <ResultPhase state={state} /> : null}
+      {state.phase === 'result' ? (
+        <ResultPhase
+          state={state}
+          onNext={() => dispatch({ type: 'NEXT' })}
+          isLastRound={isLastRound(state)}
+        />
+      ) : null}
       {state.phase === 'final' ? <FinalPhase state={state} onReplay={onReplay} onHome={goHome} /> : null}
 
-      <PauseModal
-        visible={paused && state.phase === 'play'}
-        secondsLeft={Math.ceil(remainingMs / 1000)}
-        onResume={() => setPaused(false)}
-      />
       <ConfirmModal
         visible={confirm === 'quit'}
         title="Quitter la partie ?"

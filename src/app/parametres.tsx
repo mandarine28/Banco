@@ -1,7 +1,8 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Circle, Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
@@ -37,6 +38,22 @@ function SettingIcon({ size }: { size: number }) {
   );
 }
 
+function CheckBadge() {
+  return (
+    <Svg width={28} height={28} viewBox="0 0 28 28">
+      <Circle cx="14" cy="14" r="14" fill={colors.purpleDeep} />
+      <Path
+        d="M8 15 L12 19 L20 10"
+        stroke="#FFFFFF"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </Svg>
+  );
+}
+
 type ModeCardProps = {
   label: string;
   onPress: () => void;
@@ -45,19 +62,22 @@ type ModeCardProps = {
 };
 
 function ModeCard({ label, onPress, selected = false, locked = false }: ModeCardProps) {
-  const isBlue = locked && !selected;
   return (
     <Pressable
-      style={[styles.modeCard, isBlue ? styles.modeCardBlue : styles.modeCardCream]}
+      style={[styles.modeCard, selected ? styles.modeCardCream : styles.modeCardBlue]}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ selected, disabled: locked }}
     >
-      <View style={styles.modeImage} />
-      <Text style={[styles.modeLabel, { color: isBlue ? colors.cream : colors.purpleDeep }]}>
+      <Text style={[styles.modeLabel, { color: selected ? colors.purpleDeep : colors.cream }]}>
         {label}
       </Text>
+      {selected && (
+        <View style={styles.checkBadge}>
+          <CheckBadge />
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -65,22 +85,18 @@ function ModeCard({ label, onPress, selected = false, locked = false }: ModeCard
 type PackRowProps = {
   label: string;
   price: string;
-  variant: 'cream' | 'blue';
   onPress: () => void;
 };
 
-function PackRow({ label, price, variant, onPress }: PackRowProps) {
-  const isCream = variant === 'cream';
+function PackRow({ label, price, onPress }: PackRowProps) {
   return (
     <Pressable
-      style={[styles.packRow, isCream ? styles.packRowCream : styles.packRowBlue]}
+      style={styles.packRow}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${label} — ${price}`}
     >
-      <Text style={[styles.packLabel, { color: isCream ? colors.purpleDeep : colors.cream }]}>
-        {label}
-      </Text>
+      <Text style={styles.packLabel}>{label}</Text>
       <View style={styles.priceBadge}>
         <Text style={styles.priceText}>{price}</Text>
       </View>
@@ -132,19 +148,25 @@ export default function GameConfigScreen() {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Pack de questions</Text>
               <View style={styles.packList}>
-                <PackRow label="Classique" price="0,99€" variant="cream" onPress={() => {}} />
-                <PackRow label="Mimes" price="0,99€" variant="blue" onPress={() => {}} />
+                <PackRow label="Classique" price="0,99€" onPress={() => {}} />
+                <PackRow label="Disney" price="0,99€" onPress={() => {}} />
               </View>
             </View>
 
             {/* Continuer */}
             <Pressable
-              style={styles.btnContinuer}
               onPress={() => router.push('/parametres-partie')}
               accessibilityRole="button"
               accessibilityLabel="Continuer"
             >
-              <Text style={styles.btnContinuerText}>Continuer</Text>
+              <LinearGradient
+                colors={['#fb940e', '#f2c512']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.btnContinuer}
+              >
+                <Text style={styles.btnContinuerText}>Continuer</Text>
+              </LinearGradient>
             </Pressable>
           </ScrollView>
         </View>
@@ -208,7 +230,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: fonts.display,
     fontSize: 26,
-    color: colors.cream,
+    color: '#fef1cc',
   },
   modeRow: {
     flexDirection: 'row',
@@ -218,8 +240,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 16,
     padding: 24,
-    gap: 12,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   modeCardCream: {
     backgroundColor: colors.cream,
@@ -229,15 +251,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.cream,
   },
-  modeImage: {
-    width: '100%',
-    aspectRatio: 1,
-    backgroundColor: '#d9d9d9',
-    borderRadius: 12,
-  },
   modeLabel: {
     fontFamily: fonts.displayMedium,
     fontSize: 20,
+  },
+  checkBadge: {
+    position: 'absolute',
+    top: -9,
+    right: -4,
   },
   packList: {
     gap: 16,
@@ -250,11 +271,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 16,
     minHeight: 51,
-  },
-  packRowCream: {
-    backgroundColor: colors.cream,
-  },
-  packRowBlue: {
     backgroundColor: '#4883E5',
     borderWidth: 1,
     borderColor: colors.cream,
@@ -262,6 +278,7 @@ const styles = StyleSheet.create({
   packLabel: {
     fontFamily: fonts.displayMedium,
     fontSize: 20,
+    color: colors.cream,
   },
   priceBadge: {
     borderRadius: 12,
@@ -280,9 +297,14 @@ const styles = StyleSheet.create({
   btnContinuer: {
     height: 51,
     borderRadius: 16,
-    backgroundColor: colors.pink,
+    borderWidth: 2,
+    borderColor: '#a15c03',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#a15c03',
+    shadowOffset: { width: -1, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
   },
   btnContinuerText: {
     fontFamily: fonts.displayMedium,
@@ -294,23 +316,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  flagWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.white,
-  },
-  flagEmoji: {
-    fontSize: 26,
-    lineHeight: 32,
-  },
-  headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
   },
 });

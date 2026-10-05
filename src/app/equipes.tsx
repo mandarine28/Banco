@@ -21,6 +21,13 @@ const NAME_MAX_LENGTH = 16;
 
 const defaultName = (i: number) => `Équipe ${i + 1}`;
 
+const TAKEN_COLORS: Record<string, string> = {
+  '#33FF5C': '#45A157',
+  '#FB0ED4': '#A14592',
+  '#FBD40E': '#A19245',
+  '#27FBED': '#45A19B',
+};
+
 const ARROW_PATH =
   'M25.3411 5.19038L31.4496 10.4604C32.1513 11.0658 31.7232 12.2175 30.7964 12.2175H25.3559L13.1071 11.5356C12.5339 11.5036 12.0515 11.9599 12.0515 12.534V17.1142C12.0515 17.8923 11.2019 18.3723 10.5354 17.9707L0.484021 11.9139C-0.0406948 11.5977 -0.16034 10.8883 0.231643 10.4175L8.60512 0.36043C9.12279 -0.26133 10.1261 -0.0429697 10.3385 0.737696L11.8143 6.16055C11.949 6.65574 12.4367 6.96854 12.943 6.88446L24.5241 4.96105C24.817 4.91241 25.1163 4.99643 25.3411 5.19038Z';
 
@@ -48,13 +55,11 @@ function SettingIcon({ size }: { size: number }) {
   );
 }
 
-// Returns the avatars (team colors) not yet chosen by previous teams.
 function availableAvatars(drafts: Team[], currentIndex: number): readonly string[] {
   const taken = new Set(drafts.slice(0, currentIndex).map((t) => t.color).filter(Boolean));
   return teamColors.filter((c) => !taken.has(c));
 }
 
-// Finds the best starting avatar for a team given its saved draft.
 function initialAvatar(drafts: Team[], teamIndex: number): string {
   const avail = availableAvatars(drafts, teamIndex);
   const saved = drafts[teamIndex]?.color;
@@ -69,22 +74,17 @@ export default function TeamSetupScreen() {
 
   const [index, setIndex] = useState(0);
   const [drafts, setDrafts] = useState<Team[]>(() =>
-    Array.from({ length: teamCount }, (_, i) => savedTeams[i] ?? { name: '', color: teamColors[i % teamColors.length] }),
+    Array.from({ length: teamCount }, (_, i) => ({ name: '', color: savedTeams[i]?.color ?? teamColors[i % teamColors.length] })),
   );
   const [name, setName] = useState(() => drafts[0]?.name ?? '');
   const [selectedColor, setSelectedColor] = useState<string>(() => initialAvatar(drafts, 0));
 
   const panelTop = insets.top + 68;
-  const navArrowTop = height / 2 + 74 - 20;
-
-  const avail = availableAvatars(drafts, index);
-  const avatarPos = avail.indexOf(selectedColor);
-  const canLeft = avatarPos > 0;
-  const canRight = avatarPos < avail.length - 1;
+  const takenColors = new Set(drafts.slice(0, index).map((t) => t.color).filter(Boolean));
 
   const saveAndContinue = () => {
     const updated = [...drafts];
-    updated[index] = { name: name.trim() || defaultName(index), color: selectedColor };
+    updated[index] = { name: name.trim(), color: selectedColor };
     setDrafts(updated);
 
     if (index + 1 < teamCount) {
@@ -94,7 +94,7 @@ export default function TeamSetupScreen() {
       setName(updated[index + 1]?.name ?? '');
       setIndex(index + 1);
     } else {
-      setTeams(updated.slice(0, teamCount));
+      setTeams(updated.slice(0, teamCount).map((t, i) => ({ ...t, name: t.name || defaultName(i) })));
       router.push('/partie');
     }
   };
@@ -124,36 +124,93 @@ export default function TeamSetupScreen() {
         <View style={[styles.bluePanel, { top: panelTop }]}>
           <CreamPatternSvg width={width} height={height - panelTop} opacity={0.04} fill="#ffffff" />
           <View style={[styles.panelInner, { paddingBottom: Math.max(64, insets.bottom + 30) }]}>
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Configuration des squads</Text>
-              <TextInput
-                value={name}
-                onChangeText={setName}
-                placeholder={`Nom de l'équipe ${index + 1}`}
-                placeholderTextColor="rgba(254,246,215,0.5)"
-                maxLength={NAME_MAX_LENGTH}
-                autoCapitalize="words"
-                autoCorrect={false}
-                returnKeyType="done"
-                onSubmitEditing={saveAndContinue}
-                accessibilityLabel={`Nom de l'équipe ${index + 1}`}
-                style={styles.teamInput}
-              />
-              {/* Carte avatar — placeholder couleur, assets à intégrer plus tard */}
-              <View style={[styles.mascotCard, { backgroundColor: selectedColor }]}>
-                <Text style={styles.teamCounter}>
-                  {index + 1}/{teamCount}
-                </Text>
+            <View style={styles.content}>
+              <View style={styles.topSection}>
+                {/* Titre + compteur */}
+                <View style={styles.titleRow}>
+                  <Text style={styles.sectionTitle}>Création des squads</Text>
+                  <Text style={styles.counter}>{index + 1}/{teamCount}</Text>
+                </View>
+
+                <View style={styles.sections}>
+                  {/* Sélecteur de couleur */}
+                  <View style={styles.subsection}>
+                    <Text style={styles.label}>Choisissez la couleur de l'équipe</Text>
+                    <View style={styles.colorRow}>
+                      {teamColors.map((color) => {
+                        const isSelected = color === selectedColor;
+                        const isTaken = takenColors.has(color);
+                        const displayColor = isTaken ? (TAKEN_COLORS[color] ?? color) : color;
+                        return (
+                          <Pressable
+                            key={color}
+                            onPress={() => !isTaken && setSelectedColor(color)}
+                            accessibilityRole="radio"
+                            accessibilityLabel={`Couleur ${color}`}
+                            accessibilityState={{ selected: isSelected, disabled: isTaken }}
+                            hitSlop={8}
+                          >
+                            {isSelected ? (
+                              <View style={styles.circleOuter}>
+                                <View style={styles.circleGap}>
+                                  <View style={[styles.circleInner, { backgroundColor: displayColor }]} />
+                                </View>
+                              </View>
+                            ) : (
+                              <View style={[styles.colorCircle, { backgroundColor: displayColor }]} />
+                            )}
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  </View>
+
+                  {/* Nom de l'équipe */}
+                  <View style={styles.subsection}>
+                    <Text style={styles.label}>Choisissez le nom de l'équipe</Text>
+                    <TextInput
+                      value={name}
+                      onChangeText={setName}
+                      placeholder={`Nom de l'équipe ${index + 1}`}
+                      placeholderTextColor="rgba(254,246,215,0.5)"
+                      maxLength={NAME_MAX_LENGTH}
+                      autoCapitalize="words"
+                      autoCorrect={false}
+                      returnKeyType="done"
+                      onSubmitEditing={saveAndContinue}
+                      accessibilityLabel={`Nom de l'équipe ${index + 1}`}
+                      style={styles.teamInput}
+                    />
+                  </View>
+                </View>
+              </View>
+
+              {/* Indicateurs de progression */}
+              <View style={styles.progressRow}>
+                {Array.from({ length: teamCount }, (_, i) => {
+                  const isPast = i < index;
+                  const isFuture = i > index;
+                  const dotColor = isPast ? (drafts[i]?.color ?? teamColors[i]) : selectedColor;
+                  const label = isPast ? (drafts[i]?.name || defaultName(i)) : 'En cours...';
+                  return (
+                    <View key={i} style={[styles.progressItem, isFuture && styles.hidden]}>
+                      <View style={[styles.progressDot, { backgroundColor: dotColor }]} />
+                      <Text style={styles.progressText}>{label}</Text>
+                    </View>
+                  );
+                })}
               </View>
             </View>
 
+            {/* Bouton Suivant */}
             <Pressable
-              style={styles.btnSuivant}
               onPress={saveAndContinue}
               accessibilityRole="button"
               accessibilityLabel="Suivant"
             >
-              <Text style={styles.btnSuivantText}>Suivant</Text>
+              <View style={styles.btnSuivant}>
+                <Text style={styles.btnSuivantText}>Suivant</Text>
+              </View>
             </Pressable>
           </View>
         </View>
@@ -179,40 +236,6 @@ export default function TeamSetupScreen() {
             <SettingIcon size={Math.min(width * 0.08, 32)} />
           </Pressable>
         </View>
-
-        {/* Flèche gauche — avatar précédent */}
-        {canLeft && (
-          <Pressable
-            style={[styles.navArrow, { left: 9, top: navArrowTop }]}
-            onPress={() => setSelectedColor(avail[avatarPos - 1])}
-            accessibilityRole="button"
-            accessibilityLabel="Avatar précédent"
-            hitSlop={8}
-          >
-            <View pointerEvents="none">
-              <Svg width={20} height={(20 * 19) / 32} viewBox="0 0 32 19">
-                <Path d={ARROW_PATH} fill={colors.cream} />
-              </Svg>
-            </View>
-          </Pressable>
-        )}
-
-        {/* Flèche droite — avatar suivant */}
-        {canRight && (
-          <Pressable
-            style={[styles.navArrow, { right: 9, top: navArrowTop }]}
-            onPress={() => setSelectedColor(avail[avatarPos + 1])}
-            accessibilityRole="button"
-            accessibilityLabel="Avatar suivant"
-            hitSlop={8}
-          >
-            <View style={styles.arrowRight} pointerEvents="none">
-              <Svg width={20} height={(20 * 19) / 32} viewBox="0 0 32 19">
-                <Path d={ARROW_PATH} fill={colors.cream} />
-              </Svg>
-            </View>
-          </Pressable>
-        )}
       </View>
     </View>
   );
@@ -243,14 +266,69 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 48,
   },
-  section: {
+  content: {
     flex: 1,
+    justifyContent: 'space-between',
+  },
+  topSection: {
     gap: 24,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   sectionTitle: {
     fontFamily: fonts.display,
     fontSize: 26,
     color: '#fef1cc',
+  },
+  counter: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 16,
+    color: colors.cream,
+  },
+  sections: {
+    gap: 17,
+  },
+  subsection: {
+    gap: 11,
+  },
+  label: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 20,
+    color: colors.cream,
+  },
+  colorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 24,
+  },
+  colorCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  circleOuter: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: colors.cream,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  circleGap: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: colors.purple,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  circleInner: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
   },
   teamInput: {
     backgroundColor: 'rgba(254,246,215,0.2)',
@@ -264,29 +342,41 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.cream,
   },
-  mascotCard: {
-    flex: 1,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.cream,
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
+  progressRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
   },
-  teamCounter: {
-    fontFamily: fonts.display,
-    fontSize: 26,
+  progressItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  hidden: {
+    opacity: 0,
+  },
+  progressDot: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+  },
+  progressText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 20,
     color: colors.cream,
-    position: 'absolute',
-    top: 16,
-    right: 20,
   },
   btnSuivant: {
     height: 51,
     borderRadius: 16,
-    backgroundColor: colors.cream,
+    backgroundColor: '#fffbf5',
+    borderWidth: 2,
+    borderColor: colors.purpleDeep,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: colors.purpleDeep,
+    shadowOffset: { width: -1, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
   },
   btnSuivantText: {
     fontFamily: fonts.displayMedium,
@@ -298,17 +388,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  navArrow: {
-    position: 'absolute',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.purpleDeep,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  arrowRight: {
-    transform: [{ rotate: '180deg' }],
   },
 });

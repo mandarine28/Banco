@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/theme';
@@ -35,20 +36,27 @@ type ConfirmProps = {
   onCancel: () => void;
 };
 
-/** Fenêtre de confirmation à deux boutons. */
+/** Fenêtre de confirmation à deux boutons — même DA que PauseModal. */
 export function ConfirmModal({ visible, title, message, confirmLabel, onConfirm, onCancel }: ConfirmProps) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
-      <Pressable style={styles.backdrop} onPress={onCancel} accessibilityLabel="Annuler">
-        <Pressable style={styles.card} onPress={() => {}}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.message}>{message}</Text>
-          <View style={styles.actions}>
-            <Pressable onPress={onCancel} accessibilityRole="button" style={[styles.button, styles.secondary]}>
-              <Text style={[styles.buttonLabel, styles.secondaryLabel]}>ANNULER</Text>
+      <Pressable style={pauseStyles.backdrop} onPress={onCancel} accessibilityLabel="Annuler">
+        <Pressable style={pauseStyles.card} onPress={() => {}}>
+          <Text style={pauseStyles.title}>{title}</Text>
+          <Text style={pauseStyles.message}>{message}</Text>
+          <View style={confirmStyles.actions}>
+            <Pressable onPress={onCancel} accessibilityRole="button" style={confirmStyles.cancelBtn}>
+              <Text style={confirmStyles.cancelText}>ANNULER</Text>
             </Pressable>
-            <Pressable onPress={onConfirm} accessibilityRole="button" style={[styles.button, styles.danger]}>
-              <Text style={styles.buttonLabel}>{confirmLabel}</Text>
+            <Pressable onPress={onConfirm} accessibilityRole="button" style={pauseStyles.btnWrap}>
+              <LinearGradient
+                colors={['#fb940e', '#f2c512']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={pauseStyles.btnInner}
+              >
+                <Text style={pauseStyles.btnText}>{confirmLabel}</Text>
+              </LinearGradient>
             </Pressable>
           </View>
         </Pressable>
@@ -59,25 +67,32 @@ export function ConfirmModal({ visible, title, message, confirmLabel, onConfirm,
 
 type PauseProps = {
   visible: boolean;
-  secondsLeft: number;
   onResume: () => void;
 };
 
-/** Chrono suspendu (recherche web en cours) : reprise à la main par les joueurs. */
-export function PauseModal({ visible, secondsLeft, onResume }: PauseProps) {
+/**
+ * Chrono suspendu : View absolue (pas Modal) pour laisser les chips scrollables.
+ * pointerEvents="box-none" sur le fond — touches passent au travers, sauf sur la carte.
+ */
+export function PauseModal({ visible, onResume }: PauseProps) {
+  if (!visible) return null;
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onResume}>
-      <View style={styles.backdrop}>
-        <View style={[styles.card, styles.pauseCard]}>
-          <Text style={styles.title}>CHRONO EN PAUSE</Text>
-          <Text style={styles.pauseTime}>{secondsLeft} s</Text>
-          <Text style={[styles.message, styles.centered]}>Vérifiez la réponse, puis reprenez la partie.</Text>
-          <Pressable onPress={onResume} accessibilityRole="button" style={[styles.button, styles.resume]}>
-            <Text style={styles.buttonLabel}>REPRENDRE</Text>
-          </Pressable>
-        </View>
+    <View style={pauseStyles.backdrop} pointerEvents="box-none">
+      <View style={pauseStyles.card}>
+        <Text style={pauseStyles.title}>Jeu en pause</Text>
+        <Text style={pauseStyles.message}>Vérifiez la réponse puis{'\n'}reprenez la partie.</Text>
+        <Pressable onPress={onResume} accessibilityRole="button" style={pauseStyles.btnWrap}>
+          <LinearGradient
+            colors={['#fb940e', '#f2c512']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={pauseStyles.btnInner}
+          >
+            <Text style={pauseStyles.btnText}>REPRENDRE</Text>
+          </LinearGradient>
+        </Pressable>
       </View>
-    </Modal>
+    </View>
   );
 }
 
@@ -178,5 +193,83 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: 15,
     lineHeight: 18,
+  },
+});
+
+const pauseStyles = StyleSheet.create({
+  backdrop: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    backgroundColor: 'rgba(5,20,46,0.80)',
+  },
+  card: {
+    width: '100%',
+    maxWidth: 400,
+    backgroundColor: '#fef1cb',
+    borderRadius: 24,
+    paddingHorizontal: 48,
+    paddingVertical: 48,
+    alignItems: 'center',
+    gap: 24,
+  },
+  title: {
+    fontFamily: fonts.display,
+    fontSize: 34,
+    color: colors.purpleDeep,
+    textAlign: 'center',
+  },
+  message: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 18,
+    color: colors.purpleDeep,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  btnWrap: {
+    width: '100%',
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: '#a15c03',
+    shadowColor: '#a15c03',
+    shadowOffset: { width: -1, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 3,
+  },
+  btnInner: {
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnText: {
+    fontFamily: fonts.display,
+    fontSize: 24,
+    color: colors.cream,
+  },
+});
+
+const confirmStyles = StyleSheet.create({
+  actions: {
+    width: '100%',
+    gap: 12,
+  },
+  cancelBtn: {
+    width: '100%',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: colors.purpleDeep,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 51,
+  },
+  cancelText: {
+    fontFamily: fonts.display,
+    fontSize: 24,
+    color: colors.purpleDeep,
   },
 });
