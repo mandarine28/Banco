@@ -9,6 +9,7 @@ import { CounterFooter } from '@/components/game/CounterFooter';
 import { PlayPhase } from '@/components/game/PlayPhase';
 import { ReadyPhase } from '@/components/game/ReadyPhase';
 import { ResultPhase } from '@/components/game/ResultPhase';
+import { ConfettiOverlay } from '@/components/ConfettiOverlay';
 import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal, PauseModal } from '@/components/InfoModal';
 import { questions } from '@/data/questions';
@@ -47,8 +48,9 @@ type Confirm = 'quit' | 'skip' | null;
 function Game({ teams, roundCount, onReplay }: GameProps) {
   const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, questions));
   const [confirm, setConfirm] = useState<Confirm>(null);
-  // Chrono suspendu pendant une recherche web, jusqu'à ce que les joueurs reprennent.
-  const [paused, setPaused] = useState(false);
+  // 'search' → pause auto (recherche web), 'manual' → pause bouton, null → en cours
+  const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);
+  const paused = pauseSource !== null;
   const remainingMs = useCountdown(state.phase === 'play', paused, TURN_SECONDS, () =>
     dispatch({ type: 'END_TURN', reason: 'time' }),
   );
@@ -57,14 +59,14 @@ function Game({ teams, roundCount, onReplay }: GameProps) {
   const [phase, setPhase] = useState(state.phase);
   if (phase !== state.phase) {
     setPhase(state.phase);
-    setPaused(false);
+    setPauseSource(null);
     if (confirm === 'skip') setConfirm(null);
   }
 
   const goHome = () => router.dismissTo('/');
 
   const searchWeb = (query: string) => {
-    setPaused(true);
+    setPauseSource('search');
     // isPaused=true → PlayPhase blur son TextInput immédiatement, avant que le
     // navigateur s'ouvre. Quand le navigateur se ferme, le champ est déjà blurred.
     WebBrowser.openBrowserAsync(`https://www.google.com/search?q=${encodeURIComponent(query)}`).catch(() => {});
@@ -89,12 +91,15 @@ function Game({ teams, roundCount, onReplay }: GameProps) {
   return (
     <GameLayout
       banner={banner}
+      closeIcon
       onHome={() => (state.phase === 'final' ? goHome() : setConfirm('quit'))}
       footer={footer}
-      scrollDisabled={state.phase === 'play' || state.phase === 'result'}
+      scrollDisabled={state.phase === 'play' || state.phase === 'result' || state.phase === 'final'}
       overlay={
-        paused && state.phase === 'play' ? (
-          <PauseModal visible onResume={() => setPaused(false)} />
+        pauseSource === 'search' && state.phase === 'play' ? (
+          <PauseModal visible onResume={() => setPauseSource(null)} />
+        ) : state.phase === 'final' ? (
+          <ConfettiOverlay />
         ) : undefined
       }
     >
@@ -115,6 +120,9 @@ function Game({ teams, roundCount, onReplay }: GameProps) {
           onWebSearch={searchWeb}
           onSkip={() => setConfirm('skip')}
           isPaused={paused}
+          onTogglePause={() =>
+            setPauseSource((s) => (s === null ? 'manual' : s === 'manual' ? null : s))
+          }
         />
       ) : null}
       {state.phase === 'result' ? (

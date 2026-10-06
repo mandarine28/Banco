@@ -5,6 +5,7 @@ import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
+import { LanguagePicker } from '@/components/LanguagePicker';
 import { Logo } from '@/components/Logo';
 import { colors, fonts } from '@/theme';
 
@@ -87,9 +88,7 @@ export default function HomeScreen() {
 
         {/* En-tête : drapeau gauche + paramètres droite */}
         <View style={[styles.header, { top: insets.top + 14, left: width * 0.06, right: width * 0.06 }]}>
-          <View style={styles.flagWrap}>
-            <Text style={styles.flagEmoji}>🇫🇷</Text>
-          </View>
+          <LanguagePicker />
           <Pressable
             onPress={go('/reglages')}
             accessibilityRole="button"
@@ -175,19 +174,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  flagWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.white,
-  },
-  flagEmoji: {
-    fontSize: 26,
-    lineHeight: 32,
   },
   // Logo
   logoWrap: {

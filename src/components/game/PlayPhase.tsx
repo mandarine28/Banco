@@ -15,6 +15,12 @@ const CHIP_ROW_H = 36;
 const CHIP_GAP = 12;
 const MAX_CHIPS_H = 5 * CHIP_ROW_H + 4 * CHIP_GAP; // 228
 
+const PAUSE_PATH =
+  'M5.14286 0C5.59751 0 6.03355 0.180612 6.35504 0.502103C6.67653 0.823594 6.85714 1.25963 6.85714 1.71429V22.2857C6.85714 22.7404 6.67653 23.1764 6.35504 23.4979C6.03355 23.8194 5.59751 24 5.14286 24H1.71429C1.25963 24 0.823594 23.8194 0.502103 23.4979C0.180612 23.1764 0 22.7404 0 22.2857V1.71429C0 1.25963 0.180612 0.823594 0.502103 0.502103C0.823594 0.180612 1.25963 0 1.71429 0H5.14286ZM18.8571 0C19.3118 0 19.7478 0.180612 20.0693 0.502103C20.3908 0.823594 20.5714 1.25963 20.5714 1.71429V22.2857C20.5714 22.7404 20.3908 23.1764 20.0693 23.4979C19.7478 23.8194 19.3118 24 18.8571 24H15.4286C14.9739 24 14.5379 23.8194 14.2164 23.4979C13.8949 23.1764 13.7143 22.7404 13.7143 22.2857V1.71429C13.7143 1.25963 13.8949 0.823594 14.2164 0.502103C14.5379 0.180612 14.9739 0 15.4286 0H18.8571Z';
+
+const PLAY_PATH =
+  'M23.9911 1.28571C23.9911 0.944722 23.8557 0.617695 23.6145 0.376577C23.3734 0.135459 23.0464 0 22.7054 0C22.3644 0 22.0374 0.135459 21.7963 0.376577C21.5551 0.617695 21.4197 0.944722 21.4197 1.28571V18.4286C21.4197 18.7696 21.5551 19.0966 21.7963 19.3377C22.0374 19.5788 22.3644 19.7143 22.7054 19.7143C23.0464 19.7143 23.3734 19.5788 23.6145 19.3377C23.8557 19.0966 23.9911 18.7696 23.9911 18.4286V1.28571ZM16.6265 8.04857C17.8094 8.964 17.8094 10.7503 16.6265 11.6657C12.9614 14.5019 8.86859 16.7372 4.5014 18.288L3.70254 18.5726C2.21112 19.1006 0.633973 18.0926 0.433402 16.5531C-0.144467 12.1078 -0.144467 7.60644 0.433402 3.16114C0.635688 1.62171 2.21112 0.613714 3.70254 1.14343L4.5014 1.42629C8.86859 2.97704 12.9614 5.21238 16.6265 8.04857Z';
+
 function SkipIcon() {
   return (
     <Svg width={30} height={16} viewBox="0 0 38 20">
@@ -36,10 +42,11 @@ type Props = {
   onToggle: (label: string) => void;
   onWebSearch: (query: string) => void;
   onSkip: () => void;
+  onTogglePause: () => void;
   isPaused?: boolean;
 };
 
-export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, isPaused = false }: Props) {
+export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, onTogglePause, isPaused = false }: Props) {
   const question = currentQuestion(state);
   const { team: teamIdx } = contract(state);
   const team = state.teams[teamIdx];
@@ -115,10 +122,28 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, i
       {/* ─── ZONE STICKY : chrono, badge, question, recherche ─── */}
       <Pressable style={styles.stickyTop} onPress={Keyboard.dismiss} accessible={false}>
         <View style={styles.timerRow}>
-          <View style={styles.track}>
+          <View style={[styles.track, isPaused && styles.trackPaused]}>
             <View style={[styles.fill, { width: `${elapsedFraction * 100}%`, backgroundColor: fillColor }]} />
           </View>
           <Text style={[styles.seconds, isWarning && styles.secondsWarning]}>{seconds}</Text>
+          <Pressable
+            onPress={onTogglePause}
+            accessibilityRole="button"
+            accessibilityLabel={isPaused ? 'Reprendre' : 'Pause'}
+            style={styles.pauseBtn}
+          >
+            <View pointerEvents="none">
+              {isPaused ? (
+                <Svg width={24} height={20} viewBox="0 0 24 20">
+                  <Path d={PLAY_PATH} fill={colors.cream} />
+                </Svg>
+              ) : (
+                <Svg width={21} height={24} viewBox="0 0 21 24">
+                  <Path d={PAUSE_PATH} fill={colors.cream} />
+                </Svg>
+              )}
+            </View>
+          </Pressable>
           <Pressable
             onPress={onSkip}
             accessibilityRole="button"
@@ -287,6 +312,14 @@ const styles = StyleSheet.create({
   secondsWarning: {
     color: colors.pink,
   },
+  pauseBtn: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: colors.purpleDeep,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   skipBtn: {
     width: 54,
     height: 54,
@@ -294,6 +327,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.purpleDeep,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  trackPaused: {
+    opacity: 0.45,
   },
   badgeRow: {
     alignItems: 'center',
