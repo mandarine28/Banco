@@ -5,18 +5,25 @@ import Svg, { Path } from 'react-native-svg';
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { colors } from '@/theme';
 
-// ── Icône singe (logo-icone.svg, viewBox 0 0 322 297) ──────────────────────
-// Stroke bleu = même couleur que le fond → silhouette crème sur fond bleu
+// ── Icône singe (logo-icone.svg, viewBox 0 0 300 249) ──────────────────────
+const ICON_HEAD =
+  'M156.591 77.5784C156.591 77.5784 149.739 105.478 120.126 108.414C97.856 110.372 63.5938 96.1779 63.5938 55.5527C63.5938 20.3115 79.9907 10.2775 96.3876 5.1382C123.797 -3.42737 188.162 0.243589 200.398 5.1382C222.424 13.9485 232.458 32.3033 232.458 57.2658C232.458 79.781 215.571 102.051 193.79 102.051C170.786 101.807 163.444 91.0386 156.591 77.5784ZM109.848 60.2026C109.848 69.0128 116.945 76.11 125.511 76.11C134.321 76.11 141.418 69.0128 141.418 60.2026C141.418 51.637 134.321 44.5398 125.511 44.5398C116.945 44.5398 109.848 51.637 109.848 60.2026ZM166.136 60.2026C166.136 69.0128 173.233 76.11 182.043 76.11C190.609 76.11 197.706 69.0128 197.706 60.2026C197.706 51.637 190.609 44.5398 182.043 44.5398C173.233 44.5398 166.136 51.637 166.136 60.2026Z';
+
 const ICON_BODY =
-  'M103.615 17.7715C119.346 12.8555 144 11.7224 165.107 12.1826C175.919 12.4183 186.311 13.0871 194.883 14.0283C202.913 14.9101 210.795 16.1682 215.59 18.0859C228.824 23.3798 239.005 31.8184 245.738 43.0928C252.388 54.2272 255.208 67.332 255.208 81.3711C255.208 95.5156 249.954 109.407 241.277 119.881C233.676 129.056 222.922 136.162 210.186 137.82C224.369 144.769 236.492 154.554 244.397 166.483C260.649 191.009 258.808 220.678 246.474 241.823L246.438 241.882C230.968 268.062 196.03 283.704 162.9 284.238L162.899 284.237C144.915 284.631 125.513 280.808 109.062 273.762C92.9649 266.868 77.5754 255.947 70.7598 240.653L70.7607 240.652C59.9732 216.757 61.0922 190.726 71.9668 168.977H71.9678C78.2598 156.191 89.3488 146.623 101.908 139.874C96.802 137.847 91.8109 135.153 87.1768 131.73C72.7909 121.106 62.3809 103.827 62.3809 79.6602C62.3809 60.1979 66.9308 45.9001 75.3281 35.5811C83.6461 25.3596 94.4706 20.6376 103.605 17.7744L103.615 17.7715ZM163.194 202.114C157.912 202.114 150.062 201.698 142.749 202.312C141.894 202.384 141.115 202.467 140.409 202.556C141.263 203.63 142.566 204.907 144.554 206.312C149.809 210.028 156.724 212.112 162.238 211.675C166.614 211.328 171.824 209.11 175.981 205.885C176.768 205.274 177.458 204.669 178.057 204.092C178.029 204.084 178.002 204.076 177.975 204.068C172.928 202.676 166.654 202.114 163.194 202.114ZM168.586 124.917C168.195 125.405 167.788 125.891 167.369 126.378C168.375 126.448 169.38 126.531 170.385 126.628C169.763 126.07 169.164 125.498 168.586 124.917ZM136.308 80.75C134.429 80.75 132.753 82.4261 132.753 84.3047C132.753 86.5498 134.551 88.1035 136.308 88.1035C138.431 88.1035 140.106 86.4276 140.106 84.3047C140.106 82.5476 138.553 80.75 136.308 80.75ZM192.77 80.75C190.524 80.75 188.97 82.5476 188.97 84.3047C188.97 86.4276 190.647 88.1035 192.77 88.1035C194.526 88.1033 196.324 86.5497 196.324 84.3047C196.324 82.4262 194.648 80.7502 192.77 80.75Z';
+  'M225.36 211.821C212.635 233.358 182.288 247.797 151.941 248.286C119.392 249.021 80.9695 234.337 70.9356 211.821C61.6358 191.264 62.6147 168.994 71.9145 150.394C83.6616 126.411 119.147 113.685 150.473 114.174C180.575 114.663 210.187 128.858 223.647 149.171C237.108 169.483 235.639 194.201 225.36 211.821ZM116.07 173.146C113.696 187.154 134.88 201.19 152.431 199.799C166.874 198.654 182.043 186.261 182.043 177.451C182.043 168.64 160.996 166.057 152.431 166.057C143.621 166.057 116.07 164.336 116.07 173.146Z';
+
+// Bouche seule — incluse dans le layer tête pour pivoter avec elle
+// Rendue en couleur fond (purple) pour simuler le trou du torse original
+const ICON_MOUTH =
+  'M116.07 173.146C113.696 187.154 134.88 201.19 152.431 199.799C166.874 198.654 182.043 186.261 182.043 177.451C182.043 168.64 160.996 166.057 152.431 166.057C143.621 166.057 116.07 164.336 116.07 173.146Z';
 
 const ICON_LEFT_EAR =
-  'M49.0166 83.1572C51.8856 83.2106 54.7591 83.4889 57.3506 84.0264C59.6901 84.5116 62.1723 85.2821 64.2246 86.5566L64.6289 86.8184L64.6523 86.834L64.6748 86.8506C67.3572 88.6985 68.7776 91.5694 69.4893 94.0176C70.2301 96.5665 70.4252 99.3812 70.1055 102.005C69.7934 104.565 68.9226 107.47 67.0244 109.793C64.9522 112.329 61.7704 113.962 57.9062 113.531V113.532C49.6693 112.684 47.6184 112.516 44.9834 114.783L44.9668 114.798L44.9492 114.812C42.1036 117.22 40.2789 121.437 40.2012 126.252C40.1264 130.889 41.6922 135.33 44.5918 138.298L44.876 138.58L44.8975 138.6C46.8696 140.517 51.3388 141.582 57.7705 140.074C61.8159 139.113 65.17 140.906 67.1982 143.416C69.0442 145.701 69.9281 148.623 70.2227 151.265C70.7757 156.225 69.4743 163.638 63.3779 167.276L63.3584 167.288L63.3379 167.3C61.3586 168.458 58.8782 169.107 56.6172 169.506C54.2347 169.926 51.5656 170.154 48.8857 170.222C43.6135 170.354 37.6987 169.874 33.2715 168.618L33.2646 168.615L33.2568 168.613C13.574 162.971 5.47754 145.9 5.47754 128.019C5.47761 117.924 7.81141 109.045 12.4766 101.765C17.1464 94.4773 23.9494 89.1136 32.3486 85.7432V85.7422C32.3584 85.7382 32.3682 85.7345 32.3779 85.7305C32.3851 85.7276 32.3922 85.7246 32.3994 85.7217V85.7227C37.1145 83.7943 43.4288 83.0532 49.0166 83.1572Z';
+  'M48.126 121.382C54.5576 119.829 56.5536 134.467 49.6785 138.57C45.132 141.231 31.2708 141.453 23.8412 139.346C7.20782 134.577 0 120.273 0 103.972C0 85.4535 8.53848 72.7012 23.5085 66.7132C31.049 63.6083 45.5755 63.83 50.6765 67.2676C55.6665 70.7052 55.0011 84.899 47.5716 84.0119C40.0311 83.2357 35.2628 82.4595 30.4946 86.5624C21.8452 93.8811 21.4017 110.071 30.1619 118.499C34.1539 122.38 41.0291 123.045 48.126 121.382Z';
 
 const ICON_RIGHT_EAR =
-  'M272.517 83.1572C269.648 83.2106 266.774 83.4889 264.183 84.0264C261.843 84.5116 259.361 85.2821 257.309 86.5566L256.904 86.8184L256.881 86.834L256.858 86.8506C254.176 88.6985 252.756 91.5694 252.044 94.0176C251.303 96.5665 251.108 99.3812 251.428 102.005C251.74 104.565 252.611 107.47 254.509 109.793C256.581 112.329 259.763 113.962 263.627 113.531V113.532C271.864 112.684 273.915 112.516 276.55 114.783L276.566 114.798L276.584 114.812C279.43 117.22 281.254 121.437 281.332 126.252C281.407 130.889 279.841 135.33 276.941 138.298L276.657 138.58L276.636 138.6C274.664 140.517 270.194 141.582 263.763 140.074C259.717 139.113 256.363 140.906 254.335 143.416C252.489 145.701 251.605 148.623 251.311 151.265C250.757 156.225 252.059 163.638 258.155 167.276L258.175 167.288L258.195 167.3C260.175 168.458 262.655 169.107 264.916 169.506C267.299 169.926 269.968 170.154 272.647 170.222C277.92 170.354 283.834 169.874 288.262 168.618L288.269 168.615L288.276 168.613C307.959 162.971 316.056 145.9 316.056 128.019C316.056 117.924 313.722 109.045 309.057 101.765C304.387 94.4773 297.584 89.1136 289.185 85.7432V85.7422C289.175 85.7382 289.165 85.7345 289.155 85.7305C289.148 85.7276 289.141 85.7246 289.134 85.7217V85.7227C284.419 83.7943 278.104 83.0532 272.517 83.1572Z';
+  'M251.874 121.382C245.442 119.829 243.446 134.467 250.322 138.57C254.868 141.231 268.729 141.453 276.159 139.346C292.792 134.577 300 120.273 300 103.972C300 85.4535 291.462 72.7012 276.491 66.7132C268.951 63.6083 254.424 63.83 249.324 67.2676C244.334 70.7052 244.999 84.899 252.428 84.0119C259.969 83.2357 264.737 82.4595 269.505 86.5624C278.155 93.8811 278.598 110.071 269.838 118.499C265.846 122.38 258.971 123.045 251.874 121.382Z';
 
-// ── Lettres BANCO (Logo.tsx LETTER_PATHS, viewBox 0 0 324 84) ───────────────
+// ── Lettres BANCO (viewBox 0 0 324 84) ─────────────────────────────────────
 const LETTER_PATHS = [
   'M38.4575 37.6088C38.4575 37.6088 52.2878 41.0057 53.7436 55.6853C54.7142 66.7253 47.6777 83.7099 27.5388 83.7099C10.0689 83.7099 5.09482 75.5815 2.54713 67.4532C-1.69903 53.8655 0.120753 21.9587 2.54713 15.8928C6.9146 4.97407 16.0135 0 28.388 0C39.5493 0 50.5893 8.37099 50.5893 19.1684C50.468 30.5723 45.13 34.2119 38.4575 37.6088ZM29.8438 60.7807C34.2113 60.7807 37.7295 57.2624 37.7295 53.0163C37.7295 48.6488 34.2113 45.1306 29.8438 45.1306C25.5977 45.1306 22.0794 48.6488 22.0794 53.0163C22.0794 57.2624 25.5977 60.7807 29.8438 60.7807ZM29.8438 32.8774C34.2113 32.8774 37.7295 29.3591 37.7295 24.9917C37.7295 20.7455 34.2113 17.2273 29.8438 17.2273C25.5977 17.2273 22.0794 20.7455 22.0794 24.9917C22.0794 29.3591 25.5977 32.8774 29.8438 32.8774Z',
   'M99.7187 8.73495C102.873 15.8928 114.156 52.167 117.189 65.8761C122.163 89.0479 94.502 88.9266 94.502 70.1222C94.502 58.4756 82.734 58.4756 82.734 69.5156C82.734 88.5627 54.1028 89.5332 58.9556 66.7253C65.0215 38.822 73.6351 17.9552 77.396 9.09891C82.3701 -2.42637 94.2593 -3.2756 99.7187 8.73495ZM88.6787 47.3143C92.1969 47.3143 95.1086 44.4026 95.1086 40.7631C95.1086 37.2448 92.1969 34.3332 88.6787 34.3332C85.0391 34.3332 82.1274 37.2448 82.1274 40.7631C82.1274 44.4026 85.0391 47.3143 88.6787 47.3143Z',
@@ -25,79 +32,174 @@ const LETTER_PATHS = [
   'M305.7 4.00352C316.376 10.3121 323.534 25.3556 323.776 40.3991C324.14 56.5345 316.861 75.5816 305.7 80.5556C295.509 85.1657 284.469 84.6805 275.249 80.0703C263.36 74.247 257.051 56.6558 257.294 41.127C257.536 26.2048 264.573 11.5253 274.642 4.85275C284.712 -1.81978 296.965 -1.09186 305.7 4.00352ZM290.778 48.0422C295.145 48.0422 298.663 44.524 298.663 40.1565C298.663 35.9103 295.145 32.3921 290.778 32.3921C286.41 32.3921 283.013 35.9103 283.013 40.1565C283.013 44.524 286.41 48.0422 290.778 48.0422Z',
 ];
 
-function LogoIcon() {
-  const w = 178;
-  const h = (w * 297) / 322;
+// ── Layout constants ────────────────────────────────────────────────────────
+const ICON_W = 178;
+const ICON_H = Math.round((ICON_W * 249) / 300); // 148
+
+const TEXT_W = 256;
+const SCALE = TEXT_W / 324; // ≈ 0.790
+const TEXT_H = Math.round(84 * SCALE); // 66
+
+// Per-letter crop: [minX, minY, cropW, cropH] in SVG units (viewBox 0 0 324 84)
+const CROPS: [number, number, number, number][] = [
+  [0,   0, 56, 84], // B
+  [54,  0, 68, 84], // A
+  [124, 0, 65, 84], // N
+  [197, 0, 62, 84], // C
+  [257, 0, 67, 84], // O
+];
+
+// Letter center X offsets relative to BANCO text center (pixels)
+// Source: (svgCenterX - 162) * SCALE, where 162 = half of 324
+const LETTER_X = [
+  Math.round(-134 * SCALE), // B  → -106
+  Math.round(-74  * SCALE), // A  →  -58
+  Math.round(-5.5 * SCALE), // N  →   -4
+  Math.round(66   * SCALE), // C  →   52
+  Math.round(128.5 * SCALE),// O  →  101
+];
+
+// ── Sub-components ──────────────────────────────────────────────────────────
+function IconHead() {
   return (
-    <Svg width={w} height={h} viewBox="0 0 322 297">
-      <Path d={ICON_BODY} fill={colors.cream} stroke={colors.purple} strokeWidth={24.18} />
-      <Path d={ICON_LEFT_EAR} fill={colors.cream} stroke={colors.purple} strokeWidth={10.95} />
-      <Path d={ICON_RIGHT_EAR} fill={colors.cream} stroke={colors.purple} strokeWidth={10.95} />
+    <Svg width={ICON_W} height={ICON_H} viewBox="0 0 300 249">
+      <Path d={ICON_HEAD} fill={colors.cream} />
+      <Path d={ICON_MOUTH} fill={colors.purple} />
     </Svg>
   );
 }
 
-function LogoText() {
-  const w = 256;
-  const h = (w * 84) / 324;
+function IconBody() {
   return (
-    <Svg width={w} height={h} viewBox="0 0 324 84">
-      {LETTER_PATHS.map((d, i) => (
-        <Path key={i} d={d} fill={colors.cream} />
-      ))}
+    <Svg width={ICON_W} height={ICON_H} viewBox="0 0 300 249">
+      <Path d={ICON_BODY} fill={colors.cream} />
     </Svg>
   );
 }
 
+function LeftEar() {
+  return (
+    <Svg width={ICON_W} height={ICON_H} viewBox="0 0 300 249">
+      <Path d={ICON_LEFT_EAR} fill={colors.cream} />
+    </Svg>
+  );
+}
+
+function RightEar() {
+  return (
+    <Svg width={ICON_W} height={ICON_H} viewBox="0 0 300 249">
+      <Path d={ICON_RIGHT_EAR} fill={colors.cream} />
+    </Svg>
+  );
+}
+
+function Letter({ idx }: { idx: number }) {
+  const [minX, minY, cropW, cropH] = CROPS[idx];
+  return (
+    <Svg
+      width={Math.round(cropW * SCALE)}
+      height={TEXT_H}
+      viewBox={`${minX} ${minY} ${cropW} ${cropH}`}
+    >
+      <Path d={LETTER_PATHS[idx]} fill={colors.cream} />
+    </Svg>
+  );
+}
+
+// ── Main component ──────────────────────────────────────────────────────────
 type Props = { onFinish: () => void };
 
 export function SplashScreenAnimator({ onFinish }: Props) {
   const { width, height } = useWindowDimensions();
 
-  const iconOpacity = useRef(new Animated.Value(0)).current;
-  const iconScale = useRef(new Animated.Value(0.5)).current;
-  const iconTranslateY = useRef(new Animated.Value(0)).current;
+  // Phase 1 — monkey appear
+  const iconScale    = useRef(new Animated.Value(0.7)).current;
+  const headOpacity  = useRef(new Animated.Value(0)).current;
+  const earOpacity   = useRef(new Animated.Value(0)).current;
+  const bodyOpacity  = useRef(new Animated.Value(0)).current;
 
-  const textOpacity = useRef(new Animated.Value(0)).current;
-  const textScale = useRef(new Animated.Value(1.15)).current;
-  const textTranslateY = useRef(new Animated.Value(48)).current;
+  // Phase 2 — ears fly off, head rotates then fades
+  const earSlideY   = useRef(new Animated.Value(0)).current;
+  const headRotate  = useRef(new Animated.Value(0)).current;
 
-  const creamOpacity = useRef(new Animated.Value(0)).current;
+  // Phase 3 — B and O appear and spread
+  const boOpacity   = useRef(new Animated.Value(0)).current;
+  const bX          = useRef(new Animated.Value(-55)).current;
+  const oX          = useRef(new Animated.Value(55)).current;
+  const boLetterSc  = useRef(new Animated.Value(2.0)).current;
+
+  // Phase 4 — A, N, C slide in
+  const ancOpacity  = useRef(new Animated.Value(0)).current;
+  const ancY        = useRef(new Animated.Value(16)).current;
+
+  // Phase 5 — final exponential zoom
+  const bancoScale  = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    const easeOut = Easing.out(Easing.cubic);
-    const easeIn = Easing.in(Easing.cubic);
+    const out = Easing.out(Easing.cubic);
+    const inn = Easing.in(Easing.cubic);
 
     Animated.sequence([
-      Animated.delay(160),
-      // Phase 1 : icône apparaît (fade + scale)
+      Animated.delay(180),
+
+      // 1 — Full mascot (head + body + ears) fades and scales in
       Animated.parallel([
-        Animated.timing(iconOpacity, { toValue: 1, duration: 360, easing: easeOut, useNativeDriver: true }),
-        Animated.timing(iconScale, { toValue: 1, duration: 420, easing: easeOut, useNativeDriver: true }),
+        Animated.timing(iconScale,   { toValue: 1, duration: 400, easing: out, useNativeDriver: true }),
+        Animated.timing(headOpacity, { toValue: 1, duration: 300, easing: out, useNativeDriver: true }),
+        Animated.timing(bodyOpacity, { toValue: 1, duration: 320, easing: out, useNativeDriver: true }),
+        Animated.timing(earOpacity,  { toValue: 1, duration: 340, easing: out, useNativeDriver: true }),
       ]),
-      Animated.delay(420),
-      // Phase 2a : icône zoome (visage remplit l'écran)
+
+      Animated.delay(500),
+
+      // 2 — Ears + body disappear; head rotates 90° then crossfades to B/O
       Animated.parallel([
-        Animated.timing(iconScale, { toValue: 3.6, duration: 420, easing: easeOut, useNativeDriver: true }),
-        Animated.timing(iconTranslateY, { toValue: -190, duration: 420, easing: easeOut, useNativeDriver: true }),
+        Animated.timing(earSlideY,   { toValue: -520, duration: 360, easing: inn, useNativeDriver: true }),
+        Animated.timing(earOpacity,  { toValue: 0,    duration: 240, easing: inn, useNativeDriver: true }),
+        Animated.timing(bodyOpacity, { toValue: 0,    duration: 280, easing: inn, useNativeDriver: true }),
+        Animated.timing(headRotate, { toValue: 1,    duration: 380, easing: out, useNativeDriver: true }),
+        Animated.sequence([
+          Animated.delay(180),
+          Animated.timing(headOpacity, { toValue: 0, duration: 220, easing: inn, useNativeDriver: true }),
+        ]),
+        Animated.sequence([
+          Animated.delay(180),
+          Animated.timing(boOpacity, { toValue: 1, duration: 240, easing: out, useNativeDriver: true }),
+        ]),
       ]),
-      // Phase 2b : icône sort par le haut, BANCO glisse depuis le bas
+
+      // 3+4 — B/O s'écartent ET A,N,C apparaissent en même temps (décalé de 100ms)
       Animated.parallel([
-        Animated.timing(iconTranslateY, { toValue: -660, duration: 380, easing: easeIn, useNativeDriver: true }),
-        Animated.timing(iconOpacity, { toValue: 0, duration: 260, easing: easeIn, useNativeDriver: true }),
-        Animated.timing(textOpacity, { toValue: 1, duration: 360, easing: easeOut, useNativeDriver: true }),
-        Animated.timing(textScale, { toValue: 1, duration: 380, easing: easeOut, useNativeDriver: true }),
-        Animated.timing(textTranslateY, { toValue: 0, duration: 380, easing: easeOut, useNativeDriver: true }),
+        Animated.timing(bX,         { toValue: LETTER_X[0], duration: 320, easing: out, useNativeDriver: true }),
+        Animated.timing(oX,         { toValue: LETTER_X[4], duration: 320, easing: out, useNativeDriver: true }),
+        Animated.timing(boLetterSc, { toValue: 1,           duration: 320, easing: out, useNativeDriver: true }),
+        Animated.sequence([
+          Animated.delay(100),
+          Animated.parallel([
+            Animated.timing(ancOpacity, { toValue: 1, duration: 240, easing: out, useNativeDriver: true }),
+            Animated.timing(ancY,       { toValue: 0, duration: 240, easing: out, useNativeDriver: true }),
+          ]),
+        ]),
       ]),
-      Animated.delay(520),
-      // Phase 3 : fondu vers fond crème (transition vers le home)
-      Animated.timing(creamOpacity, { toValue: 1, duration: 420, easing: easeOut, useNativeDriver: true }),
+
+      // 5 — Exponential zoom: letters fill screen
+      Animated.timing(bancoScale, {
+        toValue: 80,
+        duration: 380,
+        easing: Easing.in(Easing.cubic),
+        useNativeDriver: true,
+      }),
     ]).start(({ finished }) => {
       if (finished) onFinish();
     });
   }, []);
 
-  // Vue plein-écran centrée — width/height explicites pour garantir justifyContent: 'center'
+  const headRotateDeg = headRotate.interpolate({
+    inputRange:  [0, 1],
+    outputRange: ['0deg', '-90deg'],
+  });
+
+  // Explicit dimensions are required so justifyContent:'center' resolves
   const fullCenter = {
     position: 'absolute' as const,
     top: 0,
@@ -110,41 +212,115 @@ export function SplashScreenAnimator({ onFinish }: Props) {
 
   return (
     <View style={[styles.container, { width, height }]}>
+      {/* Blue background */}
       <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.purple }]} />
 
+      {/* Decorative cream pattern */}
       <View style={StyleSheet.absoluteFill} pointerEvents="none">
         <CreamPatternSvg width={width} height={height} opacity={0.05} fill="#ffffff" />
       </View>
 
-      <Animated.View
-        style={[StyleSheet.absoluteFill, { backgroundColor: colors.cream, opacity: creamOpacity }]}
-        pointerEvents="none"
-      />
-
+      {/* Left ear — slides up off screen */}
       <Animated.View
         style={[
           fullCenter,
-          {
-            opacity: iconOpacity,
-            transform: [{ scale: iconScale }, { translateY: iconTranslateY }],
-          },
+          { opacity: earOpacity, transform: [{ scale: iconScale }, { translateY: earSlideY }] },
         ]}
         pointerEvents="none"
       >
-        <LogoIcon />
+        <LeftEar />
       </Animated.View>
 
+      {/* Right ear — slides up off screen */}
+      <Animated.View
+        style={[
+          fullCenter,
+          { opacity: earOpacity, transform: [{ scale: iconScale }, { translateY: earSlideY }] },
+        ]}
+        pointerEvents="none"
+      >
+        <RightEar />
+      </Animated.View>
+
+      {/* Body — fades out when ears fly off */}
+      <Animated.View
+        style={[
+          fullCenter,
+          { opacity: bodyOpacity, transform: [{ scale: iconScale }] },
+        ]}
+        pointerEvents="none"
+      >
+        <IconBody />
+      </Animated.View>
+
+      {/* Head — rotates 90° then fades (crossfades to B/O) */}
       <Animated.View
         style={[
           fullCenter,
           {
-            opacity: textOpacity,
-            transform: [{ scale: textScale }, { translateY: textTranslateY }],
+            opacity: headOpacity,
+            transform: [{ scale: iconScale }, { rotate: headRotateDeg }],
           },
         ]}
         pointerEvents="none"
       >
-        <LogoText />
+        <IconHead />
+      </Animated.View>
+
+      {/* BANCO group — all letters share this container for the final zoom */}
+      <Animated.View
+        style={[fullCenter, { transform: [{ scale: bancoScale }] }]}
+        pointerEvents="none"
+      >
+        {/* B — appears near center, spreads left */}
+        <Animated.View
+          style={[
+            fullCenter,
+            { opacity: boOpacity, transform: [{ translateX: bX }, { scale: boLetterSc }] },
+          ]}
+        >
+          <Letter idx={0} />
+        </Animated.View>
+
+        {/* O — appears near center, spreads right */}
+        <Animated.View
+          style={[
+            fullCenter,
+            { opacity: boOpacity, transform: [{ translateX: oX }, { scale: boLetterSc }] },
+          ]}
+        >
+          <Letter idx={4} />
+        </Animated.View>
+
+        {/* A — slides up into gap */}
+        <Animated.View
+          style={[
+            fullCenter,
+            { opacity: ancOpacity, transform: [{ translateX: LETTER_X[1] }, { translateY: ancY }] },
+          ]}
+        >
+          <Letter idx={1} />
+        </Animated.View>
+
+        {/* N — slides up into center */}
+        <Animated.View
+          style={[
+            fullCenter,
+            { opacity: ancOpacity, transform: [{ translateX: LETTER_X[2] }, { translateY: ancY }] },
+          ]}
+        >
+          <Letter idx={2} />
+        </Animated.View>
+
+        {/* C — slides up into gap */}
+        <Animated.View
+          style={[
+            fullCenter,
+            { opacity: ancOpacity, transform: [{ translateX: LETTER_X[3] }, { translateY: ancY }] },
+          ]}
+        >
+          <Letter idx={3} />
+        </Animated.View>
       </Animated.View>
     </View>
   );
