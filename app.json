@@ -28,6 +28,9 @@
       "expo-router",
       "expo-font"
     ],
-    "backgroundColor": "#8E24D8"
+    "backgroundColor": "#266DE4",
+    "splash": {
+      "backgroundColor": "#266DE4"
+    }
   }
 }
