@@ -97,11 +97,24 @@ export function SplashScreenAnimator({ onFinish }: Props) {
     });
   }, []);
 
+  // Vue plein-écran centrée — width/height explicites pour garantir justifyContent: 'center'
+  const fullCenter = {
+    position: 'absolute' as const,
+    top: 0,
+    left: 0,
+    width,
+    height,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  };
+
   return (
     <View style={[styles.container, { width, height }]}>
       <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.purple }]} />
 
-      <CreamPatternSvg width={width} height={height} opacity={0.05} fill="#ffffff" />
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <CreamPatternSvg width={width} height={height} opacity={0.05} fill="#ffffff" />
+      </View>
 
       <Animated.View
         style={[StyleSheet.absoluteFill, { backgroundColor: colors.cream, opacity: creamOpacity }]}
@@ -110,7 +123,7 @@ export function SplashScreenAnimator({ onFinish }: Props) {
 
       <Animated.View
         style={[
-          styles.center,
+          fullCenter,
           {
             opacity: iconOpacity,
             transform: [{ scale: iconScale }, { translateY: iconTranslateY }],
@@ -123,7 +136,7 @@ export function SplashScreenAnimator({ onFinish }: Props) {
 
       <Animated.View
         style={[
-          styles.center,
+          fullCenter,
           {
             opacity: textOpacity,
             transform: [{ scale: textScale }, { translateY: textTranslateY }],
@@ -145,10 +158,5 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     elevation: 9999,
     overflow: 'hidden',
-  },
-  center: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
