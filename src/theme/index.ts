@@ -34,7 +34,7 @@ export const colors = {
 } as const;
 
 /** Couleurs proposées aux équipes, dans l'ordre d'attribution par défaut. */
-export const teamColors = ['#33FF5C', '#FB0ED4', '#FBD40E', '#27FBED'] as const;
+export const teamColors = ['#EFCC1A', '#1AEF84', '#32F1E4', '#EF1ACC'] as const;
 
 export const fonts = {
   // Titres et gros boutons : M PLUS Rounded 1c ExtraBold.

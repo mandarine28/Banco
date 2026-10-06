@@ -5,7 +5,7 @@ import { contract, currentQuestion, type GameState, isSuccess, opponent } from '
 import { colors, fonts } from '@/theme';
 
 // Même lookup que AuctionPhase / PlayPhase
-const BADGE_TEXT_COLOR: Record<string, string> = { '#FB0ED4': colors.cream };
+const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': colors.cream };
 
 type Props = {
   state: GameState;

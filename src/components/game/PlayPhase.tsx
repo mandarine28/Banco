@@ -6,7 +6,7 @@ import { normalize, searchAnswers, suggestions } from '@/game/answers';
 import { contract, currentQuestion, type GameState, TURN_SECONDS } from '@/game/engine';
 import { colors, fonts } from '@/theme';
 
-const BADGE_TEXT_COLOR: Record<string, string> = { '#FB0ED4': colors.cream };
+const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': colors.cream };
 const WARNING_SECONDS = 10;
 const THUMB_MIN_H = 28;
 

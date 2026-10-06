@@ -7,7 +7,7 @@ import { canPass, currentQuestion, type GameState, MAX_BID, minimumBid } from '@
 import { colors, fonts } from '@/theme';
 
 const BADGE_TEXT_COLOR: Record<string, string> = {
-  '#FB0ED4': colors.cream,
+  '#EF1ACC': colors.cream,
 };
 
 type Props = {
