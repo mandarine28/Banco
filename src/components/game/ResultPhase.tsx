@@ -16,9 +16,14 @@ type Props = {
 export function ResultPhase({ state, onNext, isLastRound }: Props) {
   const insets = useSafeAreaInsets();
   const question = currentQuestion(state);
-  const { team, amount } = contract(state);
+  const { amount } = contract(state);
   const success = isSuccess(state);
-  const winnerIdx = success ? team : opponent(state);
+  const adversaireIdx = opponent(state);
+
+  const getTeamDelta = (i: number): number => {
+    if (success) return state.auction.bids[i] ?? 0;
+    return i === adversaireIdx ? amount : 0;
+  };
 
   const subject = question.subject.charAt(0).toUpperCase() + question.subject.slice(1).toLowerCase();
 
@@ -55,19 +60,18 @@ export function ResultPhase({ state, onNext, isLastRound }: Props) {
       <View style={[styles.creamPanel, { paddingBottom: Math.max(insets.bottom + 30, 48) }]}>
         <View style={styles.teamsList}>
           {state.teams.map((t, i) => {
-            const isWinner = i === winnerIdx;
+            const delta = getTeamDelta(i);
             const badgeTextColor = BADGE_TEXT_COLOR[t.color] ?? colors.purpleDeep;
             return (
               <View key={t.name + String(i)} style={styles.teamRow}>
-                {/* Badge équipe — même style que AuctionPhase teamNameBadge */}
                 <View style={[styles.teamBadge, { backgroundColor: t.color }]}>
                   <Text style={[styles.teamBadgeText, { color: badgeTextColor }]} numberOfLines={1}>
                     {t.name}
                   </Text>
                 </View>
                 <View style={styles.scoreGroup}>
-                  {isWinner ? (
-                    <Text style={styles.scoreDelta}>+{amount}</Text>
+                  {delta > 0 ? (
+                    <Text style={styles.scoreDelta}>+{delta}</Text>
                   ) : null}
                   <Text style={styles.teamScore}>{state.scores[i]}</Text>
                 </View>

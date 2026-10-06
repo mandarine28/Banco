@@ -27,6 +27,8 @@ export type Auction = {
   /** Dernière équipe dépassée par la plus haute mise : c'est l'adversaire du tour. */
   outbid: number | null;
   passed: boolean[];
+  /** Dernière mise posée par chaque équipe (null = a passé sans enchérir). */
+  bids: (number | null)[];
 };
 
 export type GameState = {
@@ -79,7 +81,7 @@ export function planQuestions(questions: readonly Question[], roundCount: number
 
 /** L'enchère d'un round est ouverte par chaque équipe à tour de rôle. */
 function openAuction(teamCount: number, round: number): Auction {
-  return { current: round % teamCount, highest: null, outbid: null, passed: Array(teamCount).fill(false) };
+  return { current: round % teamCount, highest: null, outbid: null, passed: Array(teamCount).fill(false), bids: Array(teamCount).fill(null) };
 }
 
 export function createGame(
@@ -169,10 +171,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const amount = Math.min(MAX_BID, Math.max(minimumBid(state), Math.round(action.amount)));
       if (amount < minimumBid(state)) return state;
       const { auction } = state;
+      const bids = [...auction.bids];
+      bids[auction.current] = amount;
       return settle(state, {
         ...auction,
         highest: { team: auction.current, amount },
         outbid: auction.highest ? auction.highest.team : auction.outbid,
+        bids,
       });
     }
 
@@ -224,10 +229,20 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
   }
 }
 
-/** Réussite : l'équipe empoche sa mise. Échec : l'adversaire la récupère. */
+/**
+ * Réussite : chaque équipe ayant enchéri empoche sa propre mise.
+ * Échec : l'adversaire récupère la mise gagnante.
+ */
 function endTurn(state: GameState, reason: EndReason): GameState {
-  const { team, amount } = contract(state);
+  const { amount } = contract(state);
   const scores = [...state.scores];
-  scores[isSuccess(state) ? team : opponent(state)] += amount;
+  if (isSuccess(state)) {
+    for (let i = 0; i < state.teams.length; i++) {
+      const bid = state.auction.bids[i];
+      if (bid !== null) scores[i] += bid;
+    }
+  } else {
+    scores[opponent(state)] += amount;
+  }
   return { ...state, phase: 'result', scores, endReason: reason };
 }
