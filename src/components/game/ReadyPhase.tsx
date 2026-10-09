@@ -4,7 +4,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
+import { getSubject } from '@/game/answers';
 import { contract, currentQuestion, type GameState, opponent } from '@/game/engine';
+import { useLang } from '@/lib/LangContext';
+import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 
 const BADGE_TEXT_COLOR: Record<string, string> = {
@@ -53,10 +56,12 @@ type Props = {
 
 export function ReadyPhase({ state, onStart }: Props) {
   const insets = useSafeAreaInsets();
+  const { lang } = useLang();
+  const t = getT(lang);
   const { team, amount } = contract(state);
   const answering = state.teams[team];
   const holder = state.teams[opponent(state)];
-  const rawSubject = currentQuestion(state).subject;
+  const rawSubject = getSubject(currentQuestion(state), lang);
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
 
   const answeringTextColor = BADGE_TEXT_COLOR[answering.color] ?? colors.purpleDeep;
@@ -83,7 +88,7 @@ export function ReadyPhase({ state, onStart }: Props) {
       {/* Zone bleue — round + badge équipe + question + objectif */}
       <View style={styles.topContent}>
         <View style={styles.roundPill}>
-          <Text style={styles.roundLabel}>Round {state.round + 1}/{state.roundCount}</Text>
+          <Text style={styles.roundLabel}>{t.ready.round} {state.round + 1}/{state.roundCount}</Text>
         </View>
 
         <View style={[styles.teamBadge, { backgroundColor: answering.color }]}>
@@ -97,7 +102,7 @@ export function ReadyPhase({ state, onStart }: Props) {
         </View>
 
         <View style={styles.objectifSection}>
-          <Text style={styles.objectifLabel}>Objectif de réponses :</Text>
+          <Text style={styles.objectifLabel}>{t.ready.target}</Text>
           <View style={styles.amountBadge}>
             <Text style={styles.amountText}>{displayedAmount}</Text>
           </View>
@@ -117,7 +122,7 @@ export function ReadyPhase({ state, onStart }: Props) {
           end={{ x: 1, y: 0 }}
           style={styles.btnInner}
         >
-          <Text style={styles.btnText}>JOUER</Text>
+          <Text style={styles.btnText}>{t.ready.play}</Text>
         </LinearGradient>
       </Pressable>
 
@@ -130,7 +135,7 @@ export function ReadyPhase({ state, onStart }: Props) {
               {holder.name}
             </Text>
           </View>
-          <Text style={styles.infoText}>tient l'appareil</Text>
+          <Text style={styles.infoText}>{t.ready.holdsPhone}</Text>
         </View>
         <View style={styles.infoRow}>
           <ChatIcon />
@@ -139,7 +144,7 @@ export function ReadyPhase({ state, onStart }: Props) {
               {answering.name}
             </Text>
           </View>
-          <Text style={styles.infoText}>répond</Text>
+          <Text style={styles.infoText}>{t.ready.answers}</Text>
         </View>
       </View>
     </View>

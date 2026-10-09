@@ -32,6 +32,7 @@ export default function GameScreen() {
       key={gameId}
       teams={teams}
       roundCount={settings.roundCount}
+      selectedThemes={settings.selectedThemes}
       onReplay={() => setGameId((id) => id + 1)}
     />
   );
@@ -40,13 +41,16 @@ export default function GameScreen() {
 type GameProps = {
   teams: GameTeam[];
   roundCount: number;
+  selectedThemes: string[];
   onReplay: () => void;
 };
 
 type Confirm = 'quit' | 'skip' | null;
 
-function Game({ teams, roundCount, onReplay }: GameProps) {
-  const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, questions));
+function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
+  const filteredQuestions =
+    selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
+  const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, filteredQuestions));
   const [confirm, setConfirm] = useState<Confirm>(null);
   // 'search' → pause auto (recherche web), 'manual' → pause bouton, null → en cours
   const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);

@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import { normalize, searchAnswers, suggestions } from '@/game/answers';
+import { getSubject, localizedQuestion, normalize, searchAnswers, suggestions } from '@/game/answers';
 import { contract, currentQuestion, type GameState, TURN_SECONDS } from '@/game/engine';
+import { useLang } from '@/lib/LangContext';
+import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': colors.cream };
@@ -47,7 +49,10 @@ type Props = {
 };
 
 export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, onTogglePause, isPaused = false }: Props) {
+  const { lang } = useLang();
+  const t = getT(lang);
   const question = currentQuestion(state);
+  const locQuestion = localizedQuestion(question, lang);
   const { team: teamIdx } = contract(state);
   const team = state.teams[teamIdx];
   const [query, setQuery] = useState('');
@@ -95,12 +100,13 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
   const fillColor = isWarning ? colors.pink : '#fb940e';
 
   const teamBadgeTextColor = BADGE_TEXT_COLOR[team.color] ?? colors.purpleDeep;
-  const subject = question.subject.charAt(0).toUpperCase() + question.subject.slice(1).toLowerCase();
+  const rawSubject = getSubject(question, lang);
+  const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
 
   const searching = normalize(query).length > 0;
   // Mode compact : badge + question masqués quand clavier ouvert → libère de l'espace pour les chips
   const compact = searchFocused || searching;
-  const list = searching ? searchAnswers(question, query) : suggestions(question, state.found);
+  const list = searching ? searchAnswers(locQuestion, query) : suggestions(locQuestion, state.found);
 
   const handleToggle = (label: string) => {
     onToggle(label);
@@ -129,7 +135,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
           <Pressable
             onPress={onTogglePause}
             accessibilityRole="button"
-            accessibilityLabel={isPaused ? 'Reprendre' : 'Pause'}
+            accessibilityLabel={isPaused ? t.play.resume : t.play.pause}
             style={styles.pauseBtn}
           >
             <View pointerEvents="none">
@@ -147,7 +153,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
           <Pressable
             onPress={onSkip}
             accessibilityRole="button"
-            accessibilityLabel="Terminer le tour"
+            accessibilityLabel={t.play.endTurn}
             style={styles.skipBtn}
           >
             <SkipIcon />
@@ -176,7 +182,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
             value={query}
             onChangeText={setQuery}
             editable={!isPaused}
-            placeholder="Vérifier une réponse"
+            placeholder={t.play.searchPlaceholder}
             placeholderTextColor="rgba(254,246,215,0.5)"
             autoCorrect={false}
             autoCapitalize="words"
@@ -184,7 +190,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
             onSubmitEditing={searching ? handleWebSearch : undefined}
-            accessibilityLabel="Vérifier une réponse"
+            accessibilityLabel={t.play.searchPlaceholder}
             style={styles.searchInput}
           />
           {query ? (
@@ -196,13 +202,13 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
 
         {searching && list.length === 0 ? (
           <View style={styles.noResult}>
-            <Text style={styles.noResultText}>« {query.trim().toUpperCase()} » n'est pas dans la base.</Text>
+            <Text style={styles.noResultText}>{t.play.notInDatabase(query.trim().toUpperCase())}</Text>
             <View style={styles.noResultActions}>
               <Pressable onPress={() => { handleToggle(query.trim().toUpperCase()); inputRef.current?.blur(); Keyboard.dismiss(); showToast(); }} style={styles.actionBtn} accessibilityRole="button">
-                <Text style={styles.actionBtnText}>VALIDER QUAND MÊME</Text>
+                <Text style={styles.actionBtnText}>{t.play.validateAnyway}</Text>
               </Pressable>
               <Pressable onPress={handleWebSearch} style={[styles.actionBtn, styles.actionBtnAlt]} accessibilityRole="button">
-                <Text style={[styles.actionBtnText, styles.actionBtnTextAlt]}>CHERCHER EN LIGNE</Text>
+                <Text style={[styles.actionBtnText, styles.actionBtnTextAlt]}>{t.play.searchOnline}</Text>
               </Pressable>
             </View>
           </View>
@@ -213,10 +219,13 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
         style={[styles.toast, { opacity: toastOpacity, transform: [{ translateY: toastTranslateY }] }]}
         pointerEvents="none"
       >
-        <Text style={styles.toastText}>✓ Réponse ajoutée</Text>
+        <Text style={styles.toastText}>{t.play.answerAdded}</Text>
       </Animated.View>
 
       {/* ─── ZONE SCROLLABLE : chips + scrollbar dynamique ─── */}
+      {list.length > 0 && !searching ? (
+        <Text style={styles.someAnswersLabel}>{t.play.someAnswers}</Text>
+      ) : null}
       {list.length > 0 ? (
         <View style={styles.chipsArea}>
           {/* Scrollbar track + thumb dynamique */}
@@ -427,6 +436,12 @@ const styles = StyleSheet.create({
     fontFamily: fonts.displayMedium,
     fontSize: 14,
     color: colors.cream,
+  },
+  someAnswersLabel: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 16,
+    color: colors.cream,
+    marginBottom: 10,
   },
   // ── Zone chips ──
   chipsArea: {

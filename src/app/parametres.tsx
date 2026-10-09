@@ -6,6 +6,8 @@ import Svg, { Circle, Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
+import { useLang } from '@/lib/LangContext';
+import { getT } from '@/lib/i18n';
 import { useGameSettings } from '@/state/gameSettings';
 import { colors, fonts } from '@/theme';
 
@@ -109,6 +111,8 @@ export default function GameConfigScreen() {
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
   const { mode, setMode } = useGameSettings();
+  const { lang } = useLang();
+  const t = getT(lang);
 
   // Panneau bleu juste sous l'en-tête (flèche ~21px + offset 14px + marge 20px)
   const panelTop = insets.top + 68;
@@ -133,20 +137,20 @@ export default function GameConfigScreen() {
           >
             {/* Modes de jeux */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Modes de jeux</Text>
+              <Text style={styles.sectionTitle}>{t.gameMode.modesTitle}</Text>
               <View style={styles.modeRow}>
                 <ModeCard
-                  label="Classique"
+                  label={t.gameMode.classic}
                   selected={mode === 'classique'}
                   onPress={() => setMode('classique')}
                 />
-                <ModeCard label="Mimes" locked onPress={() => {}} />
+                <ModeCard label={t.gameMode.charades} locked onPress={() => {}} />
               </View>
             </View>
 
             {/* Pack de questions */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Pack de questions</Text>
+              <Text style={styles.sectionTitle}>{t.gameMode.packsTitle}</Text>
               <View style={styles.packList}>
                 <PackRow label="Classique" price="0,99€" onPress={() => {}} />
                 <PackRow label="Disney" price="0,99€" onPress={() => {}} />
@@ -157,7 +161,7 @@ export default function GameConfigScreen() {
             <Pressable
               onPress={() => router.push('/parametres-partie')}
               accessibilityRole="button"
-              accessibilityLabel="Continuer"
+              accessibilityLabel={t.gameMode.continueBtn}
             >
               <LinearGradient
                 colors={['#fb940e', '#f2c512']}
@@ -165,7 +169,7 @@ export default function GameConfigScreen() {
                 end={{ x: 1, y: 0 }}
                 style={styles.btnContinuer}
               >
-                <Text style={styles.btnContinuerText}>Continuer</Text>
+                <Text style={styles.btnContinuerText}>{t.gameMode.continueBtn}</Text>
               </LinearGradient>
             </Pressable>
           </ScrollView>

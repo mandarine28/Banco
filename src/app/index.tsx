@@ -7,6 +7,8 @@ import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { Logo } from '@/components/Logo';
+import { useLang } from '@/lib/LangContext';
+import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 
 const MAX_WIDTH = 500;
@@ -27,6 +29,8 @@ export default function HomeScreen() {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
+  const { lang } = useLang();
+  const t = getT(lang);
 
   // Logo BANCO paysage 324 × 84
   const logoWidth = Math.min(width * 0.78, 310);
@@ -58,30 +62,30 @@ export default function HomeScreen() {
             <Pressable
               onPress={go('/parametres')}
               accessibilityRole="button"
-              accessibilityLabel="Jouer"
+              accessibilityLabel={t.home.play}
               style={styles.btnJouer}
             >
-              <Text style={[styles.btnText, { color: colors.purpleDeep }]}>Jouer</Text>
+              <Text style={[styles.btnText, { color: colors.purpleDeep }]}>{t.home.play}</Text>
             </Pressable>
 
             {/* Boutique — fond orange, texte crème */}
             <Pressable
               onPress={go('/boutique')}
               accessibilityRole="button"
-              accessibilityLabel="Boutique"
+              accessibilityLabel={t.home.shop}
               style={styles.btnBoutique}
             >
-              <Text style={[styles.btnText, { color: colors.cream }]}>Boutique</Text>
+              <Text style={[styles.btnText, { color: colors.cream }]}>{t.home.shop}</Text>
             </Pressable>
 
             {/* Règle — contour blanc, texte crème */}
             <Pressable
               onPress={go('/regles')}
               accessibilityRole="button"
-              accessibilityLabel="Règle"
+              accessibilityLabel={t.home.rules}
               style={styles.btnRegle}
             >
-              <Text style={[styles.btnText, { color: colors.cream }]}>Règle</Text>
+              <Text style={[styles.btnText, { color: colors.cream }]}>{t.home.rules}</Text>
             </Pressable>
           </View>
         </View>
@@ -106,7 +110,7 @@ export default function HomeScreen() {
 
         {/* Sous-titre */}
         <Text style={[styles.subtitle, { top: subtitleTop }]}>
-          C'est partie pour Banco !
+          {t.home.subtitle}
         </Text>
 
       </View>

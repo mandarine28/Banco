@@ -3,7 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { getSubject } from '@/game/answers';
 import { canPass, currentQuestion, type GameState, MAX_BID, minimumBid } from '@/game/engine';
+import { useLang } from '@/lib/LangContext';
+import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 
 const BADGE_TEXT_COLOR: Record<string, string> = {
@@ -18,6 +21,8 @@ type Props = {
 
 export function AuctionPhase({ state, onBid, onPass }: Props) {
   const insets = useSafeAreaInsets();
+  const { lang } = useLang();
+  const t = getT(lang);
   const { auction } = state;
   const bidder = state.teams[auction.current];
   const min = minimumBid(state);
@@ -25,7 +30,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
   const parsed = parseInt(bidText, 10);
   const amount = isNaN(parsed) ? min : Math.max(Math.min(parsed, MAX_BID), min);
   const passAllowed = canPass(state);
-  const rawSubject = currentQuestion(state).subject;
+  const rawSubject = getSubject(currentQuestion(state), lang);
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
 
   // Ref synchronisé à chaque render pour les callbacks d'interval
@@ -122,9 +127,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
           <Text style={styles.questionText}>{subject}</Text>
         </View>
 
-        <Text style={styles.instruction}>
-          Combien de réponses pouvez-vous citer en 60 secondes ?
-        </Text>
+        <Text style={styles.instruction}>{t.auction.instruction}</Text>
       </View>
 
       {/* Panel crème — qui ouvre + stepper + boutons */}
@@ -137,7 +140,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
           ]}
           pointerEvents="none"
         >
-          <Text style={styles.toastText}>Maximum : {MAX_BID}</Text>
+          <Text style={styles.toastText}>{t.auction.max(MAX_BID)}</Text>
         </Animated.View>
 
         <View style={styles.opensRow}>
@@ -150,7 +153,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
             </Text>
           </View>
           <Text style={styles.opensText}>
-            {auction.highest ? 'surenchérit ou passe' : 'ouvre les enchères'}
+            {auction.highest ? t.auction.raises : t.auction.opens}
           </Text>
         </View>
 
@@ -201,7 +204,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
               end={{ x: 1, y: 0 }}
               style={styles.btnInner}
             >
-              <Text style={styles.btnMiserText}>MISER {amount}</Text>
+              <Text style={styles.btnMiserText}>{t.auction.bid} {amount}</Text>
             </LinearGradient>
           </Pressable>
 
@@ -213,7 +216,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
             pointerEvents={passAllowed ? 'auto' : 'none'}
           >
             <View style={styles.btnPasserInner}>
-              <Text style={styles.btnPasserText}>PASSER</Text>
+              <Text style={styles.btnPasserText}>{t.auction.pass}</Text>
             </View>
           </Pressable>
         </View>

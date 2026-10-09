@@ -13,13 +13,13 @@ import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
+import { useLang } from '@/lib/LangContext';
+import { getT } from '@/lib/i18n';
 import { type Team, useGameSettings } from '@/state/gameSettings';
 import { colors, fonts, teamColors } from '@/theme';
 
 const MAX_WIDTH = 500;
 const NAME_MAX_LENGTH = 16;
-
-const defaultName = (i: number) => `Équipe ${i + 1}`;
 
 const TAKEN_COLORS: Record<string, string> = {
   '#33FF5C': '#45A157',
@@ -71,6 +71,9 @@ export default function TeamSetupScreen() {
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
   const { teamCount, teams: savedTeams, setTeams } = useGameSettings();
+  const { lang } = useLang();
+  const t = getT(lang);
+  const defaultName = t.teams.defaultName;
 
   const [index, setIndex] = useState(0);
   const [drafts, setDrafts] = useState<Team[]>(() =>
@@ -94,7 +97,7 @@ export default function TeamSetupScreen() {
       setName(updated[index + 1]?.name ?? '');
       setIndex(index + 1);
     } else {
-      setTeams(updated.slice(0, teamCount).map((t, i) => ({ ...t, name: t.name || defaultName(i) })));
+      setTeams(updated.slice(0, teamCount).map((team, i) => ({ ...team, name: team.name || defaultName(i) })));
       router.push('/partie');
     }
   };
@@ -128,14 +131,14 @@ export default function TeamSetupScreen() {
               <View style={styles.topSection}>
                 {/* Titre + compteur */}
                 <View style={styles.titleRow}>
-                  <Text style={styles.sectionTitle}>Création des squads</Text>
+                  <Text style={styles.sectionTitle}>{t.teams.setupTitle}</Text>
                   <Text style={styles.counter}>{index + 1}/{teamCount}</Text>
                 </View>
 
                 <View style={styles.sections}>
                   {/* Sélecteur de couleur */}
                   <View style={styles.subsection}>
-                    <Text style={styles.label}>Choisissez la couleur de l'équipe</Text>
+                    <Text style={styles.label}>{t.teams.chooseColor}</Text>
                     <View style={styles.colorRow}>
                       {teamColors.map((color) => {
                         const isSelected = color === selectedColor;
@@ -167,18 +170,18 @@ export default function TeamSetupScreen() {
 
                   {/* Nom de l'équipe */}
                   <View style={styles.subsection}>
-                    <Text style={styles.label}>Choisissez le nom de l'équipe</Text>
+                    <Text style={styles.label}>{t.teams.chooseName}</Text>
                     <TextInput
                       value={name}
                       onChangeText={setName}
-                      placeholder={`Nom de l'équipe ${index + 1}`}
+                      placeholder={t.teams.namePlaceholder(index + 1)}
                       placeholderTextColor="rgba(254,246,215,0.5)"
                       maxLength={NAME_MAX_LENGTH}
                       autoCapitalize="words"
                       autoCorrect={false}
                       returnKeyType="done"
                       onSubmitEditing={saveAndContinue}
-                      accessibilityLabel={`Nom de l'équipe ${index + 1}`}
+                      accessibilityLabel={t.teams.namePlaceholder(index + 1)}
                       style={styles.teamInput}
                     />
                   </View>
@@ -191,7 +194,7 @@ export default function TeamSetupScreen() {
                   const isPast = i < index;
                   const isFuture = i > index;
                   const dotColor = isPast ? (drafts[i]?.color ?? teamColors[i]) : selectedColor;
-                  const label = isPast ? (drafts[i]?.name || defaultName(i)) : 'En cours...';
+                  const label = isPast ? (drafts[i]?.name || defaultName(i)) : t.teams.inProgress;
                   return (
                     <View key={i} style={[styles.progressItem, isFuture && styles.hidden]}>
                       <View style={[styles.progressDot, { backgroundColor: dotColor }]} />
@@ -206,10 +209,10 @@ export default function TeamSetupScreen() {
             <Pressable
               onPress={saveAndContinue}
               accessibilityRole="button"
-              accessibilityLabel="Suivant"
+              accessibilityLabel={t.teams.nextBtn}
             >
               <View style={styles.btnSuivant}>
-                <Text style={styles.btnSuivantText}>Suivant</Text>
+                <Text style={styles.btnSuivantText}>{t.teams.nextBtn}</Text>
               </View>
             </Pressable>
           </View>

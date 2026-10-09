@@ -1,7 +1,20 @@
+import type { Lang } from '../lib/i18n';
 import type { Question } from '../data/types';
 
-/** Nombre de réponses proposées en boutons sans recherche (3 colonnes x 9 lignes). */
-export const SUGGESTION_COUNT = 27;
+/** Retourne la banque de réponses adaptée à la langue (fallback FR). */
+export function getAnswers(question: Question, lang: Lang): string[] {
+  return question.answersByLang?.[lang] ?? question.answers;
+}
+
+/** Retourne le sujet traduit dans la langue cible (fallback FR). */
+export function getSubject(question: Question, lang: Lang): string {
+  return question.subjectByLang?.[lang] ?? question.subject;
+}
+
+/** Retourne une copie de la question avec les réponses de la langue cible comme banque principale. */
+export function localizedQuestion(question: Question, lang: Lang): Question {
+  return { ...question, answers: getAnswers(question, lang) };
+}
 
 /** Forme comparable d'un texte : minuscules, sans accents, sans espaces ni ponctuation. */
 export function normalize(text: string): string {
@@ -12,11 +25,10 @@ export function normalize(text: string): string {
     .replace(/[^a-z0-9]/g, '');
 }
 
-/** Boutons affichés sans recherche : les réponses les plus citées, plus celles déjà validées ailleurs. */
-export function suggestions(question: Question, found: readonly string[], count = SUGGESTION_COUNT): string[] {
-  const top = question.answers.slice(0, count);
-  const extra = found.filter((label) => !top.includes(label));
-  return [...top, ...extra];
+/** Boutons affichés sans recherche : toutes les réponses, plus celles déjà validées ailleurs. */
+export function suggestions(question: Question, found: readonly string[]): string[] {
+  const extra = found.filter((label) => !question.answers.includes(label));
+  return [...question.answers, ...extra];
 }
 
 /** Réponses de la base contenant la saisie (accents, casse et ponctuation ignorés). */

@@ -1,5 +1,9 @@
 import { ComingSoon } from '@/components/ComingSoon';
+import { useLang } from '@/lib/LangContext';
+import { getT } from '@/lib/i18n';
 
 export default function Screen() {
-  return <ComingSoon title="Infos" />;
+  const { lang } = useLang();
+  const t = getT(lang);
+  return <ComingSoon title={t.pages.info} />;
 }

@@ -2,12 +2,13 @@ import { useRef, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { FlagIcon } from '@/components/FlagIcon';
+import { useLang } from '@/lib/LangContext';
 import { LANGUAGES } from '@/lib/i18n';
 import type { Lang } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 
 export function LanguagePicker() {
-  const [lang, setLang] = useState<Lang>('fr');
+  const { lang, setLang } = useLang();
   const [open, setOpen] = useState(false);
   const [dropdownTop, setDropdownTop] = useState(0);
   const [dropdownLeft, setDropdownLeft] = useState(0);
@@ -15,9 +16,9 @@ export function LanguagePicker() {
 
   const handleToggle = () => {
     if (open) { setOpen(false); return; }
-    wrapRef.current?.measure((_fx, _fy, _w, height, px, py) => {
-      setDropdownTop(py + height + 6);
-      setDropdownLeft(px);
+    wrapRef.current?.measureInWindow((x, y, _w, height) => {
+      setDropdownTop(y + height + 6);
+      setDropdownLeft(x);
       setOpen(true);
     });
   };

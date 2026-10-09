@@ -15,6 +15,7 @@ export type GameSettings = {
   teamCount: number;
   roundCount: number;
   teams: Team[];
+  selectedThemes: string[];
 };
 
 type GameSettingsContextValue = GameSettings & {
@@ -22,6 +23,7 @@ type GameSettingsContextValue = GameSettings & {
   setTeamCount: (count: number) => void;
   setRoundCount: (count: number) => void;
   setTeams: (teams: Team[]) => void;
+  setSelectedThemes: (themes: string[]) => void;
 };
 
 const defaults: GameSettings = {
@@ -29,6 +31,7 @@ const defaults: GameSettings = {
   teamCount: 2,
   roundCount: 5,
   teams: [],
+  selectedThemes: [],
 };
 
 const clamp = (value: number, { min, max }: { min: number; max: number }) => Math.min(max, Math.max(min, value));
@@ -45,6 +48,7 @@ export function GameSettingsProvider({ children }: { children: ReactNode }) {
       setTeamCount: (count) => setSettings((s) => ({ ...s, teamCount: clamp(count, TEAM_LIMITS) })),
       setRoundCount: (count) => setSettings((s) => ({ ...s, roundCount: clamp(count, ROUND_LIMITS) })),
       setTeams: (teams) => setSettings((s) => ({ ...s, teams })),
+      setSelectedThemes: (selectedThemes) => setSettings((s) => ({ ...s, selectedThemes })),
     }),
     [settings],
   );

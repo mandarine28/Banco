@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import { questions } from '../data/questions.ts';
-import { normalize, searchAnswers, suggestions, SUGGESTION_COUNT } from './answers.ts';
+import { normalize, searchAnswers, suggestions } from './answers.ts';
 import {
   canPass,
   contract,
@@ -39,10 +39,10 @@ const play = (state: GameState, ...actions: GameAction[]) => actions.reduce(game
 const find = (count: number): GameAction[] =>
   Array.from({ length: count }, (_, i) => ({ type: 'TOGGLE_ANSWER', label: `RÉPONSE ${i}` }));
 
-test('chaque question a au moins 27 réponses (plus que la mise max), sans doublon', () => {
+test('chaque question a suffisamment de réponses (plus que la mise max), sans doublon', () => {
   for (const q of questions) {
     assert.ok(q.theme && q.subject && !/^CITEZ/i.test(q.subject), q.id);
-    assert.ok(q.answers.length >= Math.max(SUGGESTION_COUNT, MAX_BID), `${q.id} : ${q.answers.length} réponses`);
+    assert.ok(q.answers.length >= MAX_BID, `${q.id} : ${q.answers.length} réponses`);
     const keys = q.answers.map(normalize);
     const dupes = keys.filter((k, i) => keys.indexOf(k) !== i);
     assert.deepEqual(dupes, [], `${q.id} : doublons`);
@@ -51,22 +51,22 @@ test('chaque question a au moins 27 réponses (plus que la mise max), sans doubl
 });
 
 test('la recherche ignore accents, casse et ponctuation, préfixes en premier', () => {
-  const heroes = questions.find((q) => q.id === 'super-heros')!;
-  assert.deepEqual(searchAnswers(heroes, 'spiderman'), ['SPIDER-MAN']);
-  assert.ok(searchAnswers(heroes, 'man').includes('BATMAN'));
-  assert.deepEqual(searchAnswers(heroes, '   '), []);
-  const cheese = questions.find((q) => q.id === 'fromages')!;
-  assert.deepEqual(searchAnswers(cheese, 'epoisses'), ['ÉPOISSES']);
-  assert.equal(searchAnswers(cheese, 'co')[0], 'COMTÉ');
+  const autos = questions.find((q) => q.id === 'marques-autos')!;
+  assert.deepEqual(searchAnswers(autos, 'citroen'), ['CITROËN']);
+  assert.equal(searchAnswers(autos, 'au')[0], 'AUDI');
+  assert.deepEqual(searchAnswers(autos, '   '), []);
+  const alcool = questions.find((q) => q.id === 'marques-alcool')!;
+  assert.ok(searchAnswers(alcool, 'ja').includes('JAMESON'));
+  assert.equal(searchAnswers(alcool, 'hei')[0], 'HEINEKEN');
 });
 
-test('les boutons gardent visibles les réponses validées hors du top', () => {
+test('les boutons affichent toutes les réponses + les saisies libres validées', () => {
   const q = questions[0];
-  const deep = q.answers[q.answers.length - 1];
-  const list = suggestions(q, [deep, 'SAISIE LIBRE']);
-  assert.equal(list.length, SUGGESTION_COUNT + 2);
-  assert.ok(list.includes(deep) && list.includes('SAISIE LIBRE'));
-  assert.equal(suggestions(q, [q.answers[0]]).length, SUGGESTION_COUNT);
+  const last = q.answers[q.answers.length - 1];
+  const list = suggestions(q, [last, 'SAISIE LIBRE']);
+  assert.equal(list.length, q.answers.length + 1); // SAISIE LIBRE ajoutée ; last déjà dans la liste
+  assert.ok(list.includes(last) && list.includes('SAISIE LIBRE'));
+  assert.equal(suggestions(q, [q.answers[0]]).length, q.answers.length); // pas de doublon
 });
 
 test('compteur manuel : décompte depuis la mise, sans dépasser la mise', () => {

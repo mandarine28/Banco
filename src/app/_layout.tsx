@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 
 import { SplashScreenAnimator } from '@/components/SplashScreenAnimator';
+import { LangProvider } from '@/lib/LangContext';
 import { GameSettingsProvider } from '@/state/gameSettings';
 import { colors } from '@/theme';
 
@@ -27,10 +28,12 @@ export default function RootLayout() {
   return (
     <View style={{ flex: 1 }}>
       {fontsLoaded ? (
-        <GameSettingsProvider>
-          <StatusBar style="dark" />
-          <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
-        </GameSettingsProvider>
+        <LangProvider>
+          <GameSettingsProvider>
+            <StatusBar style="dark" />
+            <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
+          </GameSettingsProvider>
+        </LangProvider>
       ) : (
         <View style={{ flex: 1, backgroundColor: colors.purple }} />
       )}
