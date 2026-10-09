@@ -227,7 +227,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
             </Pressable>
           ) : (
             <Pressable
-              onPress={() => onWebSearch('')}
+              onPress={() => onWebSearch(question.subject)}
               hitSlop={8}
               accessibilityRole="button"
               accessibilityLabel={t.play.searchOnline}

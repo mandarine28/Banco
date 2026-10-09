@@ -10,9 +10,7 @@ import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 
-const BADGE_TEXT_COLOR: Record<string, string> = {
-  '#FB0ED4': colors.cream,
-};
+const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
 function PhoneIcon({ color = colors.purpleDeep }: { color?: string }) {
   return (
