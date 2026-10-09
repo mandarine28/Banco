@@ -23,6 +23,33 @@ const PAUSE_PATH =
 const PLAY_PATH =
   'M23.9911 1.28571C23.9911 0.944722 23.8557 0.617695 23.6145 0.376577C23.3734 0.135459 23.0464 0 22.7054 0C22.3644 0 22.0374 0.135459 21.7963 0.376577C21.5551 0.617695 21.4197 0.944722 21.4197 1.28571V18.4286C21.4197 18.7696 21.5551 19.0966 21.7963 19.3377C22.0374 19.5788 22.3644 19.7143 22.7054 19.7143C23.0464 19.7143 23.3734 19.5788 23.6145 19.3377C23.8557 19.0966 23.9911 18.7696 23.9911 18.4286V1.28571ZM16.6265 8.04857C17.8094 8.964 17.8094 10.7503 16.6265 11.6657C12.9614 14.5019 8.86859 16.7372 4.5014 18.288L3.70254 18.5726C2.21112 19.1006 0.633973 18.0926 0.433402 16.5531C-0.144467 12.1078 -0.144467 7.60644 0.433402 3.16114C0.635688 1.62171 2.21112 0.613714 3.70254 1.14343L4.5014 1.42629C8.86859 2.97704 12.9614 5.21238 16.6265 8.04857Z';
 
+function SearchOnlineIcon() {
+  return (
+    <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
+      <Path
+        d="M1.5 12C1.5 14.7848 2.60625 17.4555 4.57538 19.4246C6.54451 21.3938 9.21523 22.5 12 22.5C14.7848 22.5 17.4555 21.3938 19.4246 19.4246C21.3938 17.4555 22.5 14.7848 22.5 12C22.5 9.21523 21.3938 6.54451 19.4246 4.57538C17.4555 2.60625 14.7848 1.5 12 1.5C9.21523 1.5 6.54451 2.60625 4.57538 4.57538C2.60625 6.54451 1.5 9.21523 1.5 12Z"
+        fill="rgba(254,246,215,0.18)"
+        stroke={colors.cream}
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M8.81819 4.57549C8.81819 4.57549 8.00009 9.33546 8.00009 12.1202C8.00009 14.905 7.97428 17.4556 8.81819 19.4247C9.66211 21.3939 10.8065 22.1202 12 22.1202C13.1935 22.1202 13.6562 21.3939 14.5001 19.4247C15.344 17.4556 16.0002 14.7849 16.0002 12.0001C16.0002 9.21534 16.129 7.34104 15.285 5.37191C14.4411 3.40278 13.2965 1.75179 12.1031 1.75179C10.9096 1.75179 8.81819 4.57549 8.81819 4.57549Z"
+        stroke={colors.cream}
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M2.5 15.5H21.5M2.5 8.5H21.5"
+        stroke={colors.cream}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
 function SkipIcon() {
   return (
     <Svg width={30} height={16} viewBox="0 0 38 20">
@@ -112,7 +139,8 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
     onToggle(label);
     if (searching) setQuery('');
   };
-  const handleWebSearch = () => onWebSearch(`${query.trim()} ${question.subject}`);
+  const handleWebSearch = () =>
+    onWebSearch(query.trim() ? `${query.trim()} ${question.subject}` : question.subject);
 
   // Calcul de la scrollbar dynamique
   const isScrollable = chipsContentH > chipsContainerH + 4;
@@ -197,7 +225,16 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
             <Pressable onPress={() => setQuery('')} hitSlop={8} accessibilityRole="button" accessibilityLabel="Effacer">
               <Text style={styles.clearBtn}>✕</Text>
             </Pressable>
-          ) : null}
+          ) : (
+            <Pressable
+              onPress={handleWebSearch}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel={t.play.searchOnline}
+            >
+              <SearchOnlineIcon />
+            </Pressable>
+          )}
         </View>
 
         {searching && list.length === 0 ? (
