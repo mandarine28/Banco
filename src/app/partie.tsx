@@ -73,7 +73,10 @@ function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
     setPauseSource('search');
     // isPaused=true → PlayPhase blur son TextInput immédiatement, avant que le
     // navigateur s'ouvre. Quand le navigateur se ferme, le champ est déjà blurred.
-    WebBrowser.openBrowserAsync(`https://www.google.com/search?q=${encodeURIComponent(query)}`).catch(() => {});
+    const url = query.trim()
+      ? `https://www.google.com/search?q=${encodeURIComponent(query)}`
+      : 'https://www.google.com';
+    WebBrowser.openBrowserAsync(url).catch(() => {});
   };
   // Bandeau : l'équipe qui enchérit, puis celle qui a remporté l'enchère.
   const bannerTeam =
