@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { type GameState, ranking } from '@/game/engine';
 import { colors, fonts } from '@/theme';
 
-const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': colors.cream };
+const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
 type Props = {
   state: GameState;

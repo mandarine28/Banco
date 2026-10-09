@@ -8,7 +8,7 @@ import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 
-const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': colors.cream };
+const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 const WARNING_SECONDS = 10;
 const THUMB_MIN_H = 28;
 

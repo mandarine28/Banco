@@ -9,7 +9,7 @@ import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 
 // Même lookup que AuctionPhase / PlayPhase
-const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': colors.cream };
+const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
 type Props = {
   state: GameState;
