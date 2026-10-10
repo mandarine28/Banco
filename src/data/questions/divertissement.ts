@@ -91,8 +91,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-jeux-societe',
     theme: 'divertissement',
-    subject: 'JEUX DE SOCIÉTÉ CULTES OU MODERNES INCONTOURNABLES',
-    subjectByLang: { en: 'CLASSIC OR MODERN MUST-PLAY BOARD GAMES', de: 'KLASSISCHE ODER MODERNE GESELLSCHAFTSSPIELE', es: 'JUEGOS DE MESA CLÁSICOS O MODERNOS IMPRESCINDIBLES' },
+    subject: 'JEUX DE SOCIÉTÉ INCONTOURNABLES',
+    subjectByLang: { en: 'MUST-PLAY BOARD GAMES', de: 'UNVERZICHTBARE GESELLSCHAFTSSPIELE', es: 'JUEGOS DE MESA IMPRESCINDIBLES' },
     answers: [
       'MONOPOLY', 'SCRABBLE', 'UNO', 'TRIVIAL PURSUIT', 'RISK', 'CLUEDO',
       'DOBBLE', 'JUNGLE SPEED', '7 WONDERS', 'CATAN', 'DIXIT', 'CODENAMES',
@@ -327,8 +327,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-mechants',
     theme: 'divertissement',
-    subject: 'MÉCHANTS ICONIQUES DE FILMS, SÉRIES OU JEUX VIDÉO',
-    subjectByLang: { en: 'ICONIC VILLAINS FROM FILMS, SERIES OR VIDEO GAMES', de: 'IKONISCHE BÖSEWICHTE AUS FILMEN, SERIEN ODER VIDEOSPIELEN', es: 'VILLANOS ICÓNICOS DE PELÍCULAS, SERIES O VIDEOJUEGOS' },
+    subject: 'MÉCHANTS ICONIQUES : FILMS / SÉRIES / JEUX VIDÉO',
+    subjectByLang: { en: 'ICONIC VILLAINS: FILMS / SERIES / VIDEO GAMES', de: 'IKONISCHE BÖSEWICHTE: FILME / SERIEN / SPIELE', es: 'VILLANOS ICÓNICOS: PELÍCULAS / SERIES / JUEGOS' },
     answers: [
       'DARK VADOR', 'JOKER', 'THANOS', 'VOLDEMORT', 'HANNIBAL LECTER',
       'SAURON', 'MALÉFIQUE', 'CRUELLA', 'FREDDY KRUEGER', 'JASON VOORHEES',
@@ -375,8 +375,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-animes',
     theme: 'divertissement',
-    subject: 'ANIMÉS OU MANGAS JAPONAIS EXTRÊMEMENT POPULAIRES',
-    subjectByLang: { en: 'EXTREMELY POPULAR JAPANESE ANIME OR MANGA', de: 'EXTREM POPULÄRE JAPANISCHE ANIME ODER MANGA', es: 'ANIMES O MANGAS JAPONESES EXTREMADAMENTE POPULARES' },
+    subject: 'ANIMÉS / MANGAS JAPONAIS POPULAIRES',
+    subjectByLang: { en: 'POPULAR JAPANESE ANIME / MANGA', de: 'BELIEBTE JAPANISCHE ANIME / MANGA', es: 'ANIMES / MANGAS JAPONESES POPULARES' },
     answers: [
       'DRAGON BALL Z', 'NARUTO', 'ONE PIECE', 'ATTACK ON TITAN', 'DEMON SLAYER',
       'MY HERO ACADEMIA', 'DEATH NOTE', 'FULLMETAL ALCHEMIST', 'HUNTER X HUNTER',
@@ -424,8 +424,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-influenceurs',
     theme: 'divertissement',
-    subject: 'INFLUENCEURS, YOUTUBEURS OU CRÉATEURS DE CONTENUS',
-    subjectByLang: { en: 'INFLUENCERS, YOUTUBERS OR CONTENT CREATORS', de: 'INFLUENCER, YOUTUBER ODER CONTENT CREATOR', es: 'INFLUENCERS, YOUTUBERS O CREADORES DE CONTENIDO' },
+    subject: 'INFLUENCEURS / YOUTUBEURS / CRÉATEURS',
+    subjectByLang: { en: 'INFLUENCERS / YOUTUBERS / CREATORS', de: 'INFLUENCER / YOUTUBER / CREATOR', es: 'INFLUENCERS / YOUTUBERS / CREADORES' },
     answers: [
       'SQUEEZIE', 'MCFLY ET CARLITO', 'TIBO INSHAPE', 'NORMAN', 'CYPRIEN',
       'NATOO', 'INOXTAG', 'LÉNA SITUATIONS', 'ENJOY PHOENIX', 'DOMINGO',
@@ -518,8 +518,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-sports-extremes',
     theme: 'divertissement',
-    subject: 'SPORTS EXTRÊMES OU LOISIRS À SENSATIONS FORTES',
-    subjectByLang: { en: 'EXTREME SPORTS OR THRILL-SEEKING ACTIVITIES', de: 'EXTREMSPORTARTEN ODER ADRENALINERLEBNISSE', es: 'DEPORTES EXTREMOS O ACTIVIDADES DE SENSACIONES FUERTES' },
+    subject: 'SPORTS EXTRÊMES / SENSATIONS FORTES',
+    subjectByLang: { en: 'EXTREME SPORTS / THRILL ACTIVITIES', de: 'EXTREMSPORT / ADRENALINERLEBNISSE', es: 'DEPORTES EXTREMOS / SENSACIONES FUERTES' },
     answers: [
       'PARACHUTISME', 'PARAPENTE', 'BUNGEE JUMPING', 'BASE JUMP', 'SURF',
       'SKATEBOARD', 'BMX', 'MOTO CROSS', 'SKI EXTRÊME', 'SNOWBOARD',
@@ -608,8 +608,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-sports-plein-air',
     theme: 'divertissement',
-    subject: 'SPORTS DE PLEIN AIR OU LOISIRS DE GLISSE URBAINE',
-    subjectByLang: { en: 'OUTDOOR SPORTS OR URBAN GLIDING ACTIVITIES', de: 'OUTDOOR-SPORT ODER URBANE GLEITAKTIVITÄTEN', es: 'DEPORTES AL AIRE LIBRE O DEPORTES URBANOS DE DESLIZAMIENTO' },
+    subject: 'SPORTS PLEIN AIR / GLISSE URBAINE',
+    subjectByLang: { en: 'OUTDOOR SPORTS / URBAN GLIDING', de: 'OUTDOOR-SPORT / URBANE GLEITAKTIVITÄTEN', es: 'DEPORTES AL AIRE LIBRE / DESLIZAMIENTO URBANO' },
     answers: [
       'SKATE', 'TROTTINETTE FREESTYLE', 'ROLLER', 'BMX', 'VTT',
       'TRAIL', 'RANDONNÉE', 'PARKOUR', 'LONGBOARD', 'SURF',
@@ -742,8 +742,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-monstres',
     theme: 'divertissement',
-    subject: 'MONSTRES SACRÉS OU CRÉATURES MYTHIQUES DE LA POP CULTURE',
-    subjectByLang: { en: 'ICONIC MONSTERS OR MYTHICAL CREATURES FROM POP CULTURE', de: 'IKONISCHE MONSTER ODER MYTHISCHE KREATUREN AUS DER POPKULTUR', es: 'MONSTRUOS ICÓNICOS O CRIATURAS MÍTICAS DE LA POP CULTURE' },
+    subject: 'CRÉATURES MYTHIQUES DE LA POP CULTURE',
+    subjectByLang: { en: 'MYTHICAL CREATURES FROM POP CULTURE', de: 'MYTHISCHE KREATUREN DER POPKULTUR', es: 'CRIATURAS MÍTICAS DE LA POP CULTURE' },
     answers: [
       'ZOMBIE', 'VAMPIRE', 'LOUP-GAROU', 'DRACULA', 'FRANKENSTEIN',
       'XÉNOMORPHE', 'PREDATOR', 'GODZILLA', 'KING KONG', 'KRAKEN',
@@ -839,8 +839,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-camping',
     theme: 'divertissement',
-    subject: 'ÉQUIPEMENTS INDISPENSABLES POUR LE CAMPING OU LA RANDONNÉE',
-    subjectByLang: { en: 'ESSENTIAL GEAR FOR CAMPING OR HIKING', de: 'UNVERZICHTBARE AUSRÜSTUNG FÜR CAMPING ODER WANDERN', es: 'EQUIPAMIENTO IMPRESCINDIBLE PARA CAMPING O SENDERISMO' },
+    subject: 'ÉQUIPEMENTS DE CAMPING / RANDONNÉE',
+    subjectByLang: { en: 'CAMPING / HIKING GEAR', de: 'CAMPING / WANDER-AUSRÜSTUNG', es: 'EQUIPAMIENTO DE CAMPING / SENDERISMO' },
     answers: [
       'TENTE', 'SAC DE COUCHAGE', 'SAC À DOS', 'RÉCHAUD', 'GOURDE',
       'LAMPE FRONTALE', 'COUTEAU SUISSE', 'CARTE TOPOGRAPHIQUE', 'BOUSSOLE',
@@ -888,8 +888,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-danses',
     theme: 'divertissement',
-    subject: 'TYPES DE DANSES OU STYLES DE DANSE POPULAIRES',
-    subjectByLang: { en: 'TYPES OF POPULAR DANCES OR DANCE STYLES', de: 'BELIEBTE TANZ- ODER TANZSTILARTEN', es: 'TIPOS DE BAILES O ESTILOS DE DANZA POPULARES' },
+    subject: 'TYPES DE DANSES / STYLES DE DANSE',
+    subjectByLang: { en: 'DANCE TYPES / DANCE STYLES', de: 'TANZARTEN / TANZSTILE', es: 'TIPOS DE BAILE / ESTILOS DE DANZA' },
     answers: [
       'SALSA', 'TANGO', 'FLAMENCO', 'HIP-HOP', 'BREAKDANCE',
       'BALLET', 'VALSE', 'FOXTROT', 'RUMBA', 'CHA-CHA-CHA',

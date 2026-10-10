@@ -4,7 +4,7 @@ export const questionsCinema: Question[] = [
   {
     id: 'cinema-series-animation-cultes',
     theme: 'cinema',
-    subject: 'SÉRIES OU DESSINS ANIMÉS CULTES',
+    subject: 'SÉRIES/DESSINS ANIMÉS CULTES',
     subjectByLang: {
       en: 'CULT ANIMATED TV SERIES OR CARTOONS',
       de: 'KULTIGE ZEICHENTRICKSERIEN',
@@ -86,11 +86,11 @@ export const questionsCinema: Question[] = [
   {
     id: 'cinema-personnages-bd-animation',
     theme: 'cinema',
-    subject: 'PERSONNAGES DE DESSINS ANIMÉS OU DE BANDES DESSINÉES CULTES',
+    subject: 'PERSONNAGES DE DESSINS ANIMÉS / BD CULTES',
     subjectByLang: {
-      en: 'CULT ANIMATED OR COMIC BOOK CHARACTERS',
-      de: 'KULTIGE ZEICHENTRICK- ODER COMICFIGUREN',
-      es: 'PERSONAJES CULTOS DE DIBUJOS ANIMADOS O CÓMICS',
+      en: 'CULT ANIMATED / COMIC BOOK CHARACTERS',
+      de: 'KULTIGE ZEICHENTRICK- / COMICFIGUREN',
+      es: 'PERSONAJES CULTOS DE DIBUJOS ANIMADOS / CÓMICS',
     },
     answers: [
       'TINTIN', 'ASTÉRIX', 'MILOU', 'LES SCHTROUMPFS', 'MICKEY MOUSE',
@@ -194,11 +194,11 @@ export const questionsCinema: Question[] = [
   {
     id: 'cinema-comediens-francais',
     theme: 'cinema',
-    subject: 'ACTEURS, ACTRICES OU HUMORISTES FRANÇAIS STARS DES COMÉDIES',
+    subject: 'ACTEURS / HUMORISTES FRANÇAIS DES COMÉDIES',
     subjectByLang: {
-      en: 'FRENCH ACTORS, ACTRESSES OR COMEDIANS FAMOUS FOR COMEDIES',
-      de: 'FRANZÖSISCHE SCHAUSPIELER ODER KOMIKER IN KOMÖDIEN',
-      es: 'ACTORES, ACTRICES O HUMORISTAS FRANCESES FAMOSOS EN COMEDIAS',
+      en: 'FRENCH ACTORS / COMEDIANS IN COMEDIES',
+      de: 'FRANZÖSISCHE SCHAUSPIELER / KOMIKER IN KOMÖDIEN',
+      es: 'ACTORES / HUMORISTAS FRANCESES EN COMEDIAS',
     },
     answers: [
       'LOUIS DE FUNÈS', 'BOURVIL', 'FERNANDEL', 'PIERRE RICHARD', 'THIERRY LHERMITTE',
@@ -344,11 +344,11 @@ export const questionsCinema: Question[] = [
   {
     id: 'cinema-zombies-epidemies-fin-monde',
     theme: 'cinema',
-    subject: "FILMS ET SÉRIES DE ZOMBIES, D'ÉPIDÉMIES OU DE FINS DU MONDE",
+    subject: 'FILMS / SÉRIES : ZOMBIES, ÉPIDÉMIES, FIN DU MONDE',
     subjectByLang: {
-      en: 'ZOMBIE, EPIDEMIC OR END-OF-WORLD FILMS AND SERIES',
-      de: 'ZOMBIE-, EPIDEMIE- ODER WELTUNTERGANGSFILME UND -SERIEN',
-      es: 'PELÍCULAS Y SERIES DE ZOMBIS, EPIDEMIAS O FINES DEL MUNDO',
+      en: 'FILMS / SERIES: ZOMBIES, EPIDEMICS, END OF WORLD',
+      de: 'FILME / SERIEN: ZOMBIES, EPIDEMIEN, WELTUNTERGANG',
+      es: 'PELÍCULAS / SERIES: ZOMBIS, EPIDEMIAS, FIN DEL MUNDO',
     },
     answers: [
       '28 JOURS PLUS TARD', 'WORLD WAR Z', "L'ARMÉE DES MORTS", 'LA NUIT DES MORTS-VIVANTS',
@@ -382,11 +382,11 @@ export const questionsCinema: Question[] = [
   {
     id: 'cinema-professions-tournage',
     theme: 'cinema',
-    subject: "PROFESSIONS QUI INTERVIENNENT DANS LA RÉALISATION D'UN FILM",
+    subject: 'MÉTIERS / PROFESSIONS DU CINÉMA',
     subjectByLang: {
-      en: 'PROFESSIONS INVOLVED IN MAKING A FILM',
-      de: 'BERUFE BEI DER FILMPRODUKTION',
-      es: 'PROFESIONES QUE INTERVIENEN EN LA REALIZACIÓN DE UNA PELÍCULA',
+      en: 'FILM INDUSTRY JOBS / PROFESSIONS',
+      de: 'FILMBERUFE / FILMPRODUKTION',
+      es: 'PROFESIONES / OFICIOS DEL CINE',
     },
     answers: [
       'RÉALISATEUR', 'PRODUCTEUR', 'SCÉNARISTE', 'CHEF OPÉRATEUR', 'MONTEUR',
@@ -423,11 +423,11 @@ export const questionsCinema: Question[] = [
   {
     id: 'cinema-acteurs-multi-oscars',
     theme: 'cinema',
-    subject: 'ACTEURS ET ACTRICES AYANT REMPORTÉ PLUSIEURS OSCARS',
+    subject: 'ACTEURS / ACTRICES MULTI-OSCARISÉS',
     subjectByLang: {
-      en: 'ACTORS AND ACTRESSES WHO WON MULTIPLE OSCARS',
-      de: 'SCHAUSPIELER UND SCHAUSPIELERINNEN MIT MEHREREN OSCARS',
-      es: 'ACTORES Y ACTRICES QUE HAN GANADO VARIOS ÓSCAR',
+      en: 'MULTIPLE OSCAR-WINNING ACTORS / ACTRESSES',
+      de: 'MEHRFACH OSCAR-PRÄMIERTE SCHAUSPIELER',
+      es: 'ACTORES / ACTRICES CON VARIOS ÓSCAR',
     },
     answers: [
       'KATHARINE HEPBURN', 'MERYL STREEP', 'DANIEL DAY-LEWIS', 'JACK NICHOLSON',
@@ -442,11 +442,11 @@ export const questionsCinema: Question[] = [
   {
     id: 'cinema-records-box-office',
     theme: 'cinema',
-    subject: 'FILMS AYANT BATTU DES RECORDS AU BOX-OFFICE MONDIAL',
+    subject: 'FILMS RECORDS AU BOX-OFFICE MONDIAL',
     subjectByLang: {
-      en: 'FILMS THAT BROKE WORLDWIDE BOX-OFFICE RECORDS',
-      de: 'FILME MIT WELTWEITEN BOX-OFFICE-REKORDEN',
-      es: 'PELÍCULAS QUE BATIERON RÉCORDS EN LA TAQUILLA MUNDIAL',
+      en: 'WORLDWIDE BOX-OFFICE RECORD FILMS',
+      de: 'WELTWEITE BOX-OFFICE-REKORDFILME',
+      es: 'PELÍCULAS RÉCORD EN LA TAQUILLA MUNDIAL',
     },
     answers: [
       'AVATAR', 'AVENGERS: ENDGAME', 'TITANIC', 'STAR WARS: LE RÉVEIL DE LA FORCE',

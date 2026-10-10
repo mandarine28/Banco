@@ -100,7 +100,7 @@ export const questionsMusique: Question[] = [
   {
     id: 'musique-dj-electro',
     theme: 'musique',
-    subject: 'DJ ET PRODUCTEURS DE MUSIQUE ÉLECTRO CÉLÈBRES',
+    subject: 'DJ / PRODUCTEURS DE MUSIQUE ÉLECTRO',
     answers: [
       'DAVID GUETTA', 'MARTIN GARRIX', 'DEADMAU5', 'DAFT PUNK', 'TIËSTO', 'AVICII',
       'CALVIN HARRIS', 'DIPLO', 'SKRILLEX', 'APHEX TWIN', 'CARL COX', 'PAUL VAN DYK',
@@ -225,7 +225,7 @@ export const questionsMusique: Question[] = [
   {
     id: 'musique-reggae',
     theme: 'musique',
-    subject: 'ARTISTES OU GROUPES MYTHIQUES DE MUSIQUE REGGAE',
+    subject: 'ARTISTES / GROUPES MYTHIQUES DU REGGAE',
     answers: [
       'BOB MARLEY', 'THE WAILERS', 'PETER TOSH', 'BUNNY WAILER', 'JIMMY CLIFF',
       'BURNING SPEAR', 'TOOTS AND THE MAYTALS', 'CULTURE', 'STEEL PULSE', 'LUCKY DUBE',
@@ -237,7 +237,7 @@ export const questionsMusique: Question[] = [
   {
     id: 'musique-supports',
     theme: 'musique',
-    subject: 'SUPPORTS POUR ÉCOUTER DE LA MUSIQUE À TRAVERS LES ÉPOQUES',
+    subject: "SUPPORTS D'ÉCOUTE MUSICALE À TRAVERS LES ÂGES",
     answers: [
       'VINYLE', 'CASSETTE', 'CD', 'STREAMING', 'RADIO', 'WALKMAN', 'IPOD', 'JUKEBOX',
       'TOURNE-DISQUE', '45 TOURS', '33 TOURS', '78 TOURS', 'MINIDISC', 'BALADEUR',
