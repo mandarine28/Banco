@@ -4,6 +4,7 @@ import { questionsGeographie } from './questions/geographie';
 import { questionsCultureG } from './questions/cultureg';
 import { questionsCinema } from './questions/cinema';
 import { questionsSport } from './questions/sport';
+import { questionsMusique } from './questions/musique';
 
 export const questions = [
   ...questionsMarques,
@@ -12,4 +13,5 @@ export const questions = [
   ...questionsCultureG,
   ...questionsCinema,
   ...questionsSport,
+  ...questionsMusique,
 ];
