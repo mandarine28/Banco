@@ -1,2 +1,2 @@
 // Nom affiché dans le logo. Surchargeable au build : EXPO_PUBLIC_APP_NAME=Banco npx expo export ...
-export const appName = process.env.EXPO_PUBLIC_APP_NAME ?? 'Devineuf';
+export const appName = process.env.EXPO_PUBLIC_APP_NAME ?? 'Banco';
