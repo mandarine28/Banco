@@ -1,6 +1,10 @@
-import Svg, { Path } from 'react-native-svg';
+import { useEffect, useRef } from 'react';
+import { Animated } from 'react-native';
+import Svg, { G, Path } from 'react-native-svg';
 
 import { colors } from '@/theme';
+
+const AnimatedG = Animated.createAnimatedComponent(G);
 
 type Props = {
   width: number;
@@ -8,6 +12,11 @@ type Props = {
 
 const VIEWBOX_W = 324;
 const VIEWBOX_H = 84;
+
+// Forme de l'ampoule utilisée dans le mode Classique (Illustrations.tsx)
+// Coordonnées dans l'espace SVG de viewBox "205 65 140 231"
+export const BULB_PATH =
+  'M262 288L262 242Q252 238 242 228Q210 200 210 163A65 65 0 0 0 340 163Q340 200 308 228Q298 238 288 242L288 288Z';
 
 // Chaque lettre est un path SVG distinct (B-A-N-C-O)
 const LETTER_PATHS = [
@@ -35,6 +44,57 @@ export function Logo({ width }: Props) {
     >
       {LETTER_PATHS.map((d, i) => (
         <Path key={i} d={d} fill={colors.purple} />
+      ))}
+    </Svg>
+  );
+}
+
+const BOUNCE_TOP = 30;  // SVG units au-dessus pour le saut
+const BOUNCE_BOT = 8;   // SVG units en dessous pour le spring overshoot
+
+export function AnimatedLogo({ width }: Props) {
+  const svgHeight = (width * (VIEWBOX_H + BOUNCE_TOP + BOUNCE_BOT)) / VIEWBOX_W;
+  const marginTop = -(width * BOUNCE_TOP / VIEWBOX_W);
+
+  const bounces = useRef(LETTER_PATHS.map(() => new Animated.Value(0))).current;
+
+  useEffect(() => {
+    const play = () => {
+      bounces.forEach(v => v.setValue(0));
+      Animated.stagger(
+        60,
+        bounces.map(val =>
+          Animated.sequence([
+            Animated.timing(val, { toValue: -24, duration: 160, useNativeDriver: false }),
+            Animated.spring(val, { toValue: 0, speed: 9, bounciness: 11, useNativeDriver: false }),
+          ])
+        )
+      ).start();
+    };
+
+    let intervalId: ReturnType<typeof setInterval>;
+    const rafId = requestAnimationFrame(() => {
+      play();
+      intervalId = setInterval(play, 10000);
+    });
+    return () => {
+      cancelAnimationFrame(rafId);
+      clearInterval(intervalId);
+    };
+  }, [bounces]);
+
+  return (
+    <Svg
+      style={{ marginTop }}
+      width={width}
+      height={svgHeight}
+      viewBox={`0 -${BOUNCE_TOP} ${VIEWBOX_W} ${VIEWBOX_H + BOUNCE_TOP + BOUNCE_BOT}`}
+      accessibilityLabel="Banco"
+    >
+      {LETTER_PATHS.map((d, i) => (
+        <AnimatedG key={i} translateY={bounces[i]}>
+          <Path d={d} fill={colors.purple} />
+        </AnimatedG>
       ))}
     </Svg>
   );

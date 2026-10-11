@@ -84,10 +84,26 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
   const team = state.teams[teamIdx];
   const [query, setQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const inputRef = useRef<TextInput>(null);
   const toastOpacity = useRef(new Animated.Value(0)).current;
   const toastTranslateY = useRef(new Animated.Value(8)).current;
   const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pingScale = useRef(new Animated.Value(0.6)).current;
+  const pingOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const ping = () => {
+      pingScale.setValue(0.6);
+      pingOpacity.setValue(0.65);
+      Animated.parallel([
+        Animated.timing(pingScale, { toValue: 2.2, duration: 700, useNativeDriver: true }),
+        Animated.timing(pingOpacity, { toValue: 0, duration: 700, useNativeDriver: true }),
+      ]).start();
+    };
+    const id = setInterval(ping, 10000);
+    return () => clearInterval(id);
+  }, [pingScale, pingOpacity]);
 
   const showToast = () => {
     if (toastTimeout.current) clearTimeout(toastTimeout.current);
@@ -188,28 +204,26 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
           </Pressable>
         </View>
 
-        {!compact ? (
-          <View style={styles.badgeRow}>
-            <View style={[styles.teamBadge, { backgroundColor: team.color }]}>
-              <Text style={[styles.teamBadgeText, { color: teamBadgeTextColor }]} numberOfLines={1}>
-                {team.name}
-              </Text>
+        {!compact && !isCollapsed ? (
+          <>
+            <View style={styles.badgeRow}>
+              <View style={[styles.teamBadge, { backgroundColor: team.color }]}>
+                <Text style={[styles.teamBadgeText, { color: teamBadgeTextColor }]} numberOfLines={1}>
+                  {team.name}
+                </Text>
+              </View>
             </View>
-          </View>
-        ) : null}
-
-        {!compact ? (
-          <View style={styles.questionCard}>
             <Text style={styles.questionText}>{subject}</Text>
-          </View>
+          </>
         ) : null}
 
-        <View style={styles.searchRow}>
+        <View style={styles.searchContainer}>
+          <View style={styles.searchRow}>
           <TextInput
             ref={inputRef}
             value={query}
             onChangeText={setQuery}
-            editable={!isPaused}
+            editable={true}
             placeholder={t.play.searchPlaceholder}
             placeholderTextColor="rgba(254,246,215,0.5)"
             autoCorrect={false}
@@ -232,9 +246,23 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
               accessibilityRole="button"
               accessibilityLabel={t.play.searchOnline}
             >
-              <SearchOnlineIcon />
+              <View style={{ width: 24, height: 24 }}>
+                <Animated.View
+                  style={{
+                    position: 'absolute',
+                    width: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    backgroundColor: colors.cream,
+                    transform: [{ scale: pingScale }],
+                    opacity: pingOpacity,
+                  }}
+                />
+                <SearchOnlineIcon />
+              </View>
             </Pressable>
           )}
+          </View>
         </View>
 
         {searching && list.length === 0 ? (
@@ -261,10 +289,44 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
 
       {/* ─── ZONE SCROLLABLE : chips + scrollbar dynamique ─── */}
       {list.length > 0 && !searching ? (
-        <Text style={styles.someAnswersLabel}>{t.play.someAnswers}</Text>
+        <View style={styles.someAnswersRow}>
+          <Text style={styles.someAnswersLabel}>{t.play.someAnswers}</Text>
+          {!compact ? (
+            <Pressable
+              onPress={() => setIsCollapsed(v => !v)}
+              hitSlop={16}
+              accessibilityRole="button"
+              accessibilityLabel={isCollapsed ? 'Agrandir la zone question' : 'Réduire la zone question'}
+            >
+              <Svg width={24} height={24} viewBox="0 0 24 24">
+                {!isCollapsed ? (
+                  // Agrandir : flèche diagonale double, têtes vers ↖ et ↘ (vers l'extérieur)
+                  <Path
+                    d="M4 4 L20 20 M4 4 L10 4 M4 4 L4 10 M20 20 L14 20 M20 20 L20 14"
+                    stroke="rgba(254,246,215,0.85)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                ) : (
+                  // Réduire : deux flèches diagonales, têtes vers l'intérieur
+                  <Path
+                    d="M4 4 L9 9 M9 9 L5 9 M9 9 L9 5 M20 20 L15 15 M15 15 L19 15 M15 15 L15 19"
+                    stroke="rgba(254,246,215,0.85)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                  />
+                )}
+              </Svg>
+            </Pressable>
+          ) : null}
+        </View>
       ) : null}
       {list.length > 0 ? (
-        <View style={styles.chipsArea}>
+        <View style={[styles.chipsArea, !compact && !isCollapsed && { maxHeight: MAX_CHIPS_H }]}>
           {/* Scrollbar track + thumb dynamique */}
           <View
             style={styles.scrollTrack}
@@ -283,7 +345,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
           </View>
 
           <ScrollView
-            style={styles.chipsScroll}
+            style={[styles.chipsScroll, !compact && !isCollapsed && { maxHeight: MAX_CHIPS_H }]}
             contentContainerStyle={styles.chipsGrid}
             showsVerticalScrollIndicator={false}
             scrollEventThrottle={16}
@@ -378,7 +440,12 @@ const styles = StyleSheet.create({
     opacity: 0.45,
   },
   badgeRow: {
+    flexDirection: 'row',
     alignItems: 'center',
+  },
+  collapseToggle: {
+    alignSelf: 'center',
+    paddingVertical: 2,
   },
   teamBadge: {
     borderRadius: 12,
@@ -390,19 +457,19 @@ const styles = StyleSheet.create({
     fontFamily: fonts.displayMedium,
     fontSize: 18,
   },
-  questionCard: {
-    backgroundColor: '#fef1cc',
-    borderRadius: 16,
-    paddingHorizontal: 24,
-    paddingVertical: 13,
-  },
   questionText: {
     fontFamily: fonts.display,
-    fontSize: 34,
-    lineHeight: 40,
-    color: colors.purpleDeep,
+    fontSize: 24,
+    lineHeight: 31,
+    color: colors.cream,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
   },
   searchRow: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -474,16 +541,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.cream,
   },
+  someAnswersRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
   someAnswersLabel: {
     fontFamily: fonts.displayMedium,
     fontSize: 16,
     color: colors.cream,
-    marginBottom: 10,
   },
   // ── Zone chips ──
   chipsArea: {
     flex: 1,
-    maxHeight: MAX_CHIPS_H,
     flexDirection: 'row',
     gap: 12,
   },
@@ -506,7 +577,6 @@ const styles = StyleSheet.create({
   },
   chipsScroll: {
     flex: 1,
-    maxHeight: MAX_CHIPS_H,
   },
   chipsGrid: {
     flexDirection: 'row',

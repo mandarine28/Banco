@@ -72,6 +72,10 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
     };
   }, []);
 
+  useEffect(() => {
+    setBidText(String(min));
+  }, [min]);
+
   const step = (dir: 1 | -1) => {
     setBidText((prev) => {
       const n = parseInt(prev, 10);
@@ -88,6 +92,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
   };
 
   const startHold = (dir: 1 | -1) => {
+    stopHold(dir);
     if (dir === 1 && currentAmountRef.current >= MAX_BID) {
       triggerToast();
       return;
@@ -164,6 +169,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
             hitSlop={16}
             accessibilityRole="button"
             accessibilityLabel="Diminuer la mise"
+            style={{ opacity: amount <= min ? 0.3 : 1 }}
           >
             <Text style={styles.stepBtn}>-</Text>
           </Pressable>

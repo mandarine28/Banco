@@ -6,7 +6,7 @@ import Svg, { Path } from 'react-native-svg';
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { LanguagePicker } from '@/components/LanguagePicker';
-import { Logo } from '@/components/Logo';
+import { AnimatedLogo } from '@/components/Logo';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
@@ -23,6 +23,7 @@ function SettingIcon({ size }: { size: number }) {
     </Svg>
   );
 }
+
 
 
 export default function HomeScreen() {
@@ -105,7 +106,7 @@ export default function HomeScreen() {
 
         {/* Logo BANCO */}
         <View style={[styles.logoWrap, { top: logoTop }]}>
-          <Logo width={logoWidth} />
+          <AnimatedLogo width={logoWidth} />
         </View>
 
         {/* Sous-titre */}
