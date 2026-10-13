@@ -116,7 +116,7 @@ const translations: Record<Lang, Translations> = {
     },
     gameMode: {
       modesTitle: 'Modes de jeux',
-      classic: 'Classique',
+      classic: 'Enchères',
       charades: 'Survie',
       packsTitle: 'Pack de questions',
       continueBtn: 'Continuer',
@@ -188,7 +188,7 @@ const translations: Record<Lang, Translations> = {
     },
     gameMode: {
       modesTitle: 'Game modes',
-      classic: 'Classic',
+      classic: 'Auctions',
       charades: 'Survival',
       packsTitle: 'Question packs',
       continueBtn: 'Continue',
@@ -260,7 +260,7 @@ const translations: Record<Lang, Translations> = {
     },
     gameMode: {
       modesTitle: 'Spielmodi',
-      classic: 'Klassisch',
+      classic: 'Auktionen',
       charades: 'Überleben',
       packsTitle: 'Fragenpakete',
       continueBtn: 'Weiter',
@@ -332,7 +332,7 @@ const translations: Record<Lang, Translations> = {
     },
     gameMode: {
       modesTitle: 'Modos de juego',
-      classic: 'Clásico',
+      classic: 'Subastas',
       charades: 'Supervivencia',
       packsTitle: 'Packs de preguntas',
       continueBtn: 'Continuar',

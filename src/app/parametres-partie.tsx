@@ -111,7 +111,8 @@ export default function MatchSettingsScreen() {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
-  const { mode, setMode, teamCount, setTeamCount, roundCount, setRoundCount, setSelectedThemes } = useGameSettings();
+  const { mode, teamCount, setTeamCount, roundCount, setRoundCount, setSelectedThemes } = useGameSettings();
+  const settingsTitle = mode === 'survie' ? 'Paramètre de la survie' : 'Paramètre des enchères';
   const { hasPurchased } = usePurchases();
   const [selected, setSelected] = useState<Set<string>>(DEFAULT_SELECTED);
 
@@ -181,38 +182,9 @@ export default function MatchSettingsScreen() {
             contentContainerStyle={[styles.panelContent, { paddingBottom: 24 }]}
             showsVerticalScrollIndicator={false}
           >
-            {/* Sélection du mode */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Mode de jeu</Text>
-              <View style={styles.modeRow}>
-                <Pressable
-                  style={[styles.modeChip, mode !== 'survie' && styles.modeChipActive]}
-                  onPress={() => setMode('classique')}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected: mode !== 'survie' }}
-                  accessibilityLabel="Mode Classique"
-                >
-                  <Text style={[styles.modeChipText, mode !== 'survie' && styles.modeChipTextActive]}>
-                    Classique
-                  </Text>
-                </Pressable>
-                <Pressable
-                  style={[styles.modeChip, mode === 'survie' && styles.modeChipActive]}
-                  onPress={() => setMode('survie')}
-                  accessibilityRole="radio"
-                  accessibilityState={{ selected: mode === 'survie' }}
-                  accessibilityLabel="Mode Survie"
-                >
-                  <Text style={[styles.modeChipText, mode === 'survie' && styles.modeChipTextActive]}>
-                    Survie
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-
             {/* Paramètre de jeux */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t.matchSettings.settingsTitle}</Text>
+              <Text style={styles.sectionTitle}>{settingsTitle}</Text>
               <View style={styles.rowList}>
                 <StepperRow
                   label={t.matchSettings.teamCount}
@@ -554,31 +526,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.displayMedium,
     fontSize: 20,
     color: colors.cream,
-  },
-  modeRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  modeChip: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: 'rgba(254,246,215,0.4)',
-    borderRadius: 16,
-    paddingVertical: 10,
-    alignItems: 'center',
-    backgroundColor: '#4883E5',
-  },
-  modeChipActive: {
-    backgroundColor: colors.cream,
-    borderColor: colors.cream,
-  },
-  modeChipText: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 18,
-    color: colors.cream,
-  },
-  modeChipTextActive: {
-    color: colors.purpleDeep,
   },
   header: {
     position: 'absolute',
