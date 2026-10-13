@@ -13,7 +13,10 @@ import { View } from 'react-native';
 
 import { SplashScreenAnimator } from '@/components/SplashScreenAnimator';
 import { LangProvider } from '@/lib/LangContext';
+import { AuthProvider } from '@/state/auth';
 import { GameSettingsProvider } from '@/state/gameSettings';
+import { PurchasesProvider } from '@/state/purchases';
+import { SurvieOverlayProvider, SurviePulseBorderRoot } from '@/state/survieOverlay';
 import { colors } from '@/theme';
 
 export default function RootLayout() {
@@ -27,19 +30,26 @@ export default function RootLayout() {
 
   return (
     <View style={{ flex: 1 }}>
-      {fontsLoaded ? (
-        <LangProvider>
-          <GameSettingsProvider>
-            <StatusBar style="dark" />
-            <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
-          </GameSettingsProvider>
-        </LangProvider>
-      ) : (
-        <View style={{ flex: 1, backgroundColor: colors.purple }} />
-      )}
-      {!splashDone && (
-        <SplashScreenAnimator onFinish={() => setSplashDone(true)} />
-      )}
+      <SurvieOverlayProvider>
+        {fontsLoaded ? (
+          <AuthProvider>
+            <PurchasesProvider>
+              <LangProvider>
+                <GameSettingsProvider>
+                  <StatusBar style="dark" />
+                  <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
+                </GameSettingsProvider>
+              </LangProvider>
+            </PurchasesProvider>
+          </AuthProvider>
+        ) : (
+          <View style={{ flex: 1, backgroundColor: colors.purple }} />
+        )}
+        {!splashDone && (
+          <SplashScreenAnimator onFinish={() => setSplashDone(true)} />
+        )}
+        <SurviePulseBorderRoot />
+      </SurvieOverlayProvider>
     </View>
   );
 }

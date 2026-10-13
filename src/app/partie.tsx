@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { Keyboard } from 'react-native';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
@@ -11,7 +11,6 @@ import { ReadyPhase } from '@/components/game/ReadyPhase';
 import { ResultPhase } from '@/components/game/ResultPhase';
 import { SurvieFinalPhase } from '@/components/game/SurvieFinalPhase';
 import { SurviePlayPhase } from '@/components/game/SurviePlayPhase';
-import { SurviePulseBorder } from '@/components/game/SurviePulseBorder';
 import { SurvieReadyPhase } from '@/components/game/SurvieReadyPhase';
 import { SurvieResultPhase } from '@/components/game/SurvieResultPhase';
 import { ConfettiOverlay } from '@/components/ConfettiOverlay';
@@ -22,6 +21,7 @@ import { contract, createGame, gameReducer, type GameTeam, isLastRound, remainin
 import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
 import { useCountdown } from '@/hooks/useCountdown';
 import { useGameSettings } from '@/state/gameSettings';
+import { useSurvieOverlay } from '@/state/survieOverlay';
 import { colors, teamColors } from '@/theme';
 
 export default function GameScreen() {
@@ -193,6 +193,16 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
   const [confirmQuit, setConfirmQuit] = useState(false);
   const goHome = () => router.dismissTo('/');
   const currentTeam = state.teams[state.currentTeam];
+  const { showBorder, hideBorder } = useSurvieOverlay();
+
+  useEffect(() => {
+    if (state.phase === 'play' || state.phase === 'ready') {
+      showBorder(currentTeam.color);
+    } else {
+      hideBorder();
+    }
+    return hideBorder;
+  }, [state.phase, state.currentTeam, showBorder, hideBorder]);
 
   return (
     <GameLayout
@@ -200,11 +210,6 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
       onHome={() => (state.phase === 'final' ? goHome() : setConfirmQuit(true))}
       scrollDisabled={state.phase === 'play' || state.phase === 'ready'}
       overlay={state.phase === 'final' ? <ConfettiOverlay /> : undefined}
-      pageOverlay={
-        (state.phase === 'play' || state.phase === 'ready')
-          ? <SurviePulseBorder color={currentTeam.color} />
-          : undefined
-      }
     >
       {state.phase === 'ready' ? (
         <SurvieReadyPhase

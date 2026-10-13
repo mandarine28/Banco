@@ -30,13 +30,11 @@ type Props = {
   scrollDisabled?: boolean;
   /** Rendu au niveau écran, par-dessus tout le contenu. Utiliser pour les overlays non-bloquants (ex. PauseModal). */
   overlay?: ReactNode;
-  /** Rendu dans `page` (pas de overflow:hidden) — pour les overlays plein écran comme SurviePulseBorder. */
-  pageOverlay?: ReactNode;
   /** Affiche une croix (×) au lieu de la flèche retour — pour les écrans de jeu où "retour" = quitter. */
   closeIcon?: boolean;
 };
 
-export function GameLayout({ onHome, children, footer, scrollDisabled = false, overlay, pageOverlay, closeIcon = false }: Props) {
+export function GameLayout({ onHome, children, footer, scrollDisabled = false, overlay, closeIcon = false }: Props) {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
@@ -125,11 +123,6 @@ export function GameLayout({ onHome, children, footer, scrollDisabled = false, o
           </View>
         ) : null}
       </View>
-      {pageOverlay ? (
-        <View style={StyleSheet.absoluteFillObject} pointerEvents="box-none">
-          {pageOverlay}
-        </View>
-      ) : null}
     </View>
   );
 }
