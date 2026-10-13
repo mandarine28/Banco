@@ -9,23 +9,39 @@ import { CounterFooter } from '@/components/game/CounterFooter';
 import { PlayPhase } from '@/components/game/PlayPhase';
 import { ReadyPhase } from '@/components/game/ReadyPhase';
 import { ResultPhase } from '@/components/game/ResultPhase';
+import { SurvieFinalPhase } from '@/components/game/SurvieFinalPhase';
+import { SurviePlayPhase } from '@/components/game/SurviePlayPhase';
+import { SurviePulseBorder } from '@/components/game/SurviePulseBorder';
+import { SurvieResultPhase } from '@/components/game/SurvieResultPhase';
 import { ConfettiOverlay } from '@/components/ConfettiOverlay';
 import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal, PauseModal } from '@/components/InfoModal';
 import { questions } from '@/data/questions';
 import { contract, createGame, gameReducer, type GameTeam, isLastRound, remaining, TURN_SECONDS } from '@/game/engine';
+import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
 import { useCountdown } from '@/hooks/useCountdown';
 import { useGameSettings } from '@/state/gameSettings';
 import { colors, teamColors } from '@/theme';
 
 export default function GameScreen() {
   const settings = useGameSettings();
-  // Équipes par défaut si l'écran est ouvert sans passer par la configuration.
   const teams: GameTeam[] =
     settings.teams.length > 0
       ? settings.teams
       : Array.from({ length: settings.teamCount }, (_, i) => ({ name: `ÉQUIPE ${i + 1}`, color: teamColors[i] }));
   const [gameId, setGameId] = useState(0);
+
+  if (settings.mode === 'survie') {
+    return (
+      <SurvieGame
+        key={gameId}
+        teams={teams}
+        roundCount={settings.roundCount}
+        selectedThemes={settings.selectedThemes}
+        onReplay={() => setGameId((id) => id + 1)}
+      />
+    );
+  }
 
   return (
     <Game
@@ -162,6 +178,61 @@ function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
           setConfirm(null);
           dispatch({ type: 'END_TURN', reason: 'skip' });
         }}
+      />
+    </GameLayout>
+  );
+}
+
+function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
+  const filteredQuestions =
+    selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
+  const [state, dispatch] = useReducer(survieReducer, null, () =>
+    createSurvieGame(teams, roundCount, filteredQuestions),
+  );
+  const [confirmQuit, setConfirmQuit] = useState(false);
+  const goHome = () => router.dismissTo('/');
+  const currentTeam = state.teams[state.currentTeam];
+
+  return (
+    <GameLayout
+      closeIcon
+      onHome={() => (state.phase === 'final' ? goHome() : setConfirmQuit(true))}
+      scrollDisabled={state.phase === 'play'}
+      overlay={
+        state.phase === 'play' ? (
+          <SurviePulseBorder color={currentTeam.color} />
+        ) : state.phase === 'final' ? (
+          <ConfettiOverlay />
+        ) : undefined
+      }
+    >
+      {state.phase === 'play' ? (
+        <SurviePlayPhase
+          key={`${state.round}-${state.currentTeam}`}
+          state={state}
+          onValidate={() => dispatch({ type: 'VALIDATE' })}
+          onPass={() => dispatch({ type: 'PASS' })}
+          onTimeout={() => dispatch({ type: 'TIMEOUT' })}
+        />
+      ) : null}
+      {state.phase === 'result' ? (
+        <SurvieResultPhase
+          state={state}
+          onNext={() => dispatch({ type: 'NEXT' })}
+          isLastRound={isLastSurvieRound(state)}
+        />
+      ) : null}
+      {state.phase === 'final' ? (
+        <SurvieFinalPhase state={state} onReplay={onReplay} onHome={goHome} />
+      ) : null}
+
+      <ConfirmModal
+        visible={confirmQuit}
+        title="Quitter la partie ?"
+        message="La partie en cours sera perdue."
+        confirmLabel="QUITTER"
+        onCancel={() => setConfirmQuit(false)}
+        onConfirm={() => { setConfirmQuit(false); goHome(); }}
       />
     </GameLayout>
   );

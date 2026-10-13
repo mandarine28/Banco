@@ -1,8 +1,11 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Path, Rect } from 'react-native-svg';
+
+const LOCK_PATH =
+  'M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
@@ -11,6 +14,7 @@ import { themes } from '@/data/themes';
 import { useLang } from '@/lib/LangContext';
 import { type Lang, getT } from '@/lib/i18n';
 import { ROUND_LIMITS, TEAM_LIMITS, useGameSettings } from '@/state/gameSettings';
+import { usePurchases } from '@/state/purchases';
 import { colors, fonts } from '@/theme';
 
 const MAX_WIDTH = 500;
@@ -23,16 +27,21 @@ const SETTING_PATH =
 
 const themeIdsWithQuestions = new Set(questions.map((q) => q.theme));
 
-type Category = { id: string; label: string; labelByLang?: Partial<Record<Lang, string>>; available: boolean };
+type Category = { id: string; label: string; labelByLang?: Partial<Record<Lang, string>>; available: boolean; locked?: boolean };
 
-const CATEGORIES: Category[] = themes.map((theme) => ({
+const BASE_CATEGORIES: Category[] = themes.map((theme) => ({
   id: theme.id,
   label: theme.label,
   labelByLang: theme.labelByLang,
   available: themeIdsWithQuestions.has(theme.id),
+  locked: false,
 }));
 
-const DEFAULT_SELECTED = new Set(CATEGORIES.filter((c) => c.available).map((c) => c.id));
+const DEFAULT_SELECTED = new Set(BASE_CATEGORIES.filter((c) => c.available).map((c) => c.id));
+
+const CHIP_ROW_H = 36;
+const CHIP_GAP = 12;
+const CATEGORY_CHIPS_H = 5 * CHIP_ROW_H + 4 * CHIP_GAP; // 228 — 5 rows visible
 
 function BackArrow({ size }: { size: number }) {
   const h = (size * 19) / 32;
@@ -102,12 +111,45 @@ export default function MatchSettingsScreen() {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
-  const { teamCount, setTeamCount, roundCount, setRoundCount, setSelectedThemes } = useGameSettings();
+  const { mode, setMode, teamCount, setTeamCount, roundCount, setRoundCount, setSelectedThemes } = useGameSettings();
+  const { hasPurchased } = usePurchases();
   const [selected, setSelected] = useState<Set<string>>(DEFAULT_SELECTED);
+
+  const hasHarryPotter = hasPurchased('packHarryPotter');
+  const CATEGORIES: Category[] = [
+    ...BASE_CATEGORIES,
+    {
+      id: 'harry-potter',
+      label: 'Harry Potter',
+      available: hasHarryPotter,
+      locked: !hasHarryPotter,
+    },
+  ];
+  const [chipsScrollY, setChipsScrollY] = useState(0);
+  const [chipsContentH, setChipsContentH] = useState(0);
+  const [chipsContainerH, setChipsContainerH] = useState(0);
   const { lang } = useLang();
   const t = getT(lang);
 
+  const isChipsScrollable = chipsContentH > chipsContainerH;
+  const thumbH = isChipsScrollable
+    ? Math.max(20, (chipsContainerH / chipsContentH) * chipsContainerH)
+    : chipsContainerH;
+  const thumbTop = isChipsScrollable
+    ? (chipsScrollY / (chipsContentH - chipsContainerH)) * (chipsContainerH - thumbH)
+    : 0;
+
+  const [lockedToast, setLockedToast] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const panelTop = insets.top + 68;
+  const toastBottom = Math.max(24, insets.bottom + 16) + 51 + 16 + 8;
+
+  const handleLockedPress = () => {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setLockedToast(true);
+    toastTimer.current = setTimeout(() => setLockedToast(false), 1800);
+  };
 
   const toggleCategory = (id: string) => {
     const cat = CATEGORIES.find((c) => c.id === id);
@@ -135,12 +177,39 @@ export default function MatchSettingsScreen() {
         <View style={[styles.bluePanel, { top: panelTop }]}>
           <CreamPatternSvg width={width} height={height - panelTop} opacity={0.04} fill="#ffffff" />
           <ScrollView
-            contentContainerStyle={[
-              styles.panelContent,
-              { paddingBottom: Math.max(64, insets.bottom + 30) },
-            ]}
+            style={styles.panelScroll}
+            contentContainerStyle={[styles.panelContent, { paddingBottom: 24 }]}
             showsVerticalScrollIndicator={false}
           >
+            {/* Sélection du mode */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Mode de jeu</Text>
+              <View style={styles.modeRow}>
+                <Pressable
+                  style={[styles.modeChip, mode !== 'survie' && styles.modeChipActive]}
+                  onPress={() => setMode('classique')}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: mode !== 'survie' }}
+                  accessibilityLabel="Mode Classique"
+                >
+                  <Text style={[styles.modeChipText, mode !== 'survie' && styles.modeChipTextActive]}>
+                    Classique
+                  </Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.modeChip, mode === 'survie' && styles.modeChipActive]}
+                  onPress={() => setMode('survie')}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: mode === 'survie' }}
+                  accessibilityLabel="Mode Survie"
+                >
+                  <Text style={[styles.modeChipText, mode === 'survie' && styles.modeChipTextActive]}>
+                    Survie
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+
             {/* Paramètre de jeux */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t.matchSettings.settingsTitle}</Text>
@@ -164,35 +233,113 @@ export default function MatchSettingsScreen() {
 
             {/* Catégories de questions */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t.matchSettings.categoriesTitle}</Text>
-              <View style={styles.chips}>
-                {CATEGORIES.map((cat) => {
-                  const isActive = selected.has(cat.id);
-                  const displayLabel = cat.labelByLang?.[lang] ?? cat.label;
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>{t.matchSettings.categoriesTitle}</Text>
+                {(() => {
+                  const available = CATEGORIES.filter((c) => !c.locked).map((c) => c.id);
+                  const allSelected = available.every((id) => selected.has(id));
                   return (
                     <Pressable
-                      key={cat.id}
-                      style={[styles.chip, isActive ? styles.chipActive : styles.chipLocked]}
-                      onPress={() => toggleCategory(cat.id)}
+                      onPress={() => setSelected(allSelected ? new Set() : new Set(available))}
+                      hitSlop={8}
                       accessibilityRole="checkbox"
-                      accessibilityState={{ checked: isActive, disabled: !cat.available }}
-                      accessibilityLabel={displayLabel}
+                      accessibilityState={{ checked: allSelected }}
+                      accessibilityLabel={allSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
+                      style={styles.selectAllRow}
                     >
-                      <Text
-                        style={[
-                          styles.chipText,
-                          { color: isActive ? colors.purpleDeep : colors.cream },
-                        ]}
-                      >
-                        {displayLabel}
+                      <Text style={styles.selectAllLabel}>
+                        {allSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
                       </Text>
+                      <Svg width={28} height={28} viewBox="0 0 24 24">
+                        {allSelected ? (
+                          <>
+                            <Rect x="2" y="2" width="20" height="20" rx="6" fill={colors.cream} />
+                            <Path d="M9 12l2 2 4-4" stroke={colors.purple} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                          </>
+                        ) : (
+                          <Rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="rgba(254,246,215,0.5)" strokeWidth="2" />
+                        )}
+                      </Svg>
                     </Pressable>
                   );
-                })}
+                })()}
+              </View>
+              <View style={styles.chipsArea}>
+                <View
+                  style={styles.scrollTrack}
+                  onLayout={(e) => setChipsContainerH(e.nativeEvent.layout.height)}
+                >
+                  {isChipsScrollable ? (
+                    <View style={[styles.scrollThumb, { height: thumbH, top: thumbTop }]} />
+                  ) : (
+                    <View style={[styles.scrollThumb, { height: chipsContainerH, top: 0 }]} />
+                  )}
+                </View>
+                <ScrollView
+                  style={styles.chipsScroll}
+                  contentContainerStyle={styles.chips}
+                  showsVerticalScrollIndicator={false}
+                  scrollEventThrottle={16}
+                  nestedScrollEnabled={true}
+                  onScroll={(e) => setChipsScrollY(e.nativeEvent.contentOffset.y)}
+                  onContentSizeChange={(_, h) => setChipsContentH(h)}
+                >
+                  {CATEGORIES.map((cat) => {
+                    const isActive = selected.has(cat.id);
+                    const isLocked = cat.locked;
+                    const displayLabel = cat.labelByLang?.[lang] ?? cat.label;
+                    return (
+                      <Pressable
+                        key={cat.id}
+                        style={[
+                          styles.chip,
+                          isLocked ? styles.chipPurchaseLocked : isActive ? styles.chipActive : styles.chipInactive,
+                        ]}
+                        onPress={isLocked ? handleLockedPress : () => toggleCategory(cat.id)}
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: isActive, disabled: isLocked }}
+                        accessibilityLabel={isLocked ? `${displayLabel} — verrouillé` : displayLabel}
+                      >
+                        <Text
+                          style={[
+                            styles.chipText,
+                            isLocked
+                              ? styles.chipTextLocked
+                              : { color: isActive ? colors.purpleDeep : colors.cream },
+                          ]}
+                        >
+                          {displayLabel}
+                        </Text>
+                        {isLocked && (
+                          <Svg width={24} height={24} viewBox="0 0 24 24" style={styles.chipLockIcon}>
+                            <Path d={LOCK_PATH} fill={colors.cream} />
+                          </Svg>
+                        )}
+                      </Pressable>
+                    );
+                  })}
+                </ScrollView>
               </View>
             </View>
+          </ScrollView>
 
-            {/* Continuer */}
+          {/* Toast chip verrouillé */}
+          {lockedToast && (
+            <View style={[styles.lockedToast, { bottom: toastBottom }]}>
+              <Text style={styles.lockedToastText}>Disponible dans la boutique</Text>
+              <Pressable
+                style={styles.lockedToastCta}
+                onPress={() => { setLockedToast(false); router.push('/boutique'); }}
+                accessibilityRole="button"
+                accessibilityLabel="Aller à la boutique"
+              >
+                <Text style={styles.lockedToastCtaText}>Boutique</Text>
+              </Pressable>
+            </View>
+          )}
+
+          {/* Continuer — toujours visible */}
+          <View style={[styles.continuerWrapper, { paddingBottom: Math.max(24, insets.bottom + 16) }]}>
             <Pressable
               style={styles.btnContinuer}
               onPress={() => { setSelectedThemes([...selected]); router.push('/equipes'); }}
@@ -201,7 +348,7 @@ export default function MatchSettingsScreen() {
             >
               <Text style={styles.btnContinuerText}>{t.matchSettings.continueBtn}</Text>
             </Pressable>
-          </ScrollView>
+          </View>
         </View>
 
         {/* En-tête */}
@@ -252,13 +399,58 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 48,
     overflow: 'hidden',
   },
+  panelScroll: {
+    flex: 1,
+  },
   panelContent: {
     paddingHorizontal: 24,
     paddingTop: 48,
     gap: 48,
   },
+  chipsArea: {
+    maxHeight: CATEGORY_CHIPS_H,
+    flexDirection: 'row',
+    gap: 8,
+  },
+  chipsScroll: {
+    flex: 1,
+  },
+  scrollTrack: {
+    width: 3,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    flexShrink: 0,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  scrollThumb: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.7)',
+  },
+  continuerWrapper: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
+  },
   section: {
     gap: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  selectAllRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  selectAllLabel: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 13,
+    color: 'rgba(254,246,215,0.6)',
   },
   sectionTitle: {
     fontFamily: fonts.display,
@@ -327,16 +519,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   chipActive: {
     backgroundColor: colors.cream,
   },
-  chipLocked: {
+  chipInactive: {
     backgroundColor: '#4883E5',
+  },
+  chipPurchaseLocked: {
+    backgroundColor: '#8592A8',
+    borderColor: colors.cream,
   },
   chipText: {
     fontFamily: fonts.displayMedium,
     fontSize: 20,
+  },
+  chipTextLocked: {
+    color: colors.cream,
+  },
+  chipLockIcon: {
+    marginTop: 1,
   },
   btnContinuer: {
     height: 51,
@@ -350,10 +555,66 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.cream,
   },
+  modeRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modeChip: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: 'rgba(254,246,215,0.4)',
+    borderRadius: 16,
+    paddingVertical: 10,
+    alignItems: 'center',
+    backgroundColor: '#4883E5',
+  },
+  modeChipActive: {
+    backgroundColor: colors.cream,
+    borderColor: colors.cream,
+  },
+  modeChipText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 18,
+    color: colors.cream,
+  },
+  modeChipTextActive: {
+    color: colors.purpleDeep,
+  },
   header: {
     position: 'absolute',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  lockedToast: {
+    position: 'absolute',
+    left: 24,
+    right: 24,
+    backgroundColor: colors.purpleDeep,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    zIndex: 20,
+  },
+  lockedToastText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 15,
+    color: colors.cream,
+    flex: 1,
+  },
+  lockedToastCta: {
+    backgroundColor: colors.pink,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginLeft: 12,
+  },
+  lockedToastCtaText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 14,
+    color: colors.cream,
   },
 });

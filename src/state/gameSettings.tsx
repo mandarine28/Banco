@@ -1,6 +1,6 @@
 import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
 
-export type GameMode = 'classique' | 'streak';
+export type GameMode = 'classique' | 'streak' | 'survie';
 
 export type Team = {
   name: string;
