@@ -42,7 +42,7 @@ export function SurvieReadyPhase({ state, onStart }: Props) {
               {team.name}
             </Text>
           </View>
-          <Text style={styles.opensText}>ouvre le jeu</Text>
+          <Text style={styles.opensText}>ouvre la survie</Text>
         </View>
 
         <View style={styles.questionCard}>

@@ -200,7 +200,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
       onHome={() => (state.phase === 'final' ? goHome() : setConfirmQuit(true))}
       scrollDisabled={state.phase === 'play' || state.phase === 'ready'}
       overlay={
-        state.phase === 'play' ? (
+        state.phase === 'play' || state.phase === 'ready' ? (
           <SurviePulseBorder color={currentTeam.color} />
         ) : state.phase === 'final' ? (
           <ConfettiOverlay />
