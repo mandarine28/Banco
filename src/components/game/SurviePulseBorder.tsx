@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Animated, Modal, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
 
 type Props = {
   color: string;
@@ -20,11 +20,10 @@ export function SurviePulseBorder({ color }: Props) {
   }, [opacity]);
 
   return (
-    <Modal transparent visible animationType="none" statusBarTranslucent>
-      <View pointerEvents="none" style={StyleSheet.absoluteFillObject}>
-        <Animated.View style={[styles.border, { borderColor: color, opacity }]} />
-      </View>
-    </Modal>
+    <Animated.View
+      pointerEvents="none"
+      style={[styles.border, { borderColor: color, opacity }]}
+    />
   );
 }
 
@@ -32,5 +31,6 @@ const styles = StyleSheet.create({
   border: {
     ...StyleSheet.absoluteFillObject,
     borderWidth: 7,
+    borderRadius: 44,
   },
 });
