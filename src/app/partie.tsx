@@ -195,7 +195,6 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
   const currentTeam = state.teams[state.currentTeam];
 
   return (
-    <>
     <GameLayout
       closeIcon
       onHome={() => (state.phase === 'final' ? goHome() : setConfirmQuit(true))}
@@ -228,6 +227,10 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
         <SurvieFinalPhase state={state} onReplay={onReplay} onHome={goHome} />
       ) : null}
 
+      {(state.phase === 'play' || state.phase === 'ready') && (
+        <SurviePulseBorder color={currentTeam.color} />
+      )}
+
       <ConfirmModal
         visible={confirmQuit}
         title="Quitter la partie ?"
@@ -237,9 +240,5 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
         onConfirm={() => { setConfirmQuit(false); goHome(); }}
       />
     </GameLayout>
-    {(state.phase === 'play' || state.phase === 'ready') && (
-      <SurviePulseBorder color={currentTeam.color} />
-    )}
-    </>
   );
 }
