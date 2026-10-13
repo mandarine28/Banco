@@ -195,17 +195,12 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
   const currentTeam = state.teams[state.currentTeam];
 
   return (
+    <>
     <GameLayout
       closeIcon
       onHome={() => (state.phase === 'final' ? goHome() : setConfirmQuit(true))}
       scrollDisabled={state.phase === 'play' || state.phase === 'ready'}
-      overlay={
-        state.phase === 'play' || state.phase === 'ready' ? (
-          <SurviePulseBorder color={currentTeam.color} />
-        ) : state.phase === 'final' ? (
-          <ConfettiOverlay />
-        ) : undefined
-      }
+      overlay={state.phase === 'final' ? <ConfettiOverlay /> : undefined}
     >
       {state.phase === 'ready' ? (
         <SurvieReadyPhase
@@ -242,5 +237,9 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
         onConfirm={() => { setConfirmQuit(false); goHome(); }}
       />
     </GameLayout>
+    {(state.phase === 'play' || state.phase === 'ready') && (
+      <SurviePulseBorder color={currentTeam.color} />
+    )}
+    </>
   );
 }
