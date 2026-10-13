@@ -84,24 +84,41 @@ function ModeCard({ label, onPress, selected = false, locked = false }: ModeCard
   );
 }
 
+const LOCK_PATH =
+  'M12 1C9.24 1 7 3.24 7 6v2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6c0-2.76-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3v2H9V6c0-1.66 1.34-3 3-3zm0 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4z';
+
+function LockIcon() {
+  return (
+    <Svg width={20} height={20} viewBox="0 0 24 24">
+      <Path d={LOCK_PATH} fill="rgba(254,246,215,0.45)" />
+    </Svg>
+  );
+}
+
 type PackRowProps = {
   label: string;
   price: string;
   onPress: () => void;
+  locked?: boolean;
 };
 
-function PackRow({ label, price, onPress }: PackRowProps) {
+function PackRow({ label, price, onPress, locked = false }: PackRowProps) {
   return (
     <Pressable
-      style={styles.packRow}
-      onPress={onPress}
+      style={[styles.packRow, locked && styles.packRowLocked]}
+      onPress={locked ? undefined : onPress}
       accessibilityRole="button"
-      accessibilityLabel={`${label} — ${price}`}
+      accessibilityLabel={locked ? `${label} — verrouillé` : `${label} — ${price}`}
+      accessibilityState={{ disabled: locked }}
     >
-      <Text style={styles.packLabel}>{label}</Text>
-      <View style={styles.priceBadge}>
-        <Text style={styles.priceText}>{price}</Text>
-      </View>
+      <Text style={[styles.packLabel, locked && styles.packLabelLocked]}>{label}</Text>
+      {locked ? (
+        <LockIcon />
+      ) : (
+        <View style={styles.priceBadge}>
+          <Text style={styles.priceText}>{price}</Text>
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -144,7 +161,11 @@ export default function GameConfigScreen() {
                   selected={mode === 'classique'}
                   onPress={() => setMode('classique')}
                 />
-                <ModeCard label={t.gameMode.charades} locked onPress={() => {}} />
+                <ModeCard
+                  label={t.gameMode.charades}
+                  selected={mode === 'survie'}
+                  onPress={() => setMode('survie')}
+                />
               </View>
             </View>
 
@@ -154,6 +175,7 @@ export default function GameConfigScreen() {
               <View style={styles.packList}>
                 <PackRow label="Classique" price="0,99€" onPress={() => {}} />
                 <PackRow label="Disney" price="0,99€" onPress={() => {}} />
+                <PackRow label="Harry Potter" price="0,99€" locked onPress={() => {}} />
               </View>
             </View>
 
@@ -279,10 +301,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.cream,
   },
+  packRowLocked: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
   packLabel: {
     fontFamily: fonts.displayMedium,
     fontSize: 20,
     color: colors.cream,
+  },
+  packLabelLocked: {
+    color: 'rgba(254,246,215,0.45)',
   },
   priceBadge: {
     borderRadius: 12,

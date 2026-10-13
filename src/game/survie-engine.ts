@@ -3,7 +3,7 @@ import { planQuestions, type GameTeam } from './engine';
 
 export const SURVIE_TURN_SECONDS = 10;
 
-export type SurviePhase = 'play' | 'result' | 'final';
+export type SurviePhase = 'ready' | 'play' | 'result' | 'final';
 
 export type SurvieState = {
   teams: GameTeam[];
@@ -22,6 +22,7 @@ export type SurvieState = {
 };
 
 export type SurvieAction =
+  | { type: 'START' }
   | { type: 'VALIDATE' }
   | { type: 'PASS' }
   | { type: 'TIMEOUT' }
@@ -40,7 +41,7 @@ export function createSurvieGame(
     roundCount,
     plan: planQuestions(questions, roundCount, random),
     round: 0,
-    phase: 'play',
+    phase: 'ready',
     aliveTeams: teams.map(() => true),
     currentTeam: 0,
     jackpot: 0,
@@ -90,16 +91,21 @@ function eliminateAndAdvance(state: SurvieState): SurvieState {
   }
 
   const next = nextAliveTeam(aliveTeams, state.currentTeam);
-  return { ...state, aliveTeams, currentTeam: next };
+  return { ...state, aliveTeams, currentTeam: next, phase: 'ready' };
 }
 
 export function survieReducer(state: SurvieState, action: SurvieAction): SurvieState {
   switch (action.type) {
+    case 'START': {
+      if (state.phase !== 'ready') return state;
+      return { ...state, phase: 'play' };
+    }
+
     case 'VALIDATE': {
       if (state.phase !== 'play') return state;
       const jackpot = state.jackpot + 1;
       const next = nextAliveTeam(state.aliveTeams, state.currentTeam);
-      return { ...state, jackpot, currentTeam: next };
+      return { ...state, jackpot, currentTeam: next, phase: 'ready' };
     }
 
     case 'PASS':
@@ -115,7 +121,7 @@ export function survieReducer(state: SurvieState, action: SurvieAction): SurvieS
       return {
         ...state,
         round,
-        phase: 'play',
+        phase: 'ready',
         aliveTeams: state.teams.map(() => true),
         currentTeam: round % state.teams.length,
         jackpot: 0,

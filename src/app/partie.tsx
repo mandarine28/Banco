@@ -12,6 +12,7 @@ import { ResultPhase } from '@/components/game/ResultPhase';
 import { SurvieFinalPhase } from '@/components/game/SurvieFinalPhase';
 import { SurviePlayPhase } from '@/components/game/SurviePlayPhase';
 import { SurviePulseBorder } from '@/components/game/SurviePulseBorder';
+import { SurvieReadyPhase } from '@/components/game/SurvieReadyPhase';
 import { SurvieResultPhase } from '@/components/game/SurvieResultPhase';
 import { ConfettiOverlay } from '@/components/ConfettiOverlay';
 import { GameLayout } from '@/components/GameLayout';
@@ -197,7 +198,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
     <GameLayout
       closeIcon
       onHome={() => (state.phase === 'final' ? goHome() : setConfirmQuit(true))}
-      scrollDisabled={state.phase === 'play'}
+      scrollDisabled={state.phase === 'play' || state.phase === 'ready'}
       overlay={
         state.phase === 'play' ? (
           <SurviePulseBorder color={currentTeam.color} />
@@ -206,6 +207,12 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
         ) : undefined
       }
     >
+      {state.phase === 'ready' ? (
+        <SurvieReadyPhase
+          state={state}
+          onStart={() => dispatch({ type: 'START' })}
+        />
+      ) : null}
       {state.phase === 'play' ? (
         <SurviePlayPhase
           key={`${state.round}-${state.currentTeam}`}

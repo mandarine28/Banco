@@ -117,7 +117,7 @@ const translations: Record<Lang, Translations> = {
     gameMode: {
       modesTitle: 'Modes de jeux',
       classic: 'Classique',
-      charades: 'Mimes',
+      charades: 'Survie',
       packsTitle: 'Pack de questions',
       continueBtn: 'Continuer',
     },
@@ -125,7 +125,7 @@ const translations: Record<Lang, Translations> = {
       settingsTitle: 'Paramètre de jeux',
       teamCount: "Nombre d'équipes",
       roundCount: 'Nombre de rounds',
-      categoriesTitle: 'Catégories de questions',
+      categoriesTitle: 'Catégories',
       continueBtn: 'Continuer',
     },
     teams: {
@@ -189,7 +189,7 @@ const translations: Record<Lang, Translations> = {
     gameMode: {
       modesTitle: 'Game modes',
       classic: 'Classic',
-      charades: 'Charades',
+      charades: 'Survival',
       packsTitle: 'Question packs',
       continueBtn: 'Continue',
     },
@@ -197,7 +197,7 @@ const translations: Record<Lang, Translations> = {
       settingsTitle: 'Game settings',
       teamCount: 'Number of teams',
       roundCount: 'Number of rounds',
-      categoriesTitle: 'Question categories',
+      categoriesTitle: 'Categories',
       continueBtn: 'Continue',
     },
     teams: {
@@ -261,7 +261,7 @@ const translations: Record<Lang, Translations> = {
     gameMode: {
       modesTitle: 'Spielmodi',
       classic: 'Klassisch',
-      charades: 'Pantomime',
+      charades: 'Überleben',
       packsTitle: 'Fragenpakete',
       continueBtn: 'Weiter',
     },
@@ -269,7 +269,7 @@ const translations: Record<Lang, Translations> = {
       settingsTitle: 'Spieleinstellungen',
       teamCount: 'Anzahl Teams',
       roundCount: 'Anzahl Runden',
-      categoriesTitle: 'Fragenkategorien',
+      categoriesTitle: 'Kategorien',
       continueBtn: 'Weiter',
     },
     teams: {
@@ -333,7 +333,7 @@ const translations: Record<Lang, Translations> = {
     gameMode: {
       modesTitle: 'Modos de juego',
       classic: 'Clásico',
-      charades: 'Mímica',
+      charades: 'Supervivencia',
       packsTitle: 'Packs de preguntas',
       continueBtn: 'Continuar',
     },
@@ -341,7 +341,7 @@ const translations: Record<Lang, Translations> = {
       settingsTitle: 'Ajustes de juego',
       teamCount: 'Número de equipos',
       roundCount: 'Número de rondas',
-      categoriesTitle: 'Categorías de preguntas',
+      categoriesTitle: 'Categorías',
       continueBtn: 'Continuar',
     },
     teams: {
