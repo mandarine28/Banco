@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, Modal, StyleSheet } from 'react-native';
 
 type Actions = { showBorder: (color: string) => void; hideBorder: () => void };
 type State = { visible: boolean; color: string };
@@ -42,16 +42,18 @@ export function SurviePulseBorderRoot() {
   if (!visible) return null;
 
   return (
-    <Animated.View
-      pointerEvents="none"
-      style={[styles.border, { borderColor: color, opacity }]}
-    />
+    <Modal transparent visible animationType="none" statusBarTranslucent>
+      <Animated.View
+        pointerEvents="none"
+        style={[styles.border, { borderColor: color, opacity }]}
+      />
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   border: {
-    ...StyleSheet.absoluteFillObject,
+    flex: 1,
     borderWidth: 7,
     borderRadius: 44,
   },
