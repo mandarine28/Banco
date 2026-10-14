@@ -1,60 +1,39 @@
-import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { Animated, Modal, StyleSheet } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
-type Actions = { showBorder: (color: string) => void; hideBorder: () => void };
-type State = { visible: boolean; color: string };
+const STROKE = 7;
+const CORNER_R = 44;
+const K = 0.761;
 
-const ActionsCtx = createContext<Actions>({ showBorder: () => {}, hideBorder: () => {} });
-const StateCtx = createContext<State>({ visible: false, color: '' });
+type Props = { color: string };
 
-export function SurvieOverlayProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<State>({ visible: false, color: '' });
-  const showBorder = useCallback((color: string) => setState({ visible: true, color }), []);
-  const hideBorder = useCallback(() => setState(s => ({ ...s, visible: false })), []);
+export function SurviePulseBorder({ color }: Props) {
+  const { width, height } = useWindowDimensions();
 
-  return (
-    <ActionsCtx.Provider value={{ showBorder, hideBorder }}>
-      <StateCtx.Provider value={state}>{children}</StateCtx.Provider>
-    </ActionsCtx.Provider>
-  );
-}
+  const i = STROKE / 2;
+  const r = CORNER_R - i;
+  const c = 1 - K;
+  const x1 = i, y1 = i;
+  const x2 = width - i, y2 = height - i;
 
-export function useSurvieOverlay(): Actions {
-  return useContext(ActionsCtx);
-}
-
-export function SurviePulseBorderRoot() {
-  const { visible, color } = useContext(StateCtx);
-  const opacity = useRef(new Animated.Value(0.5)).current;
-
-  useEffect(() => {
-    if (!visible) return;
-    const anim = Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 1, duration: 700, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.3, duration: 900, useNativeDriver: true }),
-      ]),
-    );
-    anim.start();
-    return () => anim.stop();
-  }, [visible, opacity]);
-
-  if (!visible) return null;
+  const d = [
+    `M ${x1 + r} ${y1}`,
+    `L ${x2 - r} ${y1}`,
+    `C ${x2 - r * c} ${y1} ${x2} ${y1 + r * c} ${x2} ${y1 + r}`,
+    `L ${x2} ${y2 - r}`,
+    `C ${x2} ${y2 - r * c} ${x2 - r * c} ${y2} ${x2 - r} ${y2}`,
+    `L ${x1 + r} ${y2}`,
+    `C ${x1 + r * c} ${y2} ${x1} ${y2 - r * c} ${x1} ${y2 - r}`,
+    `L ${x1} ${y1 + r}`,
+    `C ${x1} ${y1 + r * c} ${x1 + r * c} ${y1} ${x1 + r} ${y1}`,
+    `Z`,
+  ].join(' ');
 
   return (
-    <Modal transparent visible animationType="none" statusBarTranslucent>
-      <Animated.View
-        pointerEvents="none"
-        style={[styles.border, { borderColor: color, opacity }]}
-      />
-    </Modal>
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <Svg width={width} height={height} pointerEvents="none">
+        <Path d={d} fill="none" stroke={color} strokeWidth={STROKE} />
+      </Svg>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  border: {
-    flex: 1,
-    borderWidth: 7,
-    borderRadius: 44,
-  },
-});

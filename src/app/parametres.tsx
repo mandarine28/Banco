@@ -6,9 +6,11 @@ import Svg, { Circle, Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
+import { offers, PACK_THEME_IDS, type ProductId } from '@/config/shop';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { useGameSettings } from '@/state/gameSettings';
+import { usePurchases } from '@/state/purchases';
 import { colors, fonts } from '@/theme';
 
 const MAX_WIDTH = 500;
@@ -97,28 +99,29 @@ function LockIcon() {
 
 type PackRowProps = {
   label: string;
-  price: string;
+  price?: string;
   onPress: () => void;
   locked?: boolean;
+  selected?: boolean;
 };
 
-function PackRow({ label, price, onPress, locked = false }: PackRowProps) {
+function PackRow({ label, price, onPress, locked = false, selected = false }: PackRowProps) {
   return (
     <Pressable
       style={[styles.packRow, locked && styles.packRowLocked]}
-      onPress={locked ? undefined : onPress}
+      onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={locked ? `${label} — verrouillé` : `${label} — ${price}`}
-      accessibilityState={{ disabled: locked }}
+      accessibilityLabel={locked ? `${label} — verrouillé, ${price}` : label}
+      accessibilityState={{ disabled: false }}
     >
       <Text style={[styles.packLabel, locked && styles.packLabelLocked]}>{label}</Text>
-      {locked ? (
-        <LockIcon />
-      ) : (
+      {selected ? (
+        <CheckBadge />
+      ) : locked && price ? (
         <View style={styles.priceBadge}>
           <Text style={styles.priceText}>{price}</Text>
         </View>
-      )}
+      ) : null}
     </Pressable>
   );
 }
@@ -127,9 +130,12 @@ export default function GameConfigScreen() {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
-  const { mode, setMode } = useGameSettings();
+  const { mode, setMode, selectedThemes, setSelectedThemes } = useGameSettings();
+  const { hasPurchased } = usePurchases();
   const { lang } = useLang();
   const t = getT(lang);
+
+  const packEntries = Object.entries(PACK_THEME_IDS) as [ProductId, string][];
 
   // Panneau bleu juste sous l'en-tête (flèche ~21px + offset 14px + marge 20px)
   const panelTop = insets.top + 68;
@@ -173,9 +179,36 @@ export default function GameConfigScreen() {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t.gameMode.packsTitle}</Text>
               <View style={styles.packList}>
-                <PackRow label="Classique" price="0,99€" onPress={() => {}} />
-                <PackRow label="Disney" price="0,99€" onPress={() => {}} />
-                <PackRow label="Harry Potter" price="0,99€" locked onPress={() => {}} />
+                <PackRow
+                  label="Classique"
+                  selected={selectedThemes.length === 0}
+                  onPress={() => setSelectedThemes([])}
+                />
+                {packEntries.map(([productId, themeId]) => {
+                  const purchased = hasPurchased(productId);
+                  const isSelected = purchased && selectedThemes.includes(themeId);
+                  const offer = offers[productId];
+                  return (
+                    <PackRow
+                      key={productId}
+                      label={offer.label}
+                      price={offer.price}
+                      locked={!purchased}
+                      selected={isSelected}
+                      onPress={() => {
+                        if (!purchased) {
+                          router.push('/boutique');
+                          return;
+                        }
+                        if (isSelected) {
+                          setSelectedThemes(selectedThemes.filter((th) => th !== themeId));
+                        } else {
+                          setSelectedThemes([...selectedThemes, themeId]);
+                        }
+                      }}
+                    />
+                  );
+                })}
               </View>
             </View>
 

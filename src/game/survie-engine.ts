@@ -19,11 +19,13 @@ export type SurvieState = {
   /** Winner of the last round (null during play). */
   roundWinner: number | null;
   scores: number[];
+  /** Canonical answers validated this round (for result screen chips). */
+  found: string[];
 };
 
 export type SurvieAction =
   | { type: 'START' }
-  | { type: 'VALIDATE' }
+  | { type: 'VALIDATE'; answer?: string }
   | { type: 'PASS' }
   | { type: 'TIMEOUT' }
   | { type: 'NEXT' };
@@ -47,6 +49,7 @@ export function createSurvieGame(
     jackpot: 0,
     roundWinner: null,
     scores: teams.map(() => 0),
+    found: [],
   };
 }
 
@@ -105,7 +108,8 @@ export function survieReducer(state: SurvieState, action: SurvieAction): SurvieS
       if (state.phase !== 'play') return state;
       const jackpot = state.jackpot + 1;
       const next = nextAliveTeam(state.aliveTeams, state.currentTeam);
-      return { ...state, jackpot, currentTeam: next, phase: 'ready' };
+      const found = action.answer ? [...state.found, action.answer] : state.found;
+      return { ...state, jackpot, currentTeam: next, found };
     }
 
     case 'PASS':
@@ -126,6 +130,7 @@ export function survieReducer(state: SurvieState, action: SurvieAction): SurvieS
         currentTeam: round % state.teams.length,
         jackpot: 0,
         roundWinner: null,
+        found: [],
       };
     }
   }

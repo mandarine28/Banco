@@ -3,7 +3,7 @@ import type { Question } from '../data/types';
 export const TURN_SECONDS = 60;
 export const MIN_BID = 1;
 /** Mise maximale : l'atteindre clôt l'enchère. Chaque question a au moins 27 réponses en base. */
-export const MAX_BID = 20;
+export const MAX_BID = 30;
 
 export type GameTeam = { name: string; color: string };
 

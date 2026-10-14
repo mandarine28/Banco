@@ -1,8 +1,10 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { getAnswers, getSubject } from '@/game/answers';
 import { survieCurrentQuestion, type SurvieState } from '@/game/survie-engine';
-import { getSubject } from '@/game/answers';
+import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 
@@ -15,55 +17,87 @@ type Props = {
 };
 
 export function SurvieResultPhase({ state, onNext, isLastRound }: Props) {
-  const insets = useSafeAreaInsets();
   const { lang } = useLang();
+  const t = getT(lang);
+  const insets = useSafeAreaInsets();
   const question = survieCurrentQuestion(state);
+
+  const [chipsScrollY, setChipsScrollY] = useState(0);
+  const [chipsContentH, setChipsContentH] = useState(0);
+  const [chipsContainerH, setChipsContainerH] = useState(0);
+
+  const THUMB_MIN_H = 28;
+  const isScrollable = chipsContentH > chipsContainerH + 4;
+  const thumbH = isScrollable
+    ? Math.max(THUMB_MIN_H, chipsContainerH * (chipsContainerH / chipsContentH))
+    : chipsContainerH;
+  const thumbMaxTop = chipsContainerH - thumbH;
+  const scrollProgress = isScrollable ? chipsScrollY / (chipsContentH - chipsContainerH) : 0;
+  const thumbTop = scrollProgress * thumbMaxTop;
+
   const rawSubject = getSubject(question, lang);
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
-  const winner = state.roundWinner !== null ? state.teams[state.roundWinner] : null;
-  const winnerBadgeText = winner ? (BADGE_TEXT_COLOR[winner.color] ?? colors.purpleDeep) : colors.purpleDeep;
+
+  const localAnswers = getAnswers(question, lang);
+  const allAnswers = [
+    ...localAnswers,
+    ...state.found.filter((a) => !localAnswers.includes(a)),
+  ];
 
   return (
     <View style={styles.wrapper}>
-      {/* Question answered */}
       <Text style={styles.questionText}>{subject}</Text>
 
-      {/* Cream panel */}
-      <View style={[styles.creamPanel, { paddingBottom: Math.max(insets.bottom + 30, 48) }]}>
-        {/* Winner + jackpot */}
-        <View style={styles.winnerSection}>
-          {winner ? (
-            <>
-              <Text style={styles.winnerLabel}>Vainqueur de la manche</Text>
-              <View style={[styles.winnerBadge, { backgroundColor: winner.color }]}>
-                <Text style={[styles.winnerName, { color: winnerBadgeText }]} numberOfLines={1}>
-                  {winner.name}
+      <Text style={styles.someAnswersLabel}>Quelques réponses qui étaient possibles</Text>
+      <View style={styles.chipsArea}>
+        <View
+          style={styles.scrollTrack}
+          onLayout={(e) => setChipsContainerH(e.nativeEvent.layout.height)}
+        >
+          {isScrollable ? (
+            <View style={[styles.scrollThumb, { height: thumbH, top: thumbTop }]} />
+          ) : (
+            <View style={[styles.scrollThumb, { height: chipsContainerH, top: 0 }]} />
+          )}
+        </View>
+        <ScrollView
+          style={styles.chipsScroll}
+          contentContainerStyle={styles.chipsGrid}
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onScroll={(e) => setChipsScrollY(e.nativeEvent.contentOffset.y)}
+          onContentSizeChange={(_, h) => setChipsContentH(h)}
+        >
+          {allAnswers.map((answer) => {
+            const found = state.found.includes(answer);
+            const label = answer.charAt(0).toUpperCase() + answer.slice(1).toLowerCase();
+            return (
+              <View key={answer} style={[styles.chip, found ? styles.chipFound : styles.chipMissed]}>
+                <Text style={[styles.chipLabel, found ? styles.chipLabelFound : styles.chipLabelMissed]}>
+                  {label}
                 </Text>
               </View>
-            </>
-          ) : (
-            <Text style={styles.winnerLabel}>Manche nulle</Text>
-          )}
-          <View style={styles.jackpotRow}>
-            <Text style={styles.jackpotLabel}>+{state.jackpot} point{state.jackpot !== 1 ? 's' : ''}</Text>
-          </View>
-        </View>
+            );
+          })}
+        </ScrollView>
+      </View>
 
-        {/* Scores */}
+      <View style={[styles.creamPanel, { paddingBottom: Math.max(insets.bottom + 30, 48) }]}>
         <View style={styles.teamsList}>
           {state.teams.map((team, i) => {
             const isWinner = i === state.roundWinner;
+            const delta = isWinner && state.jackpot > 0 ? state.jackpot : 0;
             const badgeTextColor = BADGE_TEXT_COLOR[team.color] ?? colors.purpleDeep;
             return (
-              <View key={i} style={styles.teamRow}>
+              <View key={team.name + String(i)} style={styles.teamRow}>
                 <View style={[styles.teamBadge, { backgroundColor: team.color }]}>
                   <Text style={[styles.teamBadgeText, { color: badgeTextColor }]} numberOfLines={1}>
                     {team.name}
                   </Text>
                 </View>
                 <View style={styles.scoreGroup}>
-                  {isWinner && state.jackpot > 0 ? (
-                    <Text style={styles.scoreDelta}>+{state.jackpot}</Text>
+                  {delta > 0 ? (
+                    <Text style={styles.scoreDelta}>+{delta}</Text>
                   ) : null}
                   <Text style={styles.teamScore}>{state.scores[i]}</Text>
                 </View>
@@ -75,12 +109,12 @@ export function SurvieResultPhase({ state, onNext, isLastRound }: Props) {
         <Pressable
           onPress={onNext}
           accessibilityRole="button"
-          accessibilityLabel={isLastRound ? 'Résultats finaux' : 'Manche suivante'}
+          accessibilityLabel={isLastRound ? t.result.finalResults : t.result.nextRound}
           style={({ pressed }) => [styles.btnWrap, pressed && { opacity: 0.85 }]}
         >
           <View style={styles.btnInner}>
             <Text style={styles.btnText}>
-              {isLastRound ? 'Résultats finaux' : 'Manche suivante'}
+              {isLastRound ? t.result.finalResults : t.result.nextRound}
             </Text>
           </View>
         </Pressable>
@@ -101,57 +135,81 @@ const styles = StyleSheet.create({
     lineHeight: 31,
     color: colors.cream,
     paddingHorizontal: 24,
-    paddingBottom: 20,
+    paddingBottom: 16,
+  },
+  someAnswersLabel: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 16,
+    color: colors.cream,
+    paddingHorizontal: 24,
+    marginBottom: 10,
+  },
+  chipsArea: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 12,
+    paddingHorizontal: 24,
+  },
+  scrollTrack: {
+    width: 3,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    flexShrink: 0,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  scrollThumb: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.7)',
+  },
+  chipsScroll: {
+    flex: 1,
+  },
+  chipsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    paddingBottom: 16,
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: colors.cream,
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  chipFound: {
+    backgroundColor: '#fef1cc',
+  },
+  chipMissed: {
+    backgroundColor: '#4883e5',
+  },
+  chipLabel: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 18,
+  },
+  chipLabelFound: {
+    color: colors.purpleDeep,
+  },
+  chipLabelMissed: {
+    color: colors.cream,
   },
 
   creamPanel: {
     backgroundColor: colors.cream,
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
-    paddingTop: 32,
+    paddingTop: 40,
     paddingHorizontal: 24,
-    gap: 28,
+    gap: 36,
     alignItems: 'center',
-    flex: 1,
   },
-
-  winnerSection: {
-    alignItems: 'center',
-    gap: 10,
-    width: '100%',
-  },
-  winnerLabel: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 14,
-    color: colors.purpleDeep,
-    opacity: 0.6,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
-  winnerBadge: {
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  winnerName: {
-    fontFamily: fonts.display,
-    fontSize: 28,
-  },
-  jackpotRow: {
-    backgroundColor: colors.purpleDeep,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-  },
-  jackpotLabel: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 16,
-    color: colors.cream,
-  },
-
   teamsList: {
     width: '100%',
-    gap: 12,
+    gap: 16,
   },
   teamRow: {
     flexDirection: 'row',
@@ -159,10 +217,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   teamBadge: {
+    alignSelf: 'flex-start',
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    alignSelf: 'flex-start',
   },
   teamBadgeText: {
     fontFamily: fonts.displayMedium,
@@ -185,7 +243,6 @@ const styles = StyleSheet.create({
     minWidth: 32,
     textAlign: 'right',
   },
-
   btnWrap: {
     width: '100%',
     borderRadius: 16,

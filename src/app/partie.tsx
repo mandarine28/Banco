@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { useEffect, useReducer, useState } from 'react';
-import { Keyboard } from 'react-native';
+import { useReducer, useState } from 'react';
+import { Keyboard, View } from 'react-native';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
 import { AuctionPhase } from '@/components/game/AuctionPhase';
@@ -21,7 +21,7 @@ import { contract, createGame, gameReducer, type GameTeam, isLastRound, remainin
 import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
 import { useCountdown } from '@/hooks/useCountdown';
 import { useGameSettings } from '@/state/gameSettings';
-import { useSurvieOverlay } from '@/state/survieOverlay';
+import { SurviePulseBorder } from '@/state/survieOverlay';
 import { colors, teamColors } from '@/theme';
 
 export default function GameScreen() {
@@ -191,39 +191,52 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
     createSurvieGame(teams, roundCount, filteredQuestions),
   );
   const [confirmQuit, setConfirmQuit] = useState(false);
+  const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);
+  const isPaused = pauseSource !== null;
   const goHome = () => router.dismissTo('/');
   const currentTeam = state.teams[state.currentTeam];
-  const { showBorder, hideBorder } = useSurvieOverlay();
+  const showBorder = state.phase === 'play' || state.phase === 'ready';
 
-  useEffect(() => {
-    if (state.phase === 'play' || state.phase === 'ready') {
-      showBorder(currentTeam.color);
-    } else {
-      hideBorder();
-    }
-    return hideBorder;
-  }, [state.phase, state.currentTeam, showBorder, hideBorder]);
+  const searchWeb = (query: string) => {
+    setPauseSource('search');
+    const url = query.trim()
+      ? `https://www.google.com/search?q=${encodeURIComponent(query)}`
+      : 'https://www.google.com';
+    WebBrowser.openBrowserAsync(url).catch(() => {});
+  };
 
   return (
+    <View style={{ flex: 1 }}>
     <GameLayout
       closeIcon
       onHome={() => (state.phase === 'final' ? goHome() : setConfirmQuit(true))}
-      scrollDisabled={state.phase === 'play' || state.phase === 'ready'}
-      overlay={state.phase === 'final' ? <ConfettiOverlay /> : undefined}
+      scrollDisabled={state.phase === 'play' || state.phase === 'ready' || state.phase === 'result'}
+      overlay={
+        pauseSource === 'search' && state.phase === 'play' ? (
+          <PauseModal visible onResume={() => setPauseSource(null)} />
+        ) : state.phase === 'final' ? (
+          <ConfettiOverlay />
+        ) : undefined
+      }
     >
       {state.phase === 'ready' ? (
         <SurvieReadyPhase
           state={state}
-          onStart={() => dispatch({ type: 'START' })}
+          onStart={() => { dispatch({ type: 'START' }); setPauseSource(null); }}
         />
       ) : null}
       {state.phase === 'play' ? (
         <SurviePlayPhase
           key={`${state.round}-${state.currentTeam}`}
           state={state}
-          onValidate={() => dispatch({ type: 'VALIDATE' })}
+          onValidate={(answer) => dispatch({ type: 'VALIDATE', answer })}
           onPass={() => dispatch({ type: 'PASS' })}
           onTimeout={() => dispatch({ type: 'TIMEOUT' })}
+          isPaused={isPaused}
+          onTogglePause={() =>
+            setPauseSource((s) => (s === null ? 'manual' : s === 'manual' ? null : s))
+          }
+          onWebSearch={searchWeb}
         />
       ) : null}
       {state.phase === 'result' ? (
@@ -246,5 +259,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
         onConfirm={() => { setConfirmQuit(false); goHome(); }}
       />
     </GameLayout>
+    {showBorder && <SurviePulseBorder color={currentTeam.color} />}
+    </View>
   );
 }

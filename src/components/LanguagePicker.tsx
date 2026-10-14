@@ -53,7 +53,7 @@ export function LanguagePicker() {
       >
         <View style={{ flex: 1 }}>
           {/* Dark overlay – visuel uniquement, ne capte pas les touches */}
-          <View style={[StyleSheet.absoluteFillObject, styles.backdrop]} pointerEvents="none" />
+          <View style={[StyleSheet.absoluteFill, styles.backdrop]} pointerEvents="none" />
           {/* Zone plein-écran qui ferme le dropdown au tap */}
           <Pressable style={{ flex: 1 }} onPress={() => setOpen(false)} />
           <Pressable

@@ -9,7 +9,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mandarine.banco",
-      "buildNumber": "1"
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -27,11 +30,20 @@
     "scheme": "devineuf",
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-secure-store",
+      "expo-apple-authentication",
+      "@react-native-google-signin/google-signin"
     ],
     "backgroundColor": "#266DE4",
     "splash": {
       "backgroundColor": "#266DE4"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ebce9ac2-79fd-4702-993d-57cce4659082"
+      }
     }
   }
 }
