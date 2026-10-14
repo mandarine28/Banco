@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 import { useReducer, useState } from 'react';
-import { Keyboard, View } from 'react-native';
+import { Keyboard, Linking, View } from 'react-native';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
 import { AuctionPhase } from '@/components/game/AuctionPhase';
@@ -93,7 +92,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
     const url = query.trim()
       ? `https://www.google.com/search?q=${encodeURIComponent(query)}`
       : 'https://www.google.com';
-    WebBrowser.openBrowserAsync(url).catch(() => {});
+    Linking.openURL(url).catch(() => {});
   };
   // Bandeau : l'équipe qui enchérit, puis celle qui a remporté l'enchère.
   const bannerTeam =
@@ -202,7 +201,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
     const url = query.trim()
       ? `https://www.google.com/search?q=${encodeURIComponent(query)}`
       : 'https://www.google.com';
-    WebBrowser.openBrowserAsync(url).catch(() => {});
+    Linking.openURL(url).catch(() => {});
   };
 
   return (
