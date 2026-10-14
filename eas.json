@@ -16,7 +16,12 @@
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_wWLDKUUohnRlqbYSzbSPvUnwXba",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ackokcmchudysnbyexkmk.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFja29jbWNodWR5c25ieWV4a21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3MTAxMTksImV4cCI6MjEwNzI4NjExOX0.uuN3BpbO4HZ99zh8Z3krHAwY5m6A8XvtKPEuIRBCx1I"
+      }
     }
   },
   "submit": {
