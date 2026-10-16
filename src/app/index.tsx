@@ -1,15 +1,18 @@
 import { type Href, router } from 'expo-router';
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
+import { HomeMascot } from '@/components/HomeMascot';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { AnimatedLogo } from '@/components/Logo';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const MAX_WIDTH = 500;
 
@@ -45,18 +48,32 @@ export default function HomeScreen() {
   const subtitleTop = logoTop + logoHeight + 12;
 
   const go = (href: Href) => () => router.push(href);
+  // Haut du panneau bleu (mesuré) : la mascotte se cache derrière
+  const [panelTop, setPanelTop] = useState(0);
+  // Incrémenté à chaque toucher : la mascotte prend peur et son timer repart
+  const [interactionKey, setInteractionKey] = useState(0);
 
   return (
     <View style={styles.page}>
-      <View style={[styles.screen, { width, height }]}>
+      <View
+        style={[styles.screen, { width, height }]}
+        // Phase de capture : voit chaque toucher sans le voler aux boutons
+        onStartShouldSetResponderCapture={() => {
+          setInteractionKey((k) => k + 1);
+          return false;
+        }}
+      >
 
         {/* Fond crème + pattern blobs orange */}
         <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.cream }]}>
           <HomeBackground width={width} height={height} />
         </View>
 
+        {/* Mascotte en idle — rendue avant le panneau pour passer derrière */}
+        <HomeMascot width={width} panelTop={panelTop} interactionKey={interactionKey} />
+
         {/* Panneau bleu (arrondi en haut) — auto-sized, collé en bas */}
-        <View style={[styles.bluePanel, { width }]}>
+        <View style={[styles.bluePanel, { width }]} onLayout={(e) => setPanelTop(e.nativeEvent.layout.y)}>
           <CreamPatternSvg width={width} height={360} opacity={0.04} fill="#ffffff" />
           <View style={[styles.panelContent, { paddingBottom: Math.max(64, insets.bottom + 30) }]}>
             {/* Jouer — fond crème, texte marine */}

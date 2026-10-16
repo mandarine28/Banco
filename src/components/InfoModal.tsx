@@ -1,7 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 export type InfoContent = { title: string; message: string };
 

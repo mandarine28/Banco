@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
@@ -9,6 +9,7 @@ import { contract, currentQuestion, type GameState, opponent } from '@/game/engi
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
@@ -205,9 +206,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.cream,
   },
-  // Blanc : lisible sur le fond navy de la manche (Figma « Réponses à trouver »)
   amountBadge: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.cream,
     borderRadius: 12,
     height: 85,
     paddingHorizontal: 12,

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Keyboard, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -7,8 +7,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getAnswers, getSubject, normalize } from '@/game/answers';
 import { survieCurrentQuestion, SURVIE_TURN_SECONDS, type SurvieState } from '@/game/survie-engine';
 import { useCountdown } from '@/hooks/useCountdown';
+import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 const WARNING_SECONDS = 3;
@@ -78,6 +80,7 @@ export function SurviePlayPhase({
 }: Props) {
   const insets = useSafeAreaInsets();
   const { lang } = useLang();
+  const t = getT(lang);
   const remainingMs = useCountdown(true, isPaused, SURVIE_TURN_SECONDS, onTimeout);
   const question = survieCurrentQuestion(state);
   const currentTeam = state.teams[state.currentTeam];
@@ -225,7 +228,7 @@ export function SurviePlayPhase({
           style={styles.searchInput}
         />
         {query.length > 0 ? (
-          <Pressable onPress={() => setQuery('')} hitSlop={8} accessibilityRole="button" accessibilityLabel="Effacer">
+          <Pressable onPress={() => setQuery('')} hitSlop={8} accessibilityRole="button" accessibilityLabel={t.survie.clear}>
             <Text style={styles.clearBtn}>✕</Text>
           </Pressable>
         ) : (
@@ -233,7 +236,7 @@ export function SurviePlayPhase({
             onPress={() => onWebSearch(question.subject)}
             hitSlop={8}
             accessibilityRole="button"
-            accessibilityLabel="Rechercher en ligne"
+            accessibilityLabel={t.play.searchOnline}
           >
             <View style={{ width: 24, height: 24 }}>
               <Animated.View
@@ -264,7 +267,7 @@ export function SurviePlayPhase({
       {!searchFocused && query.length === 0 ? (
         <View style={styles.jackpotMiddle}>
           <View style={styles.jackpotSection}>
-            <Text style={styles.jackpotLabel}>Points en jeu :</Text>
+            <Text style={styles.jackpotLabel}>{t.result.pointsAtStake}</Text>
             <View style={styles.jackpotCard}>
               <Text style={styles.jackpotValue}>{state.jackpot}</Text>
             </View>
@@ -276,8 +279,9 @@ export function SurviePlayPhase({
       <View style={[styles.buttons, { paddingBottom: Math.max(insets.bottom + 16, 24) }]}>
         <Pressable
           onPress={handleValidate}
+          sound="correct"
           accessibilityRole="button"
-          accessibilityLabel="Valider la réponse"
+          accessibilityLabel={t.survie.validateA11y}
           style={styles.validerWrap}
         >
           {({ pressed }) => (
@@ -287,7 +291,7 @@ export function SurviePlayPhase({
               end={{ x: 1, y: 0 }}
               style={[styles.validerInner, pressed && { opacity: 0.85 }]}
             >
-              <Text style={styles.validerText}>VALIDER</Text>
+              <Text style={styles.validerText}>{t.survie.validate}</Text>
             </LinearGradient>
           )}
         </Pressable>
@@ -295,11 +299,11 @@ export function SurviePlayPhase({
         <Pressable
           onPress={onPass}
           accessibilityRole="button"
-          accessibilityLabel="Passer — élimination"
+          accessibilityLabel={t.survie.passA11y}
           style={({ pressed }) => [styles.passerWrap, pressed && { opacity: 0.8 }]}
         >
           <View style={styles.passerInner}>
-            <Text style={styles.passerText}>PASSER</Text>
+            <Text style={styles.passerText}>{t.auction.pass}</Text>
           </View>
         </Pressable>
       </View>
@@ -356,8 +360,7 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    // Bleu : visible sur le fond navy de la partie
-    backgroundColor: colors.purple,
+    backgroundColor: colors.purpleDeep,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -438,7 +441,7 @@ const styles = StyleSheet.create({
     color: colors.cream,
   },
   jackpotCard: {
-    backgroundColor: colors.purple,
+    backgroundColor: colors.purpleDeep,
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 28,

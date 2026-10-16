@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -16,6 +15,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 import { useAuth } from '@/state/auth';
 import { colors } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 GoogleSignin.configure({
   iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,

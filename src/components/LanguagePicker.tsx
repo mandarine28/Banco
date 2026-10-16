@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 
 import { FlagIcon } from '@/components/FlagIcon';
 import { useLang } from '@/lib/LangContext';
 import { LANGUAGES } from '@/lib/i18n';
 import type { Lang } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 export function LanguagePicker() {
   const { lang, setLang } = useLang();

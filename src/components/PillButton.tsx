@@ -1,8 +1,9 @@
 import { FontAwesome6 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 type PriceProps = {
   price: string;

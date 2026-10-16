@@ -1,7 +1,8 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 type Props = {
   value: number;
@@ -21,6 +22,7 @@ export function Stepper({ value, min, max, onChange, color, shadowColor, label }
   return (
     <View style={styles.row}>
       <Pressable
+        sound="upDown"
         onPress={() => onChange(value - 1)}
         disabled={!canDecrease}
         accessibilityRole="button"
@@ -37,6 +39,7 @@ export function Stepper({ value, min, max, onChange, color, shadowColor, label }
         </View>
       </View>
       <Pressable
+        sound="upDown"
         onPress={() => onChange(value + 1)}
         disabled={!canIncrease}
         accessibilityRole="button"

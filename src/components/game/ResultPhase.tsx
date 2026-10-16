@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getAnswers, getSubject } from '@/game/answers';
@@ -7,6 +7,7 @@ import { contract, currentQuestion, type GameState, isSuccess, opponent } from '
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 // Même lookup que AuctionPhase / PlayPhase
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   MPLUSRounded1c_400Regular,
@@ -13,12 +13,18 @@ import { View } from 'react-native';
 
 import { SplashScreenAnimator } from '@/components/SplashScreenAnimator';
 import { LangProvider } from '@/lib/LangContext';
+import { preloadSounds } from '@/lib/sounds';
 import { AuthProvider } from '@/state/auth';
 import { GameSettingsProvider } from '@/state/gameSettings';
 import { PurchasesProvider } from '@/state/purchases';
 import { colors } from '@/theme';
 
 export default function RootLayout() {
+  // Sons chargés au démarrage : le premier déclenchement en partie est immédiat
+  useEffect(() => {
+    preloadSounds();
+  }, []);
+
   const [fontsLoaded] = useFonts({
     MPLUSRounded1c_400Regular,
     MPLUSRounded1c_500Medium,
@@ -35,7 +41,10 @@ export default function RootLayout() {
             <LangProvider>
               <GameSettingsProvider>
                 <StatusBar style="dark" />
-                <Stack screenOptions={{ headerShown: false, animation: 'fade' }} />
+                <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+                  {/* Pas de swipe retour en partie : on quitte uniquement via la croix */}
+                  <Stack.Screen name="partie" options={{ gestureEnabled: false }} />
+                </Stack>
               </GameSettingsProvider>
             </LangProvider>
           </PurchasesProvider>

@@ -1,17 +1,24 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Circle, Path } from 'react-native-svg';
+import Svg, { Path, SvgXml } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
-import { offers, PACK_THEME_IDS, type ProductId } from '@/config/shop';
+import {
+  ENCHERE_ACTIF_XML,
+  ENCHERE_INACTIF_XML,
+  SURVIE_ACTIF_XML,
+  SURVIE_INACTIF_XML,
+} from '@/components/modeIllustrationsXml';
+import { ModeRulesModal, type RulesMode } from '@/components/ModeRules';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { useGameSettings } from '@/state/gameSettings';
-import { usePurchases } from '@/state/purchases';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const MAX_WIDTH = 500;
 
@@ -42,86 +49,45 @@ function SettingIcon({ size }: { size: number }) {
   );
 }
 
-function CheckBadge() {
-  return (
-    <Svg width={28} height={28} viewBox="0 0 28 28">
-      <Circle cx="14" cy="14" r="14" fill={colors.purpleDeep} />
-      <Path
-        d="M8 15 L12 19 L20 10"
-        stroke="#FFFFFF"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-    </Svg>
-  );
-}
-
 type ModeCardProps = {
-  label: string;
+  title: string;
+  description: string;
+  /** Illustrations Figma : actif quand le mode est sélectionné, inactif sinon. */
+  activeXml: string;
+  inactiveXml: string;
   onPress: () => void;
-  selected?: boolean;
-  locked?: boolean;
-};
-
-function ModeCard({ label, onPress, selected = false, locked = false }: ModeCardProps) {
-  return (
-    <Pressable
-      style={[styles.modeCard, selected ? styles.modeCardCream : styles.modeCardBlue]}
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ selected, disabled: locked }}
-    >
-      <Text style={[styles.modeLabel, { color: selected ? colors.purpleDeep : colors.cream }]}>
-        {label}
-      </Text>
-      {selected && (
-        <View style={styles.checkBadge}>
-          <CheckBadge />
-        </View>
-      )}
-    </Pressable>
-  );
-}
-
-const LOCK_PATH =
-  'M12 1C9.24 1 7 3.24 7 6v2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6c0-2.76-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3v2H9V6c0-1.66 1.34-3 3-3zm0 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4z';
-
-function LockIcon() {
-  return (
-    <Svg width={20} height={20} viewBox="0 0 24 24">
-      <Path d={LOCK_PATH} fill="rgba(254,246,215,0.45)" />
-    </Svg>
-  );
-}
-
-type PackRowProps = {
-  label: string;
-  price?: string;
-  onPress: () => void;
-  locked?: boolean;
+  /** Ouvre la fenêtre des règles du mode. */
+  onInfo: () => void;
+  /** Libellé VoiceOver du bouton info. */
+  infoLabel: string;
   selected?: boolean;
 };
 
-function PackRow({ label, price, onPress, locked = false, selected = false }: PackRowProps) {
+function ModeCard({ title, description, activeXml, inactiveXml, onPress, onInfo, infoLabel, selected = false }: ModeCardProps) {
+  const textColor = selected ? colors.purpleDeep : colors.cream;
   return (
     <Pressable
-      style={[styles.packRow, locked && styles.packRowLocked]}
+      style={[styles.modeCard, selected ? styles.modeCardSelected : styles.modeCardBlue]}
       onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={locked ? `${label} — verrouillé, ${price}` : label}
-      accessibilityState={{ disabled: false }}
+      accessibilityRole="radio"
+      accessibilityLabel={`${title}. ${description}`}
+      accessibilityState={{ selected, checked: selected }}
     >
-      <Text style={[styles.packLabel, locked && styles.packLabelLocked]}>{label}</Text>
-      {selected ? (
-        <CheckBadge />
-      ) : locked && price ? (
-        <View style={styles.priceBadge}>
-          <Text style={styles.priceText}>{price}</Text>
+      <View style={styles.modeText}>
+        <View style={styles.modeTitleRow}>
+          <Text style={[styles.modeTitle, { color: textColor }]}>{title}</Text>
+          {/* Pressable imbriqué : ouvre les règles sans sélectionner le mode */}
+          <Pressable onPress={onInfo} hitSlop={12} accessibilityRole="button" accessibilityLabel={infoLabel}>
+            <View style={[styles.infoIcon, { borderColor: textColor }]}>
+              <Text style={[styles.infoIconText, { color: textColor }]}>i</Text>
+            </View>
+          </Pressable>
         </View>
-      ) : null}
+        <Text style={[styles.modeDesc, { color: textColor }]}>{description}</Text>
+      </View>
+      <View style={styles.modeIllustration} pointerEvents="none">
+        <SvgXml xml={selected ? activeXml : inactiveXml} width="100%" height="100%" />
+      </View>
     </Pressable>
   );
 }
@@ -130,12 +96,10 @@ export default function GameConfigScreen() {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
-  const { mode, setMode, selectedThemes, setSelectedThemes } = useGameSettings();
-  const { hasPurchased } = usePurchases();
+  const { mode, setMode } = useGameSettings();
   const { lang } = useLang();
   const t = getT(lang);
-
-  const packEntries = Object.entries(PACK_THEME_IDS) as [ProductId, string][];
+  const [rulesMode, setRulesMode] = useState<RulesMode | null>(null);
 
   // Panneau bleu juste sous l'en-tête (flèche ~21px + offset 14px + marge 20px)
   const panelTop = insets.top + 68;
@@ -152,67 +116,41 @@ export default function GameConfigScreen() {
         <View style={[styles.bluePanel, { top: panelTop }]}>
           <CreamPatternSvg width={width} height={height - panelTop} opacity={0.04} fill="#ffffff" />
           <ScrollView
-            contentContainerStyle={[
-              styles.panelContent,
-              { paddingBottom: Math.max(64, insets.bottom + 30) },
-            ]}
+            style={styles.panelScroll}
+            contentContainerStyle={[styles.panelContent, { paddingBottom: 24 }]}
             showsVerticalScrollIndicator={false}
           >
             {/* Modes de jeux */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t.gameMode.modesTitle}</Text>
-              <View style={styles.modeRow}>
+              <View style={styles.modeList} accessibilityRole="radiogroup">
                 <ModeCard
-                  label={t.gameMode.classic}
+                  title={t.gameMode.classic}
+                  description={t.gameMode.classicDesc}
+                  activeXml={ENCHERE_ACTIF_XML}
+                  inactiveXml={ENCHERE_INACTIF_XML}
                   selected={mode === 'classique'}
                   onPress={() => setMode('classique')}
+                  onInfo={() => setRulesMode('auction')}
+                  infoLabel={`${t.pages.rules} : ${t.gameMode.classic}`}
                 />
                 <ModeCard
-                  label={t.gameMode.charades}
+                  title={t.gameMode.charades}
+                  description={t.gameMode.survieDesc}
+                  activeXml={SURVIE_ACTIF_XML}
+                  inactiveXml={SURVIE_INACTIF_XML}
                   selected={mode === 'survie'}
                   onPress={() => setMode('survie')}
+                  onInfo={() => setRulesMode('survie')}
+                  infoLabel={`${t.pages.rules} : ${t.gameMode.charades}`}
                 />
               </View>
             </View>
 
-            {/* Pack de questions */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>{t.gameMode.packsTitle}</Text>
-              <View style={styles.packList}>
-                <PackRow
-                  label="Classique"
-                  selected={selectedThemes.length === 0}
-                  onPress={() => setSelectedThemes([])}
-                />
-                {packEntries.map(([productId, themeId]) => {
-                  const purchased = hasPurchased(productId);
-                  const isSelected = purchased && selectedThemes.includes(themeId);
-                  const offer = offers[productId];
-                  return (
-                    <PackRow
-                      key={productId}
-                      label={offer.label}
-                      price={offer.price}
-                      locked={!purchased}
-                      selected={isSelected}
-                      onPress={() => {
-                        if (!purchased) {
-                          router.push('/boutique');
-                          return;
-                        }
-                        if (isSelected) {
-                          setSelectedThemes(selectedThemes.filter((th) => th !== themeId));
-                        } else {
-                          setSelectedThemes([...selectedThemes, themeId]);
-                        }
-                      }}
-                    />
-                  );
-                })}
-              </View>
-            </View>
+          </ScrollView>
 
-            {/* Continuer */}
+          {/* Continuer — toujours visible, comme sur les autres écrans */}
+          <View style={[styles.continuerWrapper, { paddingBottom: Math.max(24, insets.bottom + 16) }]}>
             <Pressable
               onPress={() => router.push('/parametres-partie')}
               accessibilityRole="button"
@@ -227,7 +165,7 @@ export default function GameConfigScreen() {
                 <Text style={styles.btnContinuerText}>{t.gameMode.continueBtn}</Text>
               </LinearGradient>
             </Pressable>
-          </ScrollView>
+          </View>
         </View>
 
         {/* En-tête : retour + drapeau + paramètres */}
@@ -255,6 +193,8 @@ export default function GameConfigScreen() {
           </Pressable>
         </View>
       </View>
+
+      <ModeRulesModal mode={rulesMode} onClose={() => setRulesMode(null)} />
     </View>
   );
 }
@@ -278,6 +218,13 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 48,
     overflow: 'hidden',
   },
+  panelScroll: {
+    flex: 1,
+  },
+  continuerWrapper: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
+  },
   panelContent: {
     paddingHorizontal: 24,
     paddingTop: 48,
@@ -291,74 +238,61 @@ const styles = StyleSheet.create({
     fontSize: 26,
     color: '#fef1cc',
   },
-  modeRow: {
-    flexDirection: 'row',
-    gap: 24,
+  modeList: {
+    gap: 16,
   },
+  // Figma 62:323 : carte pleine largeur, texte à gauche, illustration débordante à droite
   modeCard: {
-    flex: 1,
     borderRadius: 16,
     padding: 24,
-    alignItems: 'center',
+    minHeight: 150,
     justifyContent: 'center',
+    overflow: 'hidden',
   },
-  modeCardCream: {
-    backgroundColor: colors.cream,
+  modeCardSelected: {
+    backgroundColor: '#fef9e6',
   },
   modeCardBlue: {
     backgroundColor: '#4883E5',
     borderWidth: 1,
     borderColor: colors.cream,
   },
-  modeLabel: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 20,
+  modeText: {
+    width: '48%',
+    gap: 6,
   },
-  checkBadge: {
-    position: 'absolute',
-    top: -9,
-    right: -4,
-  },
-  packList: {
-    gap: 16,
-  },
-  packRow: {
+  modeTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-    borderRadius: 16,
-    minHeight: 51,
-    backgroundColor: '#4883E5',
-    borderWidth: 1,
-    borderColor: colors.cream,
+    gap: 8,
   },
-  packRowLocked: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  packLabel: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 20,
-    color: colors.cream,
-  },
-  packLabelLocked: {
-    color: 'rgba(254,246,215,0.45)',
-  },
-  priceBadge: {
-    borderRadius: 12,
-    backgroundColor: colors.pink,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+  infoIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  priceText: {
-    fontFamily: fonts.displayMedium,
+  infoIconText: {
+    fontFamily: fonts.display,
+    fontSize: 13,
+    lineHeight: 16,
+  },
+  modeTitle: {
+    fontFamily: fonts.display,
     fontSize: 20,
-    lineHeight: 30,
-    color: colors.cream,
+  },
+  modeDesc: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 15,
+  },
+  modeIllustration: {
+    position: 'absolute',
+    right: -8,
+    bottom: 0,
+    width: 184,
+    height: 145,
   },
   btnContinuer: {
     height: 51,

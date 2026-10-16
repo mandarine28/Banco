@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Rect } from 'react-native-svg';
 
@@ -16,6 +16,7 @@ import { type Lang, getT } from '@/lib/i18n';
 import { ROUND_LIMITS, TEAM_LIMITS, useGameSettings } from '@/state/gameSettings';
 import { usePurchases } from '@/state/purchases';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const MAX_WIDTH = 500;
 
@@ -81,6 +82,7 @@ function StepperRow({ label, value, min, max, onChange }: StepperRowProps) {
       <View style={styles.stepper}>
         <Pressable
           onPress={() => onChange(Math.max(min, value - 1))}
+          sound="upDown"
           disabled={atMin}
           hitSlop={12}
           accessibilityRole="button"
@@ -94,6 +96,7 @@ function StepperRow({ label, value, min, max, onChange }: StepperRowProps) {
         </View>
         <Pressable
           onPress={() => onChange(Math.min(max, value + 1))}
+          sound="upDown"
           disabled={atMax}
           hitSlop={12}
           accessibilityRole="button"
@@ -121,7 +124,8 @@ export default function MatchSettingsScreen() {
     ...BASE_CATEGORIES,
     {
       id: 'harry-potter',
-      label: 'Harry Potter',
+      label: 'Sorciers & Magie',
+      labelByLang: { en: 'Wizards & Magic', de: 'Zauberer & Magie', es: 'Magos y magia' },
       available: hasHarryPotter,
       locked: !hasHarryPotter,
     },
@@ -268,6 +272,9 @@ export default function MatchSettingsScreen() {
                           isLocked ? styles.chipPurchaseLocked : isActive ? styles.chipActive : styles.chipInactive,
                         ]}
                         onPress={isLocked ? handleLockedPress : () => toggleCategory(cat.id)}
+                        // Cocher → son « bonne réponse », décocher ou catégorie verrouillée → clic principal
+                        sound={isLocked || isActive ? 'tap' : 'correct'}
+                        soundOnRelease
                         accessibilityRole="checkbox"
                         accessibilityState={{ checked: isActive, disabled: isLocked }}
                         accessibilityLabel={isLocked ? `${displayLabel} — verrouillé` : displayLabel}
@@ -298,14 +305,14 @@ export default function MatchSettingsScreen() {
           {/* Toast chip verrouillé */}
           {lockedToast && (
             <View style={[styles.lockedToast, { bottom: toastBottom }]}>
-              <Text style={styles.lockedToastText}>Disponible dans la boutique</Text>
+              <Text style={styles.lockedToastText}>{t.shop.lockedAvailable}</Text>
               <Pressable
                 style={styles.lockedToastCta}
                 onPress={() => { setLockedToast(false); router.push('/boutique'); }}
                 accessibilityRole="button"
-                accessibilityLabel="Aller à la boutique"
+                accessibilityLabel={t.shop.goToShop}
               >
-                <Text style={styles.lockedToastCtaText}>Boutique</Text>
+                <Text style={styles.lockedToastCtaText}>{t.pages.shop}</Text>
               </Pressable>
             </View>
           )}

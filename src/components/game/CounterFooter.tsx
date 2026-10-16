@@ -1,6 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 type Props = {
   left: number;
@@ -16,6 +17,8 @@ export function CounterFooter({ left, amount, onAdjust }: Props) {
       <View style={styles.row}>
         <Pressable
           onPress={() => onAdjust(1)}
+          // − compte une réponse trouvée : même son qu'une réponse cochée
+          sound="correct"
           accessibilityRole="button"
           accessibilityLabel="Valider une réponse"
           style={styles.btn}
@@ -29,6 +32,7 @@ export function CounterFooter({ left, amount, onAdjust }: Props) {
 
         <Pressable
           onPress={() => onAdjust(-1)}
+          sound="upDown"
           disabled={plusDisabled}
           accessibilityRole="button"
           accessibilityLabel="Annuler une réponse"
@@ -76,8 +80,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 12,
-    // Blanc : lisible sur le fond navy de la manche
-    backgroundColor: colors.white,
+    backgroundColor: colors.cream,
     alignItems: 'center',
     justifyContent: 'center',
   },

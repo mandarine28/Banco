@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -17,6 +16,7 @@ import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { type Team, useGameSettings } from '@/state/gameSettings';
 import { colors, fonts, teamColors } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const MAX_WIDTH = 500;
 const NAME_MAX_LENGTH = 16;

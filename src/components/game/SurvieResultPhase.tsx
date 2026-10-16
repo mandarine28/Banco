@@ -1,12 +1,14 @@
-import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getAnswers, getSubject } from '@/game/answers';
 import { survieCurrentQuestion, type SurvieState } from '@/game/survie-engine';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
+import { playSound } from '@/lib/sounds';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
@@ -20,6 +22,11 @@ export function SurvieResultPhase({ state, onNext, isLastRound }: Props) {
   const { lang } = useLang();
   const t = getT(lang);
   const insets = useSafeAreaInsets();
+  const hasWinner = state.roundWinner !== null;
+
+  useEffect(() => {
+    if (hasWinner) playSound('roundWon');
+  }, [hasWinner]);
   const question = survieCurrentQuestion(state);
 
   const [chipsScrollY, setChipsScrollY] = useState(0);
@@ -48,7 +55,7 @@ export function SurvieResultPhase({ state, onNext, isLastRound }: Props) {
     <View style={styles.wrapper}>
       <Text style={styles.questionText}>{subject}</Text>
 
-      <Text style={styles.someAnswersLabel}>Quelques réponses qui étaient possibles</Text>
+      <Text style={styles.someAnswersLabel}>{t.survie.someAnswers}</Text>
       <View style={styles.chipsArea}>
         <View
           style={styles.scrollTrack}

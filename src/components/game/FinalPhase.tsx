@@ -1,9 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { type GameState, ranking } from '@/game/engine';
+import { getT } from '@/lib/i18n';
+import { useLang } from '@/lib/LangContext';
+import { playSound } from '@/lib/sounds';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
@@ -14,6 +19,12 @@ type Props = {
 };
 
 export function FinalPhase({ state, onReplay, onHome }: Props) {
+  const { lang } = useLang();
+  const t = getT(lang);
+
+  useEffect(() => {
+    playSound('gameWon');
+  }, []);
   const insets = useSafeAreaInsets();
   const rows = ranking(state);
   const winners = rows.filter((r) => r.rank === 1);
@@ -26,10 +37,10 @@ export function FinalPhase({ state, onReplay, onHome }: Props) {
         {/* Title + winner badge — centré */}
         <View style={styles.titleSection}>
           {isEquality ? (
-            <Text style={styles.titleText}>ÉGALITÉ !</Text>
+            <Text style={styles.titleText}>{t.final.tie}</Text>
           ) : (
             <>
-              <Text style={styles.titleText}>Victoire de</Text>
+              <Text style={styles.titleText}>{t.final.victoryOf}</Text>
               <View style={[styles.winnerBadge, { backgroundColor: winners[0].team.color }]}>
                 <Text
                   style={[styles.winnerBadgeText, { color: BADGE_TEXT_COLOR[winners[0].team.color] ?? colors.purpleDeep }]}
@@ -69,7 +80,7 @@ export function FinalPhase({ state, onReplay, onHome }: Props) {
         <Pressable
           onPress={onReplay}
           accessibilityRole="button"
-          accessibilityLabel="Revanche"
+          accessibilityLabel={t.final.rematch}
           style={styles.btnWrapOrange}
         >
           <LinearGradient
@@ -78,7 +89,7 @@ export function FinalPhase({ state, onReplay, onHome }: Props) {
             end={{ x: 1, y: 0 }}
             style={styles.btnOrangeInner}
           >
-            <Text style={styles.btnOrangeText}>Revanche</Text>
+            <Text style={styles.btnOrangeText}>{t.final.rematch}</Text>
           </LinearGradient>
         </Pressable>
 
@@ -86,11 +97,11 @@ export function FinalPhase({ state, onReplay, onHome }: Props) {
         <Pressable
           onPress={onHome}
           accessibilityRole="button"
-          accessibilityLabel="Menu principal"
+          accessibilityLabel={t.final.home}
           style={styles.btnWrapWhite}
         >
           <View style={styles.btnWhiteInner}>
-            <Text style={styles.btnWhiteText}>Menu principal</Text>
+            <Text style={styles.btnWhiteText}>{t.final.home}</Text>
           </View>
         </Pressable>
       </View>

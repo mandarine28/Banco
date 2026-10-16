@@ -1,13 +1,20 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
+import { AccessibilityInfo, Animated, Easing, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getSubject } from '@/game/answers';
 import { canPass, currentQuestion, type GameState, MAX_BID, minimumBid } from '@/game/engine';
 import { useLang } from '@/lib/LangContext';
+import { playSound } from '@/lib/sounds';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
+
+// Pulse du carré de mise après une surenchère : gonfle vite (+18 %), la nouvelle mise s'affiche au sommet, puis revient
+const PULSE_SCALE = 0.18;
+const PULSE_UP_MS = 70;
+const PULSE_DOWN_MS = 160;
 
 const BADGE_TEXT_COLOR: Record<string, string> = {
   '#EF1ACC': '#FEF1CC',
@@ -17,16 +24,18 @@ type Props = {
   state: GameState;
   onBid: (amount: number) => void;
   onPass: () => void;
+  /** L'équipe précédente vient de miser (pas de passer) : pulse de la nouvelle mise à l'arrivée. */
+  justRaised?: boolean;
 };
 
-export function AuctionPhase({ state, onBid, onPass }: Props) {
+export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props) {
   const insets = useSafeAreaInsets();
   const { lang } = useLang();
   const t = getT(lang);
   const { auction } = state;
   const bidder = state.teams[auction.current];
   const min = minimumBid(state);
-  const [bidText, setBidText] = useState(String(min));
+  const [bidText, setBidText] = useState(String(justRaised && auction.highest ? auction.highest.amount : min));
   const parsed = parseInt(bidText, 10);
   const amount = isNaN(parsed) ? min : Math.max(Math.min(parsed, MAX_BID), min);
   const passAllowed = canPass(state);
@@ -36,6 +45,27 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
   // Ref synchronisé à chaque render pour les callbacks d'interval
   const currentAmountRef = useRef(amount);
   currentAmountRef.current = amount;
+
+  const pulse = useState(() => new Animated.Value(0))[0];
+
+  // Surenchère : on arrive sur la mise qui vient d'être faite, le carré gonfle et passe à la mise à battre.
+  // Une seule fois à l'arrivée : les + / − ensuite ne déclenchent rien.
+  const popOnRaise = useEffectEvent(() => {
+    if (!justRaised || !auction.highest) return;
+    const showMin = () => setBidText(String(min));
+    AccessibilityInfo.isReduceMotionEnabled()
+      .catch(() => false)
+      .then((reduceMotion) => {
+        if (reduceMotion) return showMin();
+        Animated.timing(pulse, { toValue: 1, duration: PULSE_UP_MS, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => {
+          showMin();
+          Animated.timing(pulse, { toValue: 0, duration: PULSE_DOWN_MS, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+        });
+      });
+  });
+  useEffect(() => {
+    popOnRaise();
+  }, []);
 
   const decTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const decIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -72,11 +102,8 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
     };
   }, []);
 
-  useEffect(() => {
-    setBidText(String(min));
-  }, [min]);
-
   const step = (dir: 1 | -1) => {
+    playSound('upDown');
     setBidText((prev) => {
       const n = parseInt(prev, 10);
       const cur = isNaN(n) ? min : Math.max(Math.min(n, MAX_BID), min);
@@ -174,7 +201,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
             <Text style={styles.stepBtn}>-</Text>
           </Pressable>
 
-          <View style={styles.bidBadge}>
+          <Animated.View style={[styles.bidBadge, { transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1 + PULSE_SCALE] }) }] }]}>
             <TextInput
               value={bidText}
               onChangeText={handleBidTextChange}
@@ -184,7 +211,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
               style={styles.bidValue}
               accessibilityLabel="Montant de la mise"
             />
-          </View>
+          </Animated.View>
 
           <Pressable
             onPressIn={() => startHold(1)}
@@ -200,6 +227,7 @@ export function AuctionPhase({ state, onBid, onPass }: Props) {
         <View style={styles.btnStack}>
           <Pressable
             onPress={() => onBid(amount)}
+            sound="bid"
             accessibilityRole="button"
             accessibilityLabel={`Miser ${amount}`}
             style={styles.btnMiserWrap}
@@ -339,7 +367,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 50,
   },
+  // zIndex : le carré gonflé passe par-dessus les boutons voisins sans les pousser
   bidBadge: {
+    zIndex: 1,
     backgroundColor: colors.purpleDeep,
     borderRadius: 12,
     paddingHorizontal: 12,

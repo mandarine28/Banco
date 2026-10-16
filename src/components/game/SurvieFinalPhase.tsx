@@ -1,9 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { survieRanking, type SurvieState } from '@/game/survie-engine';
+import { getT } from '@/lib/i18n';
+import { useLang } from '@/lib/LangContext';
+import { playSound } from '@/lib/sounds';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
@@ -14,6 +19,12 @@ type Props = {
 };
 
 export function SurvieFinalPhase({ state, onReplay, onHome }: Props) {
+  const { lang } = useLang();
+  const t = getT(lang);
+
+  useEffect(() => {
+    playSound('gameWon');
+  }, []);
   const insets = useSafeAreaInsets();
   const rows = survieRanking(state);
   const winners = rows.filter((r) => r.rank === 1);
@@ -24,10 +35,10 @@ export function SurvieFinalPhase({ state, onReplay, onHome }: Props) {
       <View style={styles.topSection}>
         <View style={styles.titleSection}>
           {isEquality ? (
-            <Text style={styles.titleText}>ÉGALITÉ !</Text>
+            <Text style={styles.titleText}>{t.final.tie}</Text>
           ) : (
             <>
-              <Text style={styles.titleText}>Victoire de</Text>
+              <Text style={styles.titleText}>{t.final.victoryOf}</Text>
               <View style={[styles.winnerBadge, { backgroundColor: winners[0].team.color }]}>
                 <Text
                   style={[styles.winnerBadgeText, { color: BADGE_TEXT_COLOR[winners[0].team.color] ?? colors.purpleDeep }]}
@@ -61,20 +72,20 @@ export function SurvieFinalPhase({ state, onReplay, onHome }: Props) {
       </View>
 
       <View style={styles.buttons}>
-        <Pressable onPress={onReplay} accessibilityRole="button" accessibilityLabel="Revanche" style={styles.btnWrapOrange}>
+        <Pressable onPress={onReplay} accessibilityRole="button" accessibilityLabel={t.final.rematch} style={styles.btnWrapOrange}>
           <LinearGradient
             colors={['#fb940e', '#f2c512']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.btnOrangeInner}
           >
-            <Text style={styles.btnOrangeText}>Revanche</Text>
+            <Text style={styles.btnOrangeText}>{t.final.rematch}</Text>
           </LinearGradient>
         </Pressable>
 
-        <Pressable onPress={onHome} accessibilityRole="button" accessibilityLabel="Menu principal" style={styles.btnWrapWhite}>
+        <Pressable onPress={onHome} accessibilityRole="button" accessibilityLabel={t.final.home} style={styles.btnWrapWhite}>
           <View style={styles.btnWhiteInner}>
-            <Text style={styles.btnWhiteText}>Menu principal</Text>
+            <Text style={styles.btnWhiteText}>{t.final.home}</Text>
           </View>
         </Pressable>
       </View>

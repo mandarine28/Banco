@@ -33,7 +33,16 @@
       "expo-font",
       "expo-secure-store",
       "expo-apple-authentication",
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      [
+        "expo-audio",
+        {
+          "enableBackgroundPlayback": false,
+          "recordAudioAndroid": false,
+          "microphonePermission": false
+        }
+      ],
+      "expo-asset"
     ],
     "backgroundColor": "#266DE4",
     "splash": {

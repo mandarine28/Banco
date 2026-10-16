@@ -4,3 +4,7 @@ export const socialLinks = {
   instagram: 'https://www.instagram.com',
   facebook: 'https://www.facebook.com',
 } as const;
+
+// Assistance (écran Réglages) — site hébergé sur GitHub Pages (dépôt banco-site).
+export const supportEmail = 'komplo.app@gmail.com';
+export const privacyUrl = 'https://mandarine28.github.io/banco-site/confidentialite.html';

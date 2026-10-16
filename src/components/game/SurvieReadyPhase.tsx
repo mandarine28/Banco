@@ -1,12 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { getSubject } from '@/game/answers';
 import { survieCurrentQuestion, type SurvieState } from '@/game/survie-engine';
+import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
@@ -21,6 +23,7 @@ type Props = {
 export function SurvieReadyPhase({ state, onStart }: Props) {
   const insets = useSafeAreaInsets();
   const { lang } = useLang();
+  const t = getT(lang);
   const question = survieCurrentQuestion(state);
   const rawSubject = getSubject(question, lang);
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
@@ -32,7 +35,7 @@ export function SurvieReadyPhase({ state, onStart }: Props) {
       <View style={styles.topGroup}>
         <View style={styles.roundBadge}>
           <Text style={styles.roundText}>
-            Round {state.round + 1}/{state.roundCount}
+            {t.ready.round} {state.round + 1}/{state.roundCount}
           </Text>
         </View>
 
@@ -42,7 +45,7 @@ export function SurvieReadyPhase({ state, onStart }: Props) {
               {team.name}
             </Text>
           </View>
-          <Text style={styles.opensText}>ouvre la survie</Text>
+          <Text style={styles.opensText}>{t.survie.opens}</Text>
         </View>
 
         <View style={styles.questionCard}>
@@ -54,7 +57,7 @@ export function SurvieReadyPhase({ state, onStart }: Props) {
         <Pressable
           onPress={onStart}
           accessibilityRole="button"
-          accessibilityLabel="Jouer"
+          accessibilityLabel={t.ready.play}
           style={({ pressed }) => [{ opacity: pressed ? 0.88 : 1 }]}
         >
           <LinearGradient
@@ -63,7 +66,7 @@ export function SurvieReadyPhase({ state, onStart }: Props) {
             end={{ x: 1, y: 0 }}
             style={styles.jouerBtn}
           >
-            <Text style={styles.jouerText}>JOUER</Text>
+            <Text style={styles.jouerText}>{t.ready.play}</Text>
           </LinearGradient>
         </Pressable>
 
@@ -72,7 +75,7 @@ export function SurvieReadyPhase({ state, onStart }: Props) {
             <Path d={BULB_PATH} fill={colors.purpleDeep} />
           </Svg>
           <Text style={styles.tipText}>
-            Désignez 1 seul maître du jeu pour maintenir le rythme !
+            {t.survie.tip}
           </Text>
         </View>
       </View>

@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 /** Écran provisoire pour les routes pas encore développées. */
 export function ComingSoon({ title }: { title: string }) {

@@ -1,8 +1,9 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { colors } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 type Props = {
   icon: ReactNode;

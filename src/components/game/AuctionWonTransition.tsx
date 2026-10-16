@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, useWindowDimensions } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Animated, Easing, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SvgXml } from 'react-native-svg';
 
@@ -9,8 +9,10 @@ import { TransitionTitle } from '@/components/game/TransitionTitle';
 import type { GameTeam } from '@/game/engine';
 import { useOverlayTimeline } from '@/hooks/useOverlayTimeline';
 import { useLang } from '@/lib/LangContext';
+import { playSound } from '@/lib/sounds';
 import { getT } from '@/lib/i18n';
 import { colors } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 // Figma « transition-1 » : étape 1 (fond bleu, badge) → étape 2 (fond navy, badge descend, mascotte monte)
 // Timings Figma : entrée ease-out 300 ms → délai 1 ms → spring « Gentle » 800 ms → délai 800 ms → sortie ease-in-out 300 ms
@@ -42,6 +44,10 @@ export function AuctionWonTransition({ team, onReveal, onDone }: Props) {
   const opacity = useState(() => new Animated.Value(0))[0];
   const badgeIn = useState(() => new Animated.Value(0))[0];
   const step2 = useState(() => new Animated.Value(0))[0];
+
+  useEffect(() => {
+    playSound('roundWon');
+  }, []);
 
   const skip = useOverlayTimeline({
     opacity,

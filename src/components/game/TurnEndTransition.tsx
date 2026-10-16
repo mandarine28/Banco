@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Animated, Easing, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Animated, Easing, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { ConfettiOverlay } from '@/components/ConfettiOverlay';
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
@@ -7,12 +7,15 @@ import { TransitionTitle } from '@/components/game/TransitionTitle';
 import type { GameTeam } from '@/game/engine';
 import { useOverlayTimeline } from '@/hooks/useOverlayTimeline';
 import { useLang } from '@/lib/LangContext';
+import { playSound } from '@/lib/sounds';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
-// Figma « transitions end » (453:6153), sur fond navy (accessibilité) :
-// - missedBid : navy → gris
-// - madeBid / roundWon : navy, rebond du badge + confettis
+// Figma « transitions end » (453:6153) :
+// - missedBid : bleu des écrans de jeu → gris
+// - madeBid : bleu, rebond du badge + confettis
+// - eliminated (survie, PASSER / temps écoulé) : même rendu que missedBid
 // Timings : entrée ease-out 300 ms → délai 1 ms → étape 2 ease-in-out 800 ms → délai 1200 ms → sortie ease-out 300 ms
 const ENTER_MS = 300;
 const STEP1_HOLD_MS = 1;
@@ -20,20 +23,19 @@ const STEP2_MS = 800;
 const HOLD_MS = 1200;
 const FADE_MS = 300;
 const FAILURE_GREY = '#798291';
-// Pattern : 1 % sur navy, 4 % sur gris
-const PATTERN_NAVY_OPACITY = 0.01;
-const PATTERN_GREY_OPACITY = 0.04;
+// Pattern à 4 % sur bleu/gris
+const PATTERN_OPACITY = 0.04;
 // Figma : titre centré à 98 pt au-dessus du milieu de l'écran
 const TITLE_OFFSET = 98;
 const BADGE_POP_SCALE = 1.12;
 const GENTLE_SPRING = { stiffness: 100, damping: 15, mass: 1 };
 
-export type TurnEndKind = 'madeBid' | 'missedBid' | 'roundWon';
+export type TurnEndKind = 'madeBid' | 'missedBid' | 'eliminated';
 
 type Props = {
   team: GameTeam;
   kind: TurnEndKind;
-  /** madeBid : réponses trouvées ; missedBid : objectif de la mise ; roundWon : points gagnés. */
+  /** madeBid : réponses trouvées ; missedBid : objectif de la mise ; eliminated : points en jeu. */
   count: number;
   onReveal: () => void;
   onDone: () => void;
@@ -43,19 +45,15 @@ export function TurnEndTransition({ team, kind, count, onReveal, onDone }: Props
   const { width, height } = useWindowDimensions();
   const { lang } = useLang();
   const t = getT(lang);
-  const success = kind !== 'missedBid';
+  const success = kind === 'madeBid';
+
+  useEffect(() => {
+    if (success) playSound('roundWon');
+  }, [success]);
 
   const opacity = useState(() => new Animated.Value(0))[0];
   const step2 = useState(() => new Animated.Value(0))[0];
   const badgeScale = useState(() => new Animated.Value(1))[0];
-  const [showConfetti, setShowConfetti] = useState(false);
-
-  // Confettis lancés avec l'étape 2
-  useEffect(() => {
-    if (!success) return;
-    const id = setTimeout(() => setShowConfetti(true), ENTER_MS + STEP1_HOLD_MS);
-    return () => clearTimeout(id);
-  }, [success]);
 
   const skip = useOverlayTimeline({
     opacity,
@@ -94,13 +92,8 @@ export function TurnEndTransition({ team, kind, count, onReveal, onDone }: Props
     },
   });
 
-  const subtitle = { madeBid: t.result.madeBid, missedBid: t.result.missedBid, roundWon: t.result.roundWon }[kind];
-  const label = { madeBid: t.result.foundCount, missedBid: t.result.toFind, roundWon: t.result.pointsWon }[kind];
-  // Le pattern « grossit » de 1 % à 4 % en même temps que le passage au gris
-  const greyPatternOpacity = step2.interpolate({
-    inputRange: [0, 1],
-    outputRange: [PATTERN_NAVY_OPACITY / PATTERN_GREY_OPACITY, 1],
-  });
+  const subtitle = { madeBid: t.result.madeBid, missedBid: t.result.missedBid, eliminated: t.result.eliminated }[kind];
+  const label = { madeBid: t.result.foundCount, missedBid: t.result.toFind, eliminated: t.result.pointsAtStake }[kind];
 
   return (
     <Animated.View style={[StyleSheet.absoluteFill, { opacity }]}>
@@ -110,17 +103,14 @@ export function TurnEndTransition({ team, kind, count, onReveal, onDone }: Props
         accessibilityRole="button"
         accessibilityLabel={`${team.name} ${subtitle}. ${label} ${count}`}
       >
-        {success ? (
-          <CreamPatternSvg width={Math.min(width, 500)} height={height} opacity={PATTERN_NAVY_OPACITY} fill="#ffffff" />
-        ) : (
-          <>
-            <Animated.View style={[StyleSheet.absoluteFill, styles.grey, { opacity: step2 }]} />
-            <Animated.View style={[StyleSheet.absoluteFill, { opacity: greyPatternOpacity }]}>
-              {/* Même largeur max que GameLayout */}
-              <CreamPatternSvg width={Math.min(width, 500)} height={height} opacity={PATTERN_GREY_OPACITY} fill="#ffffff" />
-            </Animated.View>
-          </>
-        )}
+        {success ? null : <Animated.View style={[StyleSheet.absoluteFill, styles.grey, { opacity: step2 }]} />}
+        {/* Même largeur max que GameLayout */}
+        <CreamPatternSvg
+          width={Math.min(width, 500)}
+          height={height}
+          opacity={PATTERN_OPACITY}
+          fill="#ffffff"
+        />
 
         <Animated.View style={[styles.title, { transform: [{ scale: badgeScale }] }]}>
           <TransitionTitle team={team} subtitle={subtitle} />
@@ -133,7 +123,8 @@ export function TurnEndTransition({ team, kind, count, onReveal, onDone }: Props
           </View>
         </View>
 
-        {showConfetti ? <ConfettiOverlay /> : null}
+        {/* Confettis dès la 1re frame : la réussite se comprend immédiatement */}
+        {success ? <ConfettiOverlay /> : null}
       </Pressable>
     </Animated.View>
   );
@@ -145,7 +136,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: TITLE_OFFSET * 2,
-    backgroundColor: colors.purpleDeep,
+    backgroundColor: colors.purple,
     overflow: 'hidden',
   },
   grey: {
@@ -167,7 +158,7 @@ const styles = StyleSheet.create({
     color: colors.cream,
   },
   countBox: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.cream,
     borderRadius: 12,
     height: 85,
     minWidth: 85,

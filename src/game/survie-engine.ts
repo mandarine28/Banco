@@ -2,6 +2,8 @@ import type { Question } from '../data/types';
 import { planQuestions, type GameTeam } from './engine';
 
 export const SURVIE_TURN_SECONDS = 10;
+/** La cagnotte démarre à 1 : même si la 1re équipe sèche d'entrée, la manche rapporte un point. */
+export const SURVIE_START_JACKPOT = 1;
 
 export type SurviePhase = 'ready' | 'play' | 'result' | 'final';
 
@@ -14,7 +16,7 @@ export type SurvieState = {
   /** Teams still active in the current round. */
   aliveTeams: boolean[];
   currentTeam: number;
-  /** Total correct answers given this round — the jackpot. */
+  /** Points en jeu : SURVIE_START_JACKPOT + bonnes réponses de la manche. */
   jackpot: number;
   /** Winner of the last round (null during play). */
   roundWinner: number | null;
@@ -46,7 +48,7 @@ export function createSurvieGame(
     phase: 'ready',
     aliveTeams: teams.map(() => true),
     currentTeam: 0,
-    jackpot: 0,
+    jackpot: SURVIE_START_JACKPOT,
     roundWinner: null,
     scores: teams.map(() => 0),
     found: [],
@@ -128,7 +130,7 @@ export function survieReducer(state: SurvieState, action: SurvieAction): SurvieS
         phase: 'ready',
         aliveTeams: state.teams.map(() => true),
         currentTeam: round % state.teams.length,
-        jackpot: 0,
+        jackpot: SURVIE_START_JACKPOT,
         roundWinner: null,
         found: [],
       };

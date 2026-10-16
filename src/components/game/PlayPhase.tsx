@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { getSubject, localizedQuestion, normalize, searchAnswers, suggestions } from '@/game/answers';
@@ -7,6 +7,7 @@ import { contract, currentQuestion, type GameState, TURN_SECONDS } from '@/game/
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 const WARNING_SECONDS = 10;
@@ -269,7 +270,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
           <View style={styles.noResult}>
             <Text style={styles.noResultText}>{t.play.notInDatabase(query.trim().toUpperCase())}</Text>
             <View style={styles.noResultActions}>
-              <Pressable onPress={() => { handleToggle(query.trim().toUpperCase()); inputRef.current?.blur(); Keyboard.dismiss(); showToast(); }} style={styles.actionBtn} accessibilityRole="button">
+              <Pressable onPress={() => { handleToggle(query.trim().toUpperCase()); inputRef.current?.blur(); Keyboard.dismiss(); showToast(); }} sound="correct" style={styles.actionBtn} accessibilityRole="button">
                 <Text style={styles.actionBtnText}>{t.play.validateAnyway}</Text>
               </Pressable>
               <Pressable onPress={handleWebSearch} style={[styles.actionBtn, styles.actionBtnAlt]} accessibilityRole="button">
@@ -360,6 +361,8 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
                 <Pressable
                   key={label}
                   onPress={() => handleToggle(label)}
+                  sound={found ? false : 'correct'}
+                  soundOnRelease
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: found }}
                   accessibilityLabel={label}
@@ -424,7 +427,7 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: colors.purple,
+    backgroundColor: colors.purpleDeep,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -432,7 +435,7 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: colors.purple,
+    backgroundColor: colors.purpleDeep,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -530,7 +533,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 8,
     alignSelf: 'center',
-    backgroundColor: colors.purple,
+    backgroundColor: colors.purpleDeep,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,

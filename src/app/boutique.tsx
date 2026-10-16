@@ -1,14 +1,17 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import type { ProductId } from '@/config/shop';
+import { useLang } from '@/lib/LangContext';
+import { getT } from '@/lib/i18n';
 import { usePurchases } from '@/state/purchases';
 import { colors, fonts } from '@/theme';
+import { Pressable } from '@/components/Pressable';
 
 const BACK_PATH = 'M20 12H4M10 6L4 12L10 18';
 
@@ -18,11 +21,7 @@ const SETTING_PATH =
 type Pack = {
   id: string;
   productId?: ProductId;
-  title: string;
-  bullets: string[];
-  price: string;
   borderColor: string;
-  image?: ReturnType<typeof require>;
   comingSoon?: boolean;
 };
 
@@ -30,32 +29,30 @@ const PACKS: Pack[] = [
   {
     id: 'harry-potter',
     productId: 'packHarryPotter',
-    title: 'Harry Potter',
-    bullets: ['130 questions', 'Films & livres'],
-    price: '0,99€',
     borderColor: colors.lavender,
-    image: require('../../assets/Images/harry-potter.webp'),
   },
   {
     id: 'nintendo',
-    title: 'Nintendo & Rétro-gaming',
-    bullets: ['130 questions', 'NES à Switch'],
     comingSoon: true,
-    price: '0,99€',
     borderColor: colors.cream,
-    image: require('../../assets/Images/Nintendo.webp'),
   },
 ];
 
 type PackCardProps = {
   pack: Pack;
+  /** Prix localisé de l'App Store ; badge masqué tant qu'il n'est pas connu. */
+  price?: string;
   purchased: boolean;
   purchasing: boolean;
   onPurchase: () => void;
 };
 
-function PackCard({ pack, purchased, purchasing, onPurchase }: PackCardProps) {
+function PackCard({ pack, price, purchased, purchasing, onPurchase }: PackCardProps) {
   const dimmed = pack.comingSoon;
+  const { lang } = useLang();
+  const t = getT(lang);
+  const bullets = t.shop.packBullets[pack.id] ?? [];
+  const title = t.shop.packTitles[pack.id] ?? pack.id;
 
   return (
     <View style={styles.cardContainer}>
@@ -63,10 +60,10 @@ function PackCard({ pack, purchased, purchasing, onPurchase }: PackCardProps) {
         <View style={styles.cardInner}>
           <View style={[styles.card, { borderColor: pack.borderColor }]}>
             <View style={styles.cardLeft}>
-              <Text style={styles.cardTitle} numberOfLines={2}>{pack.title}</Text>
-              <View style={styles.bulletsAndImage}>
+              <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
+              <View style={styles.bulletsRow}>
                 <View style={styles.bullets}>
-                  {pack.bullets.map((b, i) => (
+                  {bullets.map((b, i) => (
                     <View key={i} style={styles.bulletRow}>
                       <View style={styles.bulletDot} />
                       <Text style={styles.bulletText}>{b}</Text>
@@ -74,28 +71,24 @@ function PackCard({ pack, purchased, purchasing, onPurchase }: PackCardProps) {
                   ))}
                   <View style={styles.bulletsSpacer} />
                 </View>
-                {pack.image
-                  ? <Image source={pack.image} style={styles.imagePlaceholder} resizeMode="cover" />
-                  : <View style={styles.imagePlaceholder} />
-                }
               </View>
             </View>
 
             {purchased ? (
               <View style={styles.unlockedButton}>
-                <Text style={styles.unlockedText}>Pack débloqué ✓</Text>
+                <Text style={styles.unlockedText}>{t.shop.unlocked}</Text>
               </View>
             ) : (
               <Pressable
                 style={styles.ctaButton}
                 accessibilityRole="button"
-                accessibilityLabel={`Débloquer ${pack.title}`}
+                accessibilityLabel={price ? `${t.shop.unlockA11y(title)}, ${price}` : t.shop.unlockA11y(title)}
                 disabled={pack.comingSoon || purchasing}
                 onPress={onPurchase}
               >
                 {purchasing
                   ? <ActivityIndicator color={colors.purpleDeep} />
-                  : <Text style={styles.ctaText}>Débloquer le pack</Text>
+                  : <Text style={styles.ctaText}>{t.shop.unlock}</Text>
                 }
               </Pressable>
             )}
@@ -103,13 +96,13 @@ function PackCard({ pack, purchased, purchasing, onPurchase }: PackCardProps) {
 
           {purchased ? (
             <View style={styles.unlockedBadge} pointerEvents="none">
-              <Text style={styles.unlockedBadgeText}>Débloqué</Text>
+              <Text style={styles.unlockedBadgeText}>{t.shop.unlockedBadge}</Text>
             </View>
-          ) : (
+          ) : price ? (
             <View style={styles.priceBadge} pointerEvents="none">
-              <Text style={styles.priceText}>{pack.price}</Text>
+              <Text style={styles.priceText}>{price}</Text>
             </View>
-          )}
+          ) : null}
         </View>
       </View>
 
@@ -121,7 +114,7 @@ function PackCard({ pack, purchased, purchasing, onPurchase }: PackCardProps) {
             end={{ x: 1, y: 0 }}
             style={styles.comingSoonBadge}
           >
-            <Text style={styles.comingSoonText}>Bientôt disponible</Text>
+            <Text style={styles.comingSoonText}>{t.shop.comingSoon}</Text>
           </LinearGradient>
         </View>
       )}
@@ -132,9 +125,11 @@ function PackCard({ pack, purchased, purchasing, onPurchase }: PackCardProps) {
 export default function BoutiqueScreen() {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
-  const { hasPurchased, purchase, restorePurchases, isLoading, error } = usePurchases();
+  const { hasPurchased, prices, purchase, restorePurchases, isLoading, error } = usePurchases();
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
+  const { lang } = useLang();
+  const t = getT(lang);
 
   async function handlePurchase(pack: Pack) {
     if (!pack.productId) return;
@@ -149,7 +144,12 @@ export default function BoutiqueScreen() {
   async function handleRestore() {
     setRestoring(true);
     try {
-      await restorePurchases();
+      const info = await restorePurchases();
+      // Apple exige un retour explicite : succès ou rien à restaurer (l'échec s'affiche via error)
+      if (info) {
+        const restored = Object.keys(info.entitlements.active).length > 0;
+        Alert.alert(restored ? t.shop.restoredTitle : t.shop.restore, restored ? t.shop.restoredMsg : t.shop.nothingToRestore);
+      }
     } finally {
       setRestoring(false);
     }
@@ -165,7 +165,7 @@ export default function BoutiqueScreen() {
           onPress={() => router.back()}
           hitSlop={12}
           accessibilityRole="button"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t.shop.back}
         >
           <Svg width={34} height={20} viewBox="0 0 24 24" fill="none">
             <Path
@@ -182,7 +182,7 @@ export default function BoutiqueScreen() {
           onPress={() => router.push('/reglages')}
           hitSlop={12}
           accessibilityRole="button"
-          accessibilityLabel="Paramètres"
+          accessibilityLabel={t.shop.settings}
         >
           <Svg width={24} height={24} viewBox="0 0 24 24">
             <Path d={SETTING_PATH} fill={colors.cream} />
@@ -195,16 +195,17 @@ export default function BoutiqueScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 32 }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.sectionTitle}>Pack de questions</Text>
+        <Text style={styles.sectionTitle}>{t.shop.packsTitle}</Text>
 
         {error && (
-          <Text style={styles.errorText}>{error}</Text>
+          <Text style={styles.errorText}>{t.shop.errors[error]}</Text>
         )}
 
         {PACKS.map(pack => (
           <PackCard
             key={pack.id}
             pack={pack}
+            price={pack.productId ? prices[pack.productId] : undefined}
             purchased={!!pack.productId && hasPurchased(pack.productId)}
             purchasing={purchasingId === pack.id}
             onPurchase={() => handlePurchase(pack)}
@@ -216,11 +217,11 @@ export default function BoutiqueScreen() {
           onPress={handleRestore}
           disabled={isLoading || restoring}
           accessibilityRole="button"
-          accessibilityLabel="Restaurer les achats"
+          accessibilityLabel={t.shop.restore}
         >
           {restoring
             ? <ActivityIndicator color={colors.cream} size="small" />
-            : <Text style={styles.restoreText}>Restaurer les achats</Text>
+            : <Text style={styles.restoreText}>{t.shop.restore}</Text>
           }
         </Pressable>
       </ScrollView>
@@ -286,10 +287,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.cream,
   },
-  bulletsAndImage: {
+  bulletsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 24,
   },
   bullets: {
     gap: 3,
@@ -312,12 +312,6 @@ const styles = StyleSheet.create({
   },
   bulletsSpacer: {
     height: 6,
-  },
-  imagePlaceholder: {
-    flex: 1,
-    height: 96,
-    borderRadius: 6,
-    backgroundColor: 'rgba(255,255,255,0.08)',
   },
   ctaButton: {
     backgroundColor: '#fffbf5',

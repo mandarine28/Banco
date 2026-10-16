@@ -32,7 +32,11 @@ export function useOverlayTimeline({ opacity, intro, exitMs, exitEasing, onRevea
       exited = true;
       running?.stop();
       reveal();
-      Animated.timing(opacity, { toValue: 0, ...exitConfig(), useNativeDriver: true }).start(() => done());
+      running = Animated.timing(opacity, { toValue: 0, ...exitConfig(), useNativeDriver: true });
+      // finished=false → démonté en plein fondu (ex. remplacé par une nouvelle transition) : ne pas notifier
+      running.start(({ finished }) => {
+        if (finished) done();
+      });
     };
     skipRef.current = exit;
 
