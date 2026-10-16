@@ -22,6 +22,9 @@ type Translations = {
     play: string;
     holdsPhone: string;
     answers: string;
+    wonAuction: string;
+    yourTurn: string;
+    yourStart: string;
   };
   play: {
     searchPlaceholder: string;
@@ -77,6 +80,12 @@ type Translations = {
   result: {
     nextRound: string;
     finalResults: string;
+    madeBid: string;
+    missedBid: string;
+    toFind: string;
+    foundCount: string;
+    roundWon: string;
+    pointsWon: string;
   };
 };
 
@@ -96,6 +105,9 @@ const translations: Record<Lang, Translations> = {
       play: 'JOUER',
       holdsPhone: "tient l'appareil",
       answers: 'répond',
+      wonAuction: 'remporte les enchères',
+      yourTurn: 'à vous de jouer !',
+      yourStart: 'à vous de commencer',
     },
     play: {
       searchPlaceholder: 'Vérifier une réponse',
@@ -150,6 +162,12 @@ const translations: Record<Lang, Translations> = {
     },
     result: {
       nextRound: 'MANCHE SUIVANTE',
+      madeBid: 'tu as réussi ta mise',
+      missedBid: 'tu as loupé ta mise',
+      toFind: 'Réponses à trouver :',
+      foundCount: 'Réponses trouvées :',
+      roundWon: 'remporte la manche',
+      pointsWon: 'Points gagnés :',
       finalResults: 'RÉSULTATS',
     },
   },
@@ -168,6 +186,9 @@ const translations: Record<Lang, Translations> = {
       play: 'PLAY',
       holdsPhone: 'holds the phone',
       answers: 'answers',
+      wonAuction: 'wins the auction',
+      yourTurn: 'your turn!',
+      yourStart: 'you start!',
     },
     play: {
       searchPlaceholder: 'Check an answer',
@@ -222,6 +243,12 @@ const translations: Record<Lang, Translations> = {
     },
     result: {
       nextRound: 'NEXT ROUND',
+      madeBid: 'you made your bid',
+      missedBid: 'you missed your bid',
+      toFind: 'Answers to find:',
+      foundCount: 'Answers found:',
+      roundWon: 'wins the round',
+      pointsWon: 'Points won:',
       finalResults: 'RESULTS',
     },
   },
@@ -240,6 +267,9 @@ const translations: Record<Lang, Translations> = {
       play: 'SPIELEN',
       holdsPhone: 'hält das Gerät',
       answers: 'antwortet',
+      wonAuction: 'gewinnt die Auktion',
+      yourTurn: 'ihr seid dran!',
+      yourStart: 'ihr fangt an!',
     },
     play: {
       searchPlaceholder: 'Antwort prüfen',
@@ -294,6 +324,12 @@ const translations: Record<Lang, Translations> = {
     },
     result: {
       nextRound: 'NÄCHSTE RUNDE',
+      madeBid: 'Gebot geschafft',
+      missedBid: 'Gebot verfehlt',
+      toFind: 'Zu findende Antworten:',
+      foundCount: 'Gefundene Antworten:',
+      roundWon: 'gewinnt die Runde',
+      pointsWon: 'Gewonnene Punkte:',
       finalResults: 'ERGEBNISSE',
     },
   },
@@ -312,6 +348,9 @@ const translations: Record<Lang, Translations> = {
       play: 'JUGAR',
       holdsPhone: 'tiene el dispositivo',
       answers: 'responde',
+      wonAuction: 'gana la subasta',
+      yourTurn: '¡os toca jugar!',
+      yourStart: '¡empezáis vosotros!',
     },
     play: {
       searchPlaceholder: 'Verificar respuesta',
@@ -366,6 +405,12 @@ const translations: Record<Lang, Translations> = {
     },
     result: {
       nextRound: 'RONDA SIGUIENTE',
+      madeBid: 'has cumplido tu apuesta',
+      missedBid: 'has fallado tu apuesta',
+      toFind: 'Respuestas por encontrar:',
+      foundCount: 'Respuestas encontradas:',
+      roundWon: 'gana la ronda',
+      pointsWon: 'Puntos ganados:',
       finalResults: 'RESULTADOS',
     },
   },

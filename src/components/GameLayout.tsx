@@ -32,9 +32,13 @@ type Props = {
   overlay?: ReactNode;
   /** Affiche une croix (×) au lieu de la flèche retour — pour les écrans de jeu où "retour" = quitter. */
   closeIcon?: boolean;
+  /** Fond de l'écran (défaut : bleu). */
+  background?: string;
+  /** Opacité du pattern (défaut : 4 %). */
+  patternOpacity?: number;
 };
 
-export function GameLayout({ onHome, children, footer, scrollDisabled = false, overlay, closeIcon = false }: Props) {
+export function GameLayout({ onHome, children, footer, scrollDisabled = false, overlay, closeIcon = false, background = colors.purple, patternOpacity = 0.04 }: Props) {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
@@ -43,9 +47,9 @@ export function GameLayout({ onHome, children, footer, scrollDisabled = false, o
   const [headerHeight, setHeaderHeight] = useState(0);
 
   return (
-    <View style={styles.page}>
-      <View style={[styles.screen, { width, height }]}>
-        <CreamPatternSvg width={width} height={height} opacity={0.04} fill="#ffffff" />
+    <View style={[styles.page, { backgroundColor: background }]}>
+      <View style={[styles.screen, { width, height, backgroundColor: background }]}>
+        <CreamPatternSvg width={width} height={height} opacity={patternOpacity} fill="#ffffff" />
 
         {/* En-tête : retour (onHome) + paramètres */}
         <View

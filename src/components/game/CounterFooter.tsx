@@ -76,14 +76,15 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 12,
-    backgroundColor: colors.purpleDeep,
+    // Blanc : lisible sur le fond navy de la manche
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgeText: {
     fontFamily: fonts.displayMedium,
     fontSize: 40,
-    color: colors.cream,
+    color: colors.purpleDeep,
   },
   caption: {
     fontFamily: fonts.displayMedium,

@@ -356,7 +356,8 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: colors.purpleDeep,
+    // Bleu : visible sur le fond navy de la partie
+    backgroundColor: colors.purple,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -437,7 +438,7 @@ const styles = StyleSheet.create({
     color: colors.cream,
   },
   jackpotCard: {
-    backgroundColor: colors.purpleDeep,
+    backgroundColor: colors.purple,
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 28,

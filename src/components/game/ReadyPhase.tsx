@@ -205,8 +205,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.cream,
   },
+  // Blanc : lisible sur le fond navy de la manche (Figma « Réponses à trouver »)
   amountBadge: {
-    backgroundColor: colors.purpleDeep,
+    backgroundColor: colors.white,
     borderRadius: 12,
     height: 85,
     paddingHorizontal: 12,
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
   amountText: {
     fontFamily: fonts.displayMedium,
     fontSize: 48,
-    color: colors.cream,
+    color: colors.purpleDeep,
   },
   btnWrap: {
     width: '100%',

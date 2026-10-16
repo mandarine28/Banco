@@ -4,10 +4,13 @@ import { Keyboard, Linking, View } from 'react-native';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
 import { AuctionPhase } from '@/components/game/AuctionPhase';
+import { AuctionWonTransition } from '@/components/game/AuctionWonTransition';
 import { CounterFooter } from '@/components/game/CounterFooter';
+import { PlayIntroTransition } from '@/components/game/PlayIntroTransition';
 import { PlayPhase } from '@/components/game/PlayPhase';
 import { ReadyPhase } from '@/components/game/ReadyPhase';
 import { ResultPhase } from '@/components/game/ResultPhase';
+import { TurnEndTransition } from '@/components/game/TurnEndTransition';
 import { SurvieFinalPhase } from '@/components/game/SurvieFinalPhase';
 import { SurviePlayPhase } from '@/components/game/SurviePlayPhase';
 import { SurvieReadyPhase } from '@/components/game/SurvieReadyPhase';
@@ -16,7 +19,7 @@ import { ConfettiOverlay } from '@/components/ConfettiOverlay';
 import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal, PauseModal } from '@/components/InfoModal';
 import { questions } from '@/data/questions';
-import { contract, createGame, gameReducer, type GameTeam, isLastRound, remaining, TURN_SECONDS } from '@/game/engine';
+import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSuccess, opponent, remaining, TURN_SECONDS } from '@/game/engine';
 import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
 import { useCountdown } from '@/hooks/useCountdown';
 import { useGameSettings } from '@/state/gameSettings';
@@ -54,6 +57,13 @@ export default function GameScreen() {
   );
 }
 
+// Fond navy + pattern 1 % pendant la manche (accessibilité) : de l'écran prêt jusqu'au résultat, dans les deux modes
+function roundBackground(phase: string) {
+  return phase === 'ready' || phase === 'play' || phase === 'result'
+    ? { background: colors.purpleDeep, patternOpacity: 0.01 }
+    : {};
+}
+
 type GameProps = {
   teams: GameTeam[];
   roundCount: number;
@@ -68,16 +78,27 @@ function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
     selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
   const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, filteredQuestions));
   const [confirm, setConfirm] = useState<Confirm>(null);
+  // Transition « remporte les enchères » : 'covering' masque l'écran prêt, 'revealing' = fondu de sortie
+  const [wonTransition, setWonTransition] = useState<'covering' | 'revealing' | null>(null);
+  // Transition « à vous de jouer ! » entre l'écran prêt et le jeu — le chrono attend la fin
+  const [playIntro, setPlayIntro] = useState<'covering' | 'revealing' | null>(null);
+  // Transition de fin de tour (mise réussie / loupée) avant l'écran de résultat
+  const [turnEnd, setTurnEnd] = useState<'covering' | 'revealing' | null>(null);
+  // Puis, si la mise est loupée, « l'adversaire remporte la manche » — en fondu enchaîné avec turnEnd
+  const [roundWin, setRoundWin] = useState<'covering' | 'revealing' | null>(null);
   // 'search' → pause auto (recherche web), 'manual' → pause bouton, null → en cours
   const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);
   const paused = pauseSource !== null;
-  const remainingMs = useCountdown(state.phase === 'play', paused, TURN_SECONDS, () =>
+  const remainingMs = useCountdown(state.phase === 'play', paused || playIntro === 'covering', TURN_SECONDS, () =>
     dispatch({ type: 'END_TURN', reason: 'time' }),
   );
 
   // Le chrono peut finir pendant que la confirmation « Terminer le tour » est ouverte.
   const [phase, setPhase] = useState(state.phase);
   if (phase !== state.phase) {
+    if (phase === 'auction' && state.phase === 'ready') setWonTransition('covering');
+    if (phase === 'ready' && state.phase === 'play') setPlayIntro('covering');
+    if (phase === 'play' && state.phase === 'result') setTurnEnd('covering');
     setPhase(state.phase);
     setPauseSource(null);
     if (confirm === 'skip') setConfirm(null);
@@ -115,6 +136,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
     <GameLayout
       banner={banner}
       closeIcon
+      {...roundBackground(state.phase)}
       onHome={() => (state.phase === 'final' ? goHome() : setConfirm('quit'))}
       footer={footer}
       scrollDisabled={state.phase === 'play' || state.phase === 'result' || state.phase === 'final'}
@@ -123,6 +145,40 @@ function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
           <PauseModal visible onResume={() => setPauseSource(null)} />
         ) : state.phase === 'final' ? (
           <ConfettiOverlay />
+        ) : wonTransition && state.phase === 'ready' ? (
+          <AuctionWonTransition
+            team={state.teams[contract(state).team]}
+            onReveal={() => setWonTransition('revealing')}
+            onDone={() => setWonTransition(null)}
+          />
+        ) : playIntro && state.phase === 'play' ? (
+          <PlayIntroTransition
+            team={state.teams[contract(state).team]}
+            holder={state.teams[opponent(state)]}
+            onReveal={() => setPlayIntro('revealing')}
+            onDone={() => setPlayIntro(null)}
+          />
+        ) : (turnEnd || roundWin) && state.phase === 'result' ? (
+          <>
+            {roundWin ? (
+              <TurnEndTransition
+                team={state.teams[opponent(state)]}
+                kind="roundWon"
+                count={contract(state).amount}
+                onReveal={() => setRoundWin('revealing')}
+                onDone={() => setRoundWin(null)}
+              />
+            ) : null}
+            {turnEnd ? (
+              <TurnEndTransition
+                team={state.teams[contract(state).team]}
+                kind={isSuccess(state) ? 'madeBid' : 'missedBid'}
+                count={isSuccess(state) ? state.progress : contract(state).amount}
+                onReveal={() => (isSuccess(state) ? setTurnEnd('revealing') : setRoundWin('covering'))}
+                onDone={() => setTurnEnd(null)}
+              />
+            ) : null}
+          </>
         ) : undefined
       }
     >
@@ -134,8 +190,8 @@ function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
           onPass={() => dispatch({ type: 'PASS' })}
         />
       ) : null}
-      {state.phase === 'ready' ? <ReadyPhase state={state} onStart={() => dispatch({ type: 'START_TURN' })} /> : null}
-      {state.phase === 'play' ? (
+      {state.phase === 'ready' && wonTransition !== 'covering' ? <ReadyPhase state={state} onStart={() => dispatch({ type: 'START_TURN' })} /> : null}
+      {state.phase === 'play' && playIntro !== 'covering' ? (
         <PlayPhase
           state={state}
           remainingMs={remainingMs}
@@ -148,7 +204,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
           }
         />
       ) : null}
-      {state.phase === 'result' ? (
+      {state.phase === 'result' && turnEnd !== 'covering' && roundWin !== 'covering' ? (
         <ResultPhase
           state={state}
           onNext={() => dispatch({ type: 'NEXT' })}
@@ -191,6 +247,13 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
   );
   const [confirmQuit, setConfirmQuit] = useState(false);
   const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);
+  // Transition « à vous de jouer ! » entre l'écran prêt et le jeu — SurviePlayPhase (et son chrono) monte à la fin
+  const [playIntro, setPlayIntro] = useState<'covering' | 'revealing' | null>(null);
+  const [phase, setPhase] = useState(state.phase);
+  if (phase !== state.phase) {
+    if (phase === 'ready' && state.phase === 'play') setPlayIntro('covering');
+    setPhase(state.phase);
+  }
   const isPaused = pauseSource !== null;
   const goHome = () => router.dismissTo('/');
   const currentTeam = state.teams[state.currentTeam];
@@ -208,6 +271,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
     <View style={{ flex: 1 }}>
     <GameLayout
       closeIcon
+      {...roundBackground(state.phase)}
       onHome={() => (state.phase === 'final' ? goHome() : setConfirmQuit(true))}
       scrollDisabled={state.phase === 'play' || state.phase === 'ready' || state.phase === 'result'}
       overlay={
@@ -215,6 +279,13 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
           <PauseModal visible onResume={() => setPauseSource(null)} />
         ) : state.phase === 'final' ? (
           <ConfettiOverlay />
+        ) : playIntro && state.phase === 'play' ? (
+          <PlayIntroTransition
+            team={currentTeam}
+            isSurvie
+            onReveal={() => setPlayIntro('revealing')}
+            onDone={() => setPlayIntro(null)}
+          />
         ) : undefined
       }
     >
@@ -224,7 +295,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
           onStart={() => { dispatch({ type: 'START' }); setPauseSource(null); }}
         />
       ) : null}
-      {state.phase === 'play' ? (
+      {state.phase === 'play' && playIntro !== 'covering' ? (
         <SurviePlayPhase
           key={`${state.round}-${state.currentTeam}`}
           state={state}
