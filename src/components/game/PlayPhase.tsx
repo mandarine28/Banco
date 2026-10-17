@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Animated, Keyboard, PanResponder, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import { getSubject, localizedQuestion, normalize, searchAnswers, suggestions } from '@/game/answers';
+import { getSubject, indexLetter, localizedQuestion, normalize, searchAnswers, sortAlphabetically, suggestions } from '@/game/answers';
 import { contract, currentQuestion, type GameState, TURN_SECONDS } from '@/game/engine';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
+import { AlphabetIndex } from './AlphabetIndex';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 const WARNING_SECONDS = 10;
@@ -17,6 +18,8 @@ const THUMB_MIN_H = 28;
 const CHIP_ROW_H = 36;
 const CHIP_GAP = 12;
 const MAX_CHIPS_H = 5 * CHIP_ROW_H + 4 * CHIP_GAP; // 228
+// Zone tactile élargie autour de la piste de 3px, sans décaler la mise en page
+const SCRUB_SLOP = 12;
 
 const PAUSE_PATH =
   'M5.14286 0C5.59751 0 6.03355 0.180612 6.35504 0.502103C6.67653 0.823594 6.85714 1.25963 6.85714 1.71429V22.2857C6.85714 22.7404 6.67653 23.1764 6.35504 23.4979C6.03355 23.8194 5.59751 24 5.14286 24H1.71429C1.25963 24 0.823594 23.8194 0.502103 23.4979C0.180612 23.1764 0 22.7404 0 22.2857V1.71429C0 1.25963 0.180612 0.823594 0.502103 0.502103C0.823594 0.180612 1.25963 0 1.71429 0H5.14286ZM18.8571 0C19.3118 0 19.7478 0.180612 20.0693 0.502103C20.3908 0.823594 20.5714 1.25963 20.5714 1.71429V22.2857C20.5714 22.7404 20.3908 23.1764 20.0693 23.4979C19.7478 23.8194 19.3118 24 18.8571 24H15.4286C14.9739 24 14.5379 23.8194 14.2164 23.4979C13.8949 23.1764 13.7143 22.7404 13.7143 22.2857V1.71429C13.7143 1.25963 13.8949 0.823594 14.2164 0.502103C14.5379 0.180612 14.9739 0 15.4286 0H18.8571Z';
@@ -137,6 +140,35 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
   const [chipsScrollY, setChipsScrollY] = useState(0);
   const [chipsContentH, setChipsContentH] = useState(0);
   const [chipsContainerH, setChipsContainerH] = useState(0);
+  const [isAlpha, setIsAlpha] = useState(true);
+  const [isScrubbing, setIsScrubbing] = useState(false);
+  const [activeLetter, setActiveLetter] = useState<string | null>(null);
+  const scrollRef = useRef<ScrollView>(null);
+  // Mesures lues par le PanResponder (créé une seule fois) : écrites dans les handlers de layout
+  const scrubMetrics = useRef({ containerH: 0, contentH: 0, startY: 0 });
+  const chipLayouts = useRef<{ top: number; label: string }[]>([]);
+  const [scrubResponder] = useState(() => {
+    const maxScroll = () => Math.max(0, scrubMetrics.current.contentH - scrubMetrics.current.containerH);
+    // Position du doigt → défilement proportionnel
+    const scrubTo = (y: number) => {
+      const { containerH } = scrubMetrics.current;
+      const clamped = Math.max(0, Math.min(containerH, y));
+      setIsScrubbing(true);
+      scrollRef.current?.scrollTo({ y: containerH ? (clamped / containerH) * maxScroll() : 0, animated: false });
+    };
+    return PanResponder.create({
+      onStartShouldSetPanResponder: () => maxScroll() > 0,
+      onMoveShouldSetPanResponder: () => maxScroll() > 0,
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderGrant: (e) => {
+        scrubMetrics.current.startY = e.nativeEvent.locationY;
+        scrubTo(e.nativeEvent.locationY);
+      },
+      onPanResponderMove: (_, g) => scrubTo(scrubMetrics.current.startY + g.dy),
+      onPanResponderRelease: () => setIsScrubbing(false),
+      onPanResponderTerminate: () => setIsScrubbing(false),
+    });
+  });
 
   const seconds = Math.ceil(remainingMs / 1000);
   const elapsedFraction = Math.max(0, Math.min(1, 1 - remainingMs / (TURN_SECONDS * 1000)));
@@ -150,7 +182,9 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
   const searching = normalize(query).length > 0;
   // Mode compact : badge + question masqués quand clavier ouvert → libère de l'espace pour les chips
   const compact = searchFocused || searching;
-  const list = searching ? searchAnswers(locQuestion, query) : suggestions(locQuestion, state.found);
+  // L'ordre des données = popularité ; la recherche garde son ordre de pertinence
+  const baseList = searching ? searchAnswers(locQuestion, query) : suggestions(locQuestion, state.found);
+  const list = !searching && isAlpha ? sortAlphabetically(baseList) : baseList;
 
   const handleToggle = (label: string) => {
     onToggle(label);
@@ -167,6 +201,15 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
   const thumbMaxTop = chipsContainerH - thumbH;
   const scrollProgress = isScrollable ? chipsScrollY / (chipsContentH - chipsContainerH) : 0;
   const thumbTop = scrollProgress * thumbMaxTop;
+  // Index A-Z façon Apple Music, seulement sur la liste triée et défilable
+  const indexLetters = [...new Set(list.map(indexLetter))];
+  const showIndex = isAlpha && !searching && isScrollable && indexLetters.length > 1;
+  const jumpToLetter = (letter: string) => {
+    const i = list.findIndex((label) => indexLetter(label) === letter);
+    const top = chipLayouts.current[i]?.top ?? 0;
+    setActiveLetter(letter);
+    scrollRef.current?.scrollTo({ y: Math.min(top, Math.max(0, chipsContentH - chipsContainerH)), animated: false });
+  };
 
   return (
     <View style={styles.wrapper}>
@@ -292,6 +335,29 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
       {list.length > 0 && !searching ? (
         <View style={styles.someAnswersRow}>
           <Text style={styles.someAnswersLabel}>{t.play.someAnswers}</Text>
+          <View style={styles.listActions}>
+          <Pressable
+            onPress={() => {
+              setIsAlpha(v => !v);
+              setActiveLetter(null);
+              scrollRef.current?.scrollTo({ y: 0, animated: false });
+            }}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={isAlpha ? t.play.sortPopular : t.play.sortAlpha}
+            style={styles.sortBtn}
+          >
+            <Svg width={16} height={16} viewBox="0 0 24 24" pointerEvents="none">
+              <Path
+                d="M3 6 H21 M3 12 H15 M3 18 H9"
+                stroke={colors.cream}
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                fill="none"
+              />
+            </Svg>
+            <Text style={styles.sortBtnText}>{isAlpha ? 'A–Z' : '★'}</Text>
+          </Pressable>
           {!compact ? (
             <Pressable
               onPress={() => setIsCollapsed(v => !v)}
@@ -324,42 +390,58 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
               </Svg>
             </Pressable>
           ) : null}
+          </View>
         </View>
       ) : null}
       {list.length > 0 ? (
         <View style={[styles.chipsArea, !compact && !isCollapsed && { maxHeight: MAX_CHIPS_H }]}>
-          {/* Scrollbar track + thumb dynamique */}
-          <View
-            style={styles.scrollTrack}
-            onLayout={(e) => setChipsContainerH(e.nativeEvent.layout.height)}
-          >
-            {isScrollable ? (
-              <View
-                style={[
-                  styles.scrollThumb,
-                  { height: thumbH, top: thumbTop },
-                ]}
-              />
-            ) : (
-              <View style={[styles.scrollThumb, { height: chipsContainerH, top: 0 }]} />
-            )}
+          {/* Scrollbar track + thumb dynamique, glissable au doigt (remplacée par l'index A-Z en tri alphabétique) */}
+          {!showIndex ? (
+          <View style={styles.scrubZone} {...scrubResponder.panHandlers}>
+            <View style={[styles.scrollTrack, isScrubbing && styles.scrollTrackActive]} pointerEvents="none">
+              {isScrollable ? (
+                <View
+                  style={[
+                    styles.scrollThumb,
+                    { height: thumbH, top: thumbTop },
+                  ]}
+                />
+              ) : (
+                <View style={[styles.scrollThumb, { height: chipsContainerH, top: 0 }]} />
+              )}
+            </View>
           </View>
+          ) : null}
 
           <ScrollView
+            ref={scrollRef}
             style={[styles.chipsScroll, !compact && !isCollapsed && { maxHeight: MAX_CHIPS_H }]}
             contentContainerStyle={styles.chipsGrid}
             showsVerticalScrollIndicator={false}
             scrollEventThrottle={16}
             keyboardShouldPersistTaps="handled"
-            onScroll={(e) => setChipsScrollY(e.nativeEvent.contentOffset.y)}
-            onContentSizeChange={(_, h) => setChipsContentH(h)}
+            onLayout={(e) => {
+              scrubMetrics.current.containerH = e.nativeEvent.layout.height;
+              setChipsContainerH(e.nativeEvent.layout.height);
+            }}
+            onScroll={(e) => {
+              const y = e.nativeEvent.contentOffset.y;
+              setChipsScrollY(y);
+              const top = chipLayouts.current.find((c) => c && c.top + CHIP_ROW_H > y);
+              setActiveLetter(top ? indexLetter(top.label) : null);
+            }}
+            onContentSizeChange={(_, h) => {
+              scrubMetrics.current.contentH = h;
+              setChipsContentH(h);
+            }}
           >
-            {list.map((label) => {
+            {list.map((label, index) => {
               const found = state.found.includes(label);
               const displayLabel = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
               return (
                 <Pressable
                   key={label}
+                  onLayout={(e) => { chipLayouts.current[index] = { top: e.nativeEvent.layout.y, label }; }}
                   onPress={() => handleToggle(label)}
                   sound={found ? false : 'correct'}
                   soundOnRelease
@@ -379,6 +461,15 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
               );
             })}
           </ScrollView>
+
+          {showIndex ? (
+            <AlphabetIndex
+              letters={indexLetters}
+              activeLetter={activeLetter ?? indexLetters[0]}
+              onSelect={jumpToLetter}
+              accessibilityLabel={t.play.sortAlpha}
+            />
+          ) : null}
         </View>
       ) : null}
     </View>
@@ -551,9 +642,39 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   someAnswersLabel: {
+    flexShrink: 1,
     fontFamily: fonts.displayMedium,
     fontSize: 16,
     color: colors.cream,
+  },
+  listActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  sortBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    minHeight: 32,
+    paddingHorizontal: 10,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(254,246,215,0.6)',
+  },
+  sortBtnText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 14,
+    color: colors.cream,
+  },
+  scrubZone: {
+    marginHorizontal: -SCRUB_SLOP,
+    paddingHorizontal: SCRUB_SLOP,
+    zIndex: 1,
+  },
+  scrollTrackActive: {
+    width: 6,
+    marginHorizontal: -1.5,
   },
   // ── Zone chips ──
   chipsArea: {
@@ -563,6 +684,7 @@ const styles = StyleSheet.create({
   },
   // Scrollbar track (conteneur de la piste)
   scrollTrack: {
+    flex: 1,
     width: 3,
     borderRadius: 2,
     backgroundColor: 'rgba(255,255,255,0.15)',

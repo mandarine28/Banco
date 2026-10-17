@@ -40,7 +40,7 @@ export const questionsDisvertissement: Question[] = [
         'WOW', 'JOYN', 'MAGENTA TV', 'RTL+', 'ZDF MEDIATHEK', 'ARD MEDIATHEK',
         'ARTE', 'APPLE TV+', 'PARAMOUNT+', 'TWITCH', 'DEEZER', 'APPLE MUSIC',
         'TIDAL', 'SOUNDCLOUD', 'MUBI', 'CRUNCHYROLL', 'PLUTO TV', 'AMAZON MUSIC',
-        'AUDIBLE', 'HBO MAX', 'PLEX', 'DISCOVERY+', 'JOYN+', 'PROSIEBEN VIDEO',
+        'AUDIBLE', 'HBO MAX', 'PLEX', 'DISCOVERY+', 'PROSIEBEN VIDEO',
         'SAT.1 MEDIATHEK', 'FUNIMATION', 'CURIOSITY STREAM', 'BRITBOX',
         'DAZN', 'RAKUTEN TV', 'HIDIVE', 'SKYSHOWTIME', 'KABEL EINS',
         'TELE5', 'ORF TVthek', 'SRF PLAY', '3SAT', 'PHOENIX',
@@ -68,8 +68,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-parcs',
     theme: 'divertissement',
-    subject: "PARCS D'ATTRACTIONS, AQUATIQUES, ZOOS OU DE LOISIRS",
-    subjectByLang: { en: 'THEME PARKS, WATER PARKS, ZOOS OR LEISURE PARKS', de: 'FREIZEITPARKS, WASSERPARKS, ZOOS ODER ERLEBNISPARKS', es: 'PARQUES TEMÁTICOS, ACUÁTICOS, ZOOS O DE OCIO' },
+    subject: "PARCS D'ATTRACTIONS OU ZOOS",
+    subjectByLang: { en: 'THEME PARKS, WATER PARKS OR ZOOS', de: 'FREIZEITPARKS, WASSERPARKS ODER ZOOS', es: 'PARQUES TEMÁTICOS, ACUÁTICOS O ZOOS' },
     answers: [
       'DISNEYLAND PARIS', 'PARC ASTÉRIX', 'LE PUY DU FOU', 'FUTUROSCOPE',
       'VULCANIA', 'MARINELAND', 'NIGLOLAND', 'WALIBI', 'EUROPA-PARK',
@@ -139,7 +139,7 @@ export const questionsDisvertissement: Question[] = [
         "CANADA'S WONDERLAND", 'OCEANOGRÀFIC VALENCIA', 'PALMA AQUARIUM',
         'AQUALANDIA BENIDORM', 'RIO SAFARI ELCHE', 'BIOPARC FUENGIROLA',
         'LA SELVA PARC', 'PARQUE DE ATRACCIONES MADRID', 'FORESTAL PARK',
-        'MAGICLAND', 'GARDALAND', 'MIRABILANDIA', 'CINECITTÀ WORLD',
+        'MAGICLAND', 'CINECITTÀ WORLD',
         'ZOO DE JEREZ', 'PARQUE ZOOLÓGICO CÓRDOBA', 'TERRA NATURA BENIDORM',
       ],
     },
@@ -282,7 +282,7 @@ export const questionsDisvertissement: Question[] = [
         'TOP CHEF', 'MASTERCHEF', "AMERICA'S GOT TALENT",
         'AMERICAN IDOL', 'DANCING WITH THE STARS', 'X FACTOR',
         'PROMINENT ODER WAS', 'SOMMERHAUS DER STARS',
-        'THE VOICE OF GERMANY', 'SING MEINEN SONG', 'WANNA BE',
+        'SING MEINEN SONG', 'WANNA BE',
         'SHOPPING QUEEN', 'DER BACHELOR', 'DIE BACHELORETTE',
         'HOCHZEIT AUF DEN ERSTEN BLICK', 'TEMPTATION ISLAND VIP',
         'LOVE ISLAND GERMANY', 'KAMPF DER REALITYSTARS',
@@ -329,8 +329,8 @@ export const questionsDisvertissement: Question[] = [
       'COMMANDER SHEPARD', 'EZIO AUDITORE', 'NATHAN DRAKE',
       'PRINCESS PEACH', 'WARIO', 'DIDDY KONG', 'BANJO-KAZOOIE',
       'MARCUS FENIX', 'TREVOR PHILIPS', 'NIKO BELLIC', 'ALOY',
-      'ELLIE', 'JOEL', 'KRATOS (GOD OF WAR)', 'MASTER CHIEF',
-      'RATCHET', 'CLANK', 'SACKBOY', 'CRASH', 'SPYRO',
+      'ELLIE', 'JOEL', 'KRATOS (GOD OF WAR)',
+      'RATCHET', 'CLANK', 'SACKBOY', 'CRASH',
       'TOAD', 'ROSALINA', 'WALUIGI', 'BOWSER JR',
       'MEGA MAN X', 'ZERO', 'PROTOMAN', 'ROLL',
       'CHUN-LI', 'RYU', 'KEN', 'RYU HAYABUSA', 'SUB-ZERO',
@@ -355,7 +355,7 @@ export const questionsDisvertissement: Question[] = [
         'KEN', 'SUB-ZERO', 'SCORPION', 'LIU KANG', 'KITANA',
         'KAZUYA MISHIMA', 'JIN KAZAMA', 'DANTE', 'BAYONETTA',
         'TIFA LOCKHART', 'AERITH GAINSBOROUGH', 'TIDUS', 'YUNA',
-        'LIGHTNING', 'NOCTIS', 'CLOUD STRIFE', 'TERRA BRANFORD',
+        'LIGHTNING', 'NOCTIS', 'TERRA BRANFORD',
         'ZERO', 'PROTOMAN', 'RAIDEN', 'SNAKE', 'BIG BOSS',
       ],
       de: [
@@ -464,7 +464,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-super-heros',
     theme: 'divertissement',
     subject: 'SUPER-HÉROS ISSUS DES UNIVERS MARVEL OU DC',
-    subjectByLang: { en: 'SUPERHEROES FROM MARVEL OR DC', de: 'SUPERHELDEN AUS DEM MARVEL- ODER DC-UNIVERSUM', es: 'SUPERHÉROES DE LOS UNIVERSOS MARVEL O DC' },
+    subjectByLang: { en: 'SUPERHEROES FROM MARVEL OR DC', de: 'SUPERHELDEN VON MARVEL ODER DC', es: 'SUPERHÉROES DE LOS UNIVERSOS MARVEL O DC' },
     answers: [
       'SPIDER-MAN', 'SUPERMAN', 'BATMAN', 'WONDER WOMAN', 'IRON MAN',
       'CAPTAIN AMERICA', 'THOR', 'HULK', 'BLACK WIDOW', 'HAWKEYE',
@@ -536,8 +536,8 @@ export const questionsDisvertissement: Question[] = [
   {
     id: 'divertissement-mechants',
     theme: 'divertissement',
-    subject: 'MÉCHANTS ICONIQUES : FILMS / SÉRIES / JEUX VIDÉO',
-    subjectByLang: { en: 'ICONIC VILLAINS: FILMS / SERIES / VIDEO GAMES', de: 'IKONISCHE BÖSEWICHTE: FILME / SERIEN / SPIELE', es: 'VILLANOS ICÓNICOS: PELÍCULAS / SERIES / JUEGOS' },
+    subject: 'MÉCHANTS CULTES DE FILMS, SÉRIES OU JEUX',
+    subjectByLang: { en: 'ICONIC VILLAINS: FILMS / SERIES / VIDEO GAMES', de: 'KULTIGE BÖSEWICHTE AUS FILM UND SPIEL', es: 'VILLANOS DE CINE, SERIES O VIDEOJUEGOS' },
     answers: [
       'DARK VADOR', 'JOKER', 'THANOS', 'VOLDEMORT', 'HANNIBAL LECTER',
       'SAURON', 'MALÉFIQUE', 'CRUELLA', 'FREDDY KRUEGER', 'JASON VOORHEES',
@@ -627,7 +627,7 @@ export const questionsDisvertissement: Question[] = [
       'STEINS;GATE', 'ERASED', 'GIVEN', 'BANANA FISH',
       'BERSERK', 'CLAYMORE', 'ATTACK ON TITAN (SEASON 1)',
       'PARASYTE', 'TOKYO REVENGERS', 'BLUE LOCK', 'OSHI NO KO',
-      'FIRE FORCE', 'THE PROMISED NEVERLAND', 'VIOLET EVERGARDEN',
+      'FIRE FORCE', 'THE PROMISED NEVERLAND',
       'GREAT PRETENDER', 'CYBERPUNK EDGERUNNERS', 'TRIGUN',
       'RANMA 1/2', 'GTO', 'DRAGON QUEST', 'RUROUNI KENSHIN',
     ],
@@ -839,7 +839,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-sports-extremes',
     theme: 'divertissement',
     subject: 'SPORTS EXTRÊMES / SENSATIONS FORTES',
-    subjectByLang: { en: 'EXTREME SPORTS / THRILL ACTIVITIES', de: 'EXTREMSPORT / ADRENALINERLEBNISSE', es: 'DEPORTES EXTREMOS / SENSACIONES FUERTES' },
+    subjectByLang: { en: 'EXTREME SPORTS / THRILL ACTIVITIES', de: 'EXTREMSPORT / ADRENALINERLEBNISSE', es: 'DEPORTES EXTREMOS Y DE RIESGO' },
     answers: [
       'PARACHUTISME', 'PARAPENTE', 'BUNGEE JUMPING', 'BASE JUMP', 'SURF',
       'SKATEBOARD', 'BMX', 'MOTO CROSS', 'SKI EXTRÊME', 'SNOWBOARD',
@@ -909,7 +909,7 @@ export const questionsDisvertissement: Question[] = [
       'HACKATHON', 'JEUX VIDÉO EN SALLE', 'BABY SHOWER GAMES',
       'CRIME & MYSTERY DÎNER', 'CONCOURS DE QUIZ', 'BLIND TEST',
       'ATELIER POTERIE', 'COURS DE DESSIN', 'COURS DE PEINTURE',
-      'BADMINTON', 'TENNIS DE TABLE', 'FLOORBALL', 'ULTIMATE FRISBEE INDOOR',
+      'TENNIS DE TABLE', 'FLOORBALL', 'ULTIMATE FRISBEE INDOOR',
     ],
     answersByLang: {
       en: [
@@ -946,7 +946,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-sports-plein-air',
     theme: 'divertissement',
     subject: 'SPORTS PLEIN AIR / GLISSE URBAINE',
-    subjectByLang: { en: 'OUTDOOR SPORTS / URBAN GLIDING', de: 'OUTDOOR-SPORT / URBANE GLEITAKTIVITÄTEN', es: 'DEPORTES AL AIRE LIBRE / DESLIZAMIENTO URBANO' },
+    subjectByLang: { en: 'OUTDOOR SPORTS / URBAN GLIDING', de: 'OUTDOOR-SPORT / URBANE GLEITAKTIVITÄTEN', es: 'DEPORTES URBANOS Y AL AIRE LIBRE' },
     answers: [
       'SKATE', 'TROTTINETTE FREESTYLE', 'ROLLER', 'BMX', 'VTT',
       'TRAIL', 'RANDONNÉE', 'PARKOUR', 'LONGBOARD', 'SURF',
@@ -974,7 +974,7 @@ export const questionsDisvertissement: Question[] = [
         'BEACH VOLLEYBALL', 'DISC GOLF', 'ULTIMATE FRISBEE',
         'RUNNING', 'ROAD CYCLING', 'TRIATHLON', 'SLACKLINING',
         'CALISTHENICS', 'WAKEBOARDING', 'ROCK CLIMBING', 'GOLF',
-        'OBSTACLE RACING', 'SURFSKATING', 'PADDLEBOARDING', 'PARKOUR',
+        'OBSTACLE RACING', 'SURFSKATING', 'PADDLEBOARDING',
       ],
       de: [
         'SKATEBOARDEN', 'TRETROLLER', 'INLINESKATEN', 'BMX', 'MOUNTAINBIKEN',

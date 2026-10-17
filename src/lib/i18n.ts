@@ -37,6 +37,8 @@ type Translations = {
     resume: string;
     endTurn: string;
     someAnswers: string;
+    sortPopular: string;
+    sortAlpha: string;
   };
   home: {
     play: string;
@@ -168,7 +170,7 @@ const translations: Record<Lang, Translations> = {
       wonAuction: 'remporte les enchères',
       yourTurn: 'à vous de jouer !',
       yourStart: 'à vous de commencer',
-      yourGo: 'à vous !',
+      yourGo: 'à vous de répondre !',
     },
     play: {
       searchPlaceholder: 'Vérifier une réponse',
@@ -180,6 +182,8 @@ const translations: Record<Lang, Translations> = {
       resume: 'Reprendre',
       endTurn: 'Terminer le tour',
       someAnswers: 'Quelques réponses possible...',
+      sortPopular: 'Tri par popularité',
+      sortAlpha: 'Tri alphabétique',
     },
     home: {
       play: 'Jouer',
@@ -321,8 +325,8 @@ const translations: Record<Lang, Translations> = {
     },
     result: {
       nextRound: 'MANCHE SUIVANTE',
-      madeBid: 'tu as réussi ta mise',
-      missedBid: 'tu as loupé ta mise',
+      madeBid: 'vous avez réussi votre mise',
+      missedBid: 'vous avez loupé votre mise',
       toFind: 'Réponses à trouver :',
       foundCount: 'Réponses trouvées :',
       eliminated: 'est éliminée',
@@ -348,7 +352,7 @@ const translations: Record<Lang, Translations> = {
       wonAuction: 'wins the auction',
       yourTurn: 'your turn!',
       yourStart: 'you start!',
-      yourGo: 'your go!',
+      yourGo: 'your turn to answer!',
     },
     play: {
       searchPlaceholder: 'Check an answer',
@@ -360,6 +364,8 @@ const translations: Record<Lang, Translations> = {
       resume: 'Resume',
       endTurn: 'End turn',
       someAnswers: 'A few possible answers...',
+      sortPopular: 'Sort by popularity',
+      sortAlpha: 'Sort alphabetically',
     },
     home: {
       play: 'Play',
@@ -528,7 +534,7 @@ const translations: Record<Lang, Translations> = {
       wonAuction: 'gewinnt die Auktion',
       yourTurn: 'ihr seid dran!',
       yourStart: 'ihr fangt an!',
-      yourGo: 'ihr seid dran!',
+      yourGo: 'ihr antwortet!',
     },
     play: {
       searchPlaceholder: 'Antwort prüfen',
@@ -540,6 +546,8 @@ const translations: Record<Lang, Translations> = {
       resume: 'Weiter',
       endTurn: 'Runde beenden',
       someAnswers: 'Einige mögliche Antworten...',
+      sortPopular: 'Nach Beliebtheit sortieren',
+      sortAlpha: 'Alphabetisch sortieren',
     },
     home: {
       play: 'Spielen',
@@ -708,7 +716,7 @@ const translations: Record<Lang, Translations> = {
       wonAuction: 'gana la subasta',
       yourTurn: '¡os toca jugar!',
       yourStart: '¡empezáis vosotros!',
-      yourGo: '¡os toca!',
+      yourGo: '¡os toca responder!',
     },
     play: {
       searchPlaceholder: 'Verificar respuesta',
@@ -720,6 +728,8 @@ const translations: Record<Lang, Translations> = {
       resume: 'Reanudar',
       endTurn: 'Terminar turno',
       someAnswers: 'Algunas respuestas posibles...',
+      sortPopular: 'Ordenar por popularidad',
+      sortAlpha: 'Ordenar alfabéticamente',
     },
     home: {
       play: 'Jugar',
@@ -861,8 +871,8 @@ const translations: Record<Lang, Translations> = {
     },
     result: {
       nextRound: 'RONDA SIGUIENTE',
-      madeBid: 'has cumplido tu apuesta',
-      missedBid: 'has fallado tu apuesta',
+      madeBid: 'habéis cumplido vuestra apuesta',
+      missedBid: 'habéis fallado vuestra apuesta',
       toFind: 'Respuestas por encontrar:',
       foundCount: 'Respuestas encontradas:',
       eliminated: 'queda eliminado',

@@ -3,8 +3,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { glossaries } from '../data/glossaries.ts';
 import { questions } from '../data/questions.ts';
-import { normalize, searchAnswers, suggestions } from './answers.ts';
+import { LANGUAGES } from '../lib/i18n.ts';
+import { getAnswers, indexLetter, normalize, searchAnswers, sortAlphabetically, suggestions, translateAnswer } from './answers.ts';
 import {
   canPass,
   contract,
@@ -20,6 +22,10 @@ import {
   remaining,
 } from './engine.ts';
 import type { GameAction, GameState } from './engine.ts';
+
+const LANGS = LANGUAGES.map((l) => l.code);
+// Au-delà, la liste de puces du tour (toutes rendues d'un coup) devient lente sur Android d'entrée de gamme
+const MAX_SUGGESTIONS = 150;
 
 // Générateur pseudo-aléatoire déterministe pour des tests reproductibles.
 function seeded(seed: number) {
@@ -39,15 +45,41 @@ const play = (state: GameState, ...actions: GameAction[]) => actions.reduce(game
 const find = (count: number): GameAction[] =>
   Array.from({ length: count }, (_, i) => ({ type: 'TOGGLE_ANSWER', label: `RÉPONSE ${i}` }));
 
-test('chaque question a suffisamment de réponses (plus que la mise max), sans doublon', () => {
+test('chaque question a, dans chaque langue, assez de réponses (mise max), sans doublon ni excès', () => {
+  const problems: string[] = [];
   for (const q of questions) {
     assert.ok(q.theme && q.subject && !/^CITEZ/i.test(q.subject), q.id);
-    assert.ok(q.answers.length >= MAX_BID, `${q.id} : ${q.answers.length} réponses`);
-    const keys = q.answers.map(normalize);
-    const dupes = keys.filter((k, i) => keys.indexOf(k) !== i);
-    assert.deepEqual(dupes, [], `${q.id} : doublons`);
+    for (const lang of LANGS) {
+      const list = getAnswers(q, lang);
+      if (list.length < MAX_BID) problems.push(`${q.id} [${lang}] : ${list.length} réponses (< ${MAX_BID})`);
+      if (list.length > MAX_SUGGESTIONS) problems.push(`${q.id} [${lang}] : ${list.length} réponses (> ${MAX_SUGGESTIONS})`);
+      const keys = list.map(normalize);
+      const dupes = keys.filter((k, i) => keys.indexOf(k) !== i);
+      if (dupes.length) problems.push(`${q.id} [${lang}] : doublons ${dupes.join(', ')}`);
+    }
   }
+  assert.deepEqual(problems, []);
   assert.equal(new Set(questions.map((q) => q.id)).size, questions.length, 'identifiants uniques');
+});
+
+test('glossaires : chaque entrée traduit une réponse FR existante du thème', () => {
+  const stale: string[] = [];
+  for (const [theme, glossary] of Object.entries(glossaries)) {
+    const frAnswers = new Set(questions.filter((q) => q.theme === theme).flatMap((q) => q.answers));
+    for (const [lang, entries] of Object.entries(glossary)) {
+      for (const fr of Object.keys(entries ?? {})) if (!frAnswers.has(fr)) stale.push(`${theme} [${lang}] ${fr}`);
+    }
+  }
+  assert.deepEqual(stale, []);
+});
+
+test('traduction : glossaire de la langue, puis anglais, puis français', () => {
+  const theme = Object.keys(glossaries).find((t) => Object.keys(glossaries[t].en ?? {}).length)!;
+  const [fr, en] = Object.entries(glossaries[theme].en!)[0];
+  assert.equal(translateAnswer(theme, 'fr', fr), fr);
+  assert.equal(translateAnswer(theme, 'en', fr), en);
+  assert.equal(translateAnswer(theme, 'de', fr), glossaries[theme].de?.[fr] ?? en);
+  assert.equal(translateAnswer(theme, 'en', 'RÉPONSE INCONNUE'), 'RÉPONSE INCONNUE');
 });
 
 test('la recherche ignore accents, casse et ponctuation, préfixes en premier', () => {
@@ -67,6 +99,12 @@ test('les boutons affichent toutes les réponses + les saisies libres validées'
   assert.equal(list.length, q.answers.length + 1); // SAISIE LIBRE ajoutée ; last déjà dans la liste
   assert.ok(list.includes(last) && list.includes('SAISIE LIBRE'));
   assert.equal(suggestions(q, [q.answers[0]]).length, q.answers.length); // pas de doublon
+});
+
+test('tri alphabétique et lettre d\'index ignorent accents et ponctuation', () => {
+  assert.deepEqual(sortAlphabetically(['ÉCLAIR', 'ZORRO', "L'ABEILLE", 'ASTERIX']), ['ASTERIX', 'ÉCLAIR', "L'ABEILLE", 'ZORRO']);
+  assert.equal(indexLetter('ÉCLAIR'), 'E');
+  assert.equal(indexLetter('1/2'), '#');
 });
 
 test('compteur manuel : décompte depuis la mise, sans dépasser la mise', () => {

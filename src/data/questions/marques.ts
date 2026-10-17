@@ -76,7 +76,7 @@ export const questionsMarques: Question[] = [
       'KIK', 'YUBO', 'WEBEX', 'GOOGLE CHAT', 'MATCH', 'PLENTY OF FISH', 'OKCUPID', 'ZOOSK',
       'BIGO LIVE', 'KWAI', 'LIKEE', 'TRILLER', 'VSCO', 'FLICKR', 'JODEL', 'ASK.FM', 'VERO',
       'HOUSEPARTY', 'WEIBO', 'DOUYIN', 'FACETIME', 'IMESSAGE', 'PERISCOPE', 'MARCO POLO',
-      'COFFEE MEETS BAGEL', 'FEELD', 'PEANUT', 'PARLER', 'TRUTH SOCIAL', 'CLUBHOUSE',
+      'COFFEE MEETS BAGEL', 'FEELD', 'PEANUT', 'PARLER', 'TRUTH SOCIAL',
     ],
     answersByLang: {
       en: [
@@ -118,8 +118,8 @@ export const questionsMarques: Question[] = [
   {
     id: 'marques-confiseries',
     theme: 'marques',
-    subject: 'MARQUES DE CHOCOLATS, BISCUITS OU BONBONS',
-    subjectByLang: { en: 'CHOCOLATE, BISCUIT OR CANDY BRANDS', de: 'SCHOKOLADEN-, KEKS- ODER SÜSSWARENMARKEN', es: 'MARCAS DE CHOCOLATE, GALLETAS O GOLOSINAS' },
+    subject: 'MARQUES DE CONFISERIE OU BISCUITS',
+    subjectByLang: { en: 'CHOCOLATE, BISCUIT OR CANDY BRANDS', de: 'SÜSSWAREN- UND KEKSMARKEN', es: 'MARCAS DE DULCES O GALLETAS' },
     answers: [
       'MILKA', 'KINDER', 'HARIBO', 'OREO', "M&M'S", 'FERRERO ROCHER', 'TOBLERONE', 'LINDT',
       'TWIX', 'SNICKERS', 'KIT KAT', 'MARS', 'BOUNTY', 'MALTESERS', 'CARAMBAR', 'DRAGIBUS',
@@ -332,7 +332,7 @@ export const questionsMarques: Question[] = [
         'H-E-B', 'SPROUTS', 'FOOD LION', 'SOBEYS', 'METRO', 'NO FRILLS',
         'FRESHCO', 'LONGOS', 'FOODLAND', 'CARREFOUR', 'LECLERC', 'AUCHAN', 'INTERMARCHÉ',
         'MONOPRIX', 'CASINO', 'EDEKA', 'REWE', 'KAUFLAND', 'PENNY', 'NORMA', 'GLOBUS',
-        'MERCADONA', 'DIA', 'CONSUM', 'EROSKI', 'BONPREU', 'CAPRABO', 'KROGER', 'DOLLAR TREE',
+        'MERCADONA', 'DIA', 'CONSUM', 'EROSKI', 'BONPREU', 'CAPRABO', 'DOLLAR TREE',
         'FAMILY DOLLAR', 'PIGGLY WIGGLY', 'WINN-DIXIE', 'HARRIS TEETER', 'ALDI SÜD',
       ],
       de: [
@@ -377,7 +377,7 @@ export const questionsMarques: Question[] = [
       'SHARP', 'TOSHIBA', 'CASIO', 'FUJIFILM', 'CANON', 'NIKON', 'LEICA', 'FITBIT', 'SONOS',
       'RING', 'NEST', 'ROOMBA', 'KITCHENAID', 'KENWOOD', 'VITAMIX', 'BEKO', 'ARISTON',
       'INDESIT', 'CANDY', 'HONOR', 'REALME', 'JVC', 'PIONEER', 'DENON', 'HARMAN KARDON',
-      'MARSHALL', 'SKULLCANDY', 'JABRA', 'BEATS', 'BLAUPUNKT', 'LOEWE', 'SHARP',
+      'MARSHALL', 'SKULLCANDY', 'JABRA', 'BEATS', 'BLAUPUNKT', 'LOEWE',
     ],
     answersByLang: {
       en: [
@@ -410,7 +410,7 @@ export const questionsMarques: Question[] = [
   {
     id: 'marques-sodas',
     theme: 'marques',
-    subject: 'SODAS, THÉS GLACÉS OU BOISSONS ÉNERGISANTES',
+    subject: 'SODAS, THÉS GLACÉS OU ENERGY DRINKS',
     subjectByLang: { en: 'SODAS, ICED TEAS & ENERGY DRINKS', de: 'SOFTDRINKS, EISTEES & ENERGYDRINKS', es: 'REFRESCOS, TÉS HELADOS O ENERGÉTICAS' },
     answers: [
       'COCA-COLA', 'PEPSI', 'FANTA', 'SPRITE', 'RED BULL', 'MONSTER', 'ORANGINA', 'LIPTON',
@@ -610,7 +610,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-cereales-spreads',
     theme: 'marques',
     subject: 'MARQUES DE CÉRÉALES OU PÂTES À TARTINER',
-    subjectByLang: { en: 'BREAKFAST CEREAL OR SPREAD BRANDS', de: 'CEREALIEN- ODER AUFSTRICHMARKEN', es: 'MARCAS DE CEREALES O CREMAS PARA UNTAR' },
+    subjectByLang: { en: 'BREAKFAST CEREAL OR SPREAD BRANDS', de: 'CEREALIEN- ODER AUFSTRICHMARKEN', es: 'MARCAS DE CEREALES O CREMAS UNTABLES' },
     answers: [
       'NUTELLA', 'LOTUS BISCOFF', "KELLOGG'S", 'CHOCAPIC', 'MIEL POPS', 'TRÉSOR', 'CORN FLAKES',
       'SPECIAL K', 'FROSTIES', 'ALL-BRAN', 'GRANOLA', 'NATURE VALLEY', 'COUNTRY CRISP', 'MUESLIX',
@@ -657,8 +657,8 @@ export const questionsMarques: Question[] = [
   {
     id: 'marques-surgeles',
     theme: 'marques',
-    subject: 'MARQUES DE PRODUITS SURGELÉS OU PLATS CUISINÉS',
-    subjectByLang: { en: 'FROZEN FOOD OR READY MEAL BRANDS', de: 'TIEFKÜHLKOST- ODER FERTIGGERICHTMARKEN', es: 'MARCAS DE CONGELADOS O PLATOS PREPARADOS' },
+    subject: 'MARQUES DE SURGELÉS OU PLATS CUISINÉS',
+    subjectByLang: { en: 'FROZEN FOOD OR READY MEAL BRANDS', de: 'MARKEN FÜR TK- UND FERTIGGERICHTE', es: 'MARCAS DE CONGELADOS O PLATOS LISTOS' },
     answers: [
       'FINDUS', 'PICARD', 'MARIE', 'FLEURY MICHON', 'WILLIAM SAURIN', 'KNORR', 'MAGGI', 'BONDUELLE',
       'MCCAIN', 'CAPITAINE IGLOO', 'BUITONI', 'HERTA', 'CHARAL', 'LUSTUCRU', 'SODEBO',
@@ -754,7 +754,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-jouets',
     theme: 'marques',
     subject: 'JOUETS OU JEUX DE SOCIÉTÉ CULTES',
-    subjectByLang: { en: 'CLASSIC TOYS OR BOARD GAMES', de: 'KLASSISCHES SPIELZEUG UND GESELLSCHAFTSSPIELE', es: 'JUGUETES O JUEGOS DE MESA CLÁSICOS' },
+    subjectByLang: { en: 'CLASSIC TOYS OR BOARD GAMES', de: 'SPIELZEUG-KLASSIKER UND BRETTSPIELE', es: 'JUGUETES O JUEGOS DE MESA CLÁSICOS' },
     answers: [
       'LEGO', 'PLAYMOBIL', 'BARBIE', 'HOT WHEELS', 'MONOPOLY', 'SCRABBLE', 'UNO', 'TRIVIAL PURSUIT',
       'RISK', 'CLUEDO', 'MECCANO', 'BRIO', 'FISHER-PRICE', 'NERF', 'DUPLO', 'JENGA', 'PICTIONARY',
@@ -905,7 +905,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-ecommerce',
     theme: 'marques',
     subject: 'PLATEFORMES E-COMMERCE OU DE LIVRAISON',
-    subjectByLang: { en: 'E-COMMERCE OR DELIVERY PLATFORMS', de: 'E-COMMERCE- ODER LIEFERPLATTFORMEN', es: 'PLATAFORMAS DE E-COMMERCE O ENTREGA' },
+    subjectByLang: { en: 'E-COMMERCE OR DELIVERY PLATFORMS', de: 'ONLINESHOPS ODER LIEFERDIENSTE', es: 'PLATAFORMAS DE E-COMMERCE O ENTREGA' },
     answers: [
       'AMAZON', 'CDISCOUNT', 'EBAY', 'VINTED', 'LEBONCOIN', 'ZALANDO', 'SHEIN', 'ALIEXPRESS',
       'FNAC', 'LA REDOUTE', 'BACK MARKET', 'UBER EATS', 'DELIVEROO', 'JUST EAT', 'MANOMANO',

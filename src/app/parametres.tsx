@@ -61,9 +61,13 @@ type ModeCardProps = {
   /** Libellé VoiceOver du bouton info. */
   infoLabel: string;
   selected?: boolean;
+  /** Décalage horizontal de l'illustration vers la droite (px). */
+  illustrationShift?: number;
+  /** Agrandissement de l'illustration (1 = taille Figma). */
+  illustrationScale?: number;
 };
 
-function ModeCard({ title, description, activeXml, inactiveXml, onPress, onInfo, infoLabel, selected = false }: ModeCardProps) {
+function ModeCard({ title, description, activeXml, inactiveXml, onPress, onInfo, infoLabel, selected = false, illustrationShift = 0, illustrationScale = 1 }: ModeCardProps) {
   const textColor = selected ? colors.purpleDeep : colors.cream;
   return (
     <Pressable
@@ -85,7 +89,7 @@ function ModeCard({ title, description, activeXml, inactiveXml, onPress, onInfo,
         </View>
         <Text style={[styles.modeDesc, { color: textColor }]}>{description}</Text>
       </View>
-      <View style={styles.modeIllustration} pointerEvents="none">
+      <View style={[styles.modeIllustration, { transform: [{ translateX: illustrationShift }, { scale: illustrationScale }] }]} pointerEvents="none">
         <SvgXml xml={selected ? activeXml : inactiveXml} width="100%" height="100%" />
       </View>
     </Pressable>
@@ -139,6 +143,8 @@ export default function GameConfigScreen() {
                   description={t.gameMode.survieDesc}
                   activeXml={SURVIE_ACTIF_XML}
                   inactiveXml={SURVIE_INACTIF_XML}
+                  illustrationShift={5}
+                  illustrationScale={1.1}
                   selected={mode === 'survie'}
                   onPress={() => setMode('survie')}
                   onInfo={() => setRulesMode('survie')}
@@ -251,6 +257,9 @@ const styles = StyleSheet.create({
   },
   modeCardSelected: {
     backgroundColor: '#fef9e6',
+    // Même bordure (invisible) que l'état inactif : le texte ne bouge pas au changement d'état
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   modeCardBlue: {
     backgroundColor: '#4883E5',

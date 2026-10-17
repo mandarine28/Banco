@@ -6,17 +6,23 @@ export type Question = {
   /** Traductions du sujet par langue. Fallback sur `subject` (FR) si absent. */
   subjectByLang?: Partial<Record<import('../lib/i18n').Lang, string>>;
   /**
-   * Réponses FR (défaut), de la plus citée à la moins citée.
-   * Les 27 premières s'affichent en boutons ; la recherche parcourt toute la liste.
+   * Réponses FR, de la plus citée à la moins citée. Liste de référence pour toutes les langues :
+   * les autres langues la traduisent via le glossaire du thème (src/data/glossaries).
    */
   answers: string[];
   /**
-   * Surcharges par langue : ordre différent (questions internationales) ou
-   * contenu différent (questions culturellement variables).
-   * Fallback sur `answers` si la langue n'est pas définie.
+   * Liste complète propre à une langue, uniquement quand le contenu change vraiment
+   * (ex. comédiens français ≠ comédiens espagnols). Prioritaire sur `answers` + glossaire.
    */
   answersByLang?: Partial<Record<import('../lib/i18n').Lang, string[]>>;
 };
+
+/**
+ * Traductions des réponses d'un thème : réponse FR → libellé dans la langue.
+ * Seules les réponses qui changent sont listées (les noms propres identiques n'ont pas d'entrée).
+ * Une langue sans entrée retombe sur l'anglais, puis sur le français.
+ */
+export type Glossary = Partial<Record<Exclude<import('../lib/i18n').Lang, 'fr'>, Record<string, string>>>;
 
 export type Theme = {
   id: string;

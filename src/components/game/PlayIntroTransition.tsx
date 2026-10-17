@@ -30,7 +30,7 @@ type Props = {
   team: GameTeam;
   /** Équipe qui tient l'appareil — absente en mode survie. */
   holder?: GameTeam;
-  /** classic : « à vous de jouer ! » ; survieStart : « à vous de commencer » ; survieNext : « à vous ! » (rapide). */
+  /** classic : « à vous de jouer ! » ; survieStart : « à vous de commencer » ; survieNext : « à vous de répondre ! » (rapide). */
   variant?: keyof typeof TIMINGS;
   onReveal: () => void;
   onDone: () => void;

@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   questionCard: {
     backgroundColor: colors.cream,
     borderRadius: 16,
-    paddingHorizontal: 24,
+    paddingHorizontal: 16, // même carte question que l'écran des mises (3 lignes max)
     paddingVertical: 13,
     width: '100%',
   },

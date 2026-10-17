@@ -285,7 +285,8 @@ const styles = StyleSheet.create({
   questionCard: {
     backgroundColor: colors.cream,
     borderRadius: 16,
-    paddingHorizontal: 24,
+    // 16 (et non 24) : avec les intitulés raccourcis, garantit 3 lignes max dès 375pt de large
+    paddingHorizontal: 16,
     paddingVertical: 13,
     width: '100%',
   },
