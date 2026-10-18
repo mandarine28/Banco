@@ -24,6 +24,8 @@ type PurchasesContextValue = {
   purchase: (productId: ProductId) => Promise<boolean>;
   /** Renvoie les infos restaurées, ou null si indisponible / en échec. */
   restorePurchases: () => Promise<CustomerInfo | null>;
+  /** Recharge les droits depuis RevenueCat (ex. pack offert côté serveur). */
+  refresh: () => Promise<void>;
 };
 
 const PurchasesContext = createContext<PurchasesContextValue | null>(null);
@@ -134,9 +136,21 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const refresh = useCallback(async (): Promise<void> => {
+    const rc = getRevenueCat();
+    if (!rc) return;
+    try {
+      // Sans invalidation, le SDK renverrait sa copie en cache, sans le droit tout juste accordé
+      await rc.invalidateCustomerInfoCache();
+      setCustomerInfo(await rc.getCustomerInfo());
+    } catch {
+      setError('load');
+    }
+  }, []);
+
   const value = useMemo<PurchasesContextValue>(
-    () => ({ customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases }),
-    [customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases],
+    () => ({ customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases, refresh }),
+    [customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases, refresh],
   );
 
   return <PurchasesContext.Provider value={value}>{children}</PurchasesContext.Provider>;

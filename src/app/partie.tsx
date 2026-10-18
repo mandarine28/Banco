@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useReducer, useRef, useState } from 'react';
 import { Keyboard, Linking, StyleSheet, Text, View } from 'react-native';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
@@ -25,6 +25,7 @@ import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSucces
 import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
 import { useBackToQuitConfirm } from '@/hooks/useBackToQuitConfirm';
 import { useCountdown } from '@/hooks/useCountdown';
+import { maybeRequestReview, recordGameCompleted } from '@/lib/engagement';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { markTrialUsed } from '@/lib/trials';
@@ -34,6 +35,18 @@ import { SurviePulseBorder } from '@/state/survieOverlay';
 import { colors, fonts, teamColors } from '@/theme';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
+/** Laisse passer l'annonce du gagnant et les confettis avant la fenêtre d'avis. */
+const REVIEW_DELAY_MS = 2000;
+
+/** Appelle onFinished une seule fois quand la partie atteint l'écran final. */
+function useOnFinal(isFinal: boolean, onFinished: () => void) {
+  const done = useRef(false);
+  useEffect(() => {
+    if (!isFinal || done.current) return;
+    done.current = true;
+    onFinished();
+  }, [isFinal, onFinished]);
+}
 
 export default function GameScreen() {
   const settings = useGameSettings();
@@ -100,6 +113,13 @@ export default function GameScreen() {
     }
   };
 
+  const onGameFinished = () => {
+    recordGameCompleted().then((count) => {
+      // Pas après une partie d'essai : la proposition d'achat occupe déjà l'écran final
+      if (!trialProduct) setTimeout(() => maybeRequestReview(count), REVIEW_DELAY_MS);
+    });
+  };
+
   const upsell = (
     <ConfirmModal
       visible={upsellNext !== null}
@@ -130,6 +150,7 @@ export default function GameScreen() {
           selectedThemes={playableThemes}
           onReplay={replay}
           beforeLeave={beforeLeave}
+          onFinished={onGameFinished}
         />
         {upsell}
       </>
@@ -145,6 +166,7 @@ export default function GameScreen() {
         selectedThemes={playableThemes}
         onReplay={replay}
         beforeLeave={beforeLeave}
+        onFinished={onGameFinished}
       />
       {upsell}
     </>
@@ -158,14 +180,17 @@ type GameProps = {
   onReplay: () => void;
   /** Appelé avant Revanche / Menu depuis l'écran final (proposition d'achat après un essai). */
   beforeLeave: (next: () => void) => void;
+  /** Partie menée jusqu'à l'écran final (compteur de parties, demande d'avis). */
+  onFinished: () => void;
 };
 
 type Confirm = 'quit' | 'skip' | null;
 
-function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave }: GameProps) {
+function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFinished }: GameProps) {
   const filteredQuestions =
     selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
   const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, filteredQuestions));
+  useOnFinal(state.phase === 'final', onFinished);
   const [confirm, setConfirm] = useState<Confirm>(null);
   // Transition « remporte les enchères » : 'covering' masque l'écran prêt, 'revealing' = fondu de sortie
   const [wonTransition, setWonTransition] = useState<'covering' | 'revealing' | null>(null);
@@ -322,12 +347,13 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave }: Game
   );
 }
 
-function SurvieGame({ teams, roundCount, selectedThemes, onReplay, beforeLeave }: GameProps) {
+function SurvieGame({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFinished }: GameProps) {
   const filteredQuestions =
     selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
   const [state, dispatch] = useReducer(survieReducer, null, () =>
     createSurvieGame(teams, roundCount, filteredQuestions),
   );
+  useOnFinal(state.phase === 'final', onFinished);
   const [confirmQuit, setConfirmQuit] = useState(false);
   const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);
   // Popup « Éliminer <équipe> ? » — NON : PASSER reprend le chrono, temps écoulé vaut VALIDER

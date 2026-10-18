@@ -19,6 +19,9 @@ export const PRODUCT_IDS: Record<ProductId, string> = {
   packHarryPotter: 'com.banco.pack_harry_potter',
 };
 
+/** Fiche App Store (lien partagé par « Partager Banco »). */
+export const APP_STORE_URL = 'https://apps.apple.com/app/id6821200817';
+
 /** Thème de jeu correspondant à chaque pack de questions. */
 export const PACK_THEME_IDS: Partial<Record<ProductId, string>> = {
   packHarryPotter: 'harry-potter',

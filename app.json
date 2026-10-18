@@ -12,7 +12,8 @@
       "buildNumber": "1",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "appStoreUrl": "https://apps.apple.com/app/id6821200817"
     },
     "android": {
       "adaptiveIcon": {

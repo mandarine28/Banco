@@ -118,6 +118,24 @@ type Translations = {
     upsellMsg: string;
     later: string;
   };
+  gift: {
+    welcomeTitle: string;
+    shareTitle: string;
+    chooseMsg: string;
+    signInMsg: string;
+    claim: string;
+    createAccount: string;
+    later: string;
+    doneTitle: string;
+    doneMsg: string;
+    ok: string;
+    failedMsg: string;
+    alreadyClaimedMsg: string;
+    shareCardTitle: string;
+    shareCardMsg: string;
+    shareBtn: string;
+    shareMessage: string;
+  };
   survie: {
     opens: string;
     tip: string;
@@ -280,6 +298,24 @@ const translations: Record<Lang, Translations> = {
       close: 'Fermer',
       upsellMsg: 'Vous avez aimé ? Gardez ce pack pour toutes vos parties !',
       later: 'PLUS TARD',
+    },
+    gift: {
+      welcomeTitle: 'Cadeau de bienvenue !',
+      shareTitle: 'Merci pour le partage !',
+      chooseMsg: 'Choisissez le pack qui vous est offert :',
+      signInMsg: 'Créez un compte pour recevoir votre pack offert et le garder sur tous vos appareils.',
+      claim: 'RÉCUPÉRER',
+      createAccount: 'CRÉER UN COMPTE',
+      later: 'PLUS TARD',
+      doneTitle: "C'est à vous !",
+      doneMsg: 'Votre pack est débloqué. Bonne partie !',
+      ok: 'SUPER',
+      failedMsg: 'Impossible de récupérer le cadeau pour le moment. Réessayez plus tard.',
+      alreadyClaimedMsg: 'Ce cadeau a déjà été récupéré sur ce compte.',
+      shareCardTitle: 'Un pack offert',
+      shareCardMsg: 'Partagez Banco avec vos amis et recevez un pack.',
+      shareBtn: 'PARTAGER',
+      shareMessage: 'Viens jouer à Banco avec moi !',
     },
     survie: {
       opens: 'ouvre la survie',
@@ -481,6 +517,24 @@ const translations: Record<Lang, Translations> = {
       upsellMsg: 'Enjoyed it? Keep this pack for all your games!',
       later: 'LATER',
     },
+    gift: {
+      welcomeTitle: 'Welcome gift!',
+      shareTitle: 'Thanks for sharing!',
+      chooseMsg: 'Choose your free pack:',
+      signInMsg: 'Create an account to get your free pack and keep it on all your devices.',
+      claim: 'CLAIM',
+      createAccount: 'CREATE ACCOUNT',
+      later: 'LATER',
+      doneTitle: "It's yours!",
+      doneMsg: 'Your pack is unlocked. Have fun!',
+      ok: 'GREAT',
+      failedMsg: "We couldn't deliver your gift right now. Please try again later.",
+      alreadyClaimedMsg: 'This gift has already been claimed on this account.',
+      shareCardTitle: 'A free pack',
+      shareCardMsg: 'Share Banco with your friends and get a pack.',
+      shareBtn: 'SHARE',
+      shareMessage: 'Come play Banco with me!',
+    },
     survie: {
       opens: 'starts the survival',
       tip: 'Pick a single game master to keep the pace!',
@@ -681,6 +735,24 @@ const translations: Record<Lang, Translations> = {
       upsellMsg: 'Hat es gefallen? Behalte dieses Paket für alle Partien!',
       later: 'SPÄTER',
     },
+    gift: {
+      welcomeTitle: 'Willkommensgeschenk!',
+      shareTitle: 'Danke fürs Teilen!',
+      chooseMsg: 'Wähle dein Gratis-Paket:',
+      signInMsg: 'Erstelle ein Konto, um dein Gratis-Paket zu erhalten und auf allen Geräten zu behalten.',
+      claim: 'ABHOLEN',
+      createAccount: 'KONTO ERSTELLEN',
+      later: 'SPÄTER',
+      doneTitle: 'Es gehört dir!',
+      doneMsg: 'Dein Paket ist freigeschaltet. Viel Spaß!',
+      ok: 'SUPER',
+      failedMsg: 'Das Geschenk kann gerade nicht abgeholt werden. Versuche es später erneut.',
+      alreadyClaimedMsg: 'Dieses Geschenk wurde für dieses Konto bereits abgeholt.',
+      shareCardTitle: 'Ein Gratis-Paket',
+      shareCardMsg: 'Teile Banco mit deinen Freunden und erhalte ein Paket.',
+      shareBtn: 'TEILEN',
+      shareMessage: 'Komm, spiel Banco mit mir!',
+    },
     survie: {
       opens: 'eröffnet das Überleben',
       tip: 'Bestimmt einen einzigen Spielleiter, um das Tempo zu halten!',
@@ -880,6 +952,24 @@ const translations: Record<Lang, Translations> = {
       close: 'Cerrar',
       upsellMsg: '¿Te ha gustado? ¡Quédate este pack para todas tus partidas!',
       later: 'MÁS TARDE',
+    },
+    gift: {
+      welcomeTitle: '¡Regalo de bienvenida!',
+      shareTitle: '¡Gracias por compartir!',
+      chooseMsg: 'Elige tu pack gratis:',
+      signInMsg: 'Crea una cuenta para recibir tu pack gratis y conservarlo en todos tus dispositivos.',
+      claim: 'RECOGER',
+      createAccount: 'CREAR CUENTA',
+      later: 'MÁS TARDE',
+      doneTitle: '¡Es tuyo!',
+      doneMsg: 'Tu pack está desbloqueado. ¡A jugar!',
+      ok: 'GENIAL',
+      failedMsg: 'No se ha podido entregar el regalo. Inténtalo más tarde.',
+      alreadyClaimedMsg: 'Este regalo ya se ha recogido en esta cuenta.',
+      shareCardTitle: 'Un pack gratis',
+      shareCardMsg: 'Comparte Banco con tus amigos y recibe un pack.',
+      shareBtn: 'COMPARTIR',
+      shareMessage: '¡Ven a jugar a Banco conmigo!',
     },
     survie: {
       opens: 'abre la supervivencia',

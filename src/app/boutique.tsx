@@ -1,15 +1,18 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import { useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { ActivityIndicator, Alert, ScrollView, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
-import type { ProductId } from '@/config/shop';
+import { GiftModal } from '@/components/GiftModal';
+import { APP_STORE_URL, type ProductId } from '@/config/shop';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { usePurchases } from '@/state/purchases';
+import { useGifts } from '@/state/useGifts';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -131,6 +134,23 @@ export default function BoutiqueScreen() {
   const { lang } = useLang();
   const t = getT(lang);
 
+  // Récompense de partage : un pack offert, une fois par compte (accordé côté serveur)
+  const gifts = useGifts();
+  const [shareGiftOpen, setShareGiftOpen] = useState(false);
+  // Masqué le temps de la connexion (la fenêtre native passerait au-dessus de l'écran de compte)
+  const [shareGiftPaused, setShareGiftPaused] = useState(false);
+  useFocusEffect(useCallback(() => setShareGiftPaused(false), []));
+
+  async function handleShare() {
+    try {
+      const result = await Share.share({ message: `${t.gift.shareMessage} ${APP_STORE_URL}` });
+      // Le partage n'est pas vérifiable (Android ne dit pas s'il a abouti) : seule l'annulation explicite est exclue
+      if (result.action !== Share.dismissedAction) setShareGiftOpen(true);
+    } catch (e) {
+      if (__DEV__) console.warn('[gifts] partage impossible', e);
+    }
+  }
+
   async function handlePurchase(pack: Pack) {
     if (!pack.productId) return;
     setPurchasingId(pack.id);
@@ -212,6 +232,19 @@ export default function BoutiqueScreen() {
           />
         ))}
 
+        {gifts.canOffer('share') ? (
+          <View style={[styles.card, styles.shareCard]}>
+            <Text style={styles.cardTitle}>{t.gift.shareCardTitle}</Text>
+            <Text style={styles.bulletText}>{t.gift.shareCardMsg}</Text>
+            <Pressable onPress={handleShare} accessibilityRole="button" style={styles.ctaButton}>
+              <View style={styles.shareCta}>
+                <MaterialCommunityIcons name="share-variant" size={20} color={colors.purpleDeep} />
+                <Text style={styles.ctaText}>{t.gift.shareBtn}</Text>
+              </View>
+            </Pressable>
+          </View>
+        ) : null}
+
         <Pressable
           style={styles.restoreButton}
           onPress={handleRestore}
@@ -225,6 +258,17 @@ export default function BoutiqueScreen() {
           }
         </Pressable>
       </ScrollView>
+
+      {shareGiftOpen && !shareGiftPaused ? (
+        <GiftModal
+          kind="share"
+          packs={gifts.giftablePacks}
+          isSignedIn={gifts.isSignedIn}
+          onClaim={(product) => gifts.claim('share', product)}
+          onClose={() => setShareGiftOpen(false)}
+          onSignIn={() => setShareGiftPaused(true)}
+        />
+      ) : null}
     </View>
   );
 }
@@ -327,6 +371,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 0,
     elevation: 3,
+  },
+  shareCard: {
+    borderColor: colors.orange,
+    marginTop: 10,
+  },
+  shareCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   ctaText: {
     fontFamily: fonts.displayMedium,

@@ -1,15 +1,18 @@
-import { type Href, router } from 'expo-router';
-import { useState } from 'react';
+import { type Href, router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
+import { GiftModal } from '@/components/GiftModal';
 import { HomeBackground } from '@/components/HomeBackground';
 import { HomeMascot } from '@/components/HomeMascot';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { AnimatedLogo } from '@/components/Logo';
+import { loadGamesCompleted, WELCOME_GIFT_AFTER_GAMES } from '@/lib/engagement';
 import { useLang } from '@/lib/LangContext';
+import { useGifts } from '@/state/useGifts';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
@@ -28,6 +31,9 @@ function SettingIcon({ size }: { size: number }) {
 }
 
 
+
+// « Plus tard » sur le cadeau de bienvenue : reproposé seulement au prochain lancement de l'app
+let welcomeDismissedThisSession = false;
 
 export default function HomeScreen() {
   const { width: windowWidth, height } = useWindowDimensions();
@@ -48,6 +54,36 @@ export default function HomeScreen() {
   const subtitleTop = logoTop + logoHeight + 12;
 
   const go = (href: Href) => () => router.push(href);
+
+  // Cadeau de bienvenue après quelques parties : compteur relu à chaque retour sur l'accueil
+  const gifts = useGifts();
+  const [gamesCompleted, setGamesCompleted] = useState(0);
+  const [welcomeDismissed, setWelcomeDismissed] = useState(welcomeDismissedThisSession);
+  // Masqué le temps de la connexion (la fenêtre native passerait au-dessus de l'écran de compte)
+  const [welcomePaused, setWelcomePaused] = useState(false);
+  // Garde la fenêtre ouverte après l'octroi, quand canOffer repasse à false, pour afficher la confirmation
+  const [welcomeClaiming, setWelcomeClaiming] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false;
+      setWelcomePaused(false);
+      loadGamesCompleted().then((count) => {
+        if (!cancelled) setGamesCompleted(count);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }, []),
+  );
+  const showWelcome =
+    !welcomeDismissed &&
+    !welcomePaused &&
+    gamesCompleted >= WELCOME_GIFT_AFTER_GAMES &&
+    (welcomeClaiming || gifts.canOffer('welcome'));
+  const closeWelcome = () => {
+    welcomeDismissedThisSession = true;
+    setWelcomeDismissed(true);
+  };
   // Haut du panneau bleu (mesuré) : la mascotte se cache derrière
   const [panelTop, setPanelTop] = useState(0);
   // Incrémenté à chaque toucher : la mascotte prend peur et son timer repart
@@ -107,6 +143,20 @@ export default function HomeScreen() {
             </Pressable>
           </View>
         </View>
+
+        {showWelcome ? (
+          <GiftModal
+            kind="welcome"
+            packs={gifts.giftablePacks}
+            isSignedIn={gifts.isSignedIn}
+            onClaim={(product) => {
+              setWelcomeClaiming(true);
+              return gifts.claim('welcome', product);
+            }}
+            onClose={closeWelcome}
+            onSignIn={() => setWelcomePaused(true)}
+          />
+        ) : null}
 
         {/* En-tête : drapeau gauche + paramètres droite */}
         <View style={[styles.header, { top: insets.top + 14, left: width * 0.06, right: width * 0.06 }]}>

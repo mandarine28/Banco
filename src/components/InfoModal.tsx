@@ -38,6 +38,8 @@ type ConfirmProps = {
   header?: ReactNode;
   title: string;
   message: string;
+  /** Contenu affiché sous le message (ex. choix d'un pack). */
+  children?: ReactNode;
   confirmLabel: string;
   cancelLabel?: string;
   /** Pictos devant les libellés : rendent l'effet du bouton lisible d'un coup d'œil. */
@@ -59,6 +61,7 @@ export function ConfirmModal({
   header,
   title,
   message,
+  children,
   confirmLabel,
   cancelLabel = 'ANNULER',
   confirmIcon,
@@ -89,6 +92,7 @@ export function ConfirmModal({
             {title}
           </Text>
           <Text style={pauseStyles.message}>{message}</Text>
+          {children}
           <View style={confirmStyles.actions}>
             {onCancel ? (
               <Pressable onPress={onCancel} accessibilityRole="button" style={confirmStyles.cancelBtn}>

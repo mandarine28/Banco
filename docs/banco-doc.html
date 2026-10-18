@@ -201,6 +201,7 @@
     <a href="#supabase">🗄️ Supabase</a>
     <a href="#eas">🔨 EAS Build</a>
     <a href="#ads">📢 Publicité</a>
+    <a href="#gifts">🎁 Cadeaux &amp; avis</a>
 
     <div class="nav-section">L'application</div>
     <a href="#screens">📱 Écrans</a>
@@ -740,6 +741,50 @@ eas submit --platform ios --profile production</code></pre>
       <tr><td>🌐 Site · Confidentialité</td><td>Retirer « Aucune publicité, aucun pistage » ; ajouter Google AdMob comme prestataire, les données collectées, la finalité, le consentement et son retrait, les transferts hors UE, le lien vers la politique de Google</td></tr>
       <tr><td>🌐 Site · app-ads.txt</td><td>Publier le fichier à la racine du site déclaré sur les fiches des stores</td></tr>
       <tr><td>👶 Âge</td><td>Vérifier la classification d'âge ; si l'app vise aussi les moins de 13 ans, règles spécifiques (pubs non personnalisées, programme « Familles » de Google Play)</td></tr>
+    </table>
+  </section>
+
+  <!-- GIFTS & REVIEWS -->
+  <section id="gifts">
+    <h2>🎁 Cadeaux &amp; avis</h2>
+    <div class="section-divider"></div>
+    <p>
+      Deux packs offerts, <strong>une seule fois par compte</strong>, accordés côté serveur comme droits promotionnels RevenueCat « à vie » :
+      ils suivent le compte et reviennent avec « Restaurer les achats ».
+    </p>
+    <table>
+      <tr><th>Cadeau</th><th>Où / quand</th><th>Condition</th></tr>
+      <tr><td>Bienvenue</td><td>Fenêtre sur l'accueil, à partir de 3 parties terminées</td><td>Compte requis ; « Plus tard » = reproposé au prochain lancement</td></tr>
+      <tr><td>Partage</td><td>Carte « Un pack offert » dans la boutique, bouton Partager</td><td>Compte requis ; le partage n'est pas vérifiable (seule l'annulation explicite est exclue)</td></tr>
+    </table>
+    <div class="flow">
+      <div class="flow-step">App : choix du pack</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Fonction Supabase <code>claim-gift</code></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Table <code>gifts</code> (1 par type)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step orange">RevenueCat : droit promotionnel</div>
+    </div>
+    <div class="warn-box">
+      ⚠️ Interdit par Apple (règle 3.10) et Google : récompenser un <strong>avis</strong> ou une note. Les cadeaux ne sont donc jamais liés à la demande d'avis.
+    </div>
+
+    <h3>Demande d'avis</h3>
+    <p>
+      Fenêtre native (<code>expo-store-review</code>) environ 2 s après l'écran final, à partir de la 3ᵉ partie terminée, au plus une fois par mois (Apple plafonne à 3 affichages par an)
+      (règle dans <code>src/lib/reviewRule.ts</code>, testée). Jamais après une partie d'essai. Apple et Google peuvent ne pas l'afficher ; absente sur TestFlight.
+    </p>
+
+    <h3>📋 TODO de mise en service</h3>
+    <table>
+      <tr><th>#</th><th>Étape</th></tr>
+      <tr><td>1</td><td>Supabase : exécuter <code>supabase/migrations/20261018000000_gifts.sql</code> (éditeur SQL ou <code>npx supabase db push</code>)</td></tr>
+      <tr><td>2</td><td>RevenueCat : créer une <strong>clé API secrète (v1)</strong>, puis <code>npx supabase secrets set REVENUECAT_SECRET_KEY=sk_…</code>. Jamais dans <code>.env</code> ni dans l'app</td></tr>
+      <tr><td>3</td><td>Déployer la fonction : <code>npx supabase functions deploy claim-gift</code></td></tr>
+      <tr><td>4</td><td>Tester dans un build de développement (RevenueCat absent d'Expo Go) : cadeau bienvenue, partage, « Restaurer les achats »</td></tr>
+      <tr><td>5</td><td>Android : renseigner <code>android.package</code> et <code>android.playStoreUrl</code> (le lien partagé est aujourd'hui celui de l'App Store)</td></tr>
+      <tr><td>6</td><td>Ajouter un pack offrable : le déclarer dans <code>PACK_THEME_IDS</code> (app) <strong>et</strong> <code>GIFTABLE_ENTITLEMENTS</code> (fonction)</td></tr>
     </table>
   </section>
 
