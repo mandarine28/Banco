@@ -6,7 +6,7 @@ export const offers: Record<ProductId, { label: string; price: string }> = {
   packFootball: { label: 'Pack Football', price: '0,99 €' },
   packJeuxVideo: { label: 'Pack Jeux Vidéo', price: '0,99 €' },
   laTotale: { label: 'La Totale', price: '1,99 €' },
-  packHarryPotter: { label: 'Pack Sorciers & Magie', price: '0,99 €' },
+  packHarryPotter: { label: "Pack L'école du sorcier à lunettes", price: '0,99 €' },
 };
 
 // Identifiants produits tels que définis dans App Store Connect / Google Play

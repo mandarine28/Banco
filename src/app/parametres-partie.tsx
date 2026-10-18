@@ -10,6 +10,7 @@ const LOCK_PATH =
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { ConfirmModal } from '@/components/InfoModal';
+import { WizardGlasses } from '@/components/Illustrations';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { isRewardGranted, showRewardedAd } from '@/lib/ads';
@@ -31,7 +32,7 @@ const SETTING_PATH =
 
 const themeIdsWithQuestions = new Set(questions.map((q) => q.theme));
 
-type Category = { id: string; label: string; labelByLang?: Partial<Record<Lang, string>>; available: boolean; locked?: boolean };
+type Category = { id: string; label: string; labelByLang?: Partial<Record<Lang, string>>; available: boolean; locked?: boolean; isPack?: boolean };
 
 const BASE_CATEGORIES: Category[] = themes.map((theme) => ({
   id: theme.id,
@@ -140,10 +141,10 @@ export default function MatchSettingsScreen() {
     ...BASE_CATEGORIES,
     {
       id: 'harry-potter',
-      label: 'Sorciers & Magie',
-      labelByLang: { en: 'Wizards & Magic', de: 'Zauberer & Magie', es: 'Magos y magia' },
+      label: "L'école du sorcier à lunettes",
       available: hasHarryPotter,
       locked: !hasHarryPotter,
+      isPack: true,
     },
   ];
   const [chipsScrollY, setChipsScrollY] = useState(0);
@@ -275,7 +276,7 @@ export default function MatchSettingsScreen() {
                   onScroll={(e) => setChipsScrollY(e.nativeEvent.contentOffset.y)}
                   onContentSizeChange={(_, h) => setChipsContentH(h)}
                 >
-                  {CATEGORIES.map((cat) => {
+                  {CATEGORIES.filter((cat) => !cat.isPack).map((cat) => {
                     const isActive = selected.has(cat.id);
                     const isLocked = cat.locked;
                     const label = cat.labelByLang?.[lang] ?? cat.label;
@@ -313,6 +314,39 @@ export default function MatchSettingsScreen() {
                       </Pressable>
                     );
                   })}
+                  {/* Packs achetés en boutique : rubrique à part pour ne pas se confondre avec les catégories */}
+                  <Text style={styles.packsHeading}>{t.shop.packsTitle}</Text>
+                  {CATEGORIES.filter((cat) => cat.isPack).map((cat) => {
+                    const isActive = selected.has(cat.id);
+                    const isLocked = cat.locked;
+                    const title = t.shop.packTitles[cat.id] ?? cat.label;
+                    const displayLabel = trialIds.has(cat.id) ? `${title} · ${t.shop.trialBadge}` : title;
+                    return (
+                      <Pressable
+                        key={cat.id}
+                        style={[styles.packCard, isLocked ? styles.chipPurchaseLocked : isActive && styles.packCardActive]}
+                        onPress={isLocked ? () => setLockedPack(cat) : () => toggleCategory(cat.id)}
+                        sound={isLocked || isActive ? 'tap' : 'correct'}
+                        soundOnRelease
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: isActive, disabled: isLocked }}
+                        accessibilityLabel={isLocked ? `${displayLabel} — verrouillé` : displayLabel}
+                      >
+                        <WizardGlasses size={30} color={isActive && !isLocked ? colors.purpleDeep : colors.cream} />
+                        <Text
+                          style={[styles.chipText, styles.packCardText, { color: isActive && !isLocked ? colors.purpleDeep : colors.cream }]}
+                          numberOfLines={2}
+                        >
+                          {displayLabel}
+                        </Text>
+                        {isLocked && (
+                          <Svg width={24} height={24} viewBox="0 0 24 24" style={styles.chipLockIcon}>
+                            <Path d={LOCK_PATH} fill={colors.cream} />
+                          </Svg>
+                        )}
+                      </Pressable>
+                    );
+                  })}
                 </ScrollView>
               </View>
             </View>
@@ -321,7 +355,7 @@ export default function MatchSettingsScreen() {
           {/* Pack verrouillé : essai d'une partie contre une pub, ou boutique */}
           <ConfirmModal
             visible={lockedPack !== null}
-            title={lockedPack ? (lockedPack.labelByLang?.[lang] ?? lockedPack.label) : ''}
+            title={lockedPack ? (t.shop.packTitles[lockedPack.id] ?? lockedPack.labelByLang?.[lang] ?? lockedPack.label) : ''}
             message={trialUsed ? t.shop.trialUsedMsg : t.shop.trialMsg}
             cancelLabel={t.shop.goToShop}
             cancelIcon="cart"
@@ -541,6 +575,33 @@ const styles = StyleSheet.create({
   },
   chipLockIcon: {
     marginTop: 1,
+  },
+  packsHeading: {
+    width: '100%',
+    marginTop: 8,
+    fontFamily: fonts.displayMedium,
+    fontSize: 16,
+    color: colors.lavender,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  packCard: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: colors.lavender,
+    backgroundColor: colors.purpleDeep,
+  },
+  packCardActive: {
+    backgroundColor: colors.lavender,
+  },
+  packCardText: {
+    flex: 1,
   },
   btnContinuer: {
     height: 51,

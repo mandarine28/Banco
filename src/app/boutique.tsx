@@ -8,6 +8,7 @@ import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { GiftModal } from '@/components/GiftModal';
+import { WizardGlasses } from '@/components/Illustrations';
 import { APP_STORE_URL, type ProductId } from '@/config/shop';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
@@ -63,7 +64,10 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase }: PackCardPr
         <View style={styles.cardInner}>
           <View style={[styles.card, { borderColor: pack.borderColor }]}>
             <View style={styles.cardLeft}>
-              <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
+              <View style={styles.titleRow}>
+                {pack.id === 'harry-potter' && <WizardGlasses size={28} />}
+                <Text style={[styles.cardTitle, styles.titleText]} numberOfLines={2}>{title}</Text>
+              </View>
               <View style={styles.bulletsRow}>
                 <View style={styles.bullets}>
                   {bullets.map((b, i) => (
@@ -330,6 +334,14 @@ const styles = StyleSheet.create({
     fontFamily: fonts.displayMedium,
     fontSize: 20,
     color: colors.cream,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  titleText: {
+    flexShrink: 1,
   },
   bulletsRow: {
     flexDirection: 'row',
