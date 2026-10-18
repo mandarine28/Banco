@@ -30,6 +30,18 @@ export function Bulb({ height }: { height: number }) {
   );
 }
 
+/** Lunettes rondes et éclair : repère du pack sorciers, sans logo protégé. */
+export function WizardGlasses({ size, color = colors.cream }: { size: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M9.5 1 L6.5 6 H9 L7.5 10 L12 4.5 H9.5 L11 1 Z" fill={colors.yellow} />
+      <Circle cx="6.5" cy="15.5" r="4" fill="none" stroke={color} strokeWidth="1.8" />
+      <Circle cx="17.5" cy="15.5" r="4" fill="none" stroke={color} strokeWidth="1.8" />
+      <Path d="M10.5 15.5 Q12 14 13.5 15.5 M2.5 15 L1 13 M21.5 15 L23 13" fill="none" stroke={color} strokeWidth="1.8" strokeLinecap="round" />
+    </Svg>
+  );
+}
+
 /** Chapeau de bouffon (Jokers). */
 export function JesterHat({ width }: { width: number }) {
   return (
