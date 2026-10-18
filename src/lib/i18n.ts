@@ -7,6 +7,17 @@ export const LANGUAGES: { code: Lang; label: string }[] = [
   { code: 'es', label: 'Español' },
 ];
 
+export const FALLBACK_LANG: Lang = 'en';
+
+export function isLang(code: string | null | undefined): code is Lang {
+  return LANGUAGES.some((l) => l.code === code);
+}
+
+/** Première langue supportée parmi les langues préférées de l'appareil (ordre de préférence), sinon l'anglais. */
+export function pickLang(preferred: readonly (string | null | undefined)[]): Lang {
+  return preferred.map((code) => code?.toLowerCase()).find(isLang) ?? FALLBACK_LANG;
+}
+
 type Translations = {
   auction: {
     instruction: string;
@@ -108,6 +119,12 @@ type Translations = {
     passA11y: string;
     clear: string;
     someAnswers: string;
+    elimPassTitle: string;
+    elimPassMsg: string;
+    elimTimeoutTitle: string;
+    elimTimeoutMsg: string;
+    eliminate: string;
+    resume: string;
   };
   final: {
     tie: string;
@@ -127,6 +144,7 @@ type Translations = {
     auctionPoints: string[];
     survieTitle: string;
     survieSteps: string[];
+    surviePoints: string[];
   };
   support: {
     title: string;
@@ -257,6 +275,12 @@ const translations: Record<Lang, Translations> = {
       passA11y: 'Passer — élimination',
       clear: 'Effacer',
       someAnswers: 'Quelques réponses qui étaient possibles',
+      elimPassTitle: 'Passer ?',
+      elimPassMsg: "L'équipe sera éliminée de cette manche.",
+      elimTimeoutTitle: 'Temps écoulé !',
+      elimTimeoutMsg: "L'équipe a-t-elle répondu à temps ?",
+      eliminate: 'ÉLIMINER',
+      resume: 'REPRENDRE',
     },
     final: {
       tie: 'ÉGALITÉ !',
@@ -284,11 +308,16 @@ const translations: Record<Lang, Translations> = {
       ],
       survieTitle: 'Mode Survie',
       survieSteps: [
-        'Un sujet s\'affiche.',
-        'Chaque équipe a 10 secondes pour donner une nouvelle réponse, puis c\'est à l\'équipe suivante.',
-        'La cagnotte démarre à 1 point, et chaque bonne réponse ajoute 1 point.',
-        'Pas de réponse à temps, ou « Passer » : l\'équipe est éliminée.',
-        'La dernière équipe en jeu remporte toute la cagnotte.',
+        'Un sujet s\'affiche, par exemple « Capitales du monde ».',
+        'Chaque équipe, à son tour, a 10 secondes pour citer une nouvelle réponse.',
+        'Réponse validée : c\'est au tour de l\'équipe suivante.',
+        'Pas de réponse à temps, ou « Passer » : l\'équipe est éliminée de la manche.',
+        'La manche continue jusqu\'à ce qu\'il ne reste qu\'une seule équipe.',
+      ],
+      surviePoints: [
+        'Départ : la cagnotte vaut 1 point.',
+        'Bonne réponse : la cagnotte gagne 1 point.',
+        'Fin de manche : la dernière équipe en jeu remporte toute la cagnotte.',
       ],
     },
     support: {
@@ -439,6 +468,12 @@ const translations: Record<Lang, Translations> = {
       passA11y: 'Pass — elimination',
       clear: 'Clear',
       someAnswers: 'Some possible answers',
+      elimPassTitle: 'Pass?',
+      elimPassMsg: 'The team will be out for this round.',
+      elimTimeoutTitle: "Time's up!",
+      elimTimeoutMsg: 'Did the team answer in time?',
+      eliminate: 'ELIMINATE',
+      resume: 'RESUME',
     },
     final: {
       tie: 'IT\'S A TIE!',
@@ -466,11 +501,16 @@ const translations: Record<Lang, Translations> = {
       ],
       survieTitle: 'Survival mode',
       survieSteps: [
-        'A topic appears.',
-        'Each team has 10 seconds to give a new answer, then it is the next team’s turn.',
-        'The jackpot starts at 1 point, and each correct answer adds 1 point.',
-        'No answer in time, or “Pass”: the team is out.',
-        'The last team standing wins the whole jackpot.',
+        'A topic appears, for example “World capitals”.',
+        'Each team, in turn, has 10 seconds to name a new answer.',
+        'Answer validated: it’s the next team’s turn.',
+        'No answer in time, or “Pass”: the team is out of the round.',
+        'The round goes on until only one team is left.',
+      ],
+      surviePoints: [
+        'Start: the jackpot is worth 1 point.',
+        'Correct answer: the jackpot gains 1 point.',
+        'End of round: the last team standing wins the whole jackpot.',
       ],
     },
     support: {
@@ -621,6 +661,12 @@ const translations: Record<Lang, Translations> = {
       passA11y: 'Passen – Ausscheiden',
       clear: 'Löschen',
       someAnswers: 'Einige mögliche Antworten',
+      elimPassTitle: 'Passen?',
+      elimPassMsg: 'Das Team scheidet in dieser Runde aus.',
+      elimTimeoutTitle: 'Zeit abgelaufen!',
+      elimTimeoutMsg: 'Hat das Team rechtzeitig geantwortet?',
+      eliminate: 'AUSSCHEIDEN',
+      resume: 'WEITER',
     },
     final: {
       tie: 'UNENTSCHIEDEN!',
@@ -648,11 +694,16 @@ const translations: Record<Lang, Translations> = {
       ],
       survieTitle: 'Modus Überleben',
       survieSteps: [
-        'Ein Thema erscheint.',
-        'Jedes Team hat 10 Sekunden für eine neue Antwort, dann ist das nächste Team dran.',
-        'Der Jackpot startet mit 1 Punkt, jede richtige Antwort bringt 1 Punkt mehr.',
-        'Keine Antwort in der Zeit oder „Passen“: Das Team scheidet aus.',
-        'Das letzte Team im Spiel gewinnt den ganzen Jackpot.',
+        'Ein Thema erscheint, zum Beispiel „Hauptstädte der Welt“.',
+        'Jedes Team hat abwechselnd 10 Sekunden, um eine neue Antwort zu nennen.',
+        'Antwort bestätigt: Das nächste Team ist dran.',
+        'Keine Antwort in der Zeit oder „Passen“: Das Team scheidet in dieser Runde aus.',
+        'Die Runde läuft, bis nur noch ein Team übrig ist.',
+      ],
+      surviePoints: [
+        'Start: Der Jackpot ist 1 Punkt wert.',
+        'Richtige Antwort: Der Jackpot steigt um 1 Punkt.',
+        'Rundenende: Das letzte Team im Spiel gewinnt den ganzen Jackpot.',
       ],
     },
     support: {
@@ -803,6 +854,12 @@ const translations: Record<Lang, Translations> = {
       passA11y: 'Pasar — eliminación',
       clear: 'Borrar',
       someAnswers: 'Algunas respuestas posibles',
+      elimPassTitle: '¿Pasar?',
+      elimPassMsg: 'El equipo quedará eliminado de esta ronda.',
+      elimTimeoutTitle: '¡Se acabó el tiempo!',
+      elimTimeoutMsg: '¿Respondió el equipo a tiempo?',
+      eliminate: 'ELIMINAR',
+      resume: 'REANUDAR',
     },
     final: {
       tie: '¡EMPATE!',
@@ -830,11 +887,16 @@ const translations: Record<Lang, Translations> = {
       ],
       survieTitle: 'Modo Supervivencia',
       survieSteps: [
-        'Aparece un tema.',
-        'Cada equipo tiene 10 segundos para dar una respuesta nueva; luego le toca al siguiente.',
-        'El bote empieza en 1 punto y cada respuesta correcta suma 1 punto.',
-        'Sin respuesta a tiempo, o «Pasar»: el equipo queda eliminado.',
-        'El último equipo en juego se lleva todo el bote.',
+        'Aparece un tema, por ejemplo «Capitales del mundo».',
+        'Cada equipo, por turnos, tiene 10 segundos para decir una respuesta nueva.',
+        'Respuesta validada: le toca al equipo siguiente.',
+        'Sin respuesta a tiempo, o «Pasar»: el equipo queda eliminado de la ronda.',
+        'La ronda sigue hasta que solo quede un equipo.',
+      ],
+      surviePoints: [
+        'Inicio: el bote vale 1 punto.',
+        'Respuesta correcta: el bote suma 1 punto.',
+        'Fin de ronda: el último equipo en juego se lleva todo el bote.',
       ],
     },
     support: {

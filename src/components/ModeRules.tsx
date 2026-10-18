@@ -32,7 +32,7 @@ function Steps({ items, numbered = false }: { items: string[]; numbered?: boolea
   );
 }
 
-/** Règles d'un mode : titre + illustration, étapes, et les points pour les enchères ; footer est rendu en bas de la carte. */
+/** Règles d'un mode : titre + illustration, étapes, puis les points ; footer est rendu en bas de la carte. */
 export function ModeRulesCard({ mode, footer }: { mode: RulesMode; footer?: ReactNode }) {
   const { lang } = useLang();
   const r = getT(lang).rules;
@@ -53,16 +53,10 @@ export function ModeRulesCard({ mode, footer }: { mode: RulesMode; footer?: Reac
           <SvgXml xml={isAuction ? ENCHERE_ACTIF_XML : SURVIE_ACTIF_XML} width="100%" height="100%" />
         </View>
       </View>
-      {isAuction ? (
-        <>
-          <Steps items={r.auctionSteps} numbered />
-          <View style={styles.divider} />
-          <Text style={styles.subtitle}>{r.pointsTitle}</Text>
-          <Steps items={r.auctionPoints} />
-        </>
-      ) : (
-        <Steps items={r.survieSteps} numbered />
-      )}
+      <Steps items={isAuction ? r.auctionSteps : r.survieSteps} numbered />
+      <View style={styles.divider} />
+      <Text style={styles.subtitle}>{r.pointsTitle}</Text>
+      <Steps items={isAuction ? r.auctionPoints : r.surviePoints} />
       {footer}
     </View>
   );

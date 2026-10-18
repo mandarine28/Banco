@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco — Documentation Technique</title>
+<style>
+  :root {
+    --purple: #266de4;
+    --purple-deep: #0c2d64;
+    --purple-bright: #4d8ff0;
+    --green: #1AEF84;
+    --green-dark: #0ea85d;
+    --orange: #fb940e;
+    --cream: #FEF6D7;
+    --bg: #08152e;
+    --bg-card: #0f2347;
+    --bg-card2: #142d5a;
+    --text: #d4e4ff;
+    --text-muted: #7a9fd4;
+    --border: #1e3a6e;
+    --sidebar-w: 260px;
+    --radius: 12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+  /* PROGRESS BAR */
+  #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--purple), var(--green)); width: 0%; z-index: 1000; transition: width 0.1s; }
+
+  /* SIDEBAR */
+  #sidebar {
+    position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh;
+    background: var(--bg-card); border-right: 1px solid var(--border);
+    overflow-y: auto; padding: 20px 0; z-index: 100; display: flex; flex-direction: column;
+  }
+  #sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+  #sidebar-logo h1 { font-size: 22px; font-weight: 800; color: var(--cream); letter-spacing: -0.5px; }
+  #sidebar-logo span { font-size: 11px; color: var(--text-muted); }
+  #sidebar nav a {
+    display: flex; align-items: center; gap: 8px; padding: 8px 20px;
+    color: var(--text-muted); text-decoration: none; font-size: 13px; border-radius: 0;
+    transition: all 0.15s; border-left: 3px solid transparent;
+  }
+  #sidebar nav a:hover { color: var(--text); background: rgba(38,109,228,0.1); }
+  #sidebar nav a.active { color: var(--green); border-left-color: var(--green); background: rgba(26,239,132,0.07); }
+  #sidebar nav .nav-section { padding: 16px 20px 4px; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* MAIN */
+  #main { margin-left: var(--sidebar-w); flex: 1; max-width: 900px; padding: 48px 40px; }
+
+  /* SECTIONS */
+  section { margin-bottom: 60px; scroll-margin-top: 32px; }
+  h2 { font-size: 28px; font-weight: 800; color: var(--cream); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+  h3 { font-size: 18px; font-weight: 700; color: var(--purple-bright); margin: 24px 0 12px; }
+  h4 { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 16px 0 8px; }
+  p { line-height: 1.7; color: var(--text); margin-bottom: 12px; }
+  .section-divider { height: 1px; background: var(--border); margin-bottom: 28px; }
+
+  /* CARDS */
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px; }
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card-grid .card { margin-bottom: 0; }
+  .card h3 { margin-top: 0; }
+  .card-accent { border-left: 4px solid var(--purple); }
+  .card-green { border-left: 4px solid var(--green); }
+  .card-orange { border-left: 4px solid var(--orange); }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge-blue { background: rgba(38,109,228,0.2); color: var(--purple-bright); border: 1px solid var(--purple); }
+  .badge-green { background: rgba(26,239,132,0.15); color: var(--green); border: 1px solid var(--green-dark); }
+  .badge-orange { background: rgba(251,148,14,0.15); color: var(--orange); border: 1px solid #c07000; }
+  .badge-muted { background: rgba(255,255,255,0.07); color: var(--text-muted); border: 1px solid var(--border); }
+
+  /* CODE */
+  code { background: rgba(255,255,255,0.07); border: 1px solid var(--border); border-radius: 6px; padding: 2px 7px; font-size: 12.5px; font-family: 'SF Mono', 'Fira Code', monospace; color: var(--cream); }
+  pre { background: #060f22; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; overflow-x: auto; margin: 12px 0; }
+  pre code { background: none; border: none; padding: 0; font-size: 13px; line-height: 1.6; color: #a8d8ff; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13.5px; }
+  th { background: var(--bg-card2); color: var(--text-muted); font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; padding: 10px 14px; text-align: left; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(38,109,228,0.05); }
+
+  /* FLOW DIAGRAM */
+  .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .flow-step { background: var(--bg-card2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--cream); white-space: nowrap; }
+  .flow-arrow { color: var(--purple-bright); font-size: 18px; }
+  .flow-step.highlight { background: rgba(26,239,132,0.1); border-color: var(--green); color: var(--green); }
+  .flow-step.orange { background: rgba(251,148,14,0.1); border-color: var(--orange); color: var(--orange); }
+
+  /* COLLAPSIBLE */
+  .collapsible { cursor: pointer; user-select: none; }
+  .collapsible::after { content: ' ▼'; font-size: 12px; color: var(--text-muted); }
+  .collapsible.open::after { content: ' ▲'; }
+  .collapse-content { overflow: hidden; transition: max-height 0.3s ease; max-height: 0; }
+  .collapse-content.open { max-height: 2000px; }
+
+  /* GLOSSARY */
+  #glossary-search { width: 100%; padding: 10px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; margin-bottom: 20px; outline: none; }
+  #glossary-search:focus { border-color: var(--purple); }
+  .glossary-item { border-bottom: 1px solid var(--border); padding: 14px 0; }
+  .glossary-item:last-child { border-bottom: none; }
+  .glossary-term { font-size: 15px; font-weight: 700; color: var(--cream); margin-bottom: 4px; }
+  .glossary-def { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
+  .glossary-item.hidden { display: none; }
+
+  /* ENV VARS */
+  .env-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .env-row:last-child { border-bottom: none; }
+  .env-key { font-family: 'SF Mono', monospace; font-size: 13px; color: var(--cream); min-width: 320px; }
+  .env-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+  /* PHASE DIAGRAM */
+  .phases { display: flex; align-items: stretch; gap: 0; margin: 16px 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+  .phase { flex: 1; padding: 14px 10px; text-align: center; font-size: 12px; font-weight: 700; background: var(--bg-card); border-right: 1px solid var(--border); }
+  .phase:last-child { border-right: none; }
+  .phase .phase-name { font-size: 13px; color: var(--cream); margin-bottom: 4px; text-transform: uppercase; }
+  .phase .phase-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+  .phase.active-phase { background: rgba(38,109,228,0.15); }
+
+  /* HERO */
+  #hero { text-align: center; padding: 40px 0 60px; border-bottom: 1px solid var(--border); margin-bottom: 60px; }
+  #hero h1 { font-size: 52px; font-weight: 900; background: linear-gradient(135deg, var(--cream), var(--purple-bright)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; }
+  #hero .subtitle { font-size: 18px; color: var(--text-muted); margin-bottom: 24px; }
+  #hero .meta { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+  /* SCREEN LIST */
+  .screen-item { display: grid; grid-template-columns: 200px 1fr; gap: 16px; align-items: start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .screen-item:last-child { border-bottom: none; }
+  .screen-file { font-family: 'SF Mono', monospace; font-size: 12px; color: var(--orange); }
+  .screen-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.5; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    #sidebar { display: none; }
+    #main { margin-left: 0; padding: 24px 20px; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ARCHITECTURE ORGANIGRAMME */
+  .arch-diagram { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 32px 16px; background: #060f22; border-radius: 16px; border: 1px solid var(--border); overflow-x: auto; }
+  .arch-node { border-radius: 14px; padding: 16px 22px; text-align: center; min-width: 150px; }
+  .arch-node-title { font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 5px; }
+  .arch-node-sub { font-size: 11px; opacity: .7; line-height: 1.5; }
+  .arch-node-main { background: linear-gradient(135deg, #6c3fc5, #4f2d8f); border: 2px solid #9b6eff; box-shadow: 0 0 32px rgba(108,63,197,.5); min-width: 240px; padding: 20px 28px; }
+  .arch-node-main .arch-node-title { color: #fff; font-size: 17px; }
+  .arch-node-main .arch-node-sub { color: #d4b8ff; font-size: 12px; }
+  .arch-node-supabase { background: linear-gradient(135deg, #122b1f, #0a1a12); border: 2px solid #3ecf8e; box-shadow: 0 0 20px rgba(62,207,142,.25); }
+  .arch-node-supabase .arch-node-title { color: #3ecf8e; }
+  .arch-node-supabase .arch-node-sub { color: #85ddb5; }
+  .arch-node-rc { background: linear-gradient(135deg, #2b1a0e, #1a0f08); border: 2px solid #f4843d; box-shadow: 0 0 20px rgba(244,132,61,.25); }
+  .arch-node-rc .arch-node-title { color: #f4843d; }
+  .arch-node-rc .arch-node-sub { color: #f4a87d; }
+  .arch-node-eas { background: linear-gradient(135deg, #0f1a2e, #090f1c); border: 2px solid #5b8af4; box-shadow: 0 0 20px rgba(91,138,244,.25); }
+  .arch-node-eas .arch-node-title { color: #7aa4f7; }
+  .arch-node-eas .arch-node-sub { color: #a0bcf9; }
+  .arch-node-asc { background: linear-gradient(135deg, #2a1212, #1a0a0a); border: 2px solid #ff6b6b; box-shadow: 0 0 20px rgba(255,107,107,.25); }
+  .arch-node-asc .arch-node-title { color: #ff8e8e; }
+  .arch-node-asc .arch-node-sub { color: #ffb3b3; }
+  .arch-arrow-down { width: 2px; height: 36px; background: linear-gradient(to bottom, rgba(155,110,255,.8), rgba(155,110,255,.2)); margin: 0 auto; position: relative; }
+  .arch-arrow-down::after { content: '▼'; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); color: #9b6eff; font-size: 10px; }
+  .arch-arrow-small { width: 2px; height: 28px; background: linear-gradient(to bottom, rgba(244,132,61,.8), rgba(255,107,107,.4)); margin: 0 auto; position: relative; }
+  .arch-arrow-small::after { content: '▼'; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); color: #f4843d; font-size: 10px; }
+  .arch-label-small { font-size: 10px; color: #666; font-style: italic; text-align: center; margin: 2px 0; }
+  .arch-children-row { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; align-items: flex-start; margin-top: 14px; }
+  .arch-branch { display: flex; flex-direction: column; align-items: center; }
+  .arch-hbar { height: 2px; background: linear-gradient(to right, #3ecf8e44, #9b6eff88, #f4843d44, #5b8af444); width: 100%; margin: 0; position: relative; }
+  .arch-hbar-wrap { display: flex; width: 100%; align-items: center; padding: 0 80px; box-sizing: border-box; }
+  .arch-tags { display: flex; gap: 5px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+  .arch-tag { font-size: 10px; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.07); color: rgba(255,255,255,.55); }
+
+  /* INFO BOX */
+  .info-box { background: rgba(38,109,228,0.1); border: 1px solid var(--purple); border-radius: var(--radius); padding: 14px 18px; margin: 12px 0; font-size: 13.5px; }
+  .warn-box { background: rgba(251,148,14,0.1); border: 1px solid #c07000; border-radius: var(--radius); padding: 14px 18px; margin: 12px 0; font-size: 13.5px; color: #f0b060; }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div id="sidebar-logo">
+    <h1>🎲 Banco</h1>
+    <span>Documentation Technique v1.0</span>
+  </div>
+  <nav>
+    <div class="nav-section">Introduction</div>
+    <a href="#overview">🏠 Vue d'ensemble</a>
+    <a href="#architecture">🗺️ Architecture globale</a>
+
+    <div class="nav-section">Services externes</div>
+    <a href="#appstore">🍎 App Store Connect</a>
+    <a href="#revenuecat">💰 RevenueCat</a>
+    <a href="#supabase">🗄️ Supabase</a>
+    <a href="#eas">🔨 EAS Build</a>
+    <a href="#ads">📢 Publicité</a>
+
+    <div class="nav-section">L'application</div>
+    <a href="#screens">📱 Écrans</a>
+    <a href="#engine">⚙️ Moteur de jeu</a>
+    <a href="#data">📚 Données</a>
+    <a href="#iap">🛒 Achats intégrés</a>
+    <a href="#auth">🔐 Authentification</a>
+
+    <div class="nav-section">Référence</div>
+    <a href="#env">🔑 Variables d'env</a>
+    <a href="#glossary">📖 Glossaire</a>
+  </nav>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+  <!-- HERO -->
+  <div id="hero">
+    <h1>Banco</h1>
+    <div class="subtitle">Documentation technique de l'application mobile</div>
+    <div class="meta">
+      <span class="badge badge-blue">Expo SDK 57</span>
+      <span class="badge badge-blue">React Native 0.86</span>
+      <span class="badge badge-green">Bundle ID: com.mandarine.banco</span>
+      <span class="badge badge-orange">v1.0.0</span>
+      <span class="badge badge-muted">iOS · Android</span>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <h2>🏠 Vue d'ensemble</h2>
+    <div class="section-divider"></div>
+    <p>
+      <strong>Banco</strong> est un jeu de société mobile multijoueur en local (sur un seul appareil).
+      Les équipes s'affrontent en se lançant des <strong>enchères</strong> : combien de réponses à une question
+      de culture générale peuvent-elles citer en 60 secondes ? L'équipe qui enchérit le plus haut doit tenir sa promesse,
+      sinon l'adversaire empoche les points.
+    </p>
+    <p>
+      L'application est construite avec <strong>Expo</strong> (React Native géré) et déployée sur l'App Store via
+      <strong>EAS Build</strong>. Elle utilise <strong>Supabase</strong> pour l'authentification des utilisateurs et
+      <strong>RevenueCat</strong> pour gérer les achats intégrés (packs de questions).
+    </p>
+    <div class="card-grid">
+      <div class="card card-accent">
+        <h3>🎯 Concept</h3>
+        <p>Jeu d'enchères + culture générale. 2 à 4 équipes, 1 à 10 rounds, 60 secondes pour répondre.</p>
+      </div>
+      <div class="card card-green">
+        <h3>🌍 Langues</h3>
+        <p>Français, Anglais, Allemand, Espagnol. Interface et réponses traduites.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>📦 Technologie</h3>
+        <p>Expo SDK 57 · React Native 0.86 · TypeScript · Expo Router (file-based navigation)</p>
+      </div>
+      <div class="card card-orange">
+        <h3>💰 Monétisation</h3>
+        <p>Packs de questions payants via achats intégrés non-consommables (0,99€). Publicité prévue en complément (voir <a href="#ads" style="color:var(--orange);">Publicité</a>).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <h2>🗺️ Architecture globale</h2>
+    <div class="section-divider"></div>
+    <p>Banco s'appuie sur <strong>4 acteurs externes</strong> qui jouent chacun un rôle précis :</p>
+
+    <div class="arch-diagram">
+
+      <!-- Niveau 1 : App -->
+      <div class="arch-top">
+        <div class="arch-node arch-node-main">
+          <div class="arch-node-title">📱 Application Banco</div>
+          <div class="arch-node-sub">React Native · Expo Router · TypeScript</div>
+          <div class="arch-tags">
+            <span class="arch-tag">iOS</span>
+            <span class="arch-tag">Android</span>
+            <span class="arch-tag">Expo SDK 57</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connecteur vertical -->
+      <div class="arch-arrow-down" style="background:linear-gradient(to bottom,#9b6eff,#9b6eff44);"></div>
+
+      <!-- Barre horizontale reliant les 3 branches -->
+      <div style="display:flex; align-items:center; width:100%; max-width:700px; margin:0 auto;">
+        <div style="flex:1; height:2px; background:linear-gradient(to right,transparent,#3ecf8e88);"></div>
+        <div style="width:2px; height:32px; background:#3ecf8e88;"></div>
+        <div style="flex:1; height:2px; background:linear-gradient(to right,#3ecf8e44,#f4843d44);"></div>
+        <div style="width:2px; height:32px; background:#f4843d88;"></div>
+        <div style="flex:1; height:2px; background:linear-gradient(to right,#f4843d44,#5b8af488);"></div>
+        <div style="width:2px; height:32px; background:#5b8af488;"></div>
+        <div style="flex:1; height:2px; background:linear-gradient(to right,#5b8af444,transparent);"></div>
+      </div>
+
+      <!-- Niveau 2 : 3 services -->
+      <div class="arch-children-row">
+
+        <!-- Supabase -->
+        <div class="arch-branch">
+          <div class="arch-node arch-node-supabase">
+            <div class="arch-node-title">🟢 Supabase</div>
+            <div class="arch-node-sub">Authentification<br>Base de données<br>Sessions JWT</div>
+            <div class="arch-tags">
+              <span class="arch-tag">Auth</span>
+              <span class="arch-tag">PostgreSQL</span>
+              <span class="arch-tag">RLS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RevenueCat -->
+        <div class="arch-branch">
+          <div class="arch-node arch-node-rc">
+            <div class="arch-node-title">🟠 RevenueCat</div>
+            <div class="arch-node-sub">Achats intégrés<br>Entitlements<br>Restauration</div>
+            <div class="arch-tags">
+              <span class="arch-tag">IAP</span>
+              <span class="arch-tag">StoreKit 2</span>
+              <span class="arch-tag">SDK</span>
+            </div>
+          </div>
+          <!-- Connecteur RC → ASC -->
+          <div class="arch-arrow-small"></div>
+          <div class="arch-label-small">vérifie via</div>
+          <div style="height:4px;"></div>
+          <div class="arch-node arch-node-asc">
+            <div class="arch-node-title">🍎 App Store Connect</div>
+            <div class="arch-node-sub">Produits IAP<br>Fiscalité · W-8BEN<br>TestFlight</div>
+            <div class="arch-tags">
+              <span class="arch-tag">com.banco.*</span>
+              <span class="arch-tag">0,99€</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- EAS Build -->
+        <div class="arch-branch">
+          <div class="arch-node arch-node-eas">
+            <div class="arch-node-title">🔵 EAS Build</div>
+            <div class="arch-node-sub">Compile l'app<br>Signe le .ipa<br>Upload TestFlight</div>
+            <div class="arch-tags">
+              <span class="arch-tag">eas build</span>
+              <span class="arch-tag">eas submit</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <h3>Rôle détaillé de chaque acteur</h3>
+
+    <div class="card-grid" style="margin-top:16px;">
+
+      <div class="card" style="border-left:3px solid #3ecf8e;">
+        <h4 style="color:#3ecf8e;">🟢 Supabase — La base de données & l'authentification</h4>
+        <p>Supabase est le <strong>cerveau côté serveur</strong> de Banco. C'est lui qui sait qui sont les utilisateurs et stocke toutes les données persistantes.</p>
+        <ul style="margin:10px 0 0 18px; line-height:2;">
+          <li><strong>Authentification</strong> : gère la connexion des joueurs (email/mot de passe, Apple Sign In, Google). À chaque connexion, il génère un <em>token JWT</em> qui prouve l'identité de l'utilisateur.</li>
+          <li><strong>Sessions</strong> : conserve la session active entre les ouvertures de l'app. L'utilisateur n'a pas à se reconnecter à chaque fois.</li>
+          <li><strong>Base de données PostgreSQL</strong> : stocke les données des joueurs (scores, historique de parties). Protégée par des règles RLS (Row Level Security) — chaque utilisateur ne voit que ses propres données.</li>
+          <li><strong>Dans le code</strong> : <code>src/lib/supabase.ts</code> configure le client, <code>src/state/auth.tsx</code> expose le hook <code>useAuth()</code> utilisé partout dans l'app.</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-left:3px solid #f4843d;">
+        <h4 style="color:#f4843d;">🟠 RevenueCat — Le gestionnaire d'achats</h4>
+        <p>RevenueCat est le <strong>pont entre l'app et l'App Store</strong> pour tout ce qui concerne les paiements. Il abstrait la complexité de StoreKit (l'API Apple) pour la rendre simple à utiliser.</p>
+        <ul style="margin:10px 0 0 18px; line-height:2;">
+          <li><strong>Produits</strong> : fait le lien avec les IDs de produits définis dans App Store Connect (ex: <code>com.banco.pack_harry_potter</code>).</li>
+          <li><strong>Entitlements</strong> : après un achat validé par Apple, RevenueCat active un "droit" (ex: <code>pack_harry_potter</code>). L'app vérifie ce droit pour décider si le contenu est débloqué.</li>
+          <li><strong>Restauration</strong> : si l'utilisateur change de téléphone ou réinstalle l'app, RevenueCat retrouve ses achats passés chez Apple et réactive les entitlements.</li>
+          <li><strong>Offerings</strong> : groupe les produits en "offres" que l'app récupère via SDK pour afficher dans la boutique.</li>
+          <li><strong>Dans le code</strong> : <code>src/lib/revenuecat.ts</code> initialise le SDK, <code>src/state/purchases.tsx</code> expose <code>usePurchases()</code> avec <code>hasPurchased()</code>, <code>purchase()</code>, <code>restorePurchases()</code>.</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-left:3px solid #ff6b6b;">
+        <h4 style="color:#ff8e8e;">🍎 App Store Connect — La plateforme Apple</h4>
+        <p>App Store Connect est le <strong>tableau de bord officiel d'Apple</strong> pour les développeurs. C'est la source de vérité pour tout ce qui concerne la distribution de l'app.</p>
+        <ul style="margin:10px 0 0 18px; line-height:2;">
+          <li><strong>Achats intégrés (IAP)</strong> : c'est ici que chaque produit payant est déclaré avec son ID, son prix, son type et sa description. Apple est le seul à pouvoir encaisser l'argent.</li>
+          <li><strong>TestFlight</strong> : outil de bêta-test d'Apple. Les builds compilés par EAS sont envoyés ici pour être testés avant publication officielle.</li>
+          <li><strong>Fiscalité</strong> : contrats et formulaires fiscaux (W-8BEN pour les non-résidents américains), compte bancaire pour recevoir les paiements, Small Business Program (commission réduite à 15%).</li>
+          <li><strong>Review Apple</strong> : avant chaque publication sur l'App Store, Apple vérifie manuellement l'app (2–3 jours en moyenne).</li>
+          <li><strong>Clé IAP (.p8)</strong> : fichier de sécurité qui permet à RevenueCat de valider les transactions directement avec les serveurs Apple (StoreKit 2).</li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-left:3px solid #5b8af4;">
+        <h4 style="color:#7aa4f7;">🔵 EAS Build — La chaîne de compilation</h4>
+        <p>EAS (Expo Application Services) est le <strong>service de build cloud d'Expo</strong>. Il compile le code React Native en une vraie app iOS (.ipa) sans avoir besoin d'un Mac.</p>
+        <ul style="margin:10px 0 0 18px; line-height:2;">
+          <li><strong>eas build</strong> : compile l'app dans le cloud. Prend ~10–15 min. Génère un fichier <code>.ipa</code> (iOS) signé avec les certificats Apple.</li>
+          <li><strong>eas submit</strong> : envoie automatiquement le <code>.ipa</code> compilé vers TestFlight. Aucune action manuelle requise.</li>
+          <li><strong>Profils de build</strong> : définis dans <code>eas.json</code> — <code>development</code> pour le simulateur, <code>preview</code> pour TestFlight, <code>production</code> pour l'App Store.</li>
+          <li><strong>Variables d'environnement</strong> : les clés secrètes (Supabase, RevenueCat) sont injectées au moment du build depuis le fichier <code>.env</code> local — elles ne sont jamais commitées sur Git.</li>
+          <li><strong>Certificats</strong> : EAS gère automatiquement les certificats de signature Apple (provisioning profiles, certificates). Tout est stocké côté Expo, pas à gérer manuellement.</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <h3 style="margin-top:32px;">Flux de données principal</h3>
+    <div class="flow">
+      <div class="flow-step">Utilisateur ouvre l'app</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Supabase vérifie la session</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">RevenueCat charge les achats</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">Accueil (index.tsx)</div>
+    </div>
+  </section>
+
+  <!-- APP STORE CONNECT -->
+  <section id="appstore">
+    <h2>🍎 App Store Connect</h2>
+    <div class="section-divider"></div>
+    <p>
+      App Store Connect est la plateforme d'Apple pour gérer la publication d'applications.
+      C'est là que l'app est soumise à la review, que les achats intégrés sont définis et que les paramètres fiscaux sont configurés.
+    </p>
+
+    <div class="card card-accent">
+      <h4>Identifiants de l'app</h4>
+      <table>
+        <tr><th>Champ</th><th>Valeur</th></tr>
+        <tr><td>Bundle Identifier</td><td><code>com.mandarine.banco</code></td></tr>
+        <tr><td>App Name</td><td>Banco</td></tr>
+        <tr><td>ASC App ID</td><td><code>6821200817</code></td></tr>
+        <tr><td>Apple Team ID</td><td><code>C2GF493ACB</code></td></tr>
+        <tr><td>Version</td><td>1.0.0</td></tr>
+      </table>
+    </div>
+
+    <h3>Produits IAP configurés</h3>
+    <table>
+      <tr><th>Nom</th><th>Product ID (Apple)</th><th>Type</th><th>Prix</th></tr>
+      <tr><td>Pack Harry Potter</td><td><code>com.banco.pack_harry_potter</code></td><td><span class="badge badge-blue">Non-consommable</span></td><td>0,99€</td></tr>
+    </table>
+    <div class="info-box">
+      💡 <strong>Non-consommable</strong> = l'utilisateur achète une seule fois, à vie. Même en changeant de téléphone, il peut restaurer l'achat.
+    </div>
+
+    <h3>TestFlight</h3>
+    <p>TestFlight est l'outil d'Apple pour distribuer des versions bêta aux testeurs avant la publication officielle. Les builds EAS sont automatiquement uploadés vers TestFlight via <code>eas submit</code>.</p>
+
+    <h3>Fiscalité</h3>
+    <p>Formulaire W-8BEN rempli (certificat de statut étranger) → taux de retenue à la source US : <strong>0%</strong> (traité fiscal France-USA, Article 12). Compte bancaire Shine (micro-entreprise) configuré pour les paiements.</p>
+  </section>
+
+  <!-- REVENUECAT -->
+  <section id="revenuecat">
+    <h2>💰 RevenueCat</h2>
+    <div class="section-divider"></div>
+    <p>
+      RevenueCat est le service qui fait le lien entre <strong>l'app</strong> et les stores (App Store, Google Play).
+      Il gère les achats, les entitlements (droits débloqués) et la restauration.
+      Sans RevenueCat, il faudrait coder toute la logique StoreKit manuellement — c'est complexe et risqué.
+    </p>
+
+    <div class="card-grid">
+      <div class="card card-accent">
+        <h3>📦 Product</h3>
+        <p>Référence vers un produit Apple. Identifié par le même Product ID que dans App Store Connect.</p>
+        <code>com.banco.pack_harry_potter</code>
+      </div>
+      <div class="card card-green">
+        <h3>🔑 Entitlement</h3>
+        <p>Le <strong>droit</strong> débloqué par un achat. C'est ce que le code vérifie, pas le produit lui-même.</p>
+        <code>pack_harry_potter</code>
+      </div>
+      <div class="card card-accent">
+        <h3>🛍️ Offering</h3>
+        <p>Groupe de produits présentés à l'utilisateur. L'offering <strong>default</strong> est celle utilisée par l'app.</p>
+      </div>
+      <div class="card card-orange">
+        <h3>🔗 Liaison</h3>
+        <p>Product → attaché à → Entitlement → inclus dans → Offering default</p>
+      </div>
+    </div>
+
+    <h3>Configuration complète</h3>
+    <table>
+      <tr><th>Élément</th><th>Identifiant</th><th>Lié à</th></tr>
+      <tr><td>Product</td><td><code>com.banco.pack_harry_potter</code></td><td>App Store Connect</td></tr>
+      <tr><td>Entitlement</td><td><code>pack_harry_potter</code></td><td>Product ci-dessus</td></tr>
+      <tr><td>Package</td><td><code>pack_harry_potter</code></td><td>Offering <code>default</code></td></tr>
+    </table>
+
+    <h3>Comment ça fonctionne dans le code</h3>
+    <pre><code>// 1. RevenueCat est initialisé au démarrage avec la clé iOS
+initRevenueCat(userId);
+
+// 2. Pour acheter un pack :
+const offerings = await rc.getOfferings();           // récupère l'offering default
+const pkg = offerings.current?.availablePackages     // trouve le bon package
+  .find(p => p.product.identifier === 'com.banco.pack_harry_potter');
+const { customerInfo } = await rc.purchasePackage(pkg); // déclenche Apple Pay
+
+// 3. Pour vérifier si l'utilisateur a déjà acheté :
+hasEntitlement(customerInfo, 'pack_harry_potter')    // → true/false</code></pre>
+
+    <div class="info-box">
+      💡 Le code vérifie toujours l'<strong>entitlement</strong>, pas le Product ID. Ça permet d'attacher plusieurs produits au même droit plus tard (ex: pack bundle).
+    </div>
+  </section>
+
+  <!-- SUPABASE -->
+  <section id="supabase">
+    <h2>🗄️ Supabase</h2>
+    <div class="section-divider"></div>
+    <p>
+      Supabase est le backend de l'app. C'est une alternative open-source à Firebase qui fournit une base de données PostgreSQL,
+      un système d'authentification et une API REST automatique.
+    </p>
+
+    <div class="card-grid">
+      <div class="card card-accent">
+        <h3>🔐 Authentification</h3>
+        <p>Gère les comptes utilisateurs. Méthodes disponibles :<br><br>
+          • Email + mot de passe<br>
+          • Apple Sign In<br>
+          • Google Sign In
+        </p>
+      </div>
+      <div class="card card-green">
+        <h3>💾 Base de données</h3>
+        <p>PostgreSQL hébergé. Accès sécurisé via <strong>Row Level Security (RLS)</strong> — chaque utilisateur ne voit que ses propres données.</p>
+      </div>
+    </div>
+
+    <h3>Stockage des sessions</h3>
+    <p>
+      Les tokens JWT de session sont stockés de façon sécurisée sur l'appareil via <strong>expo-secure-store</strong>
+      (Keychain iOS / Keystore Android). Les tokens trop grands (&gt;2Ko) basculent automatiquement sur <strong>AsyncStorage</strong>.
+    </p>
+    <pre><code>// supabase.ts — Stockage hybride sécurisé
+const LargeSecureStore = {
+  async getItem(key) { ... },  // SecureStore avec fallback AsyncStorage
+  async setItem(key, value) {
+    if (value.length > 2000) {
+      await AsyncStorage.setItem(key, value);  // tokens trop grands
+    } else {
+      await SecureStore.setItemAsync(key, value); // tokens normaux
+    }
+  }
+}</code></pre>
+
+    <h3>Connexion à l'app</h3>
+    <div class="env-row">
+      <div class="env-key">EXPO_PUBLIC_SUPABASE_URL</div>
+      <div class="env-desc">URL du projet Supabase (ex: https://abc123.supabase.co)</div>
+    </div>
+    <div class="env-row">
+      <div class="env-key">EXPO_PUBLIC_SUPABASE_ANON_KEY</div>
+      <div class="env-desc">Clé publique (anon key). Sécurisée par les règles RLS côté base de données.</div>
+    </div>
+  </section>
+
+  <!-- EAS -->
+  <section id="eas">
+    <h2>🔨 EAS Build</h2>
+    <div class="section-divider"></div>
+    <p>
+      <strong>EAS (Expo Application Services)</strong> est le service de build en cloud d'Expo.
+      Il compile l'application React Native en fichier binaire natif (.ipa pour iOS, .apk/.aab pour Android)
+      sans avoir besoin de macOS ou Xcode en local.
+    </p>
+
+    <h3>Profils de build</h3>
+    <table>
+      <tr><th>Profil</th><th>Usage</th><th>Distribution</th></tr>
+      <tr>
+        <td><code>development</code></td>
+        <td>Développement local avec dev client</td>
+        <td><span class="badge badge-muted">Internal</span></td>
+      </tr>
+      <tr>
+        <td><code>preview</code></td>
+        <td>Tests internes sur TestFlight</td>
+        <td><span class="badge badge-orange">Internal</span></td>
+      </tr>
+      <tr>
+        <td><code>production</code></td>
+        <td>Publication App Store (auto-increment version)</td>
+        <td><span class="badge badge-green">Store</span></td>
+      </tr>
+    </table>
+
+    <h3>Commandes utiles</h3>
+    <pre><code># Builder et envoyer sur TestFlight
+eas build --platform ios --profile preview
+
+# Builder pour la production
+eas build --platform ios --profile production
+
+# Soumettre à l'App Store
+eas submit --platform ios --profile production</code></pre>
+
+    <h3>Informations de soumission</h3>
+    <table>
+      <tr><th>Champ</th><th>Valeur</th></tr>
+      <tr><td>Apple ID</td><td>armand.legros28@gmail.com</td></tr>
+      <tr><td>EAS Project ID</td><td><code>ebce9ac2-79fd-4702-993d-57cce4659082</code></td></tr>
+      <tr><td>ASC App ID</td><td><code>6821200817</code></td></tr>
+    </table>
+  </section>
+
+  <!-- ADS -->
+  <section id="ads">
+    <h2>📢 Publicité <span class="badge badge-orange">À venir</span></h2>
+    <div class="section-divider"></div>
+    <p>
+      La publicité vient <strong>compléter</strong> la boutique, elle ne la remplace pas. Banco est un jeu de soirée :
+      le téléphone passe de main en main, donc une pub qui coupe une partie gêne tout le groupe. Règle d'or :
+      <strong>jamais de pub pendant une partie</strong>.
+    </p>
+
+    <h3>Décisions pour Banco</h3>
+    <table>
+      <tr><th>Emplacement</th><th>Format</th><th>Statut</th></tr>
+      <tr><td>Essayer un pack payant (1 partie)</td><td>Vidéo récompensée</td><td><span class="badge badge-green">Retenu</span></td></tr>
+      <tr><td>Fin de partie (après l'écran final)</td><td>Interstitiel <strong>image seulement</strong>, croix rapide</td><td><span class="badge badge-green">Retenu</span></td></tr>
+      <tr><td>Fin de partie</td><td>Interstitiel vidéo</td><td><span class="badge badge-muted">Pas pour l'instant</span></td></tr>
+      <tr><td>Lancement de l'app</td><td>Pub à l'ouverture (app open)</td><td><span class="badge badge-muted">Exclu</span></td></tr>
+      <tr><td>Pendant le jeu</td><td>Tous formats, bannières comprises</td><td><span class="badge badge-muted">Exclu</span></td></tr>
+    </table>
+
+    <h3>Les acteurs</h3>
+    <div class="card-grid">
+      <div class="card card-orange">
+        <h3>🟡 Google AdMob</h3>
+        <p>Régie de Google. Le plus simple pour démarrer, gratuit, beaucoup d'annonceurs. Bibliothèque <code>react-native-google-mobile-ads</code>. Propose aussi sa propre médiation.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>🔷 AppLovin MAX</h3>
+        <p>Plateforme de médiation : met plus de 60 régies en concurrence. Souvent plus rentable sur les vidéos plein écran, mais intégration plus lourde. Pour plus tard, si le volume le justifie.</p>
+      </div>
+      <div class="card">
+        <h3>⬛ Unity LevelPlay</h3>
+        <p>Ex-ironSource. Médiation pensée d'abord pour les jeux faits avec Unity. Peu adapté à Banco.</p>
+      </div>
+      <div class="card card-green">
+        <h3>⚖️ Consentement</h3>
+        <p><strong>UMP</strong> (Google) pour le RGPD en Europe, <strong>ATT</strong> (Apple) sur iPhone. Obligatoires avant d'afficher des pubs personnalisées.</p>
+      </div>
+    </div>
+
+    <h3>Tous les formats de publicité</h3>
+    <table>
+      <tr><th>Famille</th><th>Format</th><th>Ce que voit le joueur</th></tr>
+      <tr><td rowspan="5">Interstitiel<br><small>plein écran imposé</small></td><td>Image</td><td>Affiche fixe ou animée, croix tout de suite ou après 1 à 2 s</td></tr>
+      <tr><td>Vidéo passable</td><td>Vidéo, croix après quelques secondes (souvent ~5 s)</td></tr>
+      <tr><td>Vidéo non passable</td><td>Vidéo à regarder jusqu'au bout (souvent 15 à 30 s)</td></tr>
+      <tr><td>Jouable (playable)</td><td>Mini-démo jouable d'un autre jeu, 15 à 30 s</td></tr>
+      <tr><td>Rich media</td><td>Pub interactive : carrousel, défilement, mini-animation</td></tr>
+      <tr><td rowspan="2">Récompensé<br><small>le joueur choisit</small></td><td>Vidéo récompensée</td><td>Bouton « Regarder une pub », 15 à 30 s, récompense à la fin (rien si on ferme avant)</td></tr>
+      <tr><td>Interstitiel récompensé</td><td>Pub à un moment naturel, annoncée par un écran qui laisse quelques secondes pour refuser</td></tr>
+      <tr><td rowspan="4">Intégré à l'écran</td><td>Bannière classique</td><td>Bandeau fixe en haut ou en bas</td></tr>
+      <tr><td>Bannière adaptative</td><td>Bandeau qui s'ajuste à la largeur de l'écran</td></tr>
+      <tr><td>Bannière repliable</td><td>S'ouvre en grand puis se replie en bandeau</td></tr>
+      <tr><td>Pub native</td><td>Pub dessinée par l'app avec les éléments fournis (titre, image, bouton), marquée « Pub »</td></tr>
+      <tr><td rowspan="2">Autres</td><td>App open</td><td>Plein écran au lancement ou au retour dans l'app</td></tr>
+      <tr><td>Offerwall</td><td>« Mur d'offres » : installe tel jeu pour gagner X</td></tr>
+    </table>
+    <div class="info-box">
+      💡 Chez AdMob, le délai d'apparition de la croix dépend de la pub fournie par l'annonceur, pas de l'éditeur. L'éditeur choisit les <strong>types acceptés</strong> par emplacement (image/texte, vidéo, ou les deux), la <strong>fréquence maximale</strong> (frequency capping) et le <strong>moment</strong> d'affichage. Les délais ci-dessus sont des ordres de grandeur du secteur, pas des chiffres officiels.
+    </div>
+
+    <h3>Revenus estimés (eCPM, pour 1 000 pubs vues)</h3>
+    <table>
+      <tr><th>Format</th><th>Fourchette pour l'audience de Banco</th></tr>
+      <tr><td>Vidéo récompensée</td><td>5 à 10 $</td></tr>
+      <tr><td>Interstitiel vidéo</td><td>4 à 7 $</td></tr>
+      <tr><td>Interstitiel image seulement</td><td>2 à 4 $</td></tr>
+      <tr><td>App open</td><td>2,50 à 4 $</td></tr>
+      <tr><td>Pub native</td><td>1,50 à 2,50 $</td></tr>
+      <tr><td>Bannière</td><td>0,20 à 0,40 $</td></tr>
+    </table>
+    <div class="warn-box">
+      ⚠️ Estimations tirées de rapports publics du secteur (2024–2026), sans chiffre spécifique à la France : les sources varient jusqu'à ×4. Le 4ᵉ trimestre (Noël) rapporte 20 à 40 % de plus que le 1ᵉʳ. Les vrais chiffres viendront du tableau de bord AdMob.
+    </div>
+    <p>
+      <strong>Ordre de grandeur :</strong> un pack à 0,99 € rapporte environ 0,70 € net (TVA et commission de 15 % retirées),
+      soit autant qu'environ <strong>100 vidéos récompensées</strong>. Pour 1 000 joueurs actifs par jour, avec un interstitiel image
+      toutes les 2 parties et 15 % des joueurs qui regardent une vidéo récompensée, la pub rapporterait environ
+      <strong>65 à 130 $ par mois</strong>.
+    </p>
+
+    <h3>Bonnes pratiques retenues</h3>
+    <div class="flow">
+      <div class="flow-step">Pas de pub les 2-3 premières parties</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">1 interstitiel max toutes les 2 parties</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">Aucune pub si le joueur a acheté</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step orange">Achat « Retirer les pubs »</div>
+    </div>
+    <ul style="margin: 8px 0 0 20px; line-height: 1.8;">
+      <li>Pub affichée <strong>après</strong> l'écran de victoire, quand on appuie sur « Revanche » ou « Menu ».</li>
+      <li>Pub chargée à l'avance ; si aucune n'est disponible, on passe simplement à la suite.</li>
+      <li>Essai de pack : une seule partie, puis proposer l'achat du pack. Si aucune pub n'est disponible, offrir l'essai quand même.</li>
+      <li>Identifiants de test pendant le développement, jamais de clic sur ses propres vraies pubs.</li>
+    </ul>
+
+    <h3>Process d'intégration</h3>
+    <table>
+      <tr><th>#</th><th>Étape</th></tr>
+      <tr><td>1</td><td>Créer le compte AdMob, enregistrer l'app iOS et l'app Android</td></tr>
+      <tr><td>2</td><td>Créer les emplacements : « Essayer un pack » (récompensé) et « Fin de partie » (interstitiel, image seulement)</td></tr>
+      <tr><td>3</td><td>Configurer le message de consentement UMP (RGPD) et l'ATT sur iOS</td></tr>
+      <tr><td>4</td><td>Publier <code>app-ads.txt</code> sur le site de l'éditeur déclaré sur les stores</td></tr>
+      <tr><td>5</td><td>Installer <code>react-native-google-mobile-ads</code> (vérifier la compatibilité Expo SDK 57), configurer <code>app.json</code></td></tr>
+      <tr><td>6</td><td>Nouveau build EAS (code natif : pas de mise à jour OTA, pas d'Expo Go)</td></tr>
+      <tr><td>7</td><td>Mettre à jour les fiches des stores et la page Confidentialité du site (qui dit aujourd'hui « Aucune publicité »)</td></tr>
+    </table>
+  </section>
+
+  <!-- SCREENS -->
+  <section id="screens">
+    <h2>📱 Écrans de l'application</h2>
+    <div class="section-divider"></div>
+    <p>L'application utilise <strong>Expo Router</strong> (navigation basée sur les fichiers). Chaque fichier dans <code>src/app/</code> correspond à une route.</p>
+
+    <div class="card">
+      <div class="screen-item">
+        <div class="screen-file">src/app/_layout.tsx</div>
+        <div class="screen-desc"><strong>Layout racine</strong> — Initialise les providers globaux (Auth, Purchases, GameSettings), charge les polices, configure la navigation.</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/index.tsx</div>
+        <div class="screen-desc"><strong>Accueil</strong> — Écran principal avec les boutons Jouer, Boutique et Règles.</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/auth.tsx</div>
+        <div class="screen-desc"><strong>Authentification</strong> — Connexion / inscription par email, Apple Sign In, Google Sign In.</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/parametres.tsx</div>
+        <div class="screen-desc"><strong>Paramètres mode de jeu</strong> — Sélection du mode (Classique / Mimes) et des packs de questions.</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/parametres-partie.tsx</div>
+        <div class="screen-desc"><strong>Paramètres de partie</strong> — Nombre d'équipes (2–4), nombre de rounds (1–10), sélection des catégories de questions. Les catégories payantes (Harry Potter) apparaissent verrouillées si non achetées.</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/equipes.tsx</div>
+        <div class="screen-desc"><strong>Création des équipes</strong> — Attribution des noms et couleurs à chaque équipe.</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/partie.tsx</div>
+        <div class="screen-desc"><strong>Jeu en cours</strong> — Écran principal de jeu. Gère toutes les phases : enchère, préparation, réponses, résultats, classement final.</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/boutique.tsx</div>
+        <div class="screen-desc"><strong>Boutique</strong> — Liste des packs disponibles. Bouton "Débloquer le pack" → achat RevenueCat. Restauration des achats. Packs "Bientôt disponible" affichés en grisé.</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/regles.tsx</div>
+        <div class="screen-desc"><strong>Règles du jeu</strong> — Explication des règles en français.</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/themes.tsx</div>
+        <div class="screen-desc"><strong>Thèmes de questions</strong> — Présentation des catégories disponibles.</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/reglages.tsx</div>
+        <div class="screen-desc"><strong>Réglages</strong> — Préférences de l'app (langue, son, etc.).</div>
+      </div>
+      <div class="screen-item">
+        <div class="screen-file">src/app/infos.tsx</div>
+        <div class="screen-desc"><strong>Informations</strong> — Crédits, liens légaux, version de l'app.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ENGINE -->
+  <section id="engine">
+    <h2>⚙️ Moteur de jeu</h2>
+    <div class="section-divider"></div>
+    <p>
+      Le fichier <code>src/game/engine.ts</code> contient toute la logique de jeu.
+      C'est un <strong>reducer pur</strong> (pattern Redux) : il prend un état + une action,
+      et retourne un nouvel état. Aucun effet de bord, facile à tester.
+    </p>
+
+    <h3>Constantes du jeu</h3>
+    <table>
+      <tr><th>Constante</th><th>Valeur</th><th>Signification</th></tr>
+      <tr><td><code>TURN_SECONDS</code></td><td>60</td><td>Durée d'un tour en secondes</td></tr>
+      <tr><td><code>MIN_BID</code></td><td>1</td><td>Mise minimale lors d'une enchère</td></tr>
+      <tr><td><code>MAX_BID</code></td><td>30</td><td>Mise maximale (clôture l'enchère)</td></tr>
+    </table>
+
+    <h3>Les phases d'un round</h3>
+    <div class="phases">
+      <div class="phase active-phase">
+        <div class="phase-name">🔔 auction</div>
+        <div class="phase-desc">Les équipes enchérissent. Combien de réponses peut-on citer ?</div>
+      </div>
+      <div class="phase">
+        <div class="phase-name">✋ ready</div>
+        <div class="phase-desc">L'enchère est remportée. L'équipe se prépare.</div>
+      </div>
+      <div class="phase">
+        <div class="phase-name">▶️ play</div>
+        <div class="phase-desc">Question révélée. Chrono lancé. 60 secondes !</div>
+      </div>
+      <div class="phase">
+        <div class="phase-name">🏆 result</div>
+        <div class="phase-desc">Points attribués. Succès ou échec.</div>
+      </div>
+      <div class="phase">
+        <div class="phase-name">🎉 final</div>
+        <div class="phase-desc">Dernier round joué. Classement final.</div>
+      </div>
+    </div>
+
+    <h3>Règles de points</h3>
+    <div class="card card-green">
+      <p>✅ <strong>Succès</strong> (l'équipe atteint sa mise) : chaque équipe qui a enchéri empoche sa propre mise.</p>
+      <p>❌ <strong>Échec</strong> (l'équipe n'atteint pas sa mise) : l'adversaire empoche la mise la plus haute.</p>
+    </div>
+
+    <h3>Actions disponibles</h3>
+    <table>
+      <tr><th>Action</th><th>Phase requise</th><th>Effet</th></tr>
+      <tr><td><code>BID { amount }</code></td><td>auction</td><td>Enchérit un montant</td></tr>
+      <tr><td><code>PASS</code></td><td>auction</td><td>Passe son tour (uniquement si quelqu'un a déjà enchéri)</td></tr>
+      <tr><td><code>START_TURN</code></td><td>ready</td><td>Lance le chrono, révèle la question</td></tr>
+      <tr><td><code>TOGGLE_ANSWER { label }</code></td><td>play</td><td>Valide / invalide une réponse</td></tr>
+      <tr><td><code>ADJUST { delta }</code></td><td>play</td><td>+1 ou -1 au compteur manuel</td></tr>
+      <tr><td><code>END_TURN { reason }</code></td><td>play</td><td>Termine le tour (time / reached / skip)</td></tr>
+      <tr><td><code>NEXT</code></td><td>result</td><td>Passe au round suivant ou au classement final</td></tr>
+    </table>
+  </section>
+
+  <!-- DATA -->
+  <section id="data">
+    <h2>📚 Données (Questions & Thèmes)</h2>
+    <div class="section-divider"></div>
+    <p>
+      Toutes les questions sont stockées <strong>directement dans l'app</strong> (pas de serveur).
+      Elles sont regroupées par fichier thématique dans <code>src/data/questions/</code>.
+    </p>
+
+    <h3>Thèmes gratuits</h3>
+    <table>
+      <tr><th>ID</th><th>Label</th><th>Fichier</th></tr>
+      <tr><td><code>marques</code></td><td>Marques mondiales 🏷️</td><td>questions/marques.ts</td></tr>
+      <tr><td><code>divertissement</code></td><td>Divertissement 📺</td><td>questions/divertissement.ts</td></tr>
+      <tr><td><code>geographie</code></td><td>Géographie 🌍</td><td>questions/geographie.ts</td></tr>
+      <tr><td><code>culture-generale</code></td><td>Culture générale 💡</td><td>questions/cultureg.ts</td></tr>
+      <tr><td><code>cinema</code></td><td>Cinéma 🎬</td><td>questions/cinema.ts</td></tr>
+      <tr><td><code>sport</code></td><td>Sport ⚽</td><td>questions/sport.ts</td></tr>
+      <tr><td><code>musique</code></td><td>Musique 🎵</td><td>questions/musique.ts</td></tr>
+    </table>
+
+    <h3>Packs payants</h3>
+    <table>
+      <tr><th>ID thème</th><th>Label</th><th>Product ID</th><th>Prix</th></tr>
+      <tr><td><code>harry-potter</code></td><td>Harry Potter ⚡</td><td><code>com.banco.pack_harry_potter</code></td><td>0,99€</td></tr>
+    </table>
+
+    <h3>Structure d'une question</h3>
+    <pre><code>type Question = {
+  id: string;            // ex: "hp-gryffondor"
+  theme: string;         // ex: "harry-potter"
+  subject: string;       // ex: "PERSONNAGES DE GRYFFONDOR"
+  subjectByLang?: {      // traductions du sujet
+    en: "GRYFFINDOR CHARACTERS",
+    de: "GRYFFINDOR-CHARAKTERE"
+  };
+  answers: string[];     // liste de réponses en français (uppercase)
+  answersByLang?: {      // réponses dans d'autres langues
+    en: ["HARRY POTTER", "HERMIONE GRANGER", ...]
+  };
+}</code></pre>
+    <div class="info-box">
+      💡 Les 27 premières réponses s'affichent en boutons pendant le jeu. Les suivantes sont accessibles via la barre de recherche.
+    </div>
+  </section>
+
+  <!-- IAP -->
+  <section id="iap">
+    <h2>🛒 Achats intégrés (IAP)</h2>
+    <div class="section-divider"></div>
+    <p>
+      IAP = <em>In-App Purchase</em>. Ce sont les achats effectués directement dans l'application.
+      Apple gère la transaction bancaire, RevenueCat gère les droits utilisateur, et l'app vérifie ces droits.
+    </p>
+
+    <h3>Flux complet d'un achat</h3>
+    <div class="flow">
+      <div class="flow-step">1. Utilisateur ouvre la Boutique</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">2. Clique "Débloquer le pack"</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step orange">3. RevenueCat fetche l'offering</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">4. Apple Pay s'ouvre (0,99€)</div>
+    </div>
+    <div class="flow" style="margin-top:8px">
+      <div class="flow-step">5. Apple valide le paiement</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step orange">6. RevenueCat active l'entitlement</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">7. Pack débloqué ✓</div>
+    </div>
+
+    <h3>Produits configurés</h3>
+    <table>
+      <tr><th>ProductId (code)</th><th>Product ID Apple</th><th>Entitlement RevenueCat</th></tr>
+      <tr><td><code>packHarryPotter</code></td><td><code>com.banco.pack_harry_potter</code></td><td><code>pack_harry_potter</code></td></tr>
+      <tr><td><code>packFootball</code></td><td><code>com.banco.pack_football</code></td><td><code>pack_football</code></td></tr>
+      <tr><td><code>packJeuxVideo</code></td><td><code>com.banco.pack_jeux_video</code></td><td><code>pack_jeux_video</code></td></tr>
+      <tr><td><code>streak</code></td><td><code>com.banco.mode_streak</code></td><td><code>mode_streak</code></td></tr>
+      <tr><td><code>jokers</code></td><td><code>com.banco.jokers</code></td><td><code>jokers</code></td></tr>
+      <tr><td><code>laTotale</code></td><td><code>com.banco.la_totale</code></td><td><code>la_totale</code></td></tr>
+    </table>
+
+    <div class="warn-box">
+      ⚠️ Seul <strong>packHarryPotter</strong> est actuellement configuré et fonctionnel dans App Store Connect + RevenueCat. Les autres produits sont définis dans le code mais pas encore configurés côté Apple/RevenueCat.
+    </div>
+
+    <h3>Comment le code vérifie un achat</h3>
+    <pre><code>// state/purchases.tsx
+const hasPurchased = (productId: ProductId): boolean => {
+  if (!customerInfo) return false;
+  // Vérifie si l'entitlement est actif dans RevenueCat
+  return hasEntitlement(customerInfo, ENTITLEMENT_IDS[productId]);
+};
+
+// Exemple d'utilisation dans parametres-partie.tsx
+const { hasPurchased } = usePurchases();
+const hasHarryPotter = hasPurchased('packHarryPotter'); // → true/false</code></pre>
+
+    <h3>Restauration des achats</h3>
+    <p>
+      Apple exige que les apps proposent un bouton "Restaurer les achats".
+      Quand l'utilisateur appuie dessus, RevenueCat recontacte Apple pour récupérer l'historique d'achat
+      et réactiver les entitlements.
+    </p>
+
+    <h3>Test en sandbox</h3>
+    <p>Avant de payer réellement, tester avec un compte sandbox Apple (App Store Connect → Utilisateurs et accès → Sandbox). Aucune carte n'est débitée, le flux est identique à la vraie production.</p>
+  </section>
+
+  <!-- AUTH -->
+  <section id="auth">
+    <h2>🔐 Authentification</h2>
+    <div class="section-divider"></div>
+    <p>L'authentification est gérée par Supabase Auth, accessible via le hook <code>useAuth()</code>.</p>
+
+    <div class="card-grid">
+      <div class="card card-accent">
+        <h3>📧 Email / Mot de passe</h3>
+        <p>Inscription et connexion classique via <code>signUpWithEmail</code> et <code>signInWithEmail</code>.</p>
+      </div>
+      <div class="card card-green">
+        <h3>🍎 Apple Sign In</h3>
+        <p>Utilise <code>expo-apple-authentication</code>. Retourne un <code>idToken</code> passé à Supabase.</p>
+      </div>
+      <div class="card card-accent">
+        <h3>🔵 Google Sign In</h3>
+        <p>Utilise <code>@react-native-google-signin/google-signin</code>. Clé configurée via <code>EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</code>.</p>
+      </div>
+      <div class="card card-orange">
+        <h3>💾 Session persistante</h3>
+        <p>Session JWT stockée dans SecureStore (Keychain iOS). Auto-refresh du token activé.</p>
+      </div>
+    </div>
+
+    <h3>Contexte global</h3>
+    <pre><code>// Utilisation dans n'importe quel écran
+const { user, session, isLoading, signOut } = useAuth();
+
+if (!user) {
+  // Rediriger vers auth.tsx
+}
+// user.id est utilisé pour lier RevenueCat à l'utilisateur Supabase</code></pre>
+  </section>
+
+  <!-- ENV VARS -->
+  <section id="env">
+    <h2>🔑 Variables d'environnement</h2>
+    <div class="section-divider"></div>
+    <p>
+      Les variables d'environnement sont stockées dans un fichier <code>.env</code> à la racine du projet
+      (jamais commité sur Git). Copier <code>.env.example</code> pour créer le fichier.
+    </p>
+
+    <div class="warn-box">
+      ⚠️ Ne jamais partager ou committer le fichier <code>.env</code>. Il est dans <code>.gitignore</code>.
+    </div>
+
+    <div class="card">
+      <div class="env-row">
+        <div class="env-key">EXPO_PUBLIC_SUPABASE_URL</div>
+        <div class="env-desc">URL du projet Supabase. Format : <code>https://xxxxx.supabase.co</code></div>
+      </div>
+      <div class="env-row">
+        <div class="env-key">EXPO_PUBLIC_SUPABASE_ANON_KEY</div>
+        <div class="env-desc">Clé publique Supabase (anon key). Commence par <code>eyJ...</code>. Protégée par RLS côté serveur.</div>
+      </div>
+      <div class="env-row">
+        <div class="env-key">EXPO_PUBLIC_REVENUECAT_IOS_KEY</div>
+        <div class="env-desc">Clé SDK publique RevenueCat pour iOS. Commence par <code>appl_</code>. Trouvable dans RevenueCat → Project Settings → API Keys.</div>
+      </div>
+      <div class="env-row">
+        <div class="env-key">EXPO_PUBLIC_REVENUECAT_ANDROID_KEY</div>
+        <div class="env-desc">Clé SDK publique RevenueCat pour Android. Commence par <code>goog_</code>. Optionnel si Android non déployé.</div>
+      </div>
+      <div class="env-row">
+        <div class="env-key">EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</div>
+        <div class="env-desc">Client ID OAuth Google pour iOS. Google Cloud Console → OAuth 2.0 → iOS Client ID.</div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      💡 Toutes les variables commencent par <code>EXPO_PUBLIC_</code> car elles sont incluses dans le bundle de l'app. Ne jamais y mettre de secrets privés (clés privées, tokens d'admin, etc.).
+    </div>
+  </section>
+
+  <!-- GLOSSARY -->
+  <section id="glossary">
+    <h2>📖 Glossaire</h2>
+    <div class="section-divider"></div>
+    <p>Les termes techniques expliqués simplement.</p>
+    <input type="text" id="glossary-search" placeholder="🔍 Rechercher un terme..." />
+    <div id="glossary-list">
+      <div class="glossary-item" data-term="sdk">
+        <div class="glossary-term">SDK <span class="badge badge-muted">Software Development Kit</span></div>
+        <div class="glossary-def">Boîte à outils fournie par un service pour l'intégrer dans une app. RevenueCat fournit un SDK React Native, Supabase aussi. Ça évite de coder les appels réseau à la main.</div>
+      </div>
+      <div class="glossary-item" data-term="iap in-app purchase achat intégré">
+        <div class="glossary-term">IAP <span class="badge badge-muted">In-App Purchase</span></div>
+        <div class="glossary-def">Achat effectué à l'intérieur d'une application mobile. Apple prend 15-30% de commission sur chaque vente. Les IAP non-consommables sont achetés une seule fois et gardés à vie.</div>
+      </div>
+      <div class="glossary-item" data-term="bundle id bundle identifier">
+        <div class="glossary-term">Bundle ID <span class="badge badge-muted">Bundle Identifier</span></div>
+        <div class="glossary-def">Identifiant unique de l'app dans l'écosystème Apple. Banco utilise <code>com.mandarine.banco</code>. Impossible à changer une fois l'app publiée. Format: domaine inversé + nom de l'app.</div>
+      </div>
+      <div class="glossary-item" data-term="entitlement droit">
+        <div class="glossary-term">Entitlement</div>
+        <div class="glossary-def">Dans RevenueCat, c'est le "droit" qu'un utilisateur obtient après un achat. Ex: après avoir acheté le Pack Harry Potter, l'utilisateur obtient l'entitlement <code>pack_harry_potter</code>. L'app vérifie l'entitlement (pas le produit directement) pour savoir si le contenu est débloqué.</div>
+      </div>
+      <div class="glossary-item" data-term="offering offre">
+        <div class="glossary-term">Offering (RevenueCat)</div>
+        <div class="glossary-def">Un groupe de produits IAP présentés ensemble à l'utilisateur. L'offering "default" est celle que l'app charge automatiquement. Ça permet de changer les produits proposés sans mettre à jour l'app.</div>
+      </div>
+      <div class="glossary-item" data-term="eas expo application services">
+        <div class="glossary-term">EAS <span class="badge badge-muted">Expo Application Services</span></div>
+        <div class="glossary-def">Service cloud d'Expo qui compile, signe et distribue l'app. Permet de builder une app iOS sans avoir un Mac ni Xcode. Les builds se font sur les serveurs d'Expo.</div>
+      </div>
+      <div class="glossary-item" data-term="storekit apple">
+        <div class="glossary-term">StoreKit</div>
+        <div class="glossary-def">Le framework Apple qui gère les achats in-app. StoreKit 2 (la version moderne) est ce qu'utilise Banco via RevenueCat. C'est lui qui affiche la fenêtre Apple Pay.</div>
+      </div>
+      <div class="glossary-item" data-term="sandbox test testflight">
+        <div class="glossary-term">Sandbox (Apple)</div>
+        <div class="glossary-def">Environnement de test Apple où les achats ne sont pas réels. On crée un "compte testeur sandbox" et on peut acheter sans être débité. Indispensable pour tester les IAP avant la mise en production.</div>
+      </div>
+      <div class="glossary-item" data-term="testflight beta">
+        <div class="glossary-term">TestFlight</div>
+        <div class="glossary-def">Application Apple pour distribuer des versions bêta d'une app à des testeurs. L'app est soumise une fois à Apple, puis accessible via l'app TestFlight sur iPhone. Étape avant la publication officielle sur l'App Store.</div>
+      </div>
+      <div class="glossary-item" data-term="jwt token authentification">
+        <div class="glossary-term">JWT <span class="badge badge-muted">JSON Web Token</span></div>
+        <div class="glossary-def">Un token (jeton) d'authentification. Supabase en génère un quand l'utilisateur se connecte. Il est stocké sur l'appareil et envoyé à chaque requête pour prouver l'identité de l'utilisateur. Il expire après un certain temps et est automatiquement renouvelé.</div>
+      </div>
+      <div class="glossary-item" data-term="rls row level security">
+        <div class="glossary-term">RLS <span class="badge badge-muted">Row Level Security</span></div>
+        <div class="glossary-def">Système de sécurité PostgreSQL (Supabase) qui fait que chaque utilisateur ne peut lire/modifier que ses propres données dans la base de données. Même si la clé anon est publique, les données restent sécurisées.</div>
+      </div>
+      <div class="glossary-item" data-term="reducer redux état">
+        <div class="glossary-term">Reducer (pattern)</div>
+        <div class="glossary-def">Pattern de programmation utilisé dans le moteur de jeu. Une fonction prend (état actuel + action) et retourne un nouvel état. Aucune modification directe. Facile à tester et à déboguer.</div>
+      </div>
+      <div class="glossary-item" data-term="expo router navigation">
+        <div class="glossary-term">Expo Router</div>
+        <div class="glossary-def">Système de navigation de Banco. Chaque fichier dans <code>src/app/</code> devient automatiquement une route. <code>index.tsx</code> = page d'accueil, <code>boutique.tsx</code> = page /boutique, etc.</div>
+      </div>
+      <div class="glossary-item" data-term="context provider hook react">
+        <div class="glossary-term">Context / Provider (React)</div>
+        <div class="glossary-def">Mécanisme React pour partager des données entre tous les écrans sans les passer manuellement. Banco utilise AuthProvider (session), PurchasesProvider (achats), GameSettingsProvider (paramètres de partie). On accède aux données avec useAuth(), usePurchases(), useGameSettings().</div>
+      </div>
+      <div class="glossary-item" data-term="non consommable achat">
+        <div class="glossary-term">Achat non-consommable</div>
+        <div class="glossary-def">Type d'IAP acheté une seule fois, à vie. L'utilisateur peut toujours le restaurer en changeant de téléphone. Par opposition aux consommables (pièces de jeu, vies) qui s'épuisent.</div>
+      </div>
+      <div class="glossary-item" data-term="async storage secure store">
+        <div class="glossary-term">SecureStore / AsyncStorage</div>
+        <div class="glossary-def">Systèmes de stockage local sur l'appareil. SecureStore = stockage chiffré (Keychain iOS) pour les données sensibles comme les tokens. AsyncStorage = stockage non chiffré pour les données moins sensibles.</div>
+      </div>
+      <div class="glossary-item" data-term="p8 key cle apple">
+        <div class="glossary-term">Clé .p8 (Apple)</div>
+        <div class="glossary-def">Fichier de clé privée Apple utilisé pour authentifier les requêtes entre RevenueCat et Apple (StoreKit 2). Ne jamais partager ni committer. Apple ne permet de le télécharger qu'une seule fois. Il existe deux types : clé API App Store Connect (pour EAS) et clé In-App Purchase (pour RevenueCat).</div>
+      </div>
+      <div class="glossary-item" data-term="w8ben fiscal impot">
+        <div class="glossary-term">W-8BEN</div>
+        <div class="glossary-def">Formulaire fiscal américain signé par les non-résidents US pour bénéficier du traité fiscal France-USA. Permet d'avoir un taux de retenue à la source de 0% sur les revenus App Store au lieu de 30%.</div>
+      </div>
+      <div class="glossary-item" data-term="regie ad network publicite">
+        <div class="glossary-term">Régie publicitaire <span class="badge badge-muted">Ad network</span></div>
+        <div class="glossary-def">L'entreprise qui fournit les pubs et paie l'éditeur de l'app : Google AdMob, AppLovin, Unity…</div>
+      </div>
+      <div class="glossary-item" data-term="annonceur publicite">
+        <div class="glossary-term">Annonceur</div>
+        <div class="glossary-def">La marque qui paie pour que sa pub soit diffusée (un autre jeu, une appli, une marque…).</div>
+      </div>
+      <div class="glossary-item" data-term="admob google publicite">
+        <div class="glossary-term">AdMob</div>
+        <div class="glossary-def">La régie publicitaire de Google. Gratuite à intégrer : elle se rémunère sur une part des revenus. C'est le choix de départ pour Banco.</div>
+      </div>
+      <div class="glossary-item" data-term="mediation publicite applovin max">
+        <div class="glossary-term">Médiation</div>
+        <div class="glossary-def">Un système qui met plusieurs régies en concurrence sur chaque pub affichée, pour vendre l'emplacement au plus offrant. AdMob a sa propre médiation ; AppLovin MAX et Unity LevelPlay sont des plateformes de médiation.</div>
+      </div>
+      <div class="glossary-item" data-term="bidding encheres temps reel">
+        <div class="glossary-term">Enchères en temps réel <span class="badge badge-muted">Bidding</span></div>
+        <div class="glossary-def">La méthode de la médiation : à chaque pub, les régies font une offre en quelques millisecondes et la meilleure gagne.</div>
+      </div>
+      <div class="glossary-item" data-term="lock-in fournisseur">
+        <div class="glossary-term">Lock-in</div>
+        <div class="glossary-def">Le fait d'être « enfermé » chez un fournisseur parce qu'en changer coûte cher ou est compliqué.</div>
+      </div>
+      <div class="glossary-item" data-term="ecpm revenu publicite">
+        <div class="glossary-term">eCPM <span class="badge badge-muted">Effective Cost Per Mille</span></div>
+        <div class="glossary-def">Ce que l'éditeur gagne pour 1 000 pubs affichées. L'indicateur principal pour comparer régies et formats.</div>
+      </div>
+      <div class="glossary-item" data-term="fill rate taux de remplissage">
+        <div class="glossary-term">Taux de remplissage <span class="badge badge-muted">Fill rate</span></div>
+        <div class="glossary-def">Le pourcentage de fois où une pub est réellement disponible quand on en demande une. À 90 %, une demande sur dix ne trouve pas de pub.</div>
+      </div>
+      <div class="glossary-item" data-term="tier 1 pays">
+        <div class="glossary-term">Pays « Tier 1 »</div>
+        <div class="glossary-def">Les pays où les pubs rapportent le plus (États-Unis, Royaume-Uni, Canada, Australie, Allemagne…). Selon les sources, la France est classée Tier 1 ou Tier 2.</div>
+      </div>
+      <div class="glossary-item" data-term="roas rentabilite annonceur">
+        <div class="glossary-term">ROAS <span class="badge badge-muted">Return On Ad Spend</span></div>
+        <div class="glossary-def">La rentabilité d'une campagne pour l'annonceur, pas pour l'éditeur de l'app.</div>
+      </div>
+      <div class="glossary-item" data-term="retention joueurs">
+        <div class="glossary-term">Rétention</div>
+        <div class="glossary-def">La part des joueurs qui reviennent dans l'app (après 1 jour, 7 jours, 30 jours…).</div>
+      </div>
+      <div class="glossary-item" data-term="frequency capping frequence">
+        <div class="glossary-term">Plafond de fréquence <span class="badge badge-muted">Frequency capping</span></div>
+        <div class="glossary-def">Réglage AdMob qui limite le nombre de pubs montrées à un même joueur (ex. 1 toutes les 10 minutes).</div>
+      </div>
+      <div class="glossary-item" data-term="rgpd gdpr consentement">
+        <div class="glossary-term">RGPD <span class="badge badge-muted">Règlement général sur la protection des données</span></div>
+        <div class="glossary-def">La loi européenne sur les données personnelles. Elle oblige à demander l'accord du joueur avant de lui montrer des pubs personnalisées.</div>
+      </div>
+      <div class="glossary-item" data-term="ump consentement google">
+        <div class="glossary-term">UMP <span class="badge badge-muted">User Messaging Platform</span></div>
+        <div class="glossary-def">L'outil gratuit de Google qui affiche le message de consentement RGPD (« Accepter / Refuser / Gérer »).</div>
+      </div>
+      <div class="glossary-item" data-term="att app tracking transparency apple suivi">
+        <div class="glossary-term">ATT <span class="badge badge-muted">App Tracking Transparency</span></div>
+        <div class="glossary-def">La fenêtre d'Apple « Autoriser l'app à suivre vos activités ? ». Obligatoire sur iPhone si les pubs utilisent ce suivi.</div>
+      </div>
+      <div class="glossary-item" data-term="app-ads.txt fraude">
+        <div class="glossary-term">app-ads.txt</div>
+        <div class="glossary-def">Un petit fichier texte à publier sur le site de l'éditeur. Il prouve aux annonceurs que l'app est bien la sienne, ce qui évite la fraude. Sans lui, les pubs rapportent moins.</div>
+      </div>
+      <div class="glossary-item" data-term="etiquettes confidentialite securite des donnees privacy">
+        <div class="glossary-term">Étiquettes de confidentialité / Sécurité des données</div>
+        <div class="glossary-def">Les sections des fiches App Store et Play Store où l'on déclare les données collectées par l'app. La publicité doit y figurer.</div>
+      </div>
+      <div class="glossary-item" data-term="code natif ios android">
+        <div class="glossary-term">Code natif</div>
+        <div class="glossary-def">Du code propre à iOS ou Android, en dehors du JavaScript. Les SDK de pub et RevenueCat en contiennent.</div>
+      </div>
+      <div class="glossary-item" data-term="ota over the air mise a jour eas update">
+        <div class="glossary-term">Mise à jour OTA <span class="badge badge-muted">Over The Air</span></div>
+        <div class="glossary-def">Une mise à jour envoyée directement aux joueurs sans passer par les stores. Impossible pour ajouter du code natif (comme un SDK de pub) : il faut alors un nouveau build.</div>
+      </div>
+      <div class="glossary-item" data-term="expo go">
+        <div class="glossary-term">Expo Go</div>
+        <div class="glossary-def">L'app de test d'Expo. Elle ne contient que les modules natifs d'Expo : impossible d'y tester des pubs ou des achats. Il faut un « build de développement ».</div>
+      </div>
+      <div class="glossary-item" data-term="config plugin app.json">
+        <div class="glossary-term">Config plugin</div>
+        <div class="glossary-def">Un réglage dans app.json qui configure automatiquement la partie native d'une bibliothèque.</div>
+      </div>
+      <div class="glossary-item" data-term="identifiants de test pub test ids">
+        <div class="glossary-term">Identifiants de test (pub)</div>
+        <div class="glossary-def">Codes fournis par Google qui affichent de fausses pubs pendant le développement, pour éviter une suspension du compte pour clics frauduleux.</div>
+      </div>
+      <div class="glossary-item" data-term="interstitiel interstitial publicite plein ecran">
+        <div class="glossary-term">Interstitiel <span class="badge badge-muted">Interstitial</span></div>
+        <div class="glossary-def">Pub plein écran imposée entre deux écrans. Variantes : image (croix rapide), vidéo passable, vidéo non passable, jouable, rich media. Pour Banco : image seulement, en fin de partie.</div>
+      </div>
+      <div class="glossary-item" data-term="video recompensee rewarded">
+        <div class="glossary-term">Vidéo récompensée <span class="badge badge-muted">Rewarded</span></div>
+        <div class="glossary-def">Le joueur choisit de regarder une pub (15 à 30 s) en échange d'une récompense. Le format le mieux accepté et le plus rentable. Pour Banco : essayer un pack payant.</div>
+      </div>
+      <div class="glossary-item" data-term="interstitiel recompense rewarded interstitial">
+        <div class="glossary-term">Interstitiel récompensé <span class="badge badge-muted">Rewarded interstitial</span></div>
+        <div class="glossary-def">Pub affichée à un moment naturel, annoncée par un écran qui présente la récompense et laisse quelques secondes pour refuser.</div>
+      </div>
+      <div class="glossary-item" data-term="banniere banner">
+        <div class="glossary-term">Bannière <span class="badge badge-muted">Banner</span></div>
+        <div class="glossary-def">Bandeau publicitaire en haut ou en bas de l'écran (classique, adaptative ou repliable). Rapporte peu et abîme le design.</div>
+      </div>
+      <div class="glossary-item" data-term="pub native ad">
+        <div class="glossary-term">Pub native <span class="badge badge-muted">Native ad</span></div>
+        <div class="glossary-def">Pub dont l'app dessine l'affichage avec les éléments fournis (titre, image, bouton), pour qu'elle s'intègre au design. Elle doit rester marquée « Pub ».</div>
+      </div>
+      <div class="glossary-item" data-term="app open ouverture">
+        <div class="glossary-term">Pub à l'ouverture <span class="badge badge-muted">App open</span></div>
+        <div class="glossary-def">Pub plein écran au lancement de l'app ou au retour dedans. Exclue pour Banco.</div>
+      </div>
+      <div class="glossary-item" data-term="offerwall mur offres">
+        <div class="glossary-term">Offerwall</div>
+        <div class="glossary-def">« Mur d'offres » : « Installe tel jeu ou atteins tel niveau pour gagner X ».</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrollTop = doc.scrollTop || document.body.scrollTop;
+    const scrollHeight = doc.scrollHeight - doc.clientHeight;
+    const progress = (scrollTop / scrollHeight) * 100;
+    document.getElementById('progress-bar').style.width = progress + '%';
+  });
+
+  // Active nav highlight
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('#sidebar nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + entry.target.id) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Glossary search
+  const searchInput = document.getElementById('glossary-search');
+  const glossaryItems = document.querySelectorAll('.glossary-item');
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.toLowerCase().trim();
+    glossaryItems.forEach(item => {
+      const term = item.getAttribute('data-term').toLowerCase();
+      const text = item.textContent.toLowerCase();
+      if (!q || term.includes(q) || text.includes(q)) {
+        item.classList.remove('hidden');
+      } else {
+        item.classList.add('hidden');
+      }
+    });
+  });
+</script>
+</body>
+</html>

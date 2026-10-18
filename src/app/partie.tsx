@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useReducer, useState } from 'react';
-import { Keyboard, Linking, View } from 'react-native';
+import { Keyboard, Linking, StyleSheet, Text, View } from 'react-native';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
 import { AuctionPhase } from '@/components/game/AuctionPhase';
@@ -23,9 +23,13 @@ import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSucces
 import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
 import { useBackToQuitConfirm } from '@/hooks/useBackToQuitConfirm';
 import { useCountdown } from '@/hooks/useCountdown';
+import { getT } from '@/lib/i18n';
+import { useLang } from '@/lib/LangContext';
 import { useGameSettings } from '@/state/gameSettings';
 import { SurviePulseBorder } from '@/state/survieOverlay';
-import { colors, teamColors } from '@/theme';
+import { colors, fonts, teamColors } from '@/theme';
+
+const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
 export default function GameScreen() {
   const settings = useGameSettings();
@@ -235,6 +239,10 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
   );
   const [confirmQuit, setConfirmQuit] = useState(false);
   const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);
+  // Popup « Éliminer <équipe> ? » — NON : PASSER reprend le chrono, temps écoulé vaut VALIDER
+  const [confirmElim, setConfirmElim] = useState<'pass' | 'timeout' | null>(null);
+  const { lang } = useLang();
+  const t = getT(lang);
   // Transition « à vous de jouer ! » entre l'écran prêt et le jeu — SurviePlayPhase (et son chrono) monte à la fin
   const [playIntro, setPlayIntro] = useState<'covering' | 'revealing' | null>(null);
   const [teamSwitch, setTeamSwitch] = useState<'covering' | 'revealing' | null>(null);
@@ -257,7 +265,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
     setJackpot(state.jackpot);
   }
   if (prevTeam !== state.currentTeam) setPrevTeam(state.currentTeam);
-  const isPaused = pauseSource !== null;
+  const isPaused = pauseSource !== null || confirmElim !== null;
   const goHome = () => router.dismissTo('/');
   useBackToQuitConfirm(() => (state.phase === 'final' ? goHome() : setConfirmQuit(true)));
   const currentTeam = state.teams[state.currentTeam];
@@ -320,8 +328,8 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
           key={`${state.round}-${state.currentTeam}`}
           state={state}
           onValidate={(answer) => dispatch({ type: 'VALIDATE', answer })}
-          onPass={() => dispatch({ type: 'PASS' })}
-          onTimeout={() => dispatch({ type: 'TIMEOUT' })}
+          onPass={() => setConfirmElim('pass')}
+          onTimeout={() => setConfirmElim('timeout')}
           isPaused={isPaused}
           onTogglePause={() =>
             setPauseSource((s) => (s === null ? 'manual' : s === 'manual' ? null : s))
@@ -340,6 +348,36 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
         <SurvieFinalPhase state={state} onReplay={onReplay} onHome={goHome} />
       ) : null}
 
+      {/* Mêmes codes que l'écran de jeu : dégradé = on continue (comme VALIDER), contour = élimination (comme PASSER) */}
+      <ConfirmModal
+        visible={confirmElim !== null && state.phase === 'play'}
+        header={
+          <View style={[styles.teamBadge, { backgroundColor: currentTeam.color }]}>
+            <Text
+              style={[styles.teamBadgeText, { color: BADGE_TEXT_COLOR[currentTeam.color] ?? colors.purpleDeep }]}
+              numberOfLines={1}
+            >
+              {currentTeam.name}
+            </Text>
+          </View>
+        }
+        title={confirmElim === 'timeout' ? t.survie.elimTimeoutTitle : t.survie.elimPassTitle}
+        message={confirmElim === 'timeout' ? t.survie.elimTimeoutMsg : t.survie.elimPassMsg}
+        cancelLabel={t.survie.eliminate}
+        cancelIcon="skull"
+        confirmLabel={confirmElim === 'timeout' ? t.survie.validate : t.survie.resume}
+        confirmIcon={confirmElim === 'timeout' ? 'check-bold' : 'play'}
+        onCancel={() => {
+          dispatch({ type: confirmElim === 'timeout' ? 'TIMEOUT' : 'PASS' });
+          setConfirmElim(null);
+        }}
+        onConfirm={() => {
+          if (confirmElim === 'timeout') dispatch({ type: 'VALIDATE' });
+          setConfirmElim(null);
+        }}
+        // Choix obligatoire : un tap à côté ne doit ni éliminer ni valider
+        onDismiss={() => {}}
+      />
       <ConfirmModal
         visible={confirmQuit}
         title="Quitter la partie ?"
@@ -353,3 +391,16 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  teamBadge: {
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    maxWidth: '100%',
+  },
+  teamBadgeText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 18,
+  },
+});

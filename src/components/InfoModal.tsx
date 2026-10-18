@@ -1,4 +1,6 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import type { ComponentProps, ReactNode } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
 
 import { colors, fonts } from '@/theme';
@@ -28,26 +30,56 @@ export function InfoModal({ content, onClose }: Props) {
   );
 }
 
+type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
+
 type ConfirmProps = {
   visible: boolean;
+  /** Affiché au-dessus du titre (ex. badge d'équipe). */
+  header?: ReactNode;
   title: string;
   message: string;
   confirmLabel: string;
+  cancelLabel?: string;
+  /** Pictos devant les libellés : rendent l'effet du bouton lisible d'un coup d'œil. */
+  confirmIcon?: IconName;
+  cancelIcon?: IconName;
   onConfirm: () => void;
   onCancel: () => void;
+  /** Tap hors carte / retour Android — par défaut onCancel. */
+  onDismiss?: () => void;
 };
 
 /** Fenêtre de confirmation à deux boutons — même DA que PauseModal. */
-export function ConfirmModal({ visible, title, message, confirmLabel, onConfirm, onCancel }: ConfirmProps) {
+export function ConfirmModal({
+  visible,
+  header,
+  title,
+  message,
+  confirmLabel,
+  cancelLabel = 'ANNULER',
+  confirmIcon,
+  cancelIcon,
+  onConfirm,
+  onCancel,
+  onDismiss = onCancel,
+}: ConfirmProps) {
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
-      <Pressable style={pauseStyles.backdrop} onPress={onCancel} accessibilityLabel="Annuler">
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onDismiss}>
+      <Pressable style={pauseStyles.backdrop} onPress={onDismiss} accessibilityLabel={cancelLabel}>
         <Pressable style={pauseStyles.card} onPress={() => {}}>
-          <Text style={pauseStyles.title}>{title}</Text>
+          {header}
+          <Text style={pauseStyles.title} numberOfLines={1} adjustsFontSizeToFit>
+            {title}
+          </Text>
           <Text style={pauseStyles.message}>{message}</Text>
           <View style={confirmStyles.actions}>
             <Pressable onPress={onCancel} accessibilityRole="button" style={confirmStyles.cancelBtn}>
-              <Text style={confirmStyles.cancelText}>ANNULER</Text>
+              <View style={confirmStyles.labelRow}>
+                {cancelIcon ? <MaterialCommunityIcons name={cancelIcon} size={26} color={colors.purpleDeep} /> : null}
+                <Text style={confirmStyles.cancelText} numberOfLines={1} adjustsFontSizeToFit>
+                  {cancelLabel}
+                </Text>
+              </View>
             </Pressable>
             <Pressable onPress={onConfirm} accessibilityRole="button" style={pauseStyles.btnWrap}>
               <LinearGradient
@@ -56,7 +88,12 @@ export function ConfirmModal({ visible, title, message, confirmLabel, onConfirm,
                 end={{ x: 1, y: 0 }}
                 style={pauseStyles.btnInner}
               >
-                <Text style={pauseStyles.btnText}>{confirmLabel}</Text>
+                <View style={confirmStyles.labelRow}>
+                  {confirmIcon ? <MaterialCommunityIcons name={confirmIcon} size={26} color={colors.cream} /> : null}
+                  <Text style={pauseStyles.btnText} numberOfLines={1} adjustsFontSizeToFit>
+                    {confirmLabel}
+                  </Text>
+                </View>
               </LinearGradient>
             </Pressable>
           </View>
@@ -254,6 +291,12 @@ const pauseStyles = StyleSheet.create({
 });
 
 const confirmStyles = StyleSheet.create({
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
   actions: {
     width: '100%',
     gap: 12,

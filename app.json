@@ -42,7 +42,8 @@
           "microphonePermission": false
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-localization"
     ],
     "backgroundColor": "#266DE4",
     "splash": {

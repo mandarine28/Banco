@@ -279,7 +279,7 @@ export function SurviePlayPhase({
       <View style={[styles.buttons, { paddingBottom: Math.max(insets.bottom + 16, 24) }]}>
         <Pressable
           onPress={handleValidate}
-          sound="correct"
+          sound="bid"
           accessibilityRole="button"
           accessibilityLabel={t.survie.validateA11y}
           style={styles.validerWrap}

@@ -21,12 +21,8 @@ import { Pressable } from '@/components/Pressable';
 const MAX_WIDTH = 500;
 const NAME_MAX_LENGTH = 16;
 
-const TAKEN_COLORS: Record<string, string> = {
-  '#33FF5C': '#45A157',
-  '#FB0ED4': '#A14592',
-  '#FBD40E': '#A19245',
-  '#27FBED': '#45A19B',
-};
+/** Couleur déjà prise par une équipe précédente : estompée, non cliquable. */
+const TAKEN_OPACITY = 0.25;
 
 const ARROW_PATH =
   'M25.3411 5.19038L31.4496 10.4604C32.1513 11.0658 31.7232 12.2175 30.7964 12.2175H25.3559L13.1071 11.5356C12.5339 11.5036 12.0515 11.9599 12.0515 12.534V17.1142C12.0515 17.8923 11.2019 18.3723 10.5354 17.9707L0.484021 11.9139C-0.0406948 11.5977 -0.16034 10.8883 0.231643 10.4175L8.60512 0.36043C9.12279 -0.26133 10.1261 -0.0429697 10.3385 0.737696L11.8143 6.16055C11.949 6.65574 12.4367 6.96854 12.943 6.88446L24.5241 4.96105C24.817 4.91241 25.1163 4.99643 25.3411 5.19038Z';
@@ -143,7 +139,6 @@ export default function TeamSetupScreen() {
                       {teamColors.map((color) => {
                         const isSelected = color === selectedColor;
                         const isTaken = takenColors.has(color);
-                        const displayColor = isTaken ? (TAKEN_COLORS[color] ?? color) : color;
                         return (
                           <Pressable
                             key={color}
@@ -152,15 +147,18 @@ export default function TeamSetupScreen() {
                             accessibilityLabel={`Couleur ${color}`}
                             accessibilityState={{ selected: isSelected, disabled: isTaken }}
                             hitSlop={8}
+                            disabled={isTaken}
                           >
                             {isSelected ? (
                               <View style={styles.circleOuter}>
                                 <View style={styles.circleGap}>
-                                  <View style={[styles.circleInner, { backgroundColor: displayColor }]} />
+                                  <View style={[styles.circleInner, { backgroundColor: color }]} />
                                 </View>
                               </View>
                             ) : (
-                              <View style={[styles.colorCircle, { backgroundColor: displayColor }]} />
+                              <View
+                                style={[styles.colorCircle, { backgroundColor: color }, isTaken && { opacity: TAKEN_OPACITY }]}
+                              />
                             )}
                           </Pressable>
                         );
