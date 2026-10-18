@@ -11,6 +11,12 @@ export type Question = {
    */
   answers: string[];
   /**
+   * Réponses propres à une culture (ex. enseignes allemandes), déjà écrites dans la langue :
+   * affichées seulement dans cette langue, en plus de `answers` traduit. Les autres langues
+   * ne les affichent pas mais les trouvent par la recherche.
+   */
+  local?: Partial<Record<import('../lib/i18n').Lang, string[]>>;
+  /**
    * Liste complète propre à une langue, uniquement quand le contenu change vraiment
    * (ex. comédiens français ≠ comédiens espagnols). Prioritaire sur `answers` + glossaire.
    */

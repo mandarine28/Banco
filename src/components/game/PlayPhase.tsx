@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Keyboard, PanResponder, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
-import { getSubject, indexLetter, localizedQuestion, normalize, searchAnswers, sortAlphabetically, suggestions } from '@/game/answers';
+import { getSubject, hiddenAnswers, indexLetter, localizedQuestion, normalize, searchAnswers, sortAlphabetically, suggestions } from '@/game/answers';
 import { contract, currentQuestion, type GameState, TURN_SECONDS } from '@/game/engine';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
@@ -183,7 +183,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
   // Mode compact : badge + question masqués quand clavier ouvert → libère de l'espace pour les chips
   const compact = searchFocused || searching;
   // L'ordre des données = popularité ; la recherche garde son ordre de pertinence
-  const baseList = searching ? searchAnswers(locQuestion, query) : suggestions(locQuestion, state.found);
+  const baseList = searching ? searchAnswers(locQuestion, query, 30, hiddenAnswers(question, lang)) : suggestions(locQuestion, state.found);
   const list = !searching && isAlpha ? sortAlphabetically(baseList) : baseList;
 
   const handleToggle = (label: string) => {

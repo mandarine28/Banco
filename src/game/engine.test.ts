@@ -6,7 +6,7 @@ import { test } from 'node:test';
 import { glossaries } from '../data/glossaries.ts';
 import { questions } from '../data/questions.ts';
 import { LANGUAGES } from '../lib/i18n.ts';
-import { getAnswers, indexLetter, normalize, searchAnswers, sortAlphabetically, suggestions, translateAnswer } from './answers.ts';
+import { getAnswers, hiddenAnswers, indexLetter, normalize, searchAnswers, sortAlphabetically, suggestions, translateAnswer } from './answers.ts';
 import {
   canPass,
   contract,
@@ -71,6 +71,31 @@ test('glossaires : chaque entrée traduit une réponse FR existante du thème', 
     }
   }
   assert.deepEqual(stale, []);
+});
+
+test('réponses locales : jamais en double avec la liste commune de leur langue', () => {
+  const redundant: string[] = [];
+  for (const q of questions) {
+    for (const [lang, list] of Object.entries(q.local ?? {})) {
+      const common = new Set(getAnswers({ ...q, local: undefined }, lang as (typeof LANGS)[number]).map(normalize));
+      for (const a of list ?? []) if (common.has(normalize(a))) redundant.push(`${q.id} [${lang}] ${a}`);
+    }
+  }
+  assert.deepEqual(redundant, []);
+});
+
+test('réponses locales : affichées dans leur langue seulement, trouvables ailleurs par la recherche', () => {
+  const q = {
+    id: 't', theme: 'inconnu', subject: 'SUPERMARCHÉS', answers: ['LIDL', 'ALDI'],
+    local: { fr: ['CARREFOUR', 'LECLERC'], de: ['EDEKA'] },
+  };
+  assert.deepEqual(getAnswers(q, 'fr'), ['LIDL', 'CARREFOUR', 'ALDI', 'LECLERC']);
+  assert.deepEqual(getAnswers(q, 'de'), ['LIDL', 'EDEKA', 'ALDI']);
+  assert.deepEqual(getAnswers(q, 'es'), ['LIDL', 'ALDI']);
+  assert.deepEqual(hiddenAnswers(q, 'de'), ['CARREFOUR', 'LECLERC']);
+  const de = { ...q, answers: getAnswers(q, 'de') };
+  assert.deepEqual(searchAnswers(de, 'le', 30, hiddenAnswers(q, 'de')), ['LECLERC']);
+  assert.deepEqual(searchAnswers(de, 'l', 30, hiddenAnswers(q, 'de')), ['LIDL', 'LECLERC', 'ALDI']);
 });
 
 test('traduction : glossaire de la langue, puis anglais, puis français', () => {

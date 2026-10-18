@@ -9,13 +9,27 @@ export function translateAnswer(theme: string, lang: Lang, answer: string): stri
   return glossary?.[lang]?.[answer] ?? glossary?.en?.[answer] ?? answer;
 }
 
-/** Retourne la banque de réponses adaptée à la langue (liste dédiée, sinon FR traduit). */
+/** Retourne la banque de réponses adaptée à la langue (liste dédiée, sinon FR traduit + réponses locales). */
 export function getAnswers(question: Question, lang: Lang): string[] {
   const own = question.answersByLang?.[lang];
   if (own) return own;
-  if (lang === 'fr' || !glossaries[question.theme]) return question.answers;
-  // Deux réponses FR peuvent avoir la même traduction : on garde la première
-  return [...new Set(question.answers.map((a) => translateAnswer(question.theme, lang, a)))];
+  const common = question.answers.map((a) => translateAnswer(question.theme, lang, a));
+  const local = question.local?.[lang] ?? [];
+  // Entrelacées pour garder l'ordre de popularité des deux listes
+  const merged = Array.from({ length: Math.max(common.length, local.length) }, (_, i) => [common[i], local[i]]).flat();
+  // Deux réponses peuvent avoir le même libellé une fois traduites : on garde la première
+  const seen = new Set<string>();
+  return merged.filter((a): a is string => a !== undefined && !seen.has(normalize(a)) && !!seen.add(normalize(a)));
+}
+
+/** Réponses locales des autres cultures : masquées dans la liste, mais trouvables par la recherche. */
+export function hiddenAnswers(question: Question, lang: Lang): string[] {
+  const shown = new Set(getAnswers(question, lang).map(normalize));
+  const others = [
+    ...Object.entries(question.local ?? {}),
+    ...Object.entries(question.answersByLang ?? {}),
+  ].flatMap(([l, list]) => (l === lang ? [] : (list ?? [])));
+  return others.filter((a) => !shown.has(normalize(a)) && !!shown.add(normalize(a)));
 }
 
 /** Retourne le sujet traduit dans la langue cible (fallback FR). */
@@ -54,11 +68,12 @@ export function indexLetter(label: string): string {
   return /[a-z]/.test(first) ? first.toUpperCase() : '#';
 }
 
-/** Réponses de la base contenant la saisie (accents, casse et ponctuation ignorés). */
-export function searchAnswers(question: Question, query: string, limit = 30): string[] {
+/** Réponses contenant la saisie (accents, casse et ponctuation ignorés) : préfixes d'abord, liste affichée avant les masquées. */
+export function searchAnswers(question: Question, query: string, limit = 30, hidden: readonly string[] = []): string[] {
   const q = normalize(query);
   if (!q) return [];
-  const starts = question.answers.filter((a) => normalize(a).startsWith(q));
-  const contains = question.answers.filter((a) => !starts.includes(a) && normalize(a).includes(q));
+  const pool = [...question.answers, ...hidden];
+  const starts = pool.filter((a) => normalize(a).startsWith(q));
+  const contains = pool.filter((a) => !starts.includes(a) && normalize(a).includes(q));
   return [...starts, ...contains].slice(0, limit);
 }
