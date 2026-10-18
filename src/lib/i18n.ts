@@ -444,7 +444,7 @@ const translations: Record<Lang, Translations> = {
       unlocked: 'Pack unlocked ✓',
       unlockedBadge: 'Unlocked',
       comingSoon: 'Coming soon',
-      packTitles: { 'harry-potter': "The Bespectacled Wizard's School", nintendo: 'Retro gaming' },
+      packTitles: { 'harry-potter': 'The Boy Wizard', nintendo: 'Retro gaming' },
       packBullets: { 'harry-potter': ['43 questions', 'Films & books'], nintendo: ['Cult consoles', 'Games from the 80s to 2000s'] },
       restore: 'Restore purchases',
       restoredTitle: 'Purchases restored',
