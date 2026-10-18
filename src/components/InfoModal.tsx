@@ -44,9 +44,13 @@ type ConfirmProps = {
   confirmIcon?: IconName;
   cancelIcon?: IconName;
   onConfirm: () => void;
-  onCancel: () => void;
+  /** Sans onCancel, le bouton secondaire n'est pas affiché. */
+  onCancel?: () => void;
   /** Tap hors carte / retour Android — par défaut onCancel. */
   onDismiss?: () => void;
+  /** Affiche une croix de fermeture en haut à droite de la carte. */
+  onClose?: () => void;
+  closeLabel?: string;
 };
 
 /** Fenêtre de confirmation à deux boutons — même DA que PauseModal. */
@@ -62,25 +66,40 @@ export function ConfirmModal({
   onConfirm,
   onCancel,
   onDismiss = onCancel,
+  onClose,
+  closeLabel = 'Fermer',
 }: ConfirmProps) {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onDismiss}>
       <Pressable style={pauseStyles.backdrop} onPress={onDismiss} accessibilityLabel={cancelLabel}>
         <Pressable style={pauseStyles.card} onPress={() => {}}>
+          {onClose ? (
+            <Pressable
+              onPress={onClose}
+              hitSlop={12}
+              accessibilityRole="button"
+              accessibilityLabel={closeLabel}
+              style={confirmStyles.closeBtn}
+            >
+              <MaterialCommunityIcons name="close" size={28} color={colors.purpleDeep} />
+            </Pressable>
+          ) : null}
           {header}
           <Text style={pauseStyles.title} numberOfLines={1} adjustsFontSizeToFit>
             {title}
           </Text>
           <Text style={pauseStyles.message}>{message}</Text>
           <View style={confirmStyles.actions}>
-            <Pressable onPress={onCancel} accessibilityRole="button" style={confirmStyles.cancelBtn}>
-              <View style={confirmStyles.labelRow}>
-                {cancelIcon ? <MaterialCommunityIcons name={cancelIcon} size={26} color={colors.purpleDeep} /> : null}
-                <Text style={confirmStyles.cancelText} numberOfLines={1} adjustsFontSizeToFit>
-                  {cancelLabel}
-                </Text>
-              </View>
-            </Pressable>
+            {onCancel ? (
+              <Pressable onPress={onCancel} accessibilityRole="button" style={confirmStyles.cancelBtn}>
+                <View style={confirmStyles.labelRow}>
+                  {cancelIcon ? <MaterialCommunityIcons name={cancelIcon} size={26} color={colors.purpleDeep} /> : null}
+                  <Text style={[confirmStyles.cancelText, confirmStyles.labelText]} numberOfLines={1} adjustsFontSizeToFit>
+                    {cancelLabel}
+                  </Text>
+                </View>
+              </Pressable>
+            ) : null}
             <Pressable onPress={onConfirm} accessibilityRole="button" style={pauseStyles.btnWrap}>
               <LinearGradient
                 colors={['#fb940e', '#f2c512']}
@@ -90,7 +109,7 @@ export function ConfirmModal({
               >
                 <View style={confirmStyles.labelRow}>
                   {confirmIcon ? <MaterialCommunityIcons name={confirmIcon} size={26} color={colors.cream} /> : null}
-                  <Text style={pauseStyles.btnText} numberOfLines={1} adjustsFontSizeToFit>
+                  <Text style={[pauseStyles.btnText, confirmStyles.labelText]} numberOfLines={1} adjustsFontSizeToFit>
                     {confirmLabel}
                   </Text>
                 </View>
@@ -291,11 +310,22 @@ const pauseStyles = StyleSheet.create({
 });
 
 const confirmStyles = StyleSheet.create({
+  closeBtn: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 1,
+  },
   labelRow: {
+    maxWidth: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+  },
+  // Le libellé rétrécit pour laisser la place au picto au lieu de le pousser hors du bouton
+  labelText: {
+    flexShrink: 1,
   },
   actions: {
     width: '100%',
@@ -307,6 +337,7 @@ const confirmStyles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.purpleDeep,
     paddingVertical: 10,
+    paddingHorizontal: 16,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 51,

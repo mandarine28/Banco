@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Rect } from 'react-native-svg';
@@ -9,9 +9,12 @@ const LOCK_PATH =
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
+import { ConfirmModal } from '@/components/InfoModal';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
+import { isRewardGranted, showRewardedAd } from '@/lib/ads';
 import { useLang } from '@/lib/LangContext';
+import { loadUsedTrials } from '@/lib/trials';
 import { type Lang, getT } from '@/lib/i18n';
 import { ROUND_LIMITS, TEAM_LIMITS, useGameSettings } from '@/state/gameSettings';
 import { usePurchases } from '@/state/purchases';
@@ -119,7 +122,20 @@ export default function MatchSettingsScreen() {
   const { hasPurchased } = usePurchases();
   const [selected, setSelected] = useState<Set<string>>(DEFAULT_SELECTED);
 
-  const hasHarryPotter = hasPurchased('packHarryPotter');
+  // Packs débloqués pour une partie après une vidéo récompensée
+  const [trialIds, setTrialIds] = useState<Set<string>>(new Set());
+  const [lockedPack, setLockedPack] = useState<Category | null>(null);
+  // Un seul essai par pack : ensuite, achat obligatoire pour y rejouer
+  const [usedTrials, setUsedTrials] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    loadUsedTrials().then(setUsedTrials);
+  }, []);
+  const trialUsed = lockedPack !== null && usedTrials.has(lockedPack.id);
+  const goToShop = () => {
+    setLockedPack(null);
+    router.push('/boutique');
+  };
+  const hasHarryPotter = hasPurchased('packHarryPotter') || trialIds.has('harry-potter');
   const CATEGORIES: Category[] = [
     ...BASE_CATEGORIES,
     {
@@ -144,16 +160,15 @@ export default function MatchSettingsScreen() {
     ? (chipsScrollY / (chipsContentH - chipsContainerH)) * (chipsContainerH - thumbH)
     : 0;
 
-  const [lockedToast, setLockedToast] = useState(false);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const panelTop = insets.top + 68;
-  const toastBottom = Math.max(24, insets.bottom + 16) + 51 + 16 + 8;
 
-  const handleLockedPress = () => {
-    if (toastTimer.current) clearTimeout(toastTimer.current);
-    setLockedToast(true);
-    toastTimer.current = setTimeout(() => setLockedToast(false), 1800);
+  const watchAdForTrial = async (pack: Category) => {
+    const result = await showRewardedAd();
+    setLockedPack(null);
+    if (!isRewardGranted(result)) return;
+    setTrialIds((prev) => new Set(prev).add(pack.id));
+    // Par défaut, la partie d'essai ne pioche que dans ce pack ; le joueur peut en recocher d'autres
+    setSelected(new Set([pack.id]));
   };
 
   const toggleCategory = (id: string) => {
@@ -263,7 +278,8 @@ export default function MatchSettingsScreen() {
                   {CATEGORIES.map((cat) => {
                     const isActive = selected.has(cat.id);
                     const isLocked = cat.locked;
-                    const displayLabel = cat.labelByLang?.[lang] ?? cat.label;
+                    const label = cat.labelByLang?.[lang] ?? cat.label;
+                    const displayLabel = trialIds.has(cat.id) ? `${label} · ${t.shop.trialBadge}` : label;
                     return (
                       <Pressable
                         key={cat.id}
@@ -271,7 +287,7 @@ export default function MatchSettingsScreen() {
                           styles.chip,
                           isLocked ? styles.chipPurchaseLocked : isActive ? styles.chipActive : styles.chipInactive,
                         ]}
-                        onPress={isLocked ? handleLockedPress : () => toggleCategory(cat.id)}
+                        onPress={isLocked ? () => setLockedPack(cat) : () => toggleCategory(cat.id)}
                         // Cocher → son « bonne réponse », décocher ou catégorie verrouillée → clic principal
                         sound={isLocked || isActive ? 'tap' : 'correct'}
                         soundOnRelease
@@ -302,20 +318,24 @@ export default function MatchSettingsScreen() {
             </View>
           </ScrollView>
 
-          {/* Toast chip verrouillé */}
-          {lockedToast && (
-            <View style={[styles.lockedToast, { bottom: toastBottom }]}>
-              <Text style={styles.lockedToastText}>{t.shop.lockedAvailable}</Text>
-              <Pressable
-                style={styles.lockedToastCta}
-                onPress={() => { setLockedToast(false); router.push('/boutique'); }}
-                accessibilityRole="button"
-                accessibilityLabel={t.shop.goToShop}
-              >
-                <Text style={styles.lockedToastCtaText}>{t.pages.shop}</Text>
-              </Pressable>
-            </View>
-          )}
+          {/* Pack verrouillé : essai d'une partie contre une pub, ou boutique */}
+          <ConfirmModal
+            visible={lockedPack !== null}
+            title={lockedPack ? (lockedPack.labelByLang?.[lang] ?? lockedPack.label) : ''}
+            message={trialUsed ? t.shop.trialUsedMsg : t.shop.trialMsg}
+            cancelLabel={t.shop.goToShop}
+            cancelIcon="cart"
+            confirmLabel={trialUsed ? t.shop.goToShop : t.shop.watchAd}
+            confirmIcon={trialUsed ? 'cart' : 'play-circle'}
+            onCancel={trialUsed ? undefined : goToShop}
+            onConfirm={() => {
+              if (trialUsed) goToShop();
+              else if (lockedPack) watchAdForTrial(lockedPack);
+            }}
+            onDismiss={() => setLockedPack(null)}
+            onClose={() => setLockedPack(null)}
+            closeLabel={t.shop.close}
+          />
 
           {/* Continuer — toujours visible */}
           <View style={[styles.continuerWrapper, { paddingBottom: Math.max(24, insets.bottom + 16) }]}>
@@ -539,36 +559,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  lockedToast: {
-    position: 'absolute',
-    left: 24,
-    right: 24,
-    backgroundColor: colors.purpleDeep,
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    zIndex: 20,
-  },
-  lockedToastText: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 15,
-    color: colors.cream,
-    flex: 1,
-  },
-  lockedToastCta: {
-    backgroundColor: colors.pink,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginLeft: 12,
-  },
-  lockedToastCtaText: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 14,
-    color: colors.cream,
   },
 });

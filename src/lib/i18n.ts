@@ -110,6 +110,13 @@ type Translations = {
     settings: string;
     lockedAvailable: string;
     goToShop: string;
+    trialMsg: string;
+    trialUsedMsg: string;
+    watchAd: string;
+    trialBadge: string;
+    close: string;
+    upsellMsg: string;
+    later: string;
   };
   survie: {
     opens: string;
@@ -266,6 +273,13 @@ const translations: Record<Lang, Translations> = {
       settings: 'Réglages',
       lockedAvailable: 'Disponible dans la boutique',
       goToShop: 'Aller à la boutique',
+      trialMsg: 'Jouez gratuitement avec ce pack en regardant une courte pub !',
+      trialUsedMsg: 'Vous avez déjà essayé ce pack. Débloquez-le pour continuer à jouer avec !',
+      watchAd: 'REGARDER UNE PUB',
+      trialBadge: 'ESSAI',
+      close: 'Fermer',
+      upsellMsg: 'Vous avez aimé ? Gardez ce pack pour toutes vos parties !',
+      later: 'PLUS TARD',
     },
     survie: {
       opens: 'ouvre la survie',
@@ -459,6 +473,13 @@ const translations: Record<Lang, Translations> = {
       settings: 'Settings',
       lockedAvailable: 'Available in the shop',
       goToShop: 'Go to the shop',
+      trialMsg: 'Play this pack for free by watching a short ad!',
+      trialUsedMsg: "You've already tried this pack. Unlock it to keep playing with it!",
+      watchAd: 'WATCH AN AD',
+      trialBadge: 'TRIAL',
+      close: 'Close',
+      upsellMsg: 'Enjoyed it? Keep this pack for all your games!',
+      later: 'LATER',
     },
     survie: {
       opens: 'starts the survival',
@@ -652,6 +673,13 @@ const translations: Record<Lang, Translations> = {
       settings: 'Einstellungen',
       lockedAvailable: 'Im Shop erhältlich',
       goToShop: 'Zum Shop',
+      trialMsg: 'Spiel dieses Paket gratis – schau dir dafür kurz Werbung an!',
+      trialUsedMsg: 'Du hast dieses Paket schon getestet. Schalte es frei, um weiterzuspielen!',
+      watchAd: 'WERBUNG ANSEHEN',
+      trialBadge: 'TEST',
+      close: 'Schließen',
+      upsellMsg: 'Hat es gefallen? Behalte dieses Paket für alle Partien!',
+      later: 'SPÄTER',
     },
     survie: {
       opens: 'eröffnet das Überleben',
@@ -845,6 +873,13 @@ const translations: Record<Lang, Translations> = {
       settings: 'Ajustes',
       lockedAvailable: 'Disponible en la tienda',
       goToShop: 'Ir a la tienda',
+      trialMsg: '¡Juega gratis con este pack viendo un anuncio corto!',
+      trialUsedMsg: 'Ya has probado este pack. ¡Desbloquéalo para seguir jugando con él!',
+      watchAd: 'VER UN ANUNCIO',
+      trialBadge: 'PRUEBA',
+      close: 'Cerrar',
+      upsellMsg: '¿Te ha gustado? ¡Quédate este pack para todas tus partidas!',
+      later: 'MÁS TARDE',
     },
     survie: {
       opens: 'abre la supervivencia',

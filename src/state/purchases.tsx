@@ -20,7 +20,8 @@ type PurchasesContextValue = {
   isLoading: boolean;
   error: PurchaseError | null;
   hasPurchased: (productId: ProductId) => boolean;
-  purchase: (productId: ProductId) => Promise<void>;
+  /** true si l'achat a abouti, false si annulé ou indisponible (Expo Go) ; lève une erreur en cas d'échec. */
+  purchase: (productId: ProductId) => Promise<boolean>;
   /** Renvoie les infos restaurées, ou null si indisponible / en échec. */
   restorePurchases: () => Promise<CustomerInfo | null>;
 };
@@ -98,9 +99,9 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
     [customerInfo],
   );
 
-  const purchase = useCallback(async (productId: ProductId): Promise<void> => {
+  const purchase = useCallback(async (productId: ProductId): Promise<boolean> => {
     const rc = getRevenueCat();
-    if (!rc) return;
+    if (!rc) return false;
     setError(null);
     try {
       const offerings = await rc.getOfferings();
@@ -110,8 +111,10 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
       if (!pkg) throw new Error('Produit non disponible');
       const { customerInfo: updated } = await rc.purchasePackage(pkg);
       setCustomerInfo(updated);
+      return true;
     } catch (e: unknown) {
-      if (e && typeof e === 'object' && 'userCancelled' in e) return;
+      // Les erreurs RevenueCat portent toujours userCancelled (true/false) : seul true est une annulation
+      if (e && typeof e === 'object' && 'userCancelled' in e && e.userCancelled === true) return false;
       setError('purchase');
       throw e;
     }

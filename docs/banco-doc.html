@@ -704,9 +704,9 @@ eas submit --platform ios --profile production</code></pre>
       <div class="flow-arrow">→</div>
       <div class="flow-step">1 interstitiel max toutes les 2 parties</div>
       <div class="flow-arrow">→</div>
-      <div class="flow-step highlight">Aucune pub si le joueur a acheté</div>
+      <div class="flow-step highlight">Pas de pub si partie quittée en cours</div>
       <div class="flow-arrow">→</div>
-      <div class="flow-step orange">Achat « Retirer les pubs »</div>
+      <div class="flow-step orange">Achat « Retirer les pubs » (plus tard)</div>
     </div>
     <ul style="margin: 8px 0 0 20px; line-height: 1.8;">
       <li>Pub affichée <strong>après</strong> l'écran de victoire, quand on appuie sur « Revanche » ou « Menu ».</li>
@@ -725,6 +725,21 @@ eas submit --platform ios --profile production</code></pre>
       <tr><td>5</td><td>Installer <code>react-native-google-mobile-ads</code> (vérifier la compatibilité Expo SDK 57), configurer <code>app.json</code></td></tr>
       <tr><td>6</td><td>Nouveau build EAS (code natif : pas de mise à jour OTA, pas d'Expo Go)</td></tr>
       <tr><td>7</td><td>Mettre à jour les fiches des stores et la page Confidentialité du site (qui dit aujourd'hui « Aucune publicité »)</td></tr>
+    </table>
+    <div class="info-box">
+      💡 Décision : les joueurs qui ont acheté un pack <strong>voient toujours les pubs</strong>. Seul un futur achat « Retirer les pubs » les supprimerait.
+    </div>
+
+    <h3>📋 TODO légal avant la mise en ligne des pubs</h3>
+    <table>
+      <tr><th>Où</th><th>Quoi</th></tr>
+      <tr><td>🍎 App Store Connect</td><td>« Confidentialité de l'app » : déclarer les données utilisées pour la publicité tierce (identifiant de l'appareil, données d'usage, diagnostic…) et, si ATT accepté, les données « utilisées pour vous suivre »</td></tr>
+      <tr><td>🍎 iOS (app.json)</td><td>Texte de la fenêtre de suivi ATT (<code>NSUserTrackingUsageDescription</code>) et liste <code>SKAdNetworkItems</code> fournie par Google</td></tr>
+      <tr><td>🤖 Google Play Console</td><td>« Contenu de l'application » → déclarer que l'app <strong>contient des annonces</strong> (affiche « Contient des annonces » sur la fiche) ; formulaire « Sécurité des données » ; déclaration de l'identifiant publicitaire (permission <code>AD_ID</code>)</td></tr>
+      <tr><td>📱 Dans l'app</td><td>Message de consentement RGPD (UMP) à la 1ʳᵉ ouverture ; un lien « Gérer mes choix de confidentialité » dans les Réglages pour modifier son consentement</td></tr>
+      <tr><td>🌐 Site · Confidentialité</td><td>Retirer « Aucune publicité, aucun pistage » ; ajouter Google AdMob comme prestataire, les données collectées, la finalité, le consentement et son retrait, les transferts hors UE, le lien vers la politique de Google</td></tr>
+      <tr><td>🌐 Site · app-ads.txt</td><td>Publier le fichier à la racine du site déclaré sur les fiches des stores</td></tr>
+      <tr><td>👶 Âge</td><td>Vérifier la classification d'âge ; si l'app vise aussi les moins de 13 ans, règles spécifiques (pubs non personnalisées, programme « Familles » de Google Play)</td></tr>
     </table>
   </section>
 

@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { Keyboard, Linking, StyleSheet, Text, View } from 'react-native';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
@@ -18,14 +18,18 @@ import { SurvieResultPhase } from '@/components/game/SurvieResultPhase';
 import { ConfettiOverlay } from '@/components/ConfettiOverlay';
 import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal, PauseModal } from '@/components/InfoModal';
+import { PACK_THEME_IDS, type ProductId } from '@/config/shop';
 import { questions } from '@/data/questions';
+import { themes } from '@/data/themes';
 import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSuccess, opponent, remaining, TURN_SECONDS } from '@/game/engine';
 import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
 import { useBackToQuitConfirm } from '@/hooks/useBackToQuitConfirm';
 import { useCountdown } from '@/hooks/useCountdown';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
+import { markTrialUsed } from '@/lib/trials';
 import { useGameSettings } from '@/state/gameSettings';
+import { usePurchases } from '@/state/purchases';
 import { SurviePulseBorder } from '@/state/survieOverlay';
 import { colors, fonts, teamColors } from '@/theme';
 
@@ -38,27 +42,112 @@ export default function GameScreen() {
       ? settings.teams
       : Array.from({ length: settings.teamCount }, (_, i) => ({ name: `ÉQUIPE ${i + 1}`, color: teamColors[i] }));
   const [gameId, setGameId] = useState(0);
+  const { hasPurchased, purchase, prices } = usePurchases();
+  const { lang } = useLang();
+  const t = getT(lang);
+  // Revanche : un pack en essai ne vaut que pour une partie, on le retire s'il n'a pas été acheté
+  const replay = () => {
+    const trialThemes = (Object.keys(PACK_THEME_IDS) as ProductId[])
+      .filter((product) => !hasPurchased(product))
+      .map((product) => PACK_THEME_IDS[product]);
+    const kept = settings.selectedThemes.filter((id) => !trialThemes.includes(id));
+    if (kept.length !== settings.selectedThemes.length) {
+      settings.setSelectedThemes(kept.length > 0 ? kept : themes.map((theme) => theme.id));
+    }
+    setGameId((id) => id + 1);
+  };
+
+  // Partie d'essai : on propose l'achat du pack une seule fois, au moment de quitter l'écran final
+  const trialProduct = (Object.keys(PACK_THEME_IDS) as ProductId[]).find(
+    (product) => !hasPurchased(product) && settings.selectedThemes.includes(PACK_THEME_IDS[product] ?? ''),
+  );
+  const trialTheme = trialProduct ? PACK_THEME_IDS[trialProduct] : undefined;
+  const trialPrice = trialProduct ? prices[trialProduct] : undefined;
+  const ownedPackThemes = (Object.keys(PACK_THEME_IDS) as ProductId[])
+    .filter((product) => hasPurchased(product))
+    .map((product) => PACK_THEME_IDS[product] ?? '');
+  // Aucun thème coché = tous les thèmes gratuits + les packs achetés (jamais les packs non achetés)
+  const playableThemes =
+    settings.selectedThemes.length > 0 ? settings.selectedThemes : [...themes.map((theme) => theme.id), ...ownedPackThemes];
+  // La partie d'essai a commencé : le pack ne pourra plus être essayé avec une pub
+  useEffect(() => {
+    if (trialTheme) markTrialUsed(trialTheme);
+  }, [trialTheme]);
+  const [upsellNext, setUpsellNext] = useState<(() => void) | null>(null);
+  const [upsellShown, setUpsellShown] = useState(false);
+  const [purchasing, setPurchasing] = useState(false);
+  const [purchaseFailed, setPurchaseFailed] = useState(false);
+  const beforeLeave = (next: () => void) => {
+    if (!trialProduct || upsellShown) return next();
+    setUpsellShown(true);
+    setUpsellNext(() => next);
+  };
+  const closeUpsell = () => {
+    setUpsellNext(null);
+    setPurchaseFailed(false);
+  };
+  const buyTrialPack = async () => {
+    if (!trialProduct || purchasing) return;
+    setPurchasing(true);
+    setPurchaseFailed(false);
+    try {
+      // Annulé par le joueur : la fenêtre reste ouverte pour « Plus tard »
+      if (await purchase(trialProduct)) closeUpsell();
+    } catch {
+      setPurchaseFailed(true);
+    } finally {
+      setPurchasing(false);
+    }
+  };
+
+  const upsell = (
+    <ConfirmModal
+      visible={upsellNext !== null}
+      title={trialTheme ? (t.shop.packTitles[trialTheme] ?? '') : ''}
+      message={purchaseFailed ? t.shop.errors.purchase : t.shop.upsellMsg}
+      cancelLabel={t.shop.later}
+      confirmLabel={trialPrice ? `${t.shop.unlock} · ${trialPrice}` : t.shop.unlock}
+      confirmIcon="lock-open-variant"
+      onCancel={() => {
+        const next = upsellNext;
+        closeUpsell();
+        next?.();
+      }}
+      onConfirm={buyTrialPack}
+      onDismiss={closeUpsell}
+      onClose={closeUpsell}
+      closeLabel={t.shop.close}
+    />
+  );
 
   if (settings.mode === 'survie') {
     return (
-      <SurvieGame
-        key={gameId}
-        teams={teams}
-        roundCount={settings.roundCount}
-        selectedThemes={settings.selectedThemes}
-        onReplay={() => setGameId((id) => id + 1)}
-      />
+      <>
+        <SurvieGame
+          key={gameId}
+          teams={teams}
+          roundCount={settings.roundCount}
+          selectedThemes={playableThemes}
+          onReplay={replay}
+          beforeLeave={beforeLeave}
+        />
+        {upsell}
+      </>
     );
   }
 
   return (
-    <Game
-      key={gameId}
-      teams={teams}
-      roundCount={settings.roundCount}
-      selectedThemes={settings.selectedThemes}
-      onReplay={() => setGameId((id) => id + 1)}
-    />
+    <>
+      <Game
+        key={gameId}
+        teams={teams}
+        roundCount={settings.roundCount}
+        selectedThemes={playableThemes}
+        onReplay={replay}
+        beforeLeave={beforeLeave}
+      />
+      {upsell}
+    </>
   );
 }
 
@@ -67,11 +156,13 @@ type GameProps = {
   roundCount: number;
   selectedThemes: string[];
   onReplay: () => void;
+  /** Appelé avant Revanche / Menu depuis l'écran final (proposition d'achat après un essai). */
+  beforeLeave: (next: () => void) => void;
 };
 
 type Confirm = 'quit' | 'skip' | null;
 
-function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
+function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave }: GameProps) {
   const filteredQuestions =
     selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
   const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, filteredQuestions));
@@ -203,7 +294,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
           isLastRound={isLastRound(state)}
         />
       ) : null}
-      {state.phase === 'final' ? <FinalPhase state={state} onReplay={onReplay} onHome={goHome} /> : null}
+      {state.phase === 'final' ? <FinalPhase state={state} onReplay={() => beforeLeave(onReplay)} onHome={() => beforeLeave(goHome)} /> : null}
 
       <ConfirmModal
         visible={confirm === 'quit'}
@@ -231,7 +322,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
   );
 }
 
-function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) {
+function SurvieGame({ teams, roundCount, selectedThemes, onReplay, beforeLeave }: GameProps) {
   const filteredQuestions =
     selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
   const [state, dispatch] = useReducer(survieReducer, null, () =>
@@ -345,7 +436,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay }: GameProps) 
         />
       ) : null}
       {state.phase === 'final' ? (
-        <SurvieFinalPhase state={state} onReplay={onReplay} onHome={goHome} />
+        <SurvieFinalPhase state={state} onReplay={() => beforeLeave(onReplay)} onHome={() => beforeLeave(goHome)} />
       ) : null}
 
       {/* Mêmes codes que l'écran de jeu : dégradé = on continue (comme VALIDER), contour = élimination (comme PASSER) */}
