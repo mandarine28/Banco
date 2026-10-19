@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 
 import { SplashScreenAnimator } from '@/components/SplashScreenAnimator';
+import { initAds } from '@/lib/ads';
 import { LangProvider } from '@/lib/LangContext';
 import { preloadSounds } from '@/lib/sounds';
 import { GameSettingsProvider } from '@/state/gameSettings';
@@ -31,6 +32,10 @@ export default function RootLayout() {
     MPLUSRounded1c_800ExtraBold,
   });
   const [splashDone, setSplashDone] = useState(false);
+  // Consentement pub (RGPD) après l'animation de lancement, pour que la fenêtre ne la recouvre pas
+  useEffect(() => {
+    if (splashDone) initAds();
+  }, [splashDone]);
 
   return (
     <View style={{ flex: 1 }}>

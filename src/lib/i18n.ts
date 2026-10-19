@@ -99,6 +99,7 @@ type Translations = {
     packsTitle: string;
     unlock: string;
     unlockA11y: (pack: string) => string;
+    questionCount: (n: number) => string;
     unlocked: string;
     comingSoon: string;
     packTitles: Record<string, string>;
@@ -161,6 +162,7 @@ type Translations = {
   prefs: {
     title: string;
     soundEffects: string;
+    adChoices: string;
   };
   rules: {
     close: string;
@@ -277,6 +279,7 @@ const translations: Record<Lang, Translations> = {
       packsTitle: 'Pack de questions',
       unlock: 'Débloquer',
       unlockA11y: (pack) => `Débloquer ${pack}`,
+      questionCount: (n) => `${n} questions`,
       unlocked: 'Pack débloqué ✓',
       comingSoon: 'Bientôt disponible',
       packTitles: { 'harry-potter': 'Poudlard Express', nintendo: 'Rétro-gaming', anime: 'Anime & mangas' },
@@ -315,7 +318,7 @@ const translations: Record<Lang, Translations> = {
       playBtn: 'JOUER',
     },
     survie: {
-      opens: 'ouvre la survie',
+      opens: 'commence à répondre',
       phoneTitle: 'Posez le téléphone au centre',
       phoneMsg: 'Toutes les équipes doivent pouvoir voir l’écran.',
       phoneGo: 'C’EST PARTI !',
@@ -343,6 +346,7 @@ const translations: Record<Lang, Translations> = {
     prefs: {
       title: 'Préférences',
       soundEffects: 'Effets sonores',
+      adChoices: 'Choix publicitaires',
     },
     rules: {
       close: 'Compris',
@@ -496,6 +500,7 @@ const translations: Record<Lang, Translations> = {
       packsTitle: 'Question packs',
       unlock: 'Unlock',
       unlockA11y: (pack) => `Unlock ${pack}`,
+      questionCount: (n) => `${n} questions`,
       unlocked: 'Pack unlocked ✓',
       comingSoon: 'Coming soon',
       packTitles: { 'harry-potter': 'Hogwarts Express', nintendo: 'Retro gaming', anime: 'Anime & manga' },
@@ -534,7 +539,7 @@ const translations: Record<Lang, Translations> = {
       playBtn: 'PLAY',
     },
     survie: {
-      opens: 'starts the survival',
+      opens: 'answers first',
       phoneTitle: 'Put the phone in the middle',
       phoneMsg: 'Every team must be able to see the screen.',
       phoneGo: "LET'S GO!",
@@ -562,6 +567,7 @@ const translations: Record<Lang, Translations> = {
     prefs: {
       title: 'Preferences',
       soundEffects: 'Sound effects',
+      adChoices: 'Ad choices',
     },
     rules: {
       close: 'Got it',
@@ -715,6 +721,7 @@ const translations: Record<Lang, Translations> = {
       packsTitle: 'Fragenpakete',
       unlock: 'Freischalten',
       unlockA11y: (pack) => `Freischalten: ${pack}`,
+      questionCount: (n) => `${n} Fragen`,
       unlocked: 'Paket freigeschaltet ✓',
       comingSoon: 'Demnächst verfügbar',
       packTitles: { 'harry-potter': 'Hogwarts-Express', nintendo: 'Retro-Gaming', anime: 'Anime & Manga' },
@@ -753,7 +760,7 @@ const translations: Record<Lang, Translations> = {
       playBtn: 'SPIELEN',
     },
     survie: {
-      opens: 'eröffnet das Überleben',
+      opens: 'antwortet zuerst',
       phoneTitle: 'Legt das Handy in die Mitte',
       phoneMsg: 'Alle Teams müssen den Bildschirm sehen können.',
       phoneGo: "LOS GEHT'S!",
@@ -781,6 +788,7 @@ const translations: Record<Lang, Translations> = {
     prefs: {
       title: 'Einstellungen',
       soundEffects: 'Soundeffekte',
+      adChoices: 'Werbeeinstellungen',
     },
     rules: {
       close: 'Verstanden',
@@ -934,6 +942,7 @@ const translations: Record<Lang, Translations> = {
       packsTitle: 'Packs de preguntas',
       unlock: 'Desbloquear',
       unlockA11y: (pack) => `Desbloquear ${pack}`,
+      questionCount: (n) => `${n} preguntas`,
       unlocked: 'Pack desbloqueado ✓',
       comingSoon: 'Próximamente',
       packTitles: { 'harry-potter': 'Expreso de Hogwarts', nintendo: 'Retro gaming', anime: 'Anime y manga' },
@@ -972,7 +981,7 @@ const translations: Record<Lang, Translations> = {
       playBtn: 'JUGAR',
     },
     survie: {
-      opens: 'abre la supervivencia',
+      opens: 'responde primero',
       phoneTitle: 'Poned el móvil en el centro',
       phoneMsg: 'Todos los equipos deben poder ver la pantalla.',
       phoneGo: '¡VAMOS!',
@@ -1000,6 +1009,7 @@ const translations: Record<Lang, Translations> = {
     prefs: {
       title: 'Preferencias',
       soundEffects: 'Efectos de sonido',
+      adChoices: 'Preferencias de anuncios',
     },
     rules: {
       close: 'Entendido',

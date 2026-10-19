@@ -6,7 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
-import type { ProductId } from '@/config/shop';
+import { offers, type ProductId } from '@/config/shop';
+import { questions } from '@/data/questions';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { usePurchases } from '@/state/purchases';
@@ -31,6 +32,9 @@ const PACKS: Pack[] = [
   { id: 'anime', comingSoon: true, image: require('../../assets/packs/anime.png') },
 ];
 
+/** Nombre de questions par pack, compté dans les données (0 pour un pack à venir). */
+const questionCount = (packId: string) => questions.filter((q) => q.theme === packId).length;
+
 type PackCardProps = {
   pack: Pack;
   /** Prix localisé de l'App Store ; pastille masquée tant qu'il n'est pas connu. */
@@ -44,12 +48,21 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase }: PackCardPr
   const { lang } = useLang();
   const t = getT(lang);
   const title = t.shop.packTitles[pack.id] ?? pack.id;
+  const count = questionCount(pack.id);
 
   return (
     <View>
       <View style={[styles.card, pack.comingSoon && styles.cardDimmed]}>
         <View style={styles.cardLeft}>
-          <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
+          <View style={styles.cardTexts}>
+            <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
+            {count > 0 ? (
+              <View style={styles.countRow}>
+                <View style={styles.countDot} />
+                <Text style={styles.countText}>{t.shop.questionCount(count)}</Text>
+              </View>
+            ) : null}
+          </View>
           {purchased ? (
             <View style={styles.unlockedButton}>
               <Text style={styles.unlockedText} numberOfLines={1} adjustsFontSizeToFit>{t.shop.unlocked}</Text>
@@ -65,20 +78,20 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase }: PackCardPr
               {purchasing ? (
                 <ActivityIndicator color={colors.purpleDeep} />
               ) : (
-                <>
-                  <Text style={styles.ctaText}>{t.shop.unlock}</Text>
-                  {price ? (
-                    <View style={styles.priceBadge}>
-                      <Text style={styles.priceText}>{price}</Text>
-                    </View>
-                  ) : null}
-                </>
+                <Text style={styles.ctaText}>{t.shop.unlock}</Text>
               )}
             </Pressable>
           )}
         </View>
         <Image source={pack.image} style={styles.cardImage} accessibilityIgnoresInvertColors />
       </View>
+
+      {/* Prix à cheval sur le coin haut droit de la carte (Figma 523:50) */}
+      {price && !purchased && !pack.comingSoon ? (
+        <View style={styles.priceBadge} pointerEvents="none">
+          <Text style={styles.priceText}>{price}</Text>
+        </View>
+      ) : null}
 
       {pack.comingSoon && (
         <View style={styles.comingSoonOverlay} pointerEvents="none">
@@ -179,7 +192,8 @@ export default function BoutiqueScreen() {
           <PackCard
             key={pack.id}
             pack={pack}
-            price={pack.productId ? prices[pack.productId] : undefined}
+            // Prix localisé de l'App Store dès qu'il est chargé, sinon le prix de référence de la boutique
+            price={pack.productId ? (prices[pack.productId] ?? offers[pack.productId].price) : undefined}
             purchased={!!pack.productId && hasPurchased(pack.productId)}
             purchasing={purchasingId === pack.id}
             onPurchase={() => handlePurchase(pack)}
@@ -239,7 +253,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 20,
+    gap: 24,
     backgroundColor: colors.purpleDeep,
     borderRadius: 16,
     borderWidth: 1,
@@ -259,9 +273,28 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 12,
   },
+  cardTexts: {
+    gap: 6,
+  },
   cardTitle: {
     fontFamily: fonts.displayMedium,
     fontSize: 20,
+    color: colors.cream,
+  },
+  countRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  countDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#1AEF84',
+  },
+  countText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 16,
     color: colors.cream,
   },
   cardImage: {
@@ -274,14 +307,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     // Pas de bordure ni d'ombre couleur carte : invisibles, elles laissaient un liseré clair dans les arrondis
     paddingVertical: 10,
-    paddingHorizontal: 8,
-    flexDirection: 'row',
-    // Écran étroit ou libellé long : la pastille de prix passe sous le libellé plutôt que de le chevaucher
-    flexWrap: 'wrap',
+    paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    columnGap: 8,
-    rowGap: 4,
   },
   ctaText: {
     fontFamily: fonts.displayMedium,
@@ -304,6 +332,9 @@ const styles = StyleSheet.create({
     color: colors.purpleDeep,
   },
   priceBadge: {
+    position: 'absolute',
+    top: -12,
+    right: -8,
     backgroundColor: colors.pink,
     borderRadius: 12,
     paddingHorizontal: 6,

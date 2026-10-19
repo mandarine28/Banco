@@ -27,6 +27,8 @@ import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survi
 import { useBackToQuitConfirm } from '@/hooks/useBackToQuitConfirm';
 import { useCountdown } from '@/hooks/useCountdown';
 import { usePauseOnBackground } from '@/hooks/usePauseOnBackground';
+import { preloadInterstitial, showInterstitial } from '@/lib/ads';
+import { shouldShowInterstitial } from '@/lib/adRule';
 import { maybeRequestReview, recordGameCompleted } from '@/lib/engagement';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
@@ -92,10 +94,17 @@ export default function GameScreen() {
   const [upsellShown, setUpsellShown] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
   const [purchaseFailed, setPurchaseFailed] = useState(false);
+  // Pub de fin de partie due (règle adRule) : affichée en quittant l'écran final, jamais pendant le jeu
+  const [adDue, setAdDue] = useState(false);
+  const leave = (next: () => void) => {
+    if (!adDue) return next();
+    setAdDue(false);
+    showInterstitial().finally(next);
+  };
   const beforeLeave = (next: () => void) => {
-    if (!trialProduct || upsellShown) return next();
+    if (!trialProduct || upsellShown) return leave(next);
     setUpsellShown(true);
-    setUpsellNext(() => next);
+    setUpsellNext(() => () => leave(next));
   };
   const closeUpsell = () => {
     setUpsellNext(null);
@@ -119,6 +128,11 @@ export default function GameScreen() {
     recordGameCompleted().then((count) => {
       // Pas après une partie d'essai : la proposition d'achat occupe déjà l'écran final
       if (!trialProduct) setTimeout(() => maybeRequestReview(count), REVIEW_DELAY_MS);
+      // Pas non plus de pub après une partie d'essai : le joueur vient déjà d'en regarder une
+      if (!trialProduct && shouldShowInterstitial(count)) {
+        setAdDue(true);
+        preloadInterstitial();
+      }
     });
   };
 

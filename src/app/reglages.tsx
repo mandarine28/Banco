@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Linking, Platform, ScrollView, StyleSheet, Switch, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -10,6 +10,7 @@ import Svg, { Path } from 'react-native-svg';
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { privacyUrl, supportEmail } from '@/config/links';
+import { canEditAdChoices, editAdChoices } from '@/lib/ads';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { playSound, setSoundEnabled, useSoundEnabled } from '@/lib/sounds';
@@ -58,6 +59,17 @@ export default function SettingsScreen() {
   const t = getT(lang);
   const s = t.support;
   const soundEnabled = useSoundEnabled();
+  // Lien obligatoire (RGPD) seulement quand Google l'exige pour cet utilisateur
+  const [adChoicesAvailable, setAdChoicesAvailable] = useState(false);
+  useEffect(() => {
+    let active = true;
+    canEditAdChoices().then((available) => {
+      if (active) setAdChoicesAvailable(available);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const panelTop = insets.top + 68;
 
@@ -132,6 +144,11 @@ export default function SettingsScreen() {
               >
                 <Text style={styles.link}>{s.privacy}</Text>
               </Pressable>
+              {adChoicesAvailable ? (
+                <Pressable onPress={editAdChoices} accessibilityRole="button" hitSlop={10}>
+                  <Text style={styles.link}>{t.prefs.adChoices}</Text>
+                </Pressable>
+              ) : null}
               <Text style={styles.version}>{`${s.version} ${APP_VERSION}`}</Text>
             </View>
           </ScrollView>

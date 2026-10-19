@@ -17,13 +17,15 @@ Détails techniques : `docs/banco-doc.html` (sections « Publicité » et « Cad
 
 Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le téléphone, sans compte ni serveur.
 
-## Étape 2 — Intégrer les pubs dans le code (🤖, dès réception des identifiants)
+## Étape 2 — Intégrer les pubs dans le code (🤖)
 
-- [ ] 🤖 Vérifier la version de `react-native-google-mobile-ads` compatible Expo SDK 57, l'installer et la configurer
-- [ ] 🤖 Message de consentement (RGPD) + fenêtre de suivi Apple (ATT) + lien « Gérer mes choix » dans les Réglages
-- [ ] 🤖 Vraie vidéo récompensée pour « Essayer un pack » (remplace `src/lib/ads.ts`)
-- [ ] 🤖 Interstitiel de fin de partie : 1 partie sur 2, rien les 3 premières parties, rien si partie quittée
-- [ ] 🤖 Texte ATT et liste SKAdNetwork dans `app.json`
+- [x] 🤖 `react-native-google-mobile-ads` 17.3.1 installé et configuré (identifiants d'app de **test** Google dans `app.json`)
+- [x] 🤖 Consentement RGPD (Google UMP) au démarrage + lien « Choix publicitaires » dans les Réglages quand il est exigé
+- [x] 🤖 Vraie vidéo récompensée pour « Essayer un pack » (`src/lib/ads.ts`)
+- [x] 🤖 Interstitiel de fin de partie : à partir de la 4e partie, 1 sur 2, en quittant l'écran final ; jamais si partie quittée ni après un essai
+- [x] 🤖 Texte ATT et liste SKAdNetwork (50 identifiants Google) dans `app.json`
+- [ ] 👤 AdMob → « Confidentialité et messages » : créer le message RGPD **et** le message « explication IDFA » (c'est lui qui déclenche la fenêtre de suivi Apple)
+- [ ] 🤖 Remplacer les identifiants de test : app iOS/Android dans `app.json`, emplacements dans `src/config/ads.ts`
 
 ## Étape 3 — Tester sur ton téléphone (👤 + 🤖)
 
