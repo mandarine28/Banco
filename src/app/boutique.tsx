@@ -1,19 +1,15 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Share, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ImageSourcePropType } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
-import { GiftModal } from '@/components/GiftModal';
-import { WizardGlasses } from '@/components/Illustrations';
-import { APP_STORE_URL, type ProductId } from '@/config/shop';
+import type { ProductId } from '@/config/shop';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { usePurchases } from '@/state/purchases';
-import { useGifts } from '@/state/useGifts';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -25,26 +21,19 @@ const SETTING_PATH =
 type Pack = {
   id: string;
   productId?: ProductId;
-  borderColor: string;
+  image: ImageSourcePropType;
   comingSoon?: boolean;
 };
 
 const PACKS: Pack[] = [
-  {
-    id: 'harry-potter',
-    productId: 'packHarryPotter',
-    borderColor: colors.lavender,
-  },
-  {
-    id: 'nintendo',
-    comingSoon: true,
-    borderColor: colors.cream,
-  },
+  { id: 'harry-potter', productId: 'packHarryPotter', image: require('../../assets/packs/harry-potter.png') },
+  { id: 'nintendo', comingSoon: true, image: require('../../assets/packs/retro-gaming.png') },
+  { id: 'anime', comingSoon: true, image: require('../../assets/packs/anime.png') },
 ];
 
 type PackCardProps = {
   pack: Pack;
-  /** Prix localisé de l'App Store ; badge masqué tant qu'il n'est pas connu. */
+  /** Prix localisé de l'App Store ; pastille masquée tant qu'il n'est pas connu. */
   price?: string;
   purchased: boolean;
   purchasing: boolean;
@@ -52,65 +41,43 @@ type PackCardProps = {
 };
 
 function PackCard({ pack, price, purchased, purchasing, onPurchase }: PackCardProps) {
-  const dimmed = pack.comingSoon;
   const { lang } = useLang();
   const t = getT(lang);
-  const bullets = t.shop.packBullets[pack.id] ?? [];
   const title = t.shop.packTitles[pack.id] ?? pack.id;
 
   return (
-    <View style={styles.cardContainer}>
-      <View style={{ opacity: dimmed ? 0.2 : 1 }}>
-        <View style={styles.cardInner}>
-          <View style={[styles.card, { borderColor: pack.borderColor }]}>
-            <View style={styles.cardLeft}>
-              <View style={styles.titleRow}>
-                {pack.id === 'harry-potter' && <WizardGlasses size={28} />}
-                <Text style={[styles.cardTitle, styles.titleText]} numberOfLines={2}>{title}</Text>
-              </View>
-              <View style={styles.bulletsRow}>
-                <View style={styles.bullets}>
-                  {bullets.map((b, i) => (
-                    <View key={i} style={styles.bulletRow}>
-                      <View style={styles.bulletDot} />
-                      <Text style={styles.bulletText}>{b}</Text>
-                    </View>
-                  ))}
-                  <View style={styles.bulletsSpacer} />
-                </View>
-              </View>
-            </View>
-
-            {purchased ? (
-              <View style={styles.unlockedButton}>
-                <Text style={styles.unlockedText}>{t.shop.unlocked}</Text>
-              </View>
-            ) : (
-              <Pressable
-                style={styles.ctaButton}
-                accessibilityRole="button"
-                accessibilityLabel={price ? `${t.shop.unlockA11y(title)}, ${price}` : t.shop.unlockA11y(title)}
-                disabled={pack.comingSoon || purchasing}
-                onPress={onPurchase}
-              >
-                {purchasing
-                  ? <ActivityIndicator color={colors.purpleDeep} />
-                  : <Text style={styles.ctaText}>{t.shop.unlock}</Text>
-                }
-              </Pressable>
-            )}
-          </View>
-
+    <View>
+      <View style={[styles.card, pack.comingSoon && styles.cardDimmed]}>
+        <View style={styles.cardLeft}>
+          <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
           {purchased ? (
-            <View style={styles.unlockedBadge} pointerEvents="none">
-              <Text style={styles.unlockedBadgeText}>{t.shop.unlockedBadge}</Text>
+            <View style={styles.unlockedButton}>
+              <Text style={styles.unlockedText} numberOfLines={1} adjustsFontSizeToFit>{t.shop.unlocked}</Text>
             </View>
-          ) : price ? (
-            <View style={styles.priceBadge} pointerEvents="none">
-              <Text style={styles.priceText}>{price}</Text>
-            </View>
-          ) : null}
+          ) : (
+            <Pressable
+              style={styles.ctaButton}
+              accessibilityRole="button"
+              accessibilityLabel={price ? `${t.shop.unlockA11y(title)}, ${price}` : t.shop.unlockA11y(title)}
+              disabled={pack.comingSoon || purchasing}
+              onPress={onPurchase}
+            >
+              {purchasing ? (
+                <ActivityIndicator color={colors.purpleDeep} />
+              ) : (
+                <>
+                  <Text style={styles.ctaText}>{t.shop.unlock}</Text>
+                  {price ? (
+                    <View style={styles.priceBadge}>
+                      <Text style={styles.priceText}>{price}</Text>
+                    </View>
+                  ) : null}
+                </>
+              )}
+            </Pressable>
+          )}
         </View>
+        <Image source={pack.image} style={styles.cardImage} accessibilityIgnoresInvertColors />
       </View>
 
       {pack.comingSoon && (
@@ -137,23 +104,6 @@ export default function BoutiqueScreen() {
   const [restoring, setRestoring] = useState(false);
   const { lang } = useLang();
   const t = getT(lang);
-
-  // Récompense de partage : un pack offert, une fois par compte (accordé côté serveur)
-  const gifts = useGifts();
-  const [shareGiftOpen, setShareGiftOpen] = useState(false);
-  // Masqué le temps de la connexion (la fenêtre native passerait au-dessus de l'écran de compte)
-  const [shareGiftPaused, setShareGiftPaused] = useState(false);
-  useFocusEffect(useCallback(() => setShareGiftPaused(false), []));
-
-  async function handleShare() {
-    try {
-      const result = await Share.share({ message: `${t.gift.shareMessage} ${APP_STORE_URL}` });
-      // Le partage n'est pas vérifiable (Android ne dit pas s'il a abouti) : seule l'annulation explicite est exclue
-      if (result.action !== Share.dismissedAction) setShareGiftOpen(true);
-    } catch (e) {
-      if (__DEV__) console.warn('[gifts] partage impossible', e);
-    }
-  }
 
   async function handlePurchase(pack: Pack) {
     if (!pack.productId) return;
@@ -236,19 +186,6 @@ export default function BoutiqueScreen() {
           />
         ))}
 
-        {gifts.canOffer('share') ? (
-          <View style={[styles.card, styles.shareCard]}>
-            <Text style={styles.cardTitle}>{t.gift.shareCardTitle}</Text>
-            <Text style={styles.bulletText}>{t.gift.shareCardMsg}</Text>
-            <Pressable onPress={handleShare} accessibilityRole="button" style={styles.ctaButton}>
-              <View style={styles.shareCta}>
-                <MaterialCommunityIcons name="share-variant" size={20} color={colors.purpleDeep} />
-                <Text style={styles.ctaText}>{t.gift.shareBtn}</Text>
-              </View>
-            </Pressable>
-          </View>
-        ) : null}
-
         <Pressable
           style={styles.restoreButton}
           onPress={handleRestore}
@@ -262,17 +199,6 @@ export default function BoutiqueScreen() {
           }
         </Pressable>
       </ScrollView>
-
-      {shareGiftOpen && !shareGiftPaused ? (
-        <GiftModal
-          kind="share"
-          packs={gifts.giftablePacks}
-          isSignedIn={gifts.isSignedIn}
-          onClaim={(product) => gifts.claim('share', product)}
-          onClose={() => setShareGiftOpen(false)}
-          onSignIn={() => setShareGiftPaused(true)}
-        />
-      ) : null}
     </View>
   );
 }
@@ -296,12 +222,13 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 24,
     paddingTop: 12,
-    gap: 10,
+    gap: 16,
   },
   sectionTitle: {
     fontFamily: fonts.display,
     fontSize: 24,
     color: colors.cream,
+    marginBottom: 4,
   },
   errorText: {
     fontFamily: fonts.displayMedium,
@@ -309,89 +236,52 @@ const styles = StyleSheet.create({
     color: '#ff6b6b',
     textAlign: 'center',
   },
-  cardContainer: {
-  },
-  cardInner: {
-    paddingTop: 10,
-  },
   card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 20,
     backgroundColor: colors.purpleDeep,
     borderRadius: 16,
     borderWidth: 1,
+    borderColor: colors.lavender,
     paddingHorizontal: 24,
     paddingVertical: 16,
-    gap: 12,
     shadowColor: '#ffffff',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
     elevation: 4,
   },
+  cardDimmed: {
+    opacity: 0.2,
+  },
   cardLeft: {
-    gap: 8,
+    flex: 1,
+    gap: 12,
   },
   cardTitle: {
     fontFamily: fonts.displayMedium,
     fontSize: 20,
     color: colors.cream,
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  titleText: {
-    flexShrink: 1,
-  },
-  bulletsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  bullets: {
-    gap: 3,
-  },
-  bulletRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  bulletDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#1AEF84',
-  },
-  bulletText: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 16,
-    color: colors.cream,
-  },
-  bulletsSpacer: {
-    height: 6,
+  cardImage: {
+    width: 100,
+    height: 120,
+    borderRadius: 12,
   },
   ctaButton: {
     backgroundColor: '#fffbf5',
     borderRadius: 16,
-    borderWidth: 2,
-    borderColor: colors.purpleDeep,
-    paddingVertical: 8,
-    paddingHorizontal: 24,
+    // Pas de bordure ni d'ombre couleur carte : invisibles, elles laissaient un liseré clair dans les arrondis
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    flexDirection: 'row',
+    // Écran étroit ou libellé long : la pastille de prix passe sous le libellé plutôt que de le chevaucher
+    flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: colors.purpleDeep,
-    shadowOffset: { width: -1, height: 2 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 3,
-  },
-  shareCard: {
-    borderColor: colors.orange,
-    marginTop: 10,
-  },
-  shareCta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    columnGap: 8,
+    rowGap: 4,
   },
   ctaText: {
     fontFamily: fonts.displayMedium,
@@ -404,7 +294,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#0ea85d',
     paddingVertical: 8,
-    paddingHorizontal: 24,
+    paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -414,36 +304,19 @@ const styles = StyleSheet.create({
     color: colors.purpleDeep,
   },
   priceBadge: {
-    position: 'absolute',
-    top: 0,
-    right: 16,
     backgroundColor: colors.pink,
     borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
   },
   priceText: {
     fontFamily: fonts.displayMedium,
     fontSize: 16,
     color: colors.cream,
   },
-  unlockedBadge: {
-    position: 'absolute',
-    top: 0,
-    right: 16,
-    backgroundColor: '#1AEF84',
-    borderRadius: 12,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  unlockedBadgeText: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 16,
-    color: colors.purpleDeep,
-  },
   comingSoonOverlay: {
     position: 'absolute',
-    top: 10,
+    top: 0,
     left: 0,
     right: 0,
     bottom: 0,

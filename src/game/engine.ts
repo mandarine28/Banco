@@ -115,6 +115,9 @@ export const minimumBid = (state: GameState) => (state.auction.highest?.amount ?
 /** Le premier à parler doit ouvrir l'enchère : il ne peut pas passer. */
 export const canPass = (state: GameState) => state.auction.highest !== null;
 
+/** Au plus deux équipes en lice : passer conclut l'enchère au profit de la plus haute mise. */
+export const passConcludesAuction = (state: GameState) => state.auction.passed.filter((p) => !p).length <= 2;
+
 /** Équipe qui répond (plus haute mise) et la mise à atteindre. */
 export function contract(state: GameState) {
   const { highest } = state.auction;

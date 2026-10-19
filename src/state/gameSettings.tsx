@@ -8,7 +8,10 @@ export type Team = {
 };
 
 export const TEAM_LIMITS = { min: 2, max: 4 } as const;
-export const ROUND_LIMITS = { min: 1, max: 10 } as const;
+export const ROUND_LIMITS = { min: 3, max: 10 } as const;
+/** Durées proposées pour le chrono de survie, en secondes. */
+export const SURVIE_TIMER_OPTIONS = [10, 20, 30] as const;
+export type SurvieTimer = (typeof SURVIE_TIMER_OPTIONS)[number];
 
 export type GameSettings = {
   mode: GameMode;
@@ -16,6 +19,8 @@ export type GameSettings = {
   roundCount: number;
   teams: Team[];
   selectedThemes: string[];
+  /** Secondes par tour en survie ; null = sans chrono. */
+  survieTimer: SurvieTimer | null;
 };
 
 type GameSettingsContextValue = GameSettings & {
@@ -24,6 +29,7 @@ type GameSettingsContextValue = GameSettings & {
   setRoundCount: (count: number) => void;
   setTeams: (teams: Team[]) => void;
   setSelectedThemes: (themes: string[]) => void;
+  setSurvieTimer: (seconds: SurvieTimer | null) => void;
 };
 
 const defaults: GameSettings = {
@@ -32,6 +38,7 @@ const defaults: GameSettings = {
   roundCount: 5,
   teams: [],
   selectedThemes: [],
+  survieTimer: SURVIE_TIMER_OPTIONS[0],
 };
 
 const clamp = (value: number, { min, max }: { min: number; max: number }) => Math.min(max, Math.max(min, value));
@@ -49,6 +56,7 @@ export function GameSettingsProvider({ children }: { children: ReactNode }) {
       setRoundCount: (count) => setSettings((s) => ({ ...s, roundCount: clamp(count, ROUND_LIMITS) })),
       setTeams: (teams) => setSettings((s) => ({ ...s, teams })),
       setSelectedThemes: (selectedThemes) => setSettings((s) => ({ ...s, selectedThemes })),
+      setSurvieTimer: (survieTimer) => setSettings((s) => ({ ...s, survieTimer })),
     }),
     [settings],
   );

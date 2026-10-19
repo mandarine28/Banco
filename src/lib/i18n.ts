@@ -23,8 +23,10 @@ type Translations = {
     instruction: string;
     opens: string;
     raises: string;
-    bid: string;
+    bid: (n: number) => string;
     pass: string;
+    passTurn: string;
+    concludeAuction: string;
     max: (n: number) => string;
   };
   ready: {
@@ -69,6 +71,7 @@ type Translations = {
     settingsTitle: string;
     teamCount: string;
     roundCount: string;
+    timer: string;
     categoriesTitle: string;
     continueBtn: string;
   };
@@ -97,10 +100,8 @@ type Translations = {
     unlock: string;
     unlockA11y: (pack: string) => string;
     unlocked: string;
-    unlockedBadge: string;
     comingSoon: string;
     packTitles: Record<string, string>;
-    packBullets: Record<string, string[]>;
     restore: string;
     restoredTitle: string;
     restoredMsg: string;
@@ -120,27 +121,24 @@ type Translations = {
   };
   gift: {
     welcomeTitle: string;
-    shareTitle: string;
     chooseMsg: string;
-    signInMsg: string;
     claim: string;
-    createAccount: string;
     later: string;
     doneTitle: string;
     doneMsg: string;
     ok: string;
     failedMsg: string;
-    alreadyClaimedMsg: string;
-    shareCardTitle: string;
-    shareCardMsg: string;
-    shareBtn: string;
-    shareMessage: string;
+    welcomeCardTitle: string;
+    welcomeCardMsg: (games: number) => string;
+    playBtn: string;
   };
   survie: {
     opens: string;
-    tip: string;
     validate: string;
     validateA11y: string;
+    noAnswer: string;
+    timeoutNo: string;
+    timeoutYes: string;
     passA11y: string;
     clear: string;
     someAnswers: string;
@@ -150,6 +148,9 @@ type Translations = {
     elimTimeoutMsg: string;
     eliminate: string;
     resume: string;
+    phoneTitle: string;
+    phoneMsg: string;
+    phoneGo: string;
   };
   final: {
     tie: string;
@@ -197,11 +198,13 @@ type Translations = {
 const translations: Record<Lang, Translations> = {
   fr: {
     auction: {
-      instruction: 'Combien de réponses pouvez-vous citer en 60 secondes ?',
+      instruction: 'Vous aurez 60 secondes. Combien pouvez-vous en citer ?',
       opens: 'ouvre les enchères',
       raises: 'surenchérit ou passe',
-      bid: 'MISER',
+      bid: (n) => `J'EN CITE ${n}`,
       pass: 'PASSER',
+      passTurn: 'PASSER MON TOUR',
+      concludeAuction: 'CONCLURE L’ENCHÈRE',
       max: (n) => `Maximum : ${n}`,
     },
     ready: {
@@ -244,8 +247,9 @@ const translations: Record<Lang, Translations> = {
     },
     matchSettings: {
       settingsTitle: 'Paramètre de jeux',
-      teamCount: "Nombre d'équipes",
-      roundCount: 'Nombre de rounds',
+      teamCount: 'Équipes',
+      roundCount: 'Rounds',
+      timer: 'Chrono',
       categoriesTitle: 'Catégories',
       continueBtn: 'Continuer',
     },
@@ -271,13 +275,11 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Pack de questions',
-      unlock: 'Débloquer le pack',
+      unlock: 'Débloquer',
       unlockA11y: (pack) => `Débloquer ${pack}`,
       unlocked: 'Pack débloqué ✓',
-      unlockedBadge: 'Débloqué',
       comingSoon: 'Bientôt disponible',
-      packTitles: { 'harry-potter': "L'école du sorcier à lunettes", nintendo: 'Rétro-gaming' },
-      packBullets: { 'harry-potter': ['43 questions', 'Films & livres'], nintendo: ['Consoles cultes', 'Jeux des années 80 à 2000'] },
+      packTitles: { 'harry-potter': 'Poudlard Express', nintendo: 'Rétro-gaming', anime: 'Anime & mangas' },
       restore: 'Restaurer les achats',
       restoredTitle: 'Achats restaurés',
       restoredMsg: 'Vos packs sont de nouveau débloqués.',
@@ -301,31 +303,31 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Cadeau de bienvenue !',
-      shareTitle: 'Merci pour le partage !',
       chooseMsg: 'Choisissez le pack qui vous est offert :',
-      signInMsg: 'Créez un compte pour recevoir votre pack offert et le garder sur tous vos appareils.',
       claim: 'RÉCUPÉRER',
-      createAccount: 'CRÉER UN COMPTE',
       later: 'PLUS TARD',
       doneTitle: "C'est à vous !",
       doneMsg: 'Votre pack est débloqué. Bonne partie !',
       ok: 'SUPER',
       failedMsg: 'Impossible de récupérer le cadeau pour le moment. Réessayez plus tard.',
-      alreadyClaimedMsg: 'Ce cadeau a déjà été récupéré sur ce compte.',
-      shareCardTitle: 'Un pack offert',
-      shareCardMsg: 'Partagez Banco avec vos amis et recevez un pack.',
-      shareBtn: 'PARTAGER',
-      shareMessage: 'Viens jouer à Banco avec moi !',
+      welcomeCardTitle: 'Votre pack de bienvenue',
+      welcomeCardMsg: (games) => `Recevez un pack offert après ${games} parties.`,
+      playBtn: 'JOUER',
     },
     survie: {
       opens: 'ouvre la survie',
-      tip: 'Désignez 1 seul maître du jeu pour maintenir le rythme !',
-      validate: 'VALIDER',
-      validateA11y: 'Valider la réponse',
-      passA11y: 'Passer — élimination',
+      phoneTitle: 'Posez le téléphone au centre',
+      phoneMsg: 'Toutes les équipes doivent pouvoir voir l’écran.',
+      phoneGo: 'C’EST PARTI !',
+      validate: 'BONNE RÉPONSE',
+      validateA11y: 'Bonne réponse',
+      noAnswer: 'PAS DE RÉPONSE',
+      timeoutNo: 'NON, ÉLIMINER',
+      timeoutYes: 'OUI, VALIDER',
+      passA11y: 'Pas de réponse — élimination',
       clear: 'Effacer',
       someAnswers: 'Quelques réponses qui étaient possibles',
-      elimPassTitle: 'Passer ?',
+      elimPassTitle: 'Pas de réponse ?',
       elimPassMsg: "L'équipe sera éliminée de cette manche.",
       elimTimeoutTitle: 'Temps écoulé !',
       elimTimeoutMsg: "L'équipe a-t-elle répondu à temps ?",
@@ -359,7 +361,7 @@ const translations: Record<Lang, Translations> = {
       survieTitle: 'Mode Survie',
       survieSteps: [
         'Un sujet s\'affiche, par exemple « Capitales du monde ».',
-        'Chaque équipe, à son tour, a 10 secondes pour citer une nouvelle réponse.',
+        'Chaque équipe, à son tour, a 10 secondes (réglable) pour citer une nouvelle réponse.',
         'Réponse validée : c\'est au tour de l\'équipe suivante.',
         'Pas de réponse à temps, ou « Passer » : l\'équipe est éliminée de la manche.',
         'La manche continue jusqu\'à ce qu\'il ne reste qu\'une seule équipe.',
@@ -415,11 +417,13 @@ const translations: Record<Lang, Translations> = {
   },
   en: {
     auction: {
-      instruction: 'How many answers can you name in 60 seconds?',
+      instruction: "You'll have 60 seconds. How many can you name?",
       opens: 'opens the bidding',
       raises: 'raises or passes',
-      bid: 'BID',
+      bid: (n) => `I'LL NAME ${n}`,
       pass: 'PASS',
+      passTurn: 'PASS MY TURN',
+      concludeAuction: 'CLOSE THE AUCTION',
       max: (n) => `Maximum: ${n}`,
     },
     ready: {
@@ -462,8 +466,9 @@ const translations: Record<Lang, Translations> = {
     },
     matchSettings: {
       settingsTitle: 'Game settings',
-      teamCount: 'Number of teams',
-      roundCount: 'Number of rounds',
+      teamCount: 'Teams',
+      roundCount: 'Rounds',
+      timer: 'Timer',
       categoriesTitle: 'Categories',
       continueBtn: 'Continue',
     },
@@ -489,13 +494,11 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Question packs',
-      unlock: 'Unlock pack',
+      unlock: 'Unlock',
       unlockA11y: (pack) => `Unlock ${pack}`,
       unlocked: 'Pack unlocked ✓',
-      unlockedBadge: 'Unlocked',
       comingSoon: 'Coming soon',
-      packTitles: { 'harry-potter': 'The Boy Wizard', nintendo: 'Retro gaming' },
-      packBullets: { 'harry-potter': ['43 questions', 'Films & books'], nintendo: ['Cult consoles', 'Games from the 80s to 2000s'] },
+      packTitles: { 'harry-potter': 'Hogwarts Express', nintendo: 'Retro gaming', anime: 'Anime & manga' },
       restore: 'Restore purchases',
       restoredTitle: 'Purchases restored',
       restoredMsg: 'Your packs are unlocked again.',
@@ -519,31 +522,31 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Welcome gift!',
-      shareTitle: 'Thanks for sharing!',
       chooseMsg: 'Choose your free pack:',
-      signInMsg: 'Create an account to get your free pack and keep it on all your devices.',
       claim: 'CLAIM',
-      createAccount: 'CREATE ACCOUNT',
       later: 'LATER',
       doneTitle: "It's yours!",
       doneMsg: 'Your pack is unlocked. Have fun!',
       ok: 'GREAT',
       failedMsg: "We couldn't deliver your gift right now. Please try again later.",
-      alreadyClaimedMsg: 'This gift has already been claimed on this account.',
-      shareCardTitle: 'A free pack',
-      shareCardMsg: 'Share Banco with your friends and get a pack.',
-      shareBtn: 'SHARE',
-      shareMessage: 'Come play Banco with me!',
+      welcomeCardTitle: 'Your welcome pack',
+      welcomeCardMsg: (games) => `Get a free pack after ${games} games.`,
+      playBtn: 'PLAY',
     },
     survie: {
       opens: 'starts the survival',
-      tip: 'Pick a single game master to keep the pace!',
-      validate: 'VALIDATE',
-      validateA11y: 'Validate the answer',
-      passA11y: 'Pass — elimination',
+      phoneTitle: 'Put the phone in the middle',
+      phoneMsg: 'Every team must be able to see the screen.',
+      phoneGo: "LET'S GO!",
+      validate: 'RIGHT ANSWER',
+      validateA11y: 'Right answer',
+      noAnswer: 'NO ANSWER',
+      timeoutNo: 'NO, ELIMINATE',
+      timeoutYes: 'YES, VALIDATE',
+      passA11y: 'No answer — elimination',
       clear: 'Clear',
       someAnswers: 'Some possible answers',
-      elimPassTitle: 'Pass?',
+      elimPassTitle: 'No answer?',
       elimPassMsg: 'The team will be out for this round.',
       elimTimeoutTitle: "Time's up!",
       elimTimeoutMsg: 'Did the team answer in time?',
@@ -577,7 +580,7 @@ const translations: Record<Lang, Translations> = {
       survieTitle: 'Survival mode',
       survieSteps: [
         'A topic appears, for example “World capitals”.',
-        'Each team, in turn, has 10 seconds to name a new answer.',
+        'Each team, in turn, has 10 seconds (adjustable) to name a new answer.',
         'Answer validated: it’s the next team’s turn.',
         'No answer in time, or “Pass”: the team is out of the round.',
         'The round goes on until only one team is left.',
@@ -633,11 +636,13 @@ const translations: Record<Lang, Translations> = {
   },
   de: {
     auction: {
-      instruction: 'Wie viele Antworten können Sie in 60 Sekunden nennen?',
+      instruction: 'Sie haben 60 Sekunden. Wie viele können Sie nennen?',
       opens: 'eröffnet das Gebot',
       raises: 'erhöht oder passt',
-      bid: 'BIETEN',
+      bid: (n) => `ICH NENNE ${n}`,
       pass: 'PASSEN',
+      passTurn: 'ICH PASSE',
+      concludeAuction: 'AUKTION BEENDEN',
       max: (n) => `Maximum: ${n}`,
     },
     ready: {
@@ -680,8 +685,9 @@ const translations: Record<Lang, Translations> = {
     },
     matchSettings: {
       settingsTitle: 'Spieleinstellungen',
-      teamCount: 'Anzahl Teams',
-      roundCount: 'Anzahl Runden',
+      teamCount: 'Teams',
+      roundCount: 'Runden',
+      timer: 'Timer',
       categoriesTitle: 'Kategorien',
       continueBtn: 'Weiter',
     },
@@ -707,13 +713,11 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Fragenpakete',
-      unlock: 'Paket freischalten',
+      unlock: 'Freischalten',
       unlockA11y: (pack) => `Freischalten: ${pack}`,
       unlocked: 'Paket freigeschaltet ✓',
-      unlockedBadge: 'Freigeschaltet',
       comingSoon: 'Demnächst verfügbar',
-      packTitles: { 'harry-potter': 'Schule des Zauberers mit Brille', nintendo: 'Retro-Gaming' },
-      packBullets: { 'harry-potter': ['43 Fragen', 'Filme & Bücher'], nintendo: ['Kultkonsolen', 'Spiele der 80er bis 2000er'] },
+      packTitles: { 'harry-potter': 'Hogwarts-Express', nintendo: 'Retro-Gaming', anime: 'Anime & Manga' },
       restore: 'Käufe wiederherstellen',
       restoredTitle: 'Käufe wiederhergestellt',
       restoredMsg: 'Deine Pakete sind wieder freigeschaltet.',
@@ -737,31 +741,31 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Willkommensgeschenk!',
-      shareTitle: 'Danke fürs Teilen!',
       chooseMsg: 'Wähle dein Gratis-Paket:',
-      signInMsg: 'Erstelle ein Konto, um dein Gratis-Paket zu erhalten und auf allen Geräten zu behalten.',
       claim: 'ABHOLEN',
-      createAccount: 'KONTO ERSTELLEN',
       later: 'SPÄTER',
       doneTitle: 'Es gehört dir!',
       doneMsg: 'Dein Paket ist freigeschaltet. Viel Spaß!',
       ok: 'SUPER',
       failedMsg: 'Das Geschenk kann gerade nicht abgeholt werden. Versuche es später erneut.',
-      alreadyClaimedMsg: 'Dieses Geschenk wurde für dieses Konto bereits abgeholt.',
-      shareCardTitle: 'Ein Gratis-Paket',
-      shareCardMsg: 'Teile Banco mit deinen Freunden und erhalte ein Paket.',
-      shareBtn: 'TEILEN',
-      shareMessage: 'Komm, spiel Banco mit mir!',
+      welcomeCardTitle: 'Dein Willkommenspaket',
+      welcomeCardMsg: (games) => `Erhalte nach ${games} Spielen ein Gratis-Paket.`,
+      playBtn: 'SPIELEN',
     },
     survie: {
       opens: 'eröffnet das Überleben',
-      tip: 'Bestimmt einen einzigen Spielleiter, um das Tempo zu halten!',
-      validate: 'BESTÄTIGEN',
-      validateA11y: 'Antwort bestätigen',
-      passA11y: 'Passen – Ausscheiden',
+      phoneTitle: 'Legt das Handy in die Mitte',
+      phoneMsg: 'Alle Teams müssen den Bildschirm sehen können.',
+      phoneGo: "LOS GEHT'S!",
+      validate: 'RICHTIG',
+      validateA11y: 'Richtige Antwort',
+      noAnswer: 'KEINE ANTWORT',
+      timeoutNo: 'NEIN, AUSSCHEIDEN',
+      timeoutYes: 'JA, BESTÄTIGEN',
+      passA11y: 'Keine Antwort – Ausscheiden',
       clear: 'Löschen',
       someAnswers: 'Einige mögliche Antworten',
-      elimPassTitle: 'Passen?',
+      elimPassTitle: 'Keine Antwort?',
       elimPassMsg: 'Das Team scheidet in dieser Runde aus.',
       elimTimeoutTitle: 'Zeit abgelaufen!',
       elimTimeoutMsg: 'Hat das Team rechtzeitig geantwortet?',
@@ -795,7 +799,7 @@ const translations: Record<Lang, Translations> = {
       survieTitle: 'Modus Überleben',
       survieSteps: [
         'Ein Thema erscheint, zum Beispiel „Hauptstädte der Welt“.',
-        'Jedes Team hat abwechselnd 10 Sekunden, um eine neue Antwort zu nennen.',
+        'Jedes Team hat abwechselnd 10 Sekunden (einstellbar), um eine neue Antwort zu nennen.',
         'Antwort bestätigt: Das nächste Team ist dran.',
         'Keine Antwort in der Zeit oder „Passen“: Das Team scheidet in dieser Runde aus.',
         'Die Runde läuft, bis nur noch ein Team übrig ist.',
@@ -851,11 +855,13 @@ const translations: Record<Lang, Translations> = {
   },
   es: {
     auction: {
-      instruction: '¿Cuántas respuestas puedes decir en 60 segundos?',
+      instruction: 'Tendrás 60 segundos. ¿Cuántas puedes decir?',
       opens: 'abre la puja',
       raises: 'sube o pasa',
-      bid: 'PUJAR',
+      bid: (n) => `DIGO ${n}`,
       pass: 'PASAR',
+      passTurn: 'PASAR MI TURNO',
+      concludeAuction: 'CERRAR LA SUBASTA',
       max: (n) => `Máximo: ${n}`,
     },
     ready: {
@@ -898,8 +904,9 @@ const translations: Record<Lang, Translations> = {
     },
     matchSettings: {
       settingsTitle: 'Ajustes de juego',
-      teamCount: 'Número de equipos',
-      roundCount: 'Número de rondas',
+      teamCount: 'Equipos',
+      roundCount: 'Rondas',
+      timer: 'Cronómetro',
       categoriesTitle: 'Categorías',
       continueBtn: 'Continuar',
     },
@@ -925,13 +932,11 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Packs de preguntas',
-      unlock: 'Desbloquear pack',
+      unlock: 'Desbloquear',
       unlockA11y: (pack) => `Desbloquear ${pack}`,
       unlocked: 'Pack desbloqueado ✓',
-      unlockedBadge: 'Desbloqueado',
       comingSoon: 'Próximamente',
-      packTitles: { 'harry-potter': 'La escuela del mago de gafas', nintendo: 'Retro gaming' },
-      packBullets: { 'harry-potter': ['43 preguntas', 'Películas y libros'], nintendo: ['Consolas de culto', 'Juegos de los 80 a los 2000'] },
+      packTitles: { 'harry-potter': 'Expreso de Hogwarts', nintendo: 'Retro gaming', anime: 'Anime y manga' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Tus packs vuelven a estar desbloqueados.',
@@ -955,31 +960,31 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: '¡Regalo de bienvenida!',
-      shareTitle: '¡Gracias por compartir!',
       chooseMsg: 'Elige tu pack gratis:',
-      signInMsg: 'Crea una cuenta para recibir tu pack gratis y conservarlo en todos tus dispositivos.',
       claim: 'RECOGER',
-      createAccount: 'CREAR CUENTA',
       later: 'MÁS TARDE',
       doneTitle: '¡Es tuyo!',
       doneMsg: 'Tu pack está desbloqueado. ¡A jugar!',
       ok: 'GENIAL',
       failedMsg: 'No se ha podido entregar el regalo. Inténtalo más tarde.',
-      alreadyClaimedMsg: 'Este regalo ya se ha recogido en esta cuenta.',
-      shareCardTitle: 'Un pack gratis',
-      shareCardMsg: 'Comparte Banco con tus amigos y recibe un pack.',
-      shareBtn: 'COMPARTIR',
-      shareMessage: '¡Ven a jugar a Banco conmigo!',
+      welcomeCardTitle: 'Tu pack de bienvenida',
+      welcomeCardMsg: (games) => `Recibe un pack gratis después de ${games} partidas.`,
+      playBtn: 'JUGAR',
     },
     survie: {
       opens: 'abre la supervivencia',
-      tip: '¡Elegid un solo maestro del juego para mantener el ritmo!',
-      validate: 'VALIDAR',
-      validateA11y: 'Validar la respuesta',
-      passA11y: 'Pasar — eliminación',
+      phoneTitle: 'Poned el móvil en el centro',
+      phoneMsg: 'Todos los equipos deben poder ver la pantalla.',
+      phoneGo: '¡VAMOS!',
+      validate: 'RESPUESTA CORRECTA',
+      validateA11y: 'Respuesta correcta',
+      noAnswer: 'SIN RESPUESTA',
+      timeoutNo: 'NO, ELIMINAR',
+      timeoutYes: 'SÍ, VALIDAR',
+      passA11y: 'Sin respuesta — eliminación',
       clear: 'Borrar',
       someAnswers: 'Algunas respuestas posibles',
-      elimPassTitle: '¿Pasar?',
+      elimPassTitle: '¿Sin respuesta?',
       elimPassMsg: 'El equipo quedará eliminado de esta ronda.',
       elimTimeoutTitle: '¡Se acabó el tiempo!',
       elimTimeoutMsg: '¿Respondió el equipo a tiempo?',
@@ -1013,7 +1018,7 @@ const translations: Record<Lang, Translations> = {
       survieTitle: 'Modo Supervivencia',
       survieSteps: [
         'Aparece un tema, por ejemplo «Capitales del mundo».',
-        'Cada equipo, por turnos, tiene 10 segundos para decir una respuesta nueva.',
+        'Cada equipo, por turnos, tiene 10 segundos (ajustable) para decir una respuesta nueva.',
         'Respuesta validada: le toca al equipo siguiente.',
         'Sin respuesta a tiempo, o «Pasar»: el equipo queda eliminado de la ronda.',
         'La ronda sigue hasta que solo quede un equipo.',

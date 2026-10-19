@@ -1,7 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path } from 'react-native-svg';
 
 import { getSubject } from '@/game/answers';
 import { survieCurrentQuestion, type SurvieState } from '@/game/survie-engine';
@@ -11,9 +10,6 @@ import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
-
-const BULB_PATH =
-  'M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z';
 
 type Props = {
   state: SurvieState;
@@ -69,15 +65,6 @@ export function SurvieReadyPhase({ state, onStart }: Props) {
             <Text style={styles.jouerText}>{t.ready.play}</Text>
           </LinearGradient>
         </Pressable>
-
-        <View style={styles.tipCard}>
-          <Svg width={20} height={20} viewBox="0 0 24 24">
-            <Path d={BULB_PATH} fill={colors.purpleDeep} />
-          </Svg>
-          <Text style={styles.tipText}>
-            {t.survie.tip}
-          </Text>
-        </View>
       </View>
     </View>
   );
@@ -158,21 +145,5 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#fef6d7',
     letterSpacing: 1,
-  },
-  tipCard: {
-    backgroundColor: '#fef1cb',
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  tipText: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 15,
-    color: colors.purpleDeep,
-    flex: 1,
-    lineHeight: 21,
   },
 });

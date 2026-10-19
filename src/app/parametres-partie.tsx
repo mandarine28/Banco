@@ -1,6 +1,7 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ScrollView, StyleSheet, Switch, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, Rect } from 'react-native-svg';
 
@@ -10,16 +11,15 @@ const LOCK_PATH =
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { ConfirmModal } from '@/components/InfoModal';
-import { WizardGlasses } from '@/components/Illustrations';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { isRewardGranted, showRewardedAd } from '@/lib/ads';
 import { useLang } from '@/lib/LangContext';
 import { loadUsedTrials } from '@/lib/trials';
 import { type Lang, getT } from '@/lib/i18n';
-import { ROUND_LIMITS, TEAM_LIMITS, useGameSettings } from '@/state/gameSettings';
+import { ROUND_LIMITS, SURVIE_TIMER_OPTIONS, type SurvieTimer, TEAM_LIMITS, useGameSettings } from '@/state/gameSettings';
 import { usePurchases } from '@/state/purchases';
-import { colors, fonts } from '@/theme';
+import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
 const MAX_WIDTH = 500;
@@ -32,7 +32,7 @@ const SETTING_PATH =
 
 const themeIdsWithQuestions = new Set(questions.map((q) => q.theme));
 
-type Category = { id: string; label: string; labelByLang?: Partial<Record<Lang, string>>; available: boolean; locked?: boolean; isPack?: boolean };
+type Category = { id: string; label: string; labelByLang?: Partial<Record<Lang, string>>; available: boolean; locked?: boolean };
 
 const BASE_CATEGORIES: Category[] = themes.map((theme) => ({
   id: theme.id,
@@ -43,10 +43,6 @@ const BASE_CATEGORIES: Category[] = themes.map((theme) => ({
 }));
 
 const DEFAULT_SELECTED = new Set(BASE_CATEGORIES.filter((c) => c.available).map((c) => c.id));
-
-const CHIP_ROW_H = 36;
-const CHIP_GAP = 12;
-const CATEGORY_CHIPS_H = 5 * CHIP_ROW_H + 4 * CHIP_GAP; // 228 — 5 rows visible
 
 function BackArrow({ size }: { size: number }) {
   const h = (size * 19) / 32;
@@ -69,7 +65,20 @@ function SettingIcon({ size }: { size: number }) {
   );
 }
 
+type IconName = keyof typeof MaterialCommunityIcons.glyphMap;
+
+/** Libellé de réglage précédé de son pictogramme. */
+function RowLabel({ icon, label }: { icon: IconName; label: string }) {
+  return (
+    <View style={styles.rowLabelWrap}>
+      <MaterialCommunityIcons name={icon} size={22} color={colors.cream} />
+      <Text style={styles.rowLabel} numberOfLines={1} adjustsFontSizeToFit>{label}</Text>
+    </View>
+  );
+}
+
 type StepperRowProps = {
+  icon: IconName;
   label: string;
   value: number;
   min: number;
@@ -77,12 +86,12 @@ type StepperRowProps = {
   onChange: (v: number) => void;
 };
 
-function StepperRow({ label, value, min, max, onChange }: StepperRowProps) {
+function StepperRow({ icon, label, value, min, max, onChange }: StepperRowProps) {
   const atMin = value <= min;
   const atMax = value >= max;
   return (
     <View style={styles.settingRow}>
-      <Text style={styles.rowLabel}>{label}</Text>
+      <RowLabel icon={icon} label={label} />
       <View style={styles.stepper}>
         <Pressable
           onPress={() => onChange(Math.max(min, value - 1))}
@@ -114,11 +123,57 @@ function StepperRow({ label, value, min, max, onChange }: StepperRowProps) {
   );
 }
 
+type TimerRowProps = {
+  label: string;
+  value: SurvieTimer | null;
+  onChange: (value: SurvieTimer | null) => void;
+};
+
+/** Chrono de survie : interrupteur, puis choix de la durée quand il est activé. */
+function TimerRow({ label, value, onChange }: TimerRowProps) {
+  const enabled = value !== null;
+  return (
+    <View style={[styles.settingRow, styles.timerCard]}>
+      <View style={styles.timerHeader}>
+        <RowLabel icon="timer-outline" label={label} />
+        <Switch
+          value={enabled}
+          onValueChange={(on) => onChange(on ? SURVIE_TIMER_OPTIONS[0] : null)}
+          // Vert d'équipe : l'orange est réservé aux actions et aux prix
+          trackColor={{ false: 'rgba(254,246,215,0.25)', true: teamColors[1] }}
+          thumbColor={colors.cream}
+          ios_backgroundColor="rgba(254,246,215,0.25)"
+          accessibilityLabel={label}
+        />
+      </View>
+      {enabled ? (
+        <View style={styles.timerOptions} accessibilityRole="radiogroup">
+          {SURVIE_TIMER_OPTIONS.map((seconds) => {
+            const selected = seconds === value;
+            return (
+              <Pressable
+                key={seconds}
+                onPress={() => onChange(seconds)}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                accessibilityLabel={`${label} ${seconds} s`}
+                style={[styles.timerOption, selected && styles.timerOptionSelected]}
+              >
+                <Text style={[styles.timerOptionText, selected && styles.timerOptionTextSelected]}>{seconds} s</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 export default function MatchSettingsScreen() {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
-  const { mode, teamCount, setTeamCount, roundCount, setRoundCount, setSelectedThemes } = useGameSettings();
+  const { mode, teamCount, setTeamCount, roundCount, setRoundCount, setSelectedThemes, survieTimer, setSurvieTimer } = useGameSettings();
   const settingsTitle = mode === 'survie' ? 'Paramètre de la survie' : 'Paramètre des enchères';
   const { hasPurchased } = usePurchases();
   const [selected, setSelected] = useState<Set<string>>(DEFAULT_SELECTED);
@@ -141,25 +196,13 @@ export default function MatchSettingsScreen() {
     ...BASE_CATEGORIES,
     {
       id: 'harry-potter',
-      label: "L'école du sorcier à lunettes",
+      label: 'Poudlard Express',
       available: hasHarryPotter,
       locked: !hasHarryPotter,
-      isPack: true,
     },
   ];
-  const [chipsScrollY, setChipsScrollY] = useState(0);
-  const [chipsContentH, setChipsContentH] = useState(0);
-  const [chipsContainerH, setChipsContainerH] = useState(0);
   const { lang } = useLang();
   const t = getT(lang);
-
-  const isChipsScrollable = chipsContentH > chipsContainerH;
-  const thumbH = isChipsScrollable
-    ? Math.max(20, (chipsContainerH / chipsContentH) * chipsContainerH)
-    : chipsContainerH;
-  const thumbTop = isChipsScrollable
-    ? (chipsScrollY / (chipsContentH - chipsContainerH)) * (chipsContainerH - thumbH)
-    : 0;
 
   const panelTop = insets.top + 68;
 
@@ -207,6 +250,7 @@ export default function MatchSettingsScreen() {
               <Text style={styles.sectionTitle}>{settingsTitle}</Text>
               <View style={styles.rowList}>
                 <StepperRow
+                  icon="account-group"
                   label={t.matchSettings.teamCount}
                   value={teamCount}
                   min={TEAM_LIMITS.min}
@@ -214,12 +258,16 @@ export default function MatchSettingsScreen() {
                   onChange={setTeamCount}
                 />
                 <StepperRow
+                  icon="flag-checkered"
                   label={t.matchSettings.roundCount}
                   value={roundCount}
                   min={ROUND_LIMITS.min}
                   max={ROUND_LIMITS.max}
                   onChange={setRoundCount}
                 />
+                {mode === 'survie' ? (
+                  <TimerRow label={t.matchSettings.timer} value={survieTimer} onChange={setSurvieTimer} />
+                ) : null}
               </View>
             </View>
 
@@ -256,30 +304,12 @@ export default function MatchSettingsScreen() {
                   );
                 })()}
               </View>
-              <View style={styles.chipsArea}>
-                <View
-                  style={styles.scrollTrack}
-                  onLayout={(e) => setChipsContainerH(e.nativeEvent.layout.height)}
-                >
-                  {isChipsScrollable ? (
-                    <View style={[styles.scrollThumb, { height: thumbH, top: thumbTop }]} />
-                  ) : (
-                    <View style={[styles.scrollThumb, { height: chipsContainerH, top: 0 }]} />
-                  )}
-                </View>
-                <ScrollView
-                  style={styles.chipsScroll}
-                  contentContainerStyle={styles.chips}
-                  showsVerticalScrollIndicator={false}
-                  scrollEventThrottle={16}
-                  nestedScrollEnabled={true}
-                  onScroll={(e) => setChipsScrollY(e.nativeEvent.contentOffset.y)}
-                  onContentSizeChange={(_, h) => setChipsContentH(h)}
-                >
-                  {CATEGORIES.filter((cat) => !cat.isPack).map((cat) => {
+              {/* Pas de défilement imbriqué : il se battait avec celui de la page, toute la liste défile avec la page */}
+              <View style={styles.chips}>
+                  {CATEGORIES.map((cat) => {
                     const isActive = selected.has(cat.id);
                     const isLocked = cat.locked;
-                    const label = cat.labelByLang?.[lang] ?? cat.label;
+                    const label = t.shop.packTitles[cat.id] ?? cat.labelByLang?.[lang] ?? cat.label;
                     const displayLabel = trialIds.has(cat.id) ? `${label} · ${t.shop.trialBadge}` : label;
                     return (
                       <Pressable
@@ -314,40 +344,6 @@ export default function MatchSettingsScreen() {
                       </Pressable>
                     );
                   })}
-                  {/* Packs achetés en boutique : rubrique à part pour ne pas se confondre avec les catégories */}
-                  <Text style={styles.packsHeading}>{t.shop.packsTitle}</Text>
-                  {CATEGORIES.filter((cat) => cat.isPack).map((cat) => {
-                    const isActive = selected.has(cat.id);
-                    const isLocked = cat.locked;
-                    const title = t.shop.packTitles[cat.id] ?? cat.label;
-                    const displayLabel = trialIds.has(cat.id) ? `${title} · ${t.shop.trialBadge}` : title;
-                    return (
-                      <Pressable
-                        key={cat.id}
-                        style={[styles.packCard, isLocked ? styles.chipPurchaseLocked : isActive && styles.packCardActive]}
-                        onPress={isLocked ? () => setLockedPack(cat) : () => toggleCategory(cat.id)}
-                        sound={isLocked || isActive ? 'tap' : 'correct'}
-                        soundOnRelease
-                        accessibilityRole="checkbox"
-                        accessibilityState={{ checked: isActive, disabled: isLocked }}
-                        accessibilityLabel={isLocked ? `${displayLabel} — verrouillé` : displayLabel}
-                      >
-                        <WizardGlasses size={30} color={isActive && !isLocked ? colors.purpleDeep : colors.cream} />
-                        <Text
-                          style={[styles.chipText, styles.packCardText, { color: isActive && !isLocked ? colors.purpleDeep : colors.cream }]}
-                          numberOfLines={2}
-                        >
-                          {displayLabel}
-                        </Text>
-                        {isLocked && (
-                          <Svg width={24} height={24} viewBox="0 0 24 24" style={styles.chipLockIcon}>
-                            <Path d={LOCK_PATH} fill={colors.cream} />
-                          </Svg>
-                        )}
-                      </Pressable>
-                    );
-                  })}
-                </ScrollView>
               </View>
             </View>
           </ScrollView>
@@ -440,29 +436,6 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     gap: 48,
   },
-  chipsArea: {
-    maxHeight: CATEGORY_CHIPS_H,
-    flexDirection: 'row',
-    gap: 8,
-  },
-  chipsScroll: {
-    flex: 1,
-  },
-  scrollTrack: {
-    width: 3,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    flexShrink: 0,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  scrollThumb: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.7)',
-  },
   continuerWrapper: {
     paddingHorizontal: 24,
     paddingTop: 16,
@@ -493,34 +466,79 @@ const styles = StyleSheet.create({
   rowList: {
     gap: 16,
   },
+  // Réglage, pas une option à cocher : fond bleu nuit pour ne pas ressembler aux catégories sélectionnées (crème)
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.cream,
+    backgroundColor: colors.purpleDeep,
     borderWidth: 1,
-    borderColor: colors.cream,
-    paddingHorizontal: 24,
+    borderColor: colors.lavender,
+    paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 16,
     minHeight: 51,
+    gap: 12,
   },
-  rowLabel: {
+  timerCard: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: 12,
+    paddingVertical: 12,
+  },
+  timerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  timerOptions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  // Pastilles comme la valeur des compteurs : crème = durée choisie
+  timerOption: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.lavender,
+  },
+  timerOptionSelected: {
+    backgroundColor: colors.cream,
+    borderColor: colors.cream,
+  },
+  timerOptionText: {
     fontFamily: fonts.displayMedium,
-    fontSize: 20,
+    fontSize: 18,
+    color: colors.cream,
+  },
+  timerOptionTextSelected: {
     color: colors.purpleDeep,
   },
+  rowLabelWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flexShrink: 1,
+  },
+  rowLabel: {
+    flexShrink: 1,
+    fontFamily: fonts.displayMedium,
+    fontSize: 20,
+    color: colors.cream,
+  },
+  // Largeur au contenu (− valeur +) : l'ancienne largeur fixe de 94 débordait sur le libellé
   stepper: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    width: 94,
-    justifyContent: 'flex-end',
+    gap: 8,
+    flexShrink: 0,
   },
   stepperBtn: {
     fontFamily: fonts.displayMedium,
     fontSize: 32,
-    color: colors.purpleDeep,
+    color: colors.cream,
     width: 24,
     textAlign: 'center',
   },
@@ -528,7 +546,7 @@ const styles = StyleSheet.create({
     opacity: 0.25,
   },
   stepperBadge: {
-    backgroundColor: colors.purpleDeep,
+    backgroundColor: colors.cream,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
@@ -539,7 +557,7 @@ const styles = StyleSheet.create({
   stepperValue: {
     fontFamily: fonts.displayMedium,
     fontSize: 20,
-    color: colors.cream,
+    color: colors.purpleDeep,
   },
   chips: {
     flexDirection: 'row',
@@ -575,33 +593,6 @@ const styles = StyleSheet.create({
   },
   chipLockIcon: {
     marginTop: 1,
-  },
-  packsHeading: {
-    width: '100%',
-    marginTop: 8,
-    fontFamily: fonts.displayMedium,
-    fontSize: 16,
-    color: colors.lavender,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  packCard: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: colors.lavender,
-    backgroundColor: colors.purpleDeep,
-  },
-  packCardActive: {
-    backgroundColor: colors.lavender,
-  },
-  packCardText: {
-    flex: 1,
   },
   btnContinuer: {
     height: 51,

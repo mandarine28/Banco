@@ -13,7 +13,7 @@ import { privacyUrl, supportEmail } from '@/config/links';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { playSound, setSoundEnabled, useSoundEnabled } from '@/lib/sounds';
-import { colors, fonts } from '@/theme';
+import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
 const MAX_WIDTH = 500;
@@ -83,8 +83,8 @@ export default function SettingsScreen() {
           >
             <View style={styles.section}>
               <Text style={styles.sectionTitle} accessibilityRole="header">{t.prefs.title}</Text>
-              <View style={[styles.card, styles.switchRow]}>
-                <Text style={[styles.cardTitle, styles.switchLabel]}>{t.prefs.soundEffects}</Text>
+              <View style={[styles.card, styles.switchRow, styles.switchCard]}>
+                <Text style={[styles.cardTitle, styles.switchLabel, styles.switchCardLabel]}>{t.prefs.soundEffects}</Text>
                 <Switch
                   value={soundEnabled}
                   onValueChange={(value) => {
@@ -92,7 +92,7 @@ export default function SettingsScreen() {
                     // Retour immédiat : on entend tout de suite que le son est réactivé
                     if (value) playSound('tap');
                   }}
-                  trackColor={{ false: colors.lavender, true: colors.purple }}
+                  trackColor={{ false: 'rgba(254,246,215,0.25)', true: teamColors[1] }}
                   accessibilityLabel={t.prefs.soundEffects}
                 />
               </View>
@@ -207,6 +207,15 @@ const styles = StyleSheet.create({
   },
   switchLabel: {
     flex: 1,
+  },
+  // Bleu nuit comme les réglages de partie : le vert d'équipe de l'interrupteur ne ressort pas sur le crème
+  switchCard: {
+    backgroundColor: colors.purpleDeep,
+    borderWidth: 1,
+    borderColor: colors.lavender,
+  },
+  switchCardLabel: {
+    color: colors.cream,
   },
   faqRow: {
     flexDirection: 'row',

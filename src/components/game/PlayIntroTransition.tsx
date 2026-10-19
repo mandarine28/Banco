@@ -11,9 +11,10 @@ import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
 // Figma « transitions » (430:3655) : entrée ease-in-out 300 ms → délai 1200 ms → sortie ease-out 300 ms
+// classic : délai allongé, le temps de lire l'équipe qui joue et celle qui tient le téléphone (tap pour passer)
 // survieNext (après VALIDER) : version rapide pour ne pas casser le rythme de la chaîne
 const TIMINGS = {
-  classic: { enter: 300, hold: 1200, fade: 300 },
+  classic: { enter: 300, hold: 2200, fade: 300 },
   survieStart: { enter: 300, hold: 1200, fade: 300 },
   survieNext: { enter: 200, hold: 600, fade: 200 },
 } as const;

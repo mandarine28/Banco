@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -5,7 +6,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getAnswers, getSubject, normalize } from '@/game/answers';
-import { survieCurrentQuestion, SURVIE_TURN_SECONDS, type SurvieState } from '@/game/survie-engine';
+import { survieCurrentQuestion, type SurvieState } from '@/game/survie-engine';
 import { useCountdown } from '@/hooks/useCountdown';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
@@ -64,6 +65,8 @@ type Props = {
   onValidate: (answer: string) => void;
   onPass: () => void;
   onTimeout: () => void;
+  /** Secondes par tour ; null = sans chrono (barre et pause masquées). */
+  turnSeconds: number | null;
   isPaused?: boolean;
   onTogglePause: () => void;
   onWebSearch: (query: string) => void;
@@ -74,6 +77,7 @@ export function SurviePlayPhase({
   onValidate,
   onPass,
   onTimeout,
+  turnSeconds,
   isPaused = false,
   onTogglePause,
   onWebSearch,
@@ -81,7 +85,7 @@ export function SurviePlayPhase({
   const insets = useSafeAreaInsets();
   const { lang } = useLang();
   const t = getT(lang);
-  const remainingMs = useCountdown(true, isPaused, SURVIE_TURN_SECONDS, onTimeout);
+  const remainingMs = useCountdown(turnSeconds !== null, isPaused, turnSeconds ?? 0, onTimeout);
   const question = survieCurrentQuestion(state);
   const currentTeam = state.teams[state.currentTeam];
 
@@ -121,7 +125,7 @@ export function SurviePlayPhase({
   }, [isPaused]);
 
   const seconds = Math.ceil(remainingMs / 1000);
-  const elapsedFraction = Math.max(0, Math.min(1, 1 - remainingMs / (SURVIE_TURN_SECONDS * 1000)));
+  const elapsedFraction = turnSeconds ? Math.max(0, Math.min(1, 1 - remainingMs / (turnSeconds * 1000))) : 0;
   const isWarning = seconds <= WARNING_SECONDS;
   const fillColor = isWarning ? colors.pink : '#fb940e';
 
@@ -165,7 +169,8 @@ export function SurviePlayPhase({
 
   return (
     <View style={styles.wrapper}>
-      {/* Timer row */}
+      {/* Timer row — absente quand le chrono est désactivé dans les paramètres */}
+      {turnSeconds !== null ? (
       <View style={styles.timerRow}>
         <View style={[styles.track, isPaused && styles.trackPaused]}>
           <View style={[styles.fill, { width: `${elapsedFraction * 100}%`, backgroundColor: fillColor }]} />
@@ -190,6 +195,7 @@ export function SurviePlayPhase({
           </View>
         </Pressable>
       </View>
+      ) : null}
 
       {/* Badge équipe + question — tap pour fermer le clavier */}
       <Pressable onPress={handleDismissSearch} accessible={false} style={{ gap: 20 }}>
@@ -291,7 +297,10 @@ export function SurviePlayPhase({
               end={{ x: 1, y: 0 }}
               style={[styles.validerInner, pressed && { opacity: 0.85 }]}
             >
-              <Text style={styles.validerText}>{t.survie.validate}</Text>
+              <View style={styles.btnContent}>
+                <MaterialCommunityIcons name="check-bold" size={24} color={colors.cream} />
+                <Text style={styles.validerText}>{t.survie.validate}</Text>
+              </View>
             </LinearGradient>
           )}
         </Pressable>
@@ -303,7 +312,10 @@ export function SurviePlayPhase({
           style={({ pressed }) => [styles.passerWrap, pressed && { opacity: 0.8 }]}
         >
           <View style={styles.passerInner}>
-            <Text style={styles.passerText}>{t.auction.pass}</Text>
+            <View style={styles.btnContent}>
+              <MaterialCommunityIcons name="skull" size={24} color={colors.purpleDeep} />
+              <Text style={styles.passerText}>{t.survie.noAnswer}</Text>
+            </View>
           </View>
         </Pressable>
       </View>
@@ -327,6 +339,11 @@ const styles = StyleSheet.create({
     gap: 20,
   },
 
+  btnContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   timerRow: {
     flexDirection: 'row',
     alignItems: 'center',

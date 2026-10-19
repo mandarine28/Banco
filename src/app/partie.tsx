@@ -12,6 +12,7 @@ import { ReadyPhase } from '@/components/game/ReadyPhase';
 import { ResultPhase } from '@/components/game/ResultPhase';
 import { TurnEndTransition } from '@/components/game/TurnEndTransition';
 import { SurvieFinalPhase } from '@/components/game/SurvieFinalPhase';
+import { SurviePhoneIntro } from '@/components/game/SurviePhoneIntro';
 import { SurviePlayPhase } from '@/components/game/SurviePlayPhase';
 import { SurvieReadyPhase } from '@/components/game/SurvieReadyPhase';
 import { SurvieResultPhase } from '@/components/game/SurvieResultPhase';
@@ -25,6 +26,7 @@ import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSucces
 import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
 import { useBackToQuitConfirm } from '@/hooks/useBackToQuitConfirm';
 import { useCountdown } from '@/hooks/useCountdown';
+import { usePauseOnBackground } from '@/hooks/usePauseOnBackground';
 import { maybeRequestReview, recordGameCompleted } from '@/lib/engagement';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
@@ -148,6 +150,7 @@ export default function GameScreen() {
           teams={teams}
           roundCount={settings.roundCount}
           selectedThemes={playableThemes}
+          turnSeconds={settings.survieTimer}
           onReplay={replay}
           beforeLeave={beforeLeave}
           onFinished={onGameFinished}
@@ -198,7 +201,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
   const [playIntro, setPlayIntro] = useState<'covering' | 'revealing' | null>(null);
   // Transition de fin de tour (mise réussie / loupée) avant l'écran de résultat
   const [turnEnd, setTurnEnd] = useState<'covering' | 'revealing' | null>(null);
-  // 'search' → pause auto (recherche web), 'manual' → pause bouton, null → en cours
+  // 'search' → pause auto avec fenêtre « Reprendre » (recherche web, app quittée), 'manual' → pause bouton, null → en cours
   const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);
   const paused = pauseSource !== null;
   // Dernière action d'enchère : seule une mise (pas un passe) déclenche le pulse chez l'équipe suivante
@@ -206,6 +209,8 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
   const remainingMs = useCountdown(state.phase === 'play', paused || playIntro === 'covering', TURN_SECONDS, () =>
     dispatch({ type: 'END_TURN', reason: 'time' }),
   );
+  // App quittée en plein tour : même pause que la recherche web, avec la fenêtre « Reprendre » au retour
+  usePauseOnBackground(state.phase === 'play', () => setPauseSource('search'));
 
   // Le chrono peut finir pendant que la confirmation « Terminer le tour » est ouverte.
   const [phase, setPhase] = useState(state.phase);
@@ -347,7 +352,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
   );
 }
 
-function SurvieGame({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFinished }: GameProps) {
+function SurvieGame({ teams, roundCount, selectedThemes, turnSeconds, onReplay, beforeLeave, onFinished }: GameProps & { turnSeconds: number | null }) {
   const filteredQuestions =
     selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
   const [state, dispatch] = useReducer(survieReducer, null, () =>
@@ -363,6 +368,8 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay, beforeLeave, 
   // Transition « à vous de jouer ! » entre l'écran prêt et le jeu — SurviePlayPhase (et son chrono) monte à la fin
   const [playIntro, setPlayIntro] = useState<'covering' | 'revealing' | null>(null);
   const [teamSwitch, setTeamSwitch] = useState<'covering' | 'revealing' | null>(null);
+  // Avant la première manche : téléphone posé au centre, visible par toutes les équipes
+  const [phoneIntro, setPhoneIntro] = useState(true);
   // PASSER / temps écoulé : transition grise « <équipe> a séché ! » avant l'écran prêt ou le résultat
   const [elimination, setElimination] = useState<{ stage: 'covering' | 'revealing'; team: number } | null>(null);
   // Équipe au tour précédent = équipe éliminée quand on quitte la phase de jeu
@@ -383,10 +390,11 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay, beforeLeave, 
   }
   if (prevTeam !== state.currentTeam) setPrevTeam(state.currentTeam);
   const isPaused = pauseSource !== null || confirmElim !== null;
+  usePauseOnBackground(state.phase === 'play', () => setPauseSource('search'));
   const goHome = () => router.dismissTo('/');
   useBackToQuitConfirm(() => (state.phase === 'final' ? goHome() : setConfirmQuit(true)));
   const currentTeam = state.teams[state.currentTeam];
-  const showBorder = (state.phase === 'play' || state.phase === 'ready') && elimination?.stage !== 'covering';
+  const showBorder = (state.phase === 'play' || state.phase === 'ready') && elimination?.stage !== 'covering' && !phoneIntro;
 
   const searchWeb = (query: string) => {
     setPauseSource('search');
@@ -403,7 +411,9 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay, beforeLeave, 
       onHome={() => (state.phase === 'final' ? goHome() : setConfirmQuit(true))}
       scrollDisabled={state.phase === 'play' || state.phase === 'ready' || state.phase === 'result'}
       overlay={
-        pauseSource === 'search' && state.phase === 'play' ? (
+        phoneIntro && state.phase === 'ready' ? (
+          <SurviePhoneIntro teams={state.teams} onDone={() => setPhoneIntro(false)} />
+        ) : pauseSource === 'search' && state.phase === 'play' ? (
           <PauseModal visible onResume={() => setPauseSource(null)} />
         ) : state.phase === 'final' ? (
           <ConfettiOverlay />
@@ -447,6 +457,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay, beforeLeave, 
           onValidate={(answer) => dispatch({ type: 'VALIDATE', answer })}
           onPass={() => setConfirmElim('pass')}
           onTimeout={() => setConfirmElim('timeout')}
+          turnSeconds={turnSeconds}
           isPaused={isPaused}
           onTogglePause={() =>
             setPauseSource((s) => (s === null ? 'manual' : s === 'manual' ? null : s))
@@ -480,9 +491,9 @@ function SurvieGame({ teams, roundCount, selectedThemes, onReplay, beforeLeave, 
         }
         title={confirmElim === 'timeout' ? t.survie.elimTimeoutTitle : t.survie.elimPassTitle}
         message={confirmElim === 'timeout' ? t.survie.elimTimeoutMsg : t.survie.elimPassMsg}
-        cancelLabel={t.survie.eliminate}
+        cancelLabel={confirmElim === 'timeout' ? t.survie.timeoutNo : t.survie.eliminate}
         cancelIcon="skull"
-        confirmLabel={confirmElim === 'timeout' ? t.survie.validate : t.survie.resume}
+        confirmLabel={confirmElim === 'timeout' ? t.survie.timeoutYes : t.survie.resume}
         confirmIcon={confirmElim === 'timeout' ? 'check-bold' : 'play'}
         onCancel={() => {
           dispatch({ type: confirmElim === 'timeout' ? 'TIMEOUT' : 'PASS' });

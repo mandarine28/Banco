@@ -4,7 +4,7 @@ import { AccessibilityInfo, Animated, Easing, StyleSheet, Text, TextInput, View 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getSubject } from '@/game/answers';
-import { canPass, currentQuestion, type GameState, MAX_BID, minimumBid } from '@/game/engine';
+import { canPass, currentQuestion, type GameState, MAX_BID, minimumBid, passConcludesAuction } from '@/game/engine';
 import { useLang } from '@/lib/LangContext';
 import { playSound } from '@/lib/sounds';
 import { getT } from '@/lib/i18n';
@@ -39,6 +39,7 @@ export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props
   const parsed = parseInt(bidText, 10);
   const amount = isNaN(parsed) ? min : Math.max(Math.min(parsed, MAX_BID), min);
   const passAllowed = canPass(state);
+  const passLabel = passConcludesAuction(state) ? t.auction.concludeAuction : t.auction.passTurn;
   const rawSubject = getSubject(currentQuestion(state), lang);
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
 
@@ -229,7 +230,7 @@ export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props
             onPress={() => onBid(amount)}
             sound="bid"
             accessibilityRole="button"
-            accessibilityLabel={`Miser ${amount}`}
+            accessibilityLabel={t.auction.bid(amount)}
             style={styles.btnMiserWrap}
           >
             <LinearGradient
@@ -238,19 +239,19 @@ export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props
               end={{ x: 1, y: 0 }}
               style={styles.btnInner}
             >
-              <Text style={styles.btnMiserText}>{t.auction.bid} {amount}</Text>
+              <Text style={styles.btnMiserText} numberOfLines={1} adjustsFontSizeToFit>{t.auction.bid(amount)}</Text>
             </LinearGradient>
           </Pressable>
 
           <Pressable
             onPress={onPass}
             accessibilityRole="button"
-            accessibilityLabel="Passer"
+            accessibilityLabel={passLabel}
             style={[styles.btnPasserWrap, !passAllowed && styles.hidden]}
             pointerEvents={passAllowed ? 'auto' : 'none'}
           >
             <View style={styles.btnPasserInner}>
-              <Text style={styles.btnPasserText}>{t.auction.pass}</Text>
+              <Text style={styles.btnPasserText} numberOfLines={1} adjustsFontSizeToFit>{passLabel}</Text>
             </View>
           </Pressable>
         </View>
