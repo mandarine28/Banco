@@ -5,6 +5,6 @@ const expoConfig = require('eslint-config-expo/flat');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*', 'scripts/*', 'banco-motion/*', 'supabase/functions/*'],
+    ignores: ['dist/*', 'scripts/*', 'banco-motion/*'],
   },
 ]);

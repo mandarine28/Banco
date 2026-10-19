@@ -14,7 +14,6 @@ import { View } from 'react-native';
 import { SplashScreenAnimator } from '@/components/SplashScreenAnimator';
 import { LangProvider } from '@/lib/LangContext';
 import { preloadSounds } from '@/lib/sounds';
-import { AuthProvider } from '@/state/auth';
 import { GameSettingsProvider } from '@/state/gameSettings';
 import { PurchasesProvider } from '@/state/purchases';
 import { colors } from '@/theme';
@@ -36,19 +35,17 @@ export default function RootLayout() {
   return (
     <View style={{ flex: 1 }}>
       {fontsLoaded ? (
-        <AuthProvider>
-          <PurchasesProvider>
-            <LangProvider>
-              <GameSettingsProvider>
-                <StatusBar style="dark" />
-                <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
-                  {/* Pas de swipe retour en partie : on quitte uniquement via la croix */}
-                  <Stack.Screen name="partie" options={{ gestureEnabled: false }} />
-                </Stack>
-              </GameSettingsProvider>
-            </LangProvider>
-          </PurchasesProvider>
-        </AuthProvider>
+        <PurchasesProvider>
+          <LangProvider>
+            <GameSettingsProvider>
+              <StatusBar style="dark" />
+              <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+                {/* Pas de swipe retour en partie : on quitte uniquement via la croix */}
+                <Stack.Screen name="partie" options={{ gestureEnabled: false }} />
+              </Stack>
+            </GameSettingsProvider>
+          </LangProvider>
+        </PurchasesProvider>
       ) : (
         <View style={{ flex: 1, backgroundColor: colors.purple }} />
       )}

@@ -8,7 +8,7 @@ import {
   type CustomerInfo,
 } from '@/lib/revenuecat';
 import { PRODUCT_IDS, type ProductId } from '@/config/shop';
-import { useAuth } from './auth';
+import { loadGiftedPack, saveGiftedPack } from '@/lib/gifts';
 
 /** Clé traduite par l'écran (t.shop.errors). */
 export type PurchaseError = 'load' | 'purchase' | 'restore';
@@ -24,21 +24,24 @@ type PurchasesContextValue = {
   purchase: (productId: ProductId) => Promise<boolean>;
   /** Renvoie les infos restaurées, ou null si indisponible / en échec. */
   restorePurchases: () => Promise<CustomerInfo | null>;
-  /** Recharge les droits depuis RevenueCat (ex. pack offert côté serveur). */
+  /** Recharge les droits depuis RevenueCat. */
   refresh: () => Promise<void>;
+  /** Pack offert contre un partage, sur cet appareil : undefined pendant la lecture, null s'il n'a pas encore été offert. */
+  giftedPack: ProductId | null | undefined;
+  /** Offre le pack choisi : il compte aussitôt comme acheté. */
+  claimGiftedPack: (productId: ProductId) => Promise<void>;
 };
 
 const PurchasesContext = createContext<PurchasesContextValue | null>(null);
 
 export function PurchasesProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo | null>(null);
   const [prices, setPrices] = useState<Partial<Record<ProductId, string>>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<PurchaseError | null>(null);
 
   useEffect(() => {
-    initRevenueCat(user?.id);
+    initRevenueCat();
     const rc = getRevenueCat();
 
     if (!rc) {
@@ -52,9 +55,6 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
       try {
-        if (user?.id) {
-          await rc.logIn(user.id);
-        }
         const info = await rc.getCustomerInfo();
         if (!cancelled) setCustomerInfo(info);
       } catch {
@@ -91,14 +91,25 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
       cancelled = true;
       rc.removeCustomerInfoUpdateListener(listener);
     };
-  }, [user?.id]);
+  }, []);
+
+  const [giftedPack, setGiftedPack] = useState<ProductId | null | undefined>(undefined);
+  useEffect(() => {
+    loadGiftedPack().then(setGiftedPack);
+  }, []);
+
+  const claimGiftedPack = useCallback(async (productId: ProductId) => {
+    await saveGiftedPack(productId);
+    setGiftedPack(productId);
+  }, []);
 
   const hasPurchased = useCallback(
     (productId: ProductId): boolean => {
+      if (giftedPack === productId) return true;
       if (!customerInfo) return false;
       return hasEntitlement(customerInfo, ENTITLEMENT_IDS[productId]);
     },
-    [customerInfo],
+    [customerInfo, giftedPack],
   );
 
   const purchase = useCallback(async (productId: ProductId): Promise<boolean> => {
@@ -149,8 +160,8 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<PurchasesContextValue>(
-    () => ({ customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases, refresh }),
-    [customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases, refresh],
+    () => ({ customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases, refresh, giftedPack, claimGiftedPack }),
+    [customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases, refresh, giftedPack, claimGiftedPack],
   );
 
   return <PurchasesContext.Provider value={value}>{children}</PurchasesContext.Provider>;

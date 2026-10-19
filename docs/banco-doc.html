@@ -151,9 +151,6 @@
   .arch-node-main { background: linear-gradient(135deg, #6c3fc5, #4f2d8f); border: 2px solid #9b6eff; box-shadow: 0 0 32px rgba(108,63,197,.5); min-width: 240px; padding: 20px 28px; }
   .arch-node-main .arch-node-title { color: #fff; font-size: 17px; }
   .arch-node-main .arch-node-sub { color: #d4b8ff; font-size: 12px; }
-  .arch-node-supabase { background: linear-gradient(135deg, #122b1f, #0a1a12); border: 2px solid #3ecf8e; box-shadow: 0 0 20px rgba(62,207,142,.25); }
-  .arch-node-supabase .arch-node-title { color: #3ecf8e; }
-  .arch-node-supabase .arch-node-sub { color: #85ddb5; }
   .arch-node-rc { background: linear-gradient(135deg, #2b1a0e, #1a0f08); border: 2px solid #f4843d; box-shadow: 0 0 20px rgba(244,132,61,.25); }
   .arch-node-rc .arch-node-title { color: #f4843d; }
   .arch-node-rc .arch-node-sub { color: #f4a87d; }
@@ -198,7 +195,6 @@
     <div class="nav-section">Services externes</div>
     <a href="#appstore">🍎 App Store Connect</a>
     <a href="#revenuecat">💰 RevenueCat</a>
-    <a href="#supabase">🗄️ Supabase</a>
     <a href="#eas">🔨 EAS Build</a>
     <a href="#ads">📢 Publicité</a>
     <a href="#gifts">🎁 Cadeaux &amp; avis</a>
@@ -208,7 +204,7 @@
     <a href="#engine">⚙️ Moteur de jeu</a>
     <a href="#data">📚 Données</a>
     <a href="#iap">🛒 Achats intégrés</a>
-    <a href="#auth">🔐 Authentification</a>
+    <a href="#auth">👤 Sans compte</a>
 
     <div class="nav-section">Référence</div>
     <a href="#env">🔑 Variables d'env</a>
@@ -244,8 +240,8 @@
     </p>
     <p>
       L'application est construite avec <strong>Expo</strong> (React Native géré) et déployée sur l'App Store via
-      <strong>EAS Build</strong>. Elle utilise <strong>Supabase</strong> pour l'authentification des utilisateurs et
-      <strong>RevenueCat</strong> pour gérer les achats intégrés (packs de questions).
+      <strong>EAS Build</strong>. Elle fonctionne <strong>sans compte ni serveur</strong> : tout reste sur l'appareil,
+      et <strong>RevenueCat</strong> gère les achats intégrés (packs de questions).
     </p>
     <div class="card-grid">
       <div class="card card-accent">
@@ -271,7 +267,7 @@
   <section id="architecture">
     <h2>🗺️ Architecture globale</h2>
     <div class="section-divider"></div>
-    <p>Banco s'appuie sur <strong>4 acteurs externes</strong> qui jouent chacun un rôle précis :</p>
+    <p>Banco s'appuie sur <strong>3 acteurs externes</strong> qui jouent chacun un rôle précis :</p>
 
     <div class="arch-diagram">
 
@@ -291,32 +287,17 @@
       <!-- Connecteur vertical -->
       <div class="arch-arrow-down" style="background:linear-gradient(to bottom,#9b6eff,#9b6eff44);"></div>
 
-      <!-- Barre horizontale reliant les 3 branches -->
-      <div style="display:flex; align-items:center; width:100%; max-width:700px; margin:0 auto;">
-        <div style="flex:1; height:2px; background:linear-gradient(to right,transparent,#3ecf8e88);"></div>
-        <div style="width:2px; height:32px; background:#3ecf8e88;"></div>
-        <div style="flex:1; height:2px; background:linear-gradient(to right,#3ecf8e44,#f4843d44);"></div>
+      <!-- Barre horizontale reliant les 2 branches -->
+      <div style="display:flex; align-items:center; width:100%; max-width:520px; margin:0 auto;">
+        <div style="flex:1; height:2px; background:linear-gradient(to right,transparent,#f4843d88);"></div>
         <div style="width:2px; height:32px; background:#f4843d88;"></div>
         <div style="flex:1; height:2px; background:linear-gradient(to right,#f4843d44,#5b8af488);"></div>
         <div style="width:2px; height:32px; background:#5b8af488;"></div>
         <div style="flex:1; height:2px; background:linear-gradient(to right,#5b8af444,transparent);"></div>
       </div>
 
-      <!-- Niveau 2 : 3 services -->
+      <!-- Niveau 2 : services -->
       <div class="arch-children-row">
-
-        <!-- Supabase -->
-        <div class="arch-branch">
-          <div class="arch-node arch-node-supabase">
-            <div class="arch-node-title">🟢 Supabase</div>
-            <div class="arch-node-sub">Authentification<br>Base de données<br>Sessions JWT</div>
-            <div class="arch-tags">
-              <span class="arch-tag">Auth</span>
-              <span class="arch-tag">PostgreSQL</span>
-              <span class="arch-tag">RLS</span>
-            </div>
-          </div>
-        </div>
 
         <!-- RevenueCat -->
         <div class="arch-branch">
@@ -362,17 +343,6 @@
 
     <div class="card-grid" style="margin-top:16px;">
 
-      <div class="card" style="border-left:3px solid #3ecf8e;">
-        <h4 style="color:#3ecf8e;">🟢 Supabase — La base de données & l'authentification</h4>
-        <p>Supabase est le <strong>cerveau côté serveur</strong> de Banco. C'est lui qui sait qui sont les utilisateurs et stocke toutes les données persistantes.</p>
-        <ul style="margin:10px 0 0 18px; line-height:2;">
-          <li><strong>Authentification</strong> : gère la connexion des joueurs (email/mot de passe, Apple Sign In, Google). À chaque connexion, il génère un <em>token JWT</em> qui prouve l'identité de l'utilisateur.</li>
-          <li><strong>Sessions</strong> : conserve la session active entre les ouvertures de l'app. L'utilisateur n'a pas à se reconnecter à chaque fois.</li>
-          <li><strong>Base de données PostgreSQL</strong> : stocke les données des joueurs (scores, historique de parties). Protégée par des règles RLS (Row Level Security) — chaque utilisateur ne voit que ses propres données.</li>
-          <li><strong>Dans le code</strong> : <code>src/lib/supabase.ts</code> configure le client, <code>src/state/auth.tsx</code> expose le hook <code>useAuth()</code> utilisé partout dans l'app.</li>
-        </ul>
-      </div>
-
       <div class="card" style="border-left:3px solid #f4843d;">
         <h4 style="color:#f4843d;">🟠 RevenueCat — Le gestionnaire d'achats</h4>
         <p>RevenueCat est le <strong>pont entre l'app et l'App Store</strong> pour tout ce qui concerne les paiements. Il abstrait la complexité de StoreKit (l'API Apple) pour la rendre simple à utiliser.</p>
@@ -404,7 +374,7 @@
           <li><strong>eas build</strong> : compile l'app dans le cloud. Prend ~10–15 min. Génère un fichier <code>.ipa</code> (iOS) signé avec les certificats Apple.</li>
           <li><strong>eas submit</strong> : envoie automatiquement le <code>.ipa</code> compilé vers TestFlight. Aucune action manuelle requise.</li>
           <li><strong>Profils de build</strong> : définis dans <code>eas.json</code> — <code>development</code> pour le simulateur, <code>preview</code> pour TestFlight, <code>production</code> pour l'App Store.</li>
-          <li><strong>Variables d'environnement</strong> : les clés secrètes (Supabase, RevenueCat) sont injectées au moment du build depuis le fichier <code>.env</code> local — elles ne sont jamais commitées sur Git.</li>
+          <li><strong>Variables d'environnement</strong> : les clés publiques RevenueCat sont injectées au moment du build depuis le fichier <code>.env</code> local — il n'est jamais commité sur Git.</li>
           <li><strong>Certificats</strong> : EAS gère automatiquement les certificats de signature Apple (provisioning profiles, certificates). Tout est stocké côté Expo, pas à gérer manuellement.</li>
         </ul>
       </div>
@@ -414,8 +384,6 @@
     <h3 style="margin-top:32px;">Flux de données principal</h3>
     <div class="flow">
       <div class="flow-step">Utilisateur ouvre l'app</div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step">Supabase vérifie la session</div>
       <div class="flow-arrow">→</div>
       <div class="flow-step">RevenueCat charge les achats</div>
       <div class="flow-arrow">→</div>
@@ -514,58 +482,6 @@ hasEntitlement(customerInfo, 'pack_harry_potter')    // → true/false</code></p
 
     <div class="info-box">
       💡 Le code vérifie toujours l'<strong>entitlement</strong>, pas le Product ID. Ça permet d'attacher plusieurs produits au même droit plus tard (ex: pack bundle).
-    </div>
-  </section>
-
-  <!-- SUPABASE -->
-  <section id="supabase">
-    <h2>🗄️ Supabase</h2>
-    <div class="section-divider"></div>
-    <p>
-      Supabase est le backend de l'app. C'est une alternative open-source à Firebase qui fournit une base de données PostgreSQL,
-      un système d'authentification et une API REST automatique.
-    </p>
-
-    <div class="card-grid">
-      <div class="card card-accent">
-        <h3>🔐 Authentification</h3>
-        <p>Gère les comptes utilisateurs. Méthodes disponibles :<br><br>
-          • Email + mot de passe<br>
-          • Apple Sign In<br>
-          • Google Sign In
-        </p>
-      </div>
-      <div class="card card-green">
-        <h3>💾 Base de données</h3>
-        <p>PostgreSQL hébergé. Accès sécurisé via <strong>Row Level Security (RLS)</strong> — chaque utilisateur ne voit que ses propres données.</p>
-      </div>
-    </div>
-
-    <h3>Stockage des sessions</h3>
-    <p>
-      Les tokens JWT de session sont stockés de façon sécurisée sur l'appareil via <strong>expo-secure-store</strong>
-      (Keychain iOS / Keystore Android). Les tokens trop grands (&gt;2Ko) basculent automatiquement sur <strong>AsyncStorage</strong>.
-    </p>
-    <pre><code>// supabase.ts — Stockage hybride sécurisé
-const LargeSecureStore = {
-  async getItem(key) { ... },  // SecureStore avec fallback AsyncStorage
-  async setItem(key, value) {
-    if (value.length > 2000) {
-      await AsyncStorage.setItem(key, value);  // tokens trop grands
-    } else {
-      await SecureStore.setItemAsync(key, value); // tokens normaux
-    }
-  }
-}</code></pre>
-
-    <h3>Connexion à l'app</h3>
-    <div class="env-row">
-      <div class="env-key">EXPO_PUBLIC_SUPABASE_URL</div>
-      <div class="env-desc">URL du projet Supabase (ex: https://abc123.supabase.co)</div>
-    </div>
-    <div class="env-row">
-      <div class="env-key">EXPO_PUBLIC_SUPABASE_ANON_KEY</div>
-      <div class="env-desc">Clé publique (anon key). Sécurisée par les règles RLS côté base de données.</div>
     </div>
   </section>
 
@@ -749,43 +665,33 @@ eas submit --platform ios --profile production</code></pre>
     <h2>🎁 Cadeaux &amp; avis</h2>
     <div class="section-divider"></div>
     <p>
-      Deux packs offerts, <strong>une seule fois par compte</strong>, accordés côté serveur comme droits promotionnels RevenueCat « à vie » :
-      ils suivent le compte et reviennent avec « Restaurer les achats ».
+      Un <strong>pack de bienvenue</strong>, offert une seule fois par appareil, <strong>sans compte ni serveur</strong> :
+      il est enregistré dans le stockage sécurisé du téléphone (<code>expo-secure-store</code>, clé <code>banco.welcomeGift</code>)
+      et <code>hasPurchased</code> le compte comme acheté.
     </p>
     <table>
-      <tr><th>Cadeau</th><th>Où / quand</th><th>Condition</th></tr>
-      <tr><td>Bienvenue</td><td>Fenêtre sur l'accueil, à partir de 3 parties terminées</td><td>Compte requis ; « Plus tard » = reproposé au prochain lancement</td></tr>
-      <tr><td>Partage</td><td>Carte « Un pack offert » dans la boutique, bouton Partager</td><td>Compte requis ; le partage n'est pas vérifiable (seule l'annulation explicite est exclue)</td></tr>
+      <tr><th>Où</th><th>Quand / quoi</th></tr>
+      <tr><td>Accueil</td><td>Fenêtre « Cadeau de bienvenue » à partir de 3 parties terminées : choix d'un pack parmi ceux non possédés</td></tr>
+      <tr><td>Boutique</td><td>Carte « Votre pack de bienvenue après 3 parties » avec un bouton Jouer (vers le choix du mode)</td></tr>
     </table>
-    <div class="flow">
-      <div class="flow-step">App : choix du pack</div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step">Fonction Supabase <code>claim-gift</code></div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step">Table <code>gifts</code> (1 par type)</div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step orange">RevenueCat : droit promotionnel</div>
+    <div class="warn-box">
+      ⚠️ Pas lié au joueur : le pack offert ne revient pas avec « Restaurer les achats » sur un autre téléphone.
+      Sur iPhone, le stockage sécurisé survit le plus souvent à la désinstallation ; sur Android, une réinstallation permet de le recevoir à nouveau.
     </div>
     <div class="warn-box">
-      ⚠️ Interdit par Apple (règle 3.10) et Google : récompenser un <strong>avis</strong> ou une note. Les cadeaux ne sont donc jamais liés à la demande d'avis.
+      ⚠️ Interdit par Apple (règle 3.10) et Google : récompenser un <strong>avis</strong> ou une note. Les cadeaux ne sont jamais liés à la demande d'avis.
+      La récompense de partage a été abandonnée (décision du 19/10/2026).
     </div>
 
     <h3>Demande d'avis</h3>
     <p>
-      Fenêtre native (<code>expo-store-review</code>) environ 2 s après l'écran final, à partir de la 3ᵉ partie terminée, au plus une fois par mois (Apple plafonne à 3 affichages par an)
-      (règle dans <code>src/lib/reviewRule.ts</code>, testée). Jamais après une partie d'essai. Apple et Google peuvent ne pas l'afficher ; absente sur TestFlight.
+      Fenêtre native (<code>expo-store-review</code>) environ 2 s après l'écran final, à partir de la 3ᵉ partie terminée, au plus une fois par mois
+      (Apple plafonne à 3 affichages par an). Règle dans <code>src/lib/reviewRule.ts</code>, testée. Jamais après une partie d'essai.
+      Absente sur TestFlight ; Apple et Google peuvent ne pas l'afficher.
     </p>
 
-    <h3>📋 TODO de mise en service</h3>
-    <table>
-      <tr><th>#</th><th>Étape</th></tr>
-      <tr><td>1</td><td>Supabase : exécuter <code>supabase/migrations/20261018000000_gifts.sql</code> (éditeur SQL ou <code>npx supabase db push</code>)</td></tr>
-      <tr><td>2</td><td>RevenueCat : créer une <strong>clé API secrète (v1)</strong>, puis <code>npx supabase secrets set REVENUECAT_SECRET_KEY=sk_…</code>. Jamais dans <code>.env</code> ni dans l'app</td></tr>
-      <tr><td>3</td><td>Déployer la fonction : <code>npx supabase functions deploy claim-gift</code></td></tr>
-      <tr><td>4</td><td>Tester dans un build de développement (RevenueCat absent d'Expo Go) : cadeau bienvenue, partage, « Restaurer les achats »</td></tr>
-      <tr><td>5</td><td>Android : renseigner <code>android.package</code> et <code>android.playStoreUrl</code> (le lien partagé est aujourd'hui celui de l'App Store)</td></tr>
-      <tr><td>6</td><td>Ajouter un pack offrable : le déclarer dans <code>PACK_THEME_IDS</code> (app) <strong>et</strong> <code>GIFTABLE_ENTITLEMENTS</code> (fonction)</td></tr>
-    </table>
+    <h3>Ajouter un pack offrable</h3>
+    <p>Le déclarer dans <code>PACK_THEME_IDS</code> (<code>src/config/shop.ts</code>) : il devient automatiquement proposable en pack de bienvenue.</p>
   </section>
 
   <!-- SCREENS -->
@@ -797,15 +703,11 @@ eas submit --platform ios --profile production</code></pre>
     <div class="card">
       <div class="screen-item">
         <div class="screen-file">src/app/_layout.tsx</div>
-        <div class="screen-desc"><strong>Layout racine</strong> — Initialise les providers globaux (Auth, Purchases, GameSettings), charge les polices, configure la navigation.</div>
+        <div class="screen-desc"><strong>Layout racine</strong> — Initialise les providers globaux (Purchases, Lang, GameSettings), charge les polices, configure la navigation.</div>
       </div>
       <div class="screen-item">
         <div class="screen-file">src/app/index.tsx</div>
         <div class="screen-desc"><strong>Accueil</strong> — Écran principal avec les boutons Jouer, Boutique et Règles.</div>
-      </div>
-      <div class="screen-item">
-        <div class="screen-file">src/app/auth.tsx</div>
-        <div class="screen-desc"><strong>Authentification</strong> — Connexion / inscription par email, Apple Sign In, Google Sign In.</div>
       </div>
       <div class="screen-item">
         <div class="screen-file">src/app/parametres.tsx</div>
@@ -1020,37 +922,26 @@ const hasHarryPotter = hasPurchased('packHarryPotter'); // → true/false</code>
 
   <!-- AUTH -->
   <section id="auth">
-    <h2>🔐 Authentification</h2>
+    <h2>👤 Sans compte</h2>
     <div class="section-divider"></div>
-    <p>L'authentification est gérée par Supabase Auth, accessible via le hook <code>useAuth()</code>.</p>
-
+    <p>
+      Depuis le 19/10/2026, Banco n'a <strong>plus de compte joueur</strong> : l'écran de connexion, Supabase,
+      Apple Sign-In et Google Sign-In ont été retirés. L'app fonctionne entièrement sur l'appareil.
+    </p>
     <div class="card-grid">
       <div class="card card-accent">
-        <h3>📧 Email / Mot de passe</h3>
-        <p>Inscription et connexion classique via <code>signUpWithEmail</code> et <code>signInWithEmail</code>.</p>
+        <h3>🛒 Achats</h3>
+        <p>RevenueCat est initialisé sans identifiant (<code>initRevenueCat()</code>) : il crée un identifiant anonyme. Les achats restent liés à l'<strong>identifiant Apple</strong> et reviennent avec « Restaurer les achats ».</p>
       </div>
       <div class="card card-green">
-        <h3>🍎 Apple Sign In</h3>
-        <p>Utilise <code>expo-apple-authentication</code>. Retourne un <code>idToken</code> passé à Supabase.</p>
-      </div>
-      <div class="card card-accent">
-        <h3>🔵 Google Sign In</h3>
-        <p>Utilise <code>@react-native-google-signin/google-signin</code>. Clé configurée via <code>EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</code>.</p>
+        <h3>🎁 Pack de bienvenue</h3>
+        <p>Stocké localement (<code>expo-secure-store</code>), donc <strong>non restaurable</strong> sur un autre appareil. Voir <a href="#gifts" style="color:var(--green);">Cadeaux &amp; avis</a>.</p>
       </div>
       <div class="card card-orange">
-        <h3>💾 Session persistante</h3>
-        <p>Session JWT stockée dans SecureStore (Keychain iOS). Auto-refresh du token activé.</p>
+        <h3>💾 Données locales</h3>
+        <p>Langue, compteur de parties, essais de packs déjà utilisés, date de la dernière demande d'avis : AsyncStorage. Pack offert : SecureStore.</p>
       </div>
     </div>
-
-    <h3>Contexte global</h3>
-    <pre><code>// Utilisation dans n'importe quel écran
-const { user, session, isLoading, signOut } = useAuth();
-
-if (!user) {
-  // Rediriger vers auth.tsx
-}
-// user.id est utilisé pour lier RevenueCat à l'utilisateur Supabase</code></pre>
   </section>
 
   <!-- ENV VARS -->
@@ -1068,24 +959,12 @@ if (!user) {
 
     <div class="card">
       <div class="env-row">
-        <div class="env-key">EXPO_PUBLIC_SUPABASE_URL</div>
-        <div class="env-desc">URL du projet Supabase. Format : <code>https://xxxxx.supabase.co</code></div>
-      </div>
-      <div class="env-row">
-        <div class="env-key">EXPO_PUBLIC_SUPABASE_ANON_KEY</div>
-        <div class="env-desc">Clé publique Supabase (anon key). Commence par <code>eyJ...</code>. Protégée par RLS côté serveur.</div>
-      </div>
-      <div class="env-row">
         <div class="env-key">EXPO_PUBLIC_REVENUECAT_IOS_KEY</div>
         <div class="env-desc">Clé SDK publique RevenueCat pour iOS. Commence par <code>appl_</code>. Trouvable dans RevenueCat → Project Settings → API Keys.</div>
       </div>
       <div class="env-row">
         <div class="env-key">EXPO_PUBLIC_REVENUECAT_ANDROID_KEY</div>
         <div class="env-desc">Clé SDK publique RevenueCat pour Android. Commence par <code>goog_</code>. Optionnel si Android non déployé.</div>
-      </div>
-      <div class="env-row">
-        <div class="env-key">EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID</div>
-        <div class="env-desc">Client ID OAuth Google pour iOS. Google Cloud Console → OAuth 2.0 → iOS Client ID.</div>
       </div>
     </div>
 
@@ -1103,7 +982,7 @@ if (!user) {
     <div id="glossary-list">
       <div class="glossary-item" data-term="sdk">
         <div class="glossary-term">SDK <span class="badge badge-muted">Software Development Kit</span></div>
-        <div class="glossary-def">Boîte à outils fournie par un service pour l'intégrer dans une app. RevenueCat fournit un SDK React Native, Supabase aussi. Ça évite de coder les appels réseau à la main.</div>
+        <div class="glossary-def">Boîte à outils fournie par un service pour l'intégrer dans une app. RevenueCat fournit un SDK React Native, Google AdMob aussi. Ça évite de coder les appels réseau à la main.</div>
       </div>
       <div class="glossary-item" data-term="iap in-app purchase achat intégré">
         <div class="glossary-term">IAP <span class="badge badge-muted">In-App Purchase</span></div>
@@ -1137,14 +1016,6 @@ if (!user) {
         <div class="glossary-term">TestFlight</div>
         <div class="glossary-def">Application Apple pour distribuer des versions bêta d'une app à des testeurs. L'app est soumise une fois à Apple, puis accessible via l'app TestFlight sur iPhone. Étape avant la publication officielle sur l'App Store.</div>
       </div>
-      <div class="glossary-item" data-term="jwt token authentification">
-        <div class="glossary-term">JWT <span class="badge badge-muted">JSON Web Token</span></div>
-        <div class="glossary-def">Un token (jeton) d'authentification. Supabase en génère un quand l'utilisateur se connecte. Il est stocké sur l'appareil et envoyé à chaque requête pour prouver l'identité de l'utilisateur. Il expire après un certain temps et est automatiquement renouvelé.</div>
-      </div>
-      <div class="glossary-item" data-term="rls row level security">
-        <div class="glossary-term">RLS <span class="badge badge-muted">Row Level Security</span></div>
-        <div class="glossary-def">Système de sécurité PostgreSQL (Supabase) qui fait que chaque utilisateur ne peut lire/modifier que ses propres données dans la base de données. Même si la clé anon est publique, les données restent sécurisées.</div>
-      </div>
       <div class="glossary-item" data-term="reducer redux état">
         <div class="glossary-term">Reducer (pattern)</div>
         <div class="glossary-def">Pattern de programmation utilisé dans le moteur de jeu. Une fonction prend (état actuel + action) et retourne un nouvel état. Aucune modification directe. Facile à tester et à déboguer.</div>
@@ -1155,7 +1026,7 @@ if (!user) {
       </div>
       <div class="glossary-item" data-term="context provider hook react">
         <div class="glossary-term">Context / Provider (React)</div>
-        <div class="glossary-def">Mécanisme React pour partager des données entre tous les écrans sans les passer manuellement. Banco utilise AuthProvider (session), PurchasesProvider (achats), GameSettingsProvider (paramètres de partie). On accède aux données avec useAuth(), usePurchases(), useGameSettings().</div>
+        <div class="glossary-def">Mécanisme React pour partager des données entre tous les écrans sans les passer manuellement. Banco utilise PurchasesProvider (achats), LangProvider (langue), GameSettingsProvider (paramètres de partie). On accède aux données avec usePurchases(), useLang(), useGameSettings().</div>
       </div>
       <div class="glossary-item" data-term="non consommable achat">
         <div class="glossary-term">Achat non-consommable</div>
@@ -1163,7 +1034,7 @@ if (!user) {
       </div>
       <div class="glossary-item" data-term="async storage secure store">
         <div class="glossary-term">SecureStore / AsyncStorage</div>
-        <div class="glossary-def">Systèmes de stockage local sur l'appareil. SecureStore = stockage chiffré (Keychain iOS) pour les données sensibles comme les tokens. AsyncStorage = stockage non chiffré pour les données moins sensibles.</div>
+        <div class="glossary-def">Systèmes de stockage local sur l'appareil. SecureStore = stockage chiffré (Keychain iOS) pour les données à protéger, comme le pack de bienvenue offert. AsyncStorage = stockage non chiffré pour les données moins sensibles.</div>
       </div>
       <div class="glossary-item" data-term="p8 key cle apple">
         <div class="glossary-term">Clé .p8 (Apple)</div>

@@ -15,7 +15,6 @@
   ],
   "exclude": [
     "banco-motion",
-    "supabase/functions",
     "node_modules"
   ]
 }

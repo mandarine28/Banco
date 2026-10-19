@@ -6,8 +6,6 @@ import { shouldRequestReview } from './reviewRule';
 const GAMES_KEY = 'banco.gamesCompleted';
 const REVIEW_KEY = 'banco.lastReviewPromptAt';
 
-/** Cadeau de bienvenue proposé à partir de cette partie terminée. */
-export const WELCOME_GIFT_AFTER_GAMES = 3;
 
 function warn(message: string, error: unknown) {
   if (__DEV__) console.warn(`[engagement] ${message}`, error);
