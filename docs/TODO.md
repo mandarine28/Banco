@@ -14,7 +14,7 @@ Détails techniques : `docs/banco-doc.html` (sections « Publicité » et « Cad
 - [ ] 👤 **« Confidentialité et messages »** : créer et publier le message **RGPD** et le message **« explication IDFA »** (fenêtre de suivi Apple), pour l'app Banco iOS — ⚠️ la page ne chargeait pas le 2026-10-20 : essayer en navigation privée, bloqueur de pub désactivé (uBlock, Brave…), un seul compte Google connecté, Chrome ; sinon réessayer plus tard (compte tout neuf). Non bloquant pour les tests, obligatoire avant la mise en ligne
 - [ ] 👤 Relire la politique AdMob sur les annonces avec récompense (texte « Jouez gratuitement avec ce pack »)
 - [x] 👤 Identifiants envoyés : app iOS `~4845563686`, « Essayer un pack » `/2385640044`, « Fin de partie » `/5963204236`
-- [ ] 👤 Infos de paiement AdMob (avant le 1er versement, ~70 €) : type **Organisation** avec la micro-entreprise ; d'abord **déclarer l'activité « édition d'applications »** sur le guichet unique INPI et valider la catégorie fiscale avec un comptable / l'URSSAF ; même nom que le compte Apple et App Store Connect
+- [ ] 👤 Infos de paiement AdMob (avant le 1er versement, ~70 €) : type **Particulier ou Organisation : pas encore tranché** (piste : Organisation via la micro-entreprise, après avoir déclaré l'activité « édition d'applications » sur le guichet unique INPI ; catégorie fiscale à valider avec un comptable / l'URSSAF) — choix quasi définitif chez Google ; même nom que le compte Apple et App Store Connect
 - [ ] 👤 Après la publication par Apple : AdMob → app → **Associer à une plate-forme de téléchargement** (lance l'examen AdMob, quelques jours)
 
 Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le téléphone, sans compte ni serveur.
