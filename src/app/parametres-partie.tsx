@@ -38,6 +38,9 @@ const themeIdsWithQuestions = new Set(questions.map((q) => q.theme));
 
 type Category = { id: string; label: string; labelByLang?: Partial<Record<Lang, string>>; available: boolean; locked?: boolean };
 
+const PACK_GOLD = '#f2c512';
+const PACK_GOLD_DARK = '#a15c03';
+
 const BASE_CATEGORIES: Category[] = themes.map((theme) => ({
   id: theme.id,
   label: theme.label,
@@ -321,6 +324,8 @@ export default function MatchSettingsScreen() {
                   {CATEGORIES.map((cat) => {
                     const isActive = selected.has(cat.id);
                     const isLocked = cat.locked;
+                    // Pack débloqué (hors catégories de base) : contour et étoile dorés pour le distinguer
+                    const isPack = !isLocked && !BASE_CATEGORIES.some((base) => base.id === cat.id);
                     const label = t.shop.packTitles[cat.id] ?? cat.labelByLang?.[lang] ?? cat.label;
                     const displayLabel = trialIds.has(cat.id) ? `${label} · ${t.shop.trialBadge}` : label;
                     return (
@@ -329,6 +334,8 @@ export default function MatchSettingsScreen() {
                         style={[
                           styles.chip,
                           isLocked ? styles.chipPurchaseLocked : isActive ? styles.chipActive : styles.chipInactive,
+                          isPack && styles.chipPack,
+                          isPack && isActive && styles.chipPackActive,
                         ]}
                         onPress={isLocked ? () => setLockedPack(cat) : () => toggleCategory(cat.id)}
                         // Cocher → son « bonne réponse », décocher ou catégorie verrouillée → clic principal
@@ -338,6 +345,13 @@ export default function MatchSettingsScreen() {
                         accessibilityState={{ checked: isActive, disabled: isLocked }}
                         accessibilityLabel={isLocked ? `${displayLabel} — verrouillé` : displayLabel}
                       >
+                        {isPack ? (
+                          <MaterialCommunityIcons
+                            name="star-four-points"
+                            size={16}
+                            color={isActive ? PACK_GOLD_DARK : PACK_GOLD}
+                          />
+                        ) : null}
                         <Text
                           style={[
                             styles.chipText,
@@ -606,6 +620,16 @@ const styles = StyleSheet.create({
   },
   chipInactive: {
     backgroundColor: '#4883E5',
+  },
+  // Contour 2 px : padding réduit d'1 px pour garder la taille des autres catégories
+  chipPack: {
+    borderWidth: 2,
+    borderColor: PACK_GOLD,
+    paddingHorizontal: 11,
+    paddingVertical: 5,
+  },
+  chipPackActive: {
+    backgroundColor: '#FFE7A3',
   },
   chipPurchaseLocked: {
     backgroundColor: '#8592A8',
