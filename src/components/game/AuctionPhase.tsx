@@ -155,7 +155,7 @@ export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props
       {/* Zone bleue — round + carte question + instruction */}
       <View style={styles.blueZone}>
         <View style={styles.roundPill}>
-          <Text style={styles.roundLabel}>Round {state.round + 1}/{state.roundCount}</Text>
+          <Text style={styles.roundLabel}>{t.ready.round} {state.round + 1}/{state.roundCount}</Text>
         </View>
 
         <View style={styles.questionCard}>

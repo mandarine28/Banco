@@ -210,7 +210,7 @@ const translations: Record<Lang, Translations> = {
       max: (n) => `Maximum : ${n}`,
     },
     ready: {
-      round: 'Round',
+      round: 'Manche',
       target: 'Objectif de réponses :',
       play: 'JOUER',
       start: 'COMMENCER',
@@ -252,7 +252,7 @@ const translations: Record<Lang, Translations> = {
     matchSettings: {
       settingsTitle: 'Paramètre de jeux',
       teamCount: 'Équipes',
-      roundCount: 'Rounds',
+      roundCount: 'Manches',
       timer: 'Chrono',
       categoriesTitle: 'Catégories',
       continueBtn: 'Continuer',
