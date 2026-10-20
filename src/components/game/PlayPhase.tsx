@@ -14,10 +14,11 @@ const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 const WARNING_SECONDS = 10;
 const THUMB_MIN_H = 28;
 
-// Hauteur max de la zone chips : 5 lignes visibles sans scroll
+// Hauteur max de la zone chips : 7 lignes visibles sans scroll (flex: 1 la réduit sur petit écran)
+const CHIP_ROWS = 7;
 const CHIP_ROW_H = 36;
 const CHIP_GAP = 12;
-const MAX_CHIPS_H = 5 * CHIP_ROW_H + 4 * CHIP_GAP; // 228
+const MAX_CHIPS_H = CHIP_ROWS * CHIP_ROW_H + (CHIP_ROWS - 1) * CHIP_GAP; // 324
 // Zone tactile élargie autour de la piste de 3px, sans décaler la mise en page
 const SCRUB_SLOP = 12;
 
