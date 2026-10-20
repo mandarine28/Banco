@@ -38,13 +38,22 @@ const themeIdsWithQuestions = new Set(questions.map((q) => q.theme));
 
 type Category = { id: string; label: string; labelByLang?: Partial<Record<Lang, string>>; available: boolean; locked?: boolean };
 
-const BASE_CATEGORIES: Category[] = themes.map((theme) => ({
-  id: theme.id,
-  label: theme.label,
-  labelByLang: theme.labelByLang,
-  available: themeIdsWithQuestions.has(theme.id),
-  locked: false,
-}));
+// Ordre d'affichage : noms courts et longs alternés pour remplir les lignes sans gros blocs
+const DISPLAY_ORDER = ['sport', 'musique', 'divertissement', 'cinema', 'culture-generale', 'geographie', 'marques'];
+const displayRank = (id: string) => {
+  const rank = DISPLAY_ORDER.indexOf(id);
+  return rank === -1 ? DISPLAY_ORDER.length : rank;
+};
+
+const BASE_CATEGORIES: Category[] = themes
+  .map((theme) => ({
+    id: theme.id,
+    label: theme.label,
+    labelByLang: theme.labelByLang,
+    available: themeIdsWithQuestions.has(theme.id),
+    locked: false,
+  }))
+  .sort((a, b) => displayRank(a.id) - displayRank(b.id));
 
 function BackArrow({ size }: { size: number }) {
   const h = (size * 19) / 32;
