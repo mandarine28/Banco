@@ -102,12 +102,15 @@
             "3qcr597p9d.skadnetwork"
           ]
         }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#266DE4"
+        }
       ]
     ],
     "backgroundColor": "#266DE4",
-    "splash": {
-      "backgroundColor": "#266DE4"
-    },
     "extra": {
       "router": {},
       "eas": {
