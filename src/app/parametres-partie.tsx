@@ -43,8 +43,6 @@ const BASE_CATEGORIES: Category[] = themes.map((theme) => ({
   locked: false,
 }));
 
-const DEFAULT_SELECTED = new Set(BASE_CATEGORIES.filter((c) => c.available).map((c) => c.id));
-
 function BackArrow({ size }: { size: number }) {
   const h = (size * 19) / 32;
   return (
@@ -182,7 +180,7 @@ export default function MatchSettingsScreen() {
   const { mode, teamCount, setTeamCount, roundCount, setRoundCount, setSelectedThemes, survieTimer, setSurvieTimer } = useGameSettings();
   const settingsTitle = mode === 'survie' ? 'Paramètre de la survie' : 'Paramètre des enchères';
   const { hasPurchased } = usePurchases();
-  const [selected, setSelected] = useState<Set<string>>(DEFAULT_SELECTED);
+  const [selected, setSelected] = useState<Set<string>>(() => new Set());
 
   // Packs débloqués pour une partie après une vidéo récompensée
   const [trialIds, setTrialIds] = useState<Set<string>>(new Set());
@@ -376,7 +374,9 @@ export default function MatchSettingsScreen() {
           {/* Continuer — toujours visible */}
           <View style={[styles.continuerWrapper, { paddingBottom: Math.max(24, insets.bottom + 16) }]}>
             <Pressable
-              style={styles.btnContinuer}
+              style={[styles.btnContinuer, selected.size === 0 && styles.btnContinuerDisabled]}
+              disabled={selected.size === 0}
+              accessibilityState={{ disabled: selected.size === 0 }}
               onPress={() => { setSelectedThemes([...selected]); router.push('/equipes'); }}
               accessibilityRole="button"
               accessibilityLabel={t.matchSettings.continueBtn}
@@ -599,6 +599,9 @@ const styles = StyleSheet.create({
   },
   chipLockIcon: {
     marginTop: 1,
+  },
+  btnContinuerDisabled: {
+    opacity: 0.4,
   },
   btnContinuer: {
     height: 51,

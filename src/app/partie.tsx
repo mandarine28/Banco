@@ -22,7 +22,7 @@ import { ConfirmModal, PauseModal } from '@/components/InfoModal';
 import { PACK_THEME_IDS, type ProductId } from '@/config/shop';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
-import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSuccess, opponent, remaining, TURN_SECONDS } from '@/game/engine';
+import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSuccess, opponent, TURN_SECONDS } from '@/game/engine';
 import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
 import { useBackToQuitConfirm } from '@/hooks/useBackToQuitConfirm';
 import { useCountdown } from '@/hooks/useCountdown';
@@ -262,7 +262,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
   const footer =
     state.phase === 'play' ? (
       <CounterFooter
-        left={remaining(state)}
+        progress={state.progress}
         amount={contract(state).amount}
         onAdjust={(delta) => dispatch({ type: 'ADJUST', delta })}
       />
@@ -412,14 +412,6 @@ function SurvieGame({ teams, roundCount, selectedThemes, turnSeconds, onReplay, 
   const currentTeam = state.teams[state.currentTeam];
   const showBorder = (state.phase === 'play' || state.phase === 'ready') && elimination?.stage !== 'covering' && !phoneIntro;
 
-  const searchWeb = (query: string) => {
-    setPauseSource('search');
-    const url = query.trim()
-      ? `https://www.google.com/search?q=${encodeURIComponent(query)}`
-      : 'https://www.google.com';
-    Linking.openURL(url).catch(() => {});
-  };
-
   return (
     <View style={{ flex: 1 }}>
     <GameLayout
@@ -470,7 +462,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, turnSeconds, onReplay, 
         <SurviePlayPhase
           key={`${state.round}-${state.currentTeam}`}
           state={state}
-          onValidate={(answer) => dispatch({ type: 'VALIDATE', answer })}
+          onValidate={() => dispatch({ type: 'VALIDATE' })}
           onPass={() => setConfirmElim('pass')}
           onTimeout={() => setConfirmElim('timeout')}
           turnSeconds={turnSeconds}
@@ -478,7 +470,6 @@ function SurvieGame({ teams, roundCount, selectedThemes, turnSeconds, onReplay, 
           onTogglePause={() =>
             setPauseSource((s) => (s === null ? 'manual' : s === 'manual' ? null : s))
           }
-          onWebSearch={searchWeb}
         />
       ) : null}
       {state.phase === 'result' && elimination?.stage !== 'covering' ? (

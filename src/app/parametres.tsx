@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path, SvgXml } from 'react-native-svg';
 
@@ -16,7 +16,7 @@ import {
 import { ModeRulesModal, type RulesMode } from '@/components/ModeRules';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
-import { useGameSettings } from '@/state/gameSettings';
+import { type GameMode, useGameSettings } from '@/state/gameSettings';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -104,6 +104,33 @@ export default function GameConfigScreen() {
   const { lang } = useLang();
   const t = getT(lang);
   const [rulesMode, setRulesMode] = useState<RulesMode | null>(null);
+  // Aucun mode présélectionné : le joueur doit en choisir un avant de continuer
+  const [hasPickedMode, setHasPickedMode] = useState(false);
+  const pickMode = (next: GameMode) => {
+    setHasPickedMode(true);
+    setMode(next);
+  };
+
+  const toastOpacity = useState(() => new Animated.Value(0))[0];
+  const toastTranslateY = useState(() => new Animated.Value(8))[0];
+  const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+  }, []);
+  const triggerToast = () => {
+    if (toastTimeout.current) clearTimeout(toastTimeout.current);
+    toastTranslateY.setValue(8);
+    Animated.parallel([
+      Animated.timing(toastOpacity, { toValue: 1, duration: 150, useNativeDriver: true }),
+      Animated.timing(toastTranslateY, { toValue: 0, duration: 150, useNativeDriver: true }),
+    ]).start();
+    toastTimeout.current = setTimeout(() => {
+      Animated.parallel([
+        Animated.timing(toastOpacity, { toValue: 0, duration: 250, useNativeDriver: true }),
+        Animated.timing(toastTranslateY, { toValue: 8, duration: 250, useNativeDriver: true }),
+      ]).start();
+    }, 2000);
+  };
 
   // Panneau bleu juste sous l'en-tête (flèche ~21px + offset 14px + marge 20px)
   const panelTop = insets.top + 68;
@@ -133,8 +160,8 @@ export default function GameConfigScreen() {
                   description={t.gameMode.classicDesc}
                   activeXml={ENCHERE_ACTIF_XML}
                   inactiveXml={ENCHERE_INACTIF_XML}
-                  selected={mode === 'classique'}
-                  onPress={() => setMode('classique')}
+                  selected={hasPickedMode && mode === 'classique'}
+                  onPress={() => pickMode('classique')}
                   onInfo={() => setRulesMode('auction')}
                   infoLabel={`${t.pages.rules} : ${t.gameMode.classic}`}
                 />
@@ -145,8 +172,8 @@ export default function GameConfigScreen() {
                   inactiveXml={SURVIE_INACTIF_XML}
                   illustrationShift={5}
                   illustrationScale={1.1}
-                  selected={mode === 'survie'}
-                  onPress={() => setMode('survie')}
+                  selected={hasPickedMode && mode === 'survie'}
+                  onPress={() => pickMode('survie')}
                   onInfo={() => setRulesMode('survie')}
                   infoLabel={`${t.pages.rules} : ${t.gameMode.charades}`}
                 />
@@ -157,10 +184,20 @@ export default function GameConfigScreen() {
 
           {/* Continuer — toujours visible, comme sur les autres écrans */}
           <View style={[styles.continuerWrapper, { paddingBottom: Math.max(24, insets.bottom + 16) }]}>
+            <Animated.View
+              style={[styles.toast, { opacity: toastOpacity, transform: [{ translateY: toastTranslateY }] }]}
+              pointerEvents="none"
+            >
+              <Text style={styles.toastText}>{t.gameMode.pickModeFirst}</Text>
+            </Animated.View>
+            {/* Reste pressable même inactif : un appui explique pourquoi on ne peut pas continuer */}
             <Pressable
-              onPress={() => router.push('/parametres-partie')}
+              onPress={hasPickedMode ? () => router.push('/parametres-partie') : triggerToast}
+              style={!hasPickedMode && styles.btnInactive}
               accessibilityRole="button"
               accessibilityLabel={t.gameMode.continueBtn}
+              accessibilityHint={hasPickedMode ? undefined : t.gameMode.pickModeFirst}
+              accessibilityState={{ disabled: !hasPickedMode }}
             >
               <LinearGradient
                 colors={['#fb940e', '#f2c512']}
@@ -230,6 +267,29 @@ const styles = StyleSheet.create({
   continuerWrapper: {
     paddingHorizontal: 24,
     paddingTop: 16,
+  },
+  btnInactive: {
+    opacity: 0.4,
+  },
+  toast: {
+    position: 'absolute',
+    top: -24,
+    alignSelf: 'center',
+    backgroundColor: colors.purpleDeep,
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    zIndex: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  toastText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 14,
+    color: colors.cream,
   },
   panelContent: {
     paddingHorizontal: 24,

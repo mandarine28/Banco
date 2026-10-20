@@ -33,6 +33,7 @@ type Translations = {
     round: string;
     target: string;
     play: string;
+    start: string;
     holdsPhone: string;
     answers: string;
     wonAuction: string;
@@ -66,6 +67,7 @@ type Translations = {
     classicDesc: string;
     survieDesc: string;
     continueBtn: string;
+    pickModeFirst: string;
   };
   matchSettings: {
     settingsTitle: string;
@@ -134,7 +136,6 @@ type Translations = {
     playBtn: string;
   };
   survie: {
-    opens: string;
     validate: string;
     validateA11y: string;
     noAnswer: string;
@@ -214,6 +215,7 @@ const translations: Record<Lang, Translations> = {
       round: 'Round',
       target: 'Objectif de réponses :',
       play: 'JOUER',
+      start: 'COMMENCER',
       holdsPhone: "tient l'appareil",
       answers: 'répond',
       wonAuction: 'remporte les enchères',
@@ -247,6 +249,7 @@ const translations: Record<Lang, Translations> = {
       classicDesc: 'Misez sur votre nombre de réponses en 60 secondes !',
       survieDesc: 'Répondez en chaîne, le premier qui sèche perd',
       continueBtn: 'Continuer',
+      pickModeFirst: "Choisissez d'abord un mode de jeu",
     },
     matchSettings: {
       settingsTitle: 'Paramètre de jeux',
@@ -319,7 +322,6 @@ const translations: Record<Lang, Translations> = {
       playBtn: 'JOUER',
     },
     survie: {
-      opens: 'commence à répondre',
       phoneTitle: 'Posez le téléphone au centre',
       phoneMsg: 'Toutes les équipes doivent pouvoir voir l’écran.',
       phoneGo: 'C’EST PARTI !',
@@ -436,6 +438,7 @@ const translations: Record<Lang, Translations> = {
       round: 'Round',
       target: 'Target:',
       play: 'PLAY',
+      start: 'START',
       holdsPhone: 'holds the phone',
       answers: 'answers',
       wonAuction: 'wins the auction',
@@ -469,6 +472,7 @@ const translations: Record<Lang, Translations> = {
       classicDesc: 'Bet on how many answers you can give in 60 seconds!',
       survieDesc: 'Answer in turn, the first to dry up loses',
       continueBtn: 'Continue',
+      pickModeFirst: 'Choose a game mode first',
     },
     matchSettings: {
       settingsTitle: 'Game settings',
@@ -541,7 +545,6 @@ const translations: Record<Lang, Translations> = {
       playBtn: 'PLAY',
     },
     survie: {
-      opens: 'answers first',
       phoneTitle: 'Put the phone in the middle',
       phoneMsg: 'Every team must be able to see the screen.',
       phoneGo: "LET'S GO!",
@@ -658,6 +661,7 @@ const translations: Record<Lang, Translations> = {
       round: 'Runde',
       target: 'Ziel:',
       play: 'SPIELEN',
+      start: 'STARTEN',
       holdsPhone: 'hält das Gerät',
       answers: 'antwortet',
       wonAuction: 'gewinnt die Auktion',
@@ -691,6 +695,7 @@ const translations: Record<Lang, Translations> = {
       classicDesc: 'Wettet, wie viele Antworten ihr in 60 Sekunden findet!',
       survieDesc: 'Antwortet nacheinander, wer zuerst passt, verliert',
       continueBtn: 'Weiter',
+      pickModeFirst: 'Wählen Sie zuerst einen Spielmodus',
     },
     matchSettings: {
       settingsTitle: 'Spieleinstellungen',
@@ -763,7 +768,6 @@ const translations: Record<Lang, Translations> = {
       playBtn: 'SPIELEN',
     },
     survie: {
-      opens: 'antwortet zuerst',
       phoneTitle: 'Legt das Handy in die Mitte',
       phoneMsg: 'Alle Teams müssen den Bildschirm sehen können.',
       phoneGo: "LOS GEHT'S!",
@@ -880,6 +884,7 @@ const translations: Record<Lang, Translations> = {
       round: 'Ronda',
       target: 'Objetivo:',
       play: 'JUGAR',
+      start: 'EMPEZAR',
       holdsPhone: 'tiene el dispositivo',
       answers: 'responde',
       wonAuction: 'gana la subasta',
@@ -913,6 +918,7 @@ const translations: Record<Lang, Translations> = {
       classicDesc: '¡Apostad cuántas respuestas daréis en 60 segundos!',
       survieDesc: 'Responded por turnos, el primero que se quede en blanco pierde',
       continueBtn: 'Continuar',
+      pickModeFirst: 'Elija primero un modo de juego',
     },
     matchSettings: {
       settingsTitle: 'Ajustes de juego',
@@ -985,7 +991,6 @@ const translations: Record<Lang, Translations> = {
       playBtn: 'JUGAR',
     },
     survie: {
-      opens: 'responde primero',
       phoneTitle: 'Poned el móvil en el centro',
       phoneMsg: 'Todos los equipos deben poder ver la pantalla.',
       phoneGo: '¡VAMOS!',

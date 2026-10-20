@@ -6,6 +6,8 @@ type Options = {
   opacity: Animated.Value;
   /** Animation d'entrée + maintien. reduceMotion=true → poser les valeurs finales et renvoyer un simple délai. */
   intro: (reduceMotion: boolean) => Animated.CompositeAnimation;
+  /** Séquence jouée après l'intro (ou après un tap), impossible à passer — ex. compte à rebours. */
+  outro?: () => Animated.CompositeAnimation;
   exitMs: number;
   exitEasing: EasingFunction;
   /** Le fondu de sortie commence : l'écran suivant peut se monter dessous. */
@@ -15,9 +17,10 @@ type Options = {
 };
 
 /** Joue une transition plein écran puis son fondu de sortie. Renvoie `skip` (tap pour passer). */
-export function useOverlayTimeline({ opacity, intro, exitMs, exitEasing, onReveal, onDone }: Options) {
+export function useOverlayTimeline({ opacity, intro, outro, exitMs, exitEasing, onReveal, onDone }: Options) {
   // Props recréées à chaque render — effect events pour ne pas relancer l'animation.
   const buildIntro = useEffectEvent(intro);
+  const buildOutro = useEffectEvent(() => outro?.() ?? null);
   const reveal = useEffectEvent(onReveal);
   const done = useEffectEvent(onDone);
   const exitConfig = useEffectEvent(() => ({ duration: exitMs, easing: exitEasing }));
@@ -38,15 +41,28 @@ export function useOverlayTimeline({ opacity, intro, exitMs, exitEasing, onRevea
         if (finished) done();
       });
     };
-    skipRef.current = exit;
+    let inOutro = false;
+    const finishIntro = () => {
+      if (exited || inOutro) return;
+      const sequel = buildOutro();
+      if (!sequel) return exit();
+      inOutro = true;
+      running?.stop();
+      opacity.setValue(1);
+      running = sequel;
+      running.start(({ finished }) => {
+        if (finished) exit();
+      });
+    };
+    skipRef.current = finishIntro;
 
     AccessibilityInfo.isReduceMotionEnabled()
       .catch(() => false)
       .then((reduceMotion) => {
-        if (exited) return;
+        if (exited || inOutro) return;
         running = buildIntro(reduceMotion);
         running.start(({ finished }) => {
-          if (finished) exit();
+          if (finished) finishIntro();
         });
       });
 

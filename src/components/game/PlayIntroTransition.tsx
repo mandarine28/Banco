@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
@@ -20,6 +20,10 @@ const TIMINGS = {
 } as const;
 // Fond bleu des écrans de jeu, pattern à 4 %
 const PATTERN_OPACITY = 0.04;
+// Compte à rebours 3-2-1 après l'annonce de l'équipe, pour ne pas lancer le chrono par surprise
+const COUNTDOWN_FROM = 3;
+const COUNTDOWN_STEP_MS = 1000;
+const WITH_COUNTDOWN: Record<keyof typeof TIMINGS, boolean> = { classic: true, survieStart: true, survieNext: false };
 // Figma (classic) : titre centré à 98 pt au-dessus du milieu, pour laisser la place au bloc du bas.
 // Survie (pas de bloc du bas) : titre centré verticalement.
 const TITLE_OFFSET = 98;
@@ -43,7 +47,13 @@ export function PlayIntroTransition({ team, holder, variant = 'classic', onRevea
   const t = getT(lang);
   const opacity = useState(() => new Animated.Value(0))[0];
   const timing = TIMINGS[variant];
-
+  const countdown = useState(() => new Animated.Value(COUNTDOWN_FROM))[0];
+  // null tant que l'annonce de l'équipe est affichée
+  const [count, setCount] = useState<number | null>(null);
+  useEffect(() => {
+    const id = countdown.addListener(({ value }) => setCount(Math.max(1, Math.ceil(value))));
+    return () => countdown.removeListener(id);
+  }, [countdown]);
   const skip = useOverlayTimeline({
     opacity,
     exitMs: timing.fade,
@@ -65,6 +75,16 @@ export function PlayIntroTransition({ team, holder, variant = 'classic', onRevea
         Animated.delay(timing.hold),
       ]);
     },
+    // Un tap passe l'annonce de l'équipe, jamais le compte à rebours
+    outro: WITH_COUNTDOWN[variant]
+      ? () =>
+          Animated.timing(countdown, {
+            toValue: 0,
+            duration: COUNTDOWN_FROM * COUNTDOWN_STEP_MS,
+            easing: Easing.linear,
+            useNativeDriver: false,
+          })
+      : undefined,
   });
 
   const subtitle = { classic: t.ready.yourTurn, survieStart: t.ready.yourStart, survieNext: t.ready.yourGo }[variant];
@@ -74,7 +94,7 @@ export function PlayIntroTransition({ team, holder, variant = 'classic', onRevea
   return (
     <Animated.View style={[StyleSheet.absoluteFill, { opacity }]}>
       <Pressable
-        style={[styles.root, variant === 'classic' && styles.rootRaised]}
+        style={[styles.root, variant === 'classic' && count === null && styles.rootRaised]}
         onPress={skip}
         accessibilityRole="button"
         accessibilityLabel={`${team.name} ${subtitle}${holderLabel}`}
@@ -82,11 +102,17 @@ export function PlayIntroTransition({ team, holder, variant = 'classic', onRevea
         {/* Même largeur max que GameLayout */}
         <CreamPatternSvg width={Math.min(width, 500)} height={height} opacity={PATTERN_OPACITY} fill="#ffffff" />
 
-        <View style={styles.title}>
-          <TransitionTitle team={team} subtitle={subtitle} />
-        </View>
+        {count !== null ? (
+          <Text style={styles.countdown} accessibilityLiveRegion="polite">
+            {count}
+          </Text>
+        ) : (
+          <View style={styles.title}>
+            <TransitionTitle team={team} subtitle={subtitle} />
+          </View>
+        )}
 
-        {holder ? (
+        {holder && count === null ? (
           <View style={styles.holderRow}>
             <View style={[styles.holderBadge, { backgroundColor: holder.color }]}>
               <Text style={[styles.holderName, { color: holderTextColor }]} numberOfLines={1}>
@@ -114,6 +140,11 @@ const styles = StyleSheet.create({
   },
   title: {
     maxWidth: '90%',
+  },
+  countdown: {
+    fontFamily: fonts.display,
+    fontSize: 160,
+    color: colors.white,
   },
   // Figma : bottom 54 + padding 24
   holderRow: {
