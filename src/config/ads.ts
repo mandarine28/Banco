@@ -3,9 +3,9 @@
 // une version publiée sans identifiant n'affiche simplement aucune pub.
 export const AD_UNIT_IDS = {
   /** Vidéo récompensée « Essayer un pack ». */
-  rewardedTrial: { ios: '', android: '' },
+  rewardedTrial: { ios: 'ca-app-pub-7673839117797871/2385640044', android: '' },
   /** Interstitiel de fin de partie (image et texte seulement). */
-  endGameInterstitial: { ios: '', android: '' },
+  endGameInterstitial: { ios: 'ca-app-pub-7673839117797871/5963204236', android: '' },
 } as const;
 
 export type AdPlacement = keyof typeof AD_UNIT_IDS;

@@ -47,7 +47,7 @@
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-3940256099942544~3347511713",
-          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "iosAppId": "ca-app-pub-7673839117797871~4845563686",
           "userTrackingUsageDescription": "Cet identifiant sert à vous proposer des publicités plus pertinentes. Banco reste gratuit grâce à elles.",
           "skAdNetworkItems": [
             "cstr6suwn9.skadnetwork",
