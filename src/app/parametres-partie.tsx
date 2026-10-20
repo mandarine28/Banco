@@ -204,14 +204,15 @@ export default function MatchSettingsScreen() {
   const { gamesLeft } = useWelcomePack();
   const lockedIsWelcome = lockedPack !== null && lockedPack.id === PACK_THEME_IDS[WELCOME_PACK];
   const hasHarryPotter = hasPurchased(WELCOME_PACK);
+  // Packs premium en tête de liste, avant les catégories de base
   const CATEGORIES: Category[] = [
-    ...BASE_CATEGORIES,
     {
       id: 'harry-potter',
       label: 'Poudlard Express',
       available: hasHarryPotter,
       locked: !hasHarryPotter,
     },
+    ...BASE_CATEGORIES,
   ];
   const { lang } = useLang();
   const t = getT(lang);
