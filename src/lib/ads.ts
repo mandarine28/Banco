@@ -1,3 +1,4 @@
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'react-native';
 import type * as GoogleMobileAds from 'react-native-google-mobile-ads';
 
@@ -16,14 +17,23 @@ function warn(message: string, error?: unknown) {
   if (__DEV__) console.warn(`[ads] ${message}`, error ?? '');
 }
 
-// Module natif absent dans Expo Go et sur le web : jamais de plantage, simplement pas de pub
+// Module natif absent dans Expo Go et sur le web : jamais de plantage, simplement pas de pub.
+// Dans Expo Go on ne tente même pas le require : son échec s'affichait en erreur à l'écran.
+const IS_EXPO_GO = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+let adsModule: typeof GoogleMobileAds | null | undefined;
 function getAds(): typeof GoogleMobileAds | null {
-  if (Platform.OS === 'web') return null;
-  try {
-    return require('react-native-google-mobile-ads') as typeof GoogleMobileAds;
-  } catch {
-    return null;
+  if (adsModule !== undefined) return adsModule;
+  if (Platform.OS === 'web' || IS_EXPO_GO) {
+    adsModule = null;
+    return adsModule;
   }
+  try {
+    adsModule = require('react-native-google-mobile-ads') as typeof GoogleMobileAds;
+  } catch (e) {
+    warn('module publicitaire indisponible', e);
+    adsModule = null;
+  }
+  return adsModule;
 }
 
 function unitId(ads: typeof GoogleMobileAds, placement: AdPlacement): string | null {
