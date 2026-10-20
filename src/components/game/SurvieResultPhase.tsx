@@ -156,8 +156,6 @@ const styles = StyleSheet.create({
     color: colors.purpleDeep,
     borderRadius: 10,
     overflow: 'hidden',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
     marginHorizontal: 24,
     marginBottom: 10,
   },
