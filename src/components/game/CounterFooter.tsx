@@ -57,7 +57,7 @@ export function CounterFooter({ progress, amount, onAdjust }: Props) {
 const styles = StyleSheet.create({
   wrapper: {
     alignItems: 'center',
-    gap: 16,
+    gap: 6,
   },
   row: {
     flexDirection: 'row',
