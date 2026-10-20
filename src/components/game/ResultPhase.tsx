@@ -154,12 +154,8 @@ const styles = StyleSheet.create({
   someAnswersLabel: {
     fontFamily: fonts.displayMedium,
     fontSize: 16,
-    alignSelf: 'flex-start',
-    backgroundColor: colors.cream,
-    color: colors.purpleDeep,
-    borderRadius: 10,
-    overflow: 'hidden',
-    marginHorizontal: 24,
+    color: colors.cream,
+    paddingHorizontal: 24,
     marginBottom: 10,
   },
   chipsArea: {

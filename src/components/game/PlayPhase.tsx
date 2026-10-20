@@ -582,11 +582,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     fontFamily: fonts.displayMedium,
     fontSize: 16,
-    alignSelf: 'flex-start',
-    backgroundColor: colors.cream,
-    color: colors.purpleDeep,
-    borderRadius: 10,
-    overflow: 'hidden',
+    color: colors.cream,
   },
   listActions: {
     flexDirection: 'row',
