@@ -74,10 +74,16 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress
               <Text style={styles.unlockedText} numberOfLines={1} adjustsFontSizeToFit>{t.shop.unlocked}</Text>
             </View>
           ) : pack.gift ? (
-            <View style={[styles.ctaButton, styles.giftProgress]} accessibilityLabel={`${t.gift.welcomeTitle} ${giftProgress ?? ''}`}>
+            // Le pack se gagne en jouant : le bouton mène directement au choix du mode
+            <Pressable
+              style={[styles.ctaButton, styles.giftProgress]}
+              onPress={() => router.push('/parametres')}
+              accessibilityRole="button"
+              accessibilityLabel={`${t.gift.welcomeTitle} ${giftProgress ?? ''}`}
+            >
               <MaterialCommunityIcons name="gift" size={18} color={colors.purpleDeep} />
               <Text style={styles.ctaText} numberOfLines={1} adjustsFontSizeToFit>{giftProgress ?? ''}</Text>
-            </View>
+            </Pressable>
           ) : (
             <Pressable
               style={styles.ctaButton}

@@ -24,15 +24,17 @@ export function SurvieReadyPhase({ state, onStart }: Props) {
 
   return (
     <View style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom + 20, 36) }]}>
-      {/* Round, question et bouton groupés au centre de l'écran */}
-      <View style={styles.roundBadge}>
-        <Text style={styles.roundText}>
-          {t.ready.round} {state.round + 1}/{state.roundCount}
-        </Text>
-      </View>
+      {/* Round + question centrés entre l'en-tête et le bouton : même écart au-dessus et en dessous */}
+      <View style={styles.questionArea}>
+        <View style={styles.roundBadge}>
+          <Text style={styles.roundText}>
+            {t.ready.round} {state.round + 1}/{state.roundCount}
+          </Text>
+        </View>
 
-      <View style={styles.questionCard}>
-        <Text style={styles.questionText}>{subject}</Text>
+        <View style={styles.questionCard}>
+          <Text style={styles.questionText}>{subject}</Text>
+        </View>
       </View>
 
       <Pressable
@@ -50,17 +52,29 @@ export function SurvieReadyPhase({ state, onStart }: Props) {
           <Text style={styles.jouerText}>{t.ready.start}</Text>
         </LinearGradient>
       </Pressable>
+
+      <View style={styles.bottomSpacer} />
     </View>
   );
 }
+
+// Espace sous le bouton, relatif à la zone de la question (flex 1)
+const BUTTON_BOTTOM_SPACE = 0.45;
 
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     paddingHorizontal: 24,
     paddingTop: 8,
+  },
+  questionArea: {
+    flex: 1,
     justifyContent: 'center',
     gap: 28,
+  },
+  // Garde le bouton à peu près à sa hauteur d'avant (sous le milieu de l'écran) au lieu de le coller en bas
+  bottomSpacer: {
+    flex: BUTTON_BOTTOM_SPACE,
   },
   roundBadge: {
     alignSelf: 'center',

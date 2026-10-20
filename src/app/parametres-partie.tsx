@@ -11,6 +11,7 @@ const LOCK_PATH =
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { ConfirmModal } from '@/components/InfoModal';
+import { Toast, useToast } from '@/components/Toast';
 import { PACK_THEME_IDS, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
@@ -183,6 +184,8 @@ export default function MatchSettingsScreen() {
   const settingsTitle = mode === 'survie' ? 'Paramètre de la survie' : 'Paramètre des enchères';
   const { hasPurchased } = usePurchases();
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  const toast = useToast();
+  const noCategory = selected.size === 0;
 
   // Packs débloqués pour une partie après une vidéo récompensée
   const [trialIds, setTrialIds] = useState<Set<string>>(new Set());
@@ -389,11 +392,13 @@ export default function MatchSettingsScreen() {
 
           {/* Continuer — toujours visible */}
           <View style={[styles.continuerWrapper, { paddingBottom: Math.max(24, insets.bottom + 16) }]}>
+            <Toast toast={toast} message={t.matchSettings.pickCategoryFirst} />
+            {/* Reste pressable même inactif : un appui explique pourquoi on ne peut pas continuer */}
             <Pressable
-              style={[styles.btnContinuer, selected.size === 0 && styles.btnContinuerDisabled]}
-              disabled={selected.size === 0}
-              accessibilityState={{ disabled: selected.size === 0 }}
-              onPress={() => { setSelectedThemes([...selected]); router.push('/equipes'); }}
+              style={[styles.btnContinuer, noCategory && styles.btnContinuerDisabled]}
+              accessibilityState={{ disabled: noCategory }}
+              accessibilityHint={noCategory ? t.matchSettings.pickCategoryFirst : undefined}
+              onPress={noCategory ? toast.show : () => { setSelectedThemes([...selected]); router.push('/equipes'); }}
               accessibilityRole="button"
               accessibilityLabel={t.matchSettings.continueBtn}
             >

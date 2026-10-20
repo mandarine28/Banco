@@ -76,6 +76,7 @@ type Translations = {
     timer: string;
     categoriesTitle: string;
     continueBtn: string;
+    pickCategoryFirst: string;
   };
   teams: {
     setupTitle: string;
@@ -255,6 +256,7 @@ const translations: Record<Lang, Translations> = {
       timer: 'Chrono',
       categoriesTitle: 'Catégories',
       continueBtn: 'Continuer',
+      pickCategoryFirst: 'Choisissez au moins une catégorie',
     },
     teams: {
       setupTitle: 'Création des squads',
@@ -475,6 +477,7 @@ const translations: Record<Lang, Translations> = {
       timer: 'Timer',
       categoriesTitle: 'Categories',
       continueBtn: 'Continue',
+      pickCategoryFirst: 'Choose at least one category',
     },
     teams: {
       setupTitle: 'Team setup',
@@ -695,6 +698,7 @@ const translations: Record<Lang, Translations> = {
       timer: 'Timer',
       categoriesTitle: 'Kategorien',
       continueBtn: 'Weiter',
+      pickCategoryFirst: 'Wählen Sie mindestens eine Kategorie',
     },
     teams: {
       setupTitle: 'Teams erstellen',
@@ -915,6 +919,7 @@ const translations: Record<Lang, Translations> = {
       timer: 'Cronómetro',
       categoriesTitle: 'Categorías',
       continueBtn: 'Continuar',
+      pickCategoryFirst: 'Elija al menos una categoría',
     },
     teams: {
       setupTitle: 'Crear equipos',
