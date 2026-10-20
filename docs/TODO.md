@@ -6,14 +6,16 @@ Détails techniques : `docs/banco-doc.html` (sections « Publicité » et « Cad
 ## Étape 1 — Créer les comptes et réglages (👤, aucun code)
 
 **Google AdMob**
-- [ ] 👤 Créer le compte AdMob (infos fiscales et bancaires : possible plus tard, avant le 1er paiement)
-- [ ] 👤 Ajouter l'app iOS (Android plus tard)
-- [ ] 👤 Créer l'emplacement « Essayer un pack » → type **Récompensé**
-- [ ] 👤 Créer l'emplacement « Fin de partie » → type **Interstitiel**, **image et texte seulement** (décocher la vidéo)
-- [ ] 👤 Régler la fréquence maximale de l'interstitiel
-- [ ] 👤 Configurer le message de consentement RGPD (« Confidentialité et messages »)
+- [x] 👤 Créer le compte AdMob
+- [x] 👤 Ajouter l'app iOS (« non publiée » pour l'instant ; Android plus tard)
+- [x] 👤 Créer l'emplacement « Essayer un pack » → type **Récompensé**
+- [x] 👤 Créer l'emplacement « Fin de partie » → type **Interstitiel**
+- [ ] 👤 Vérifier dans l'emplacement « Fin de partie » : **image et texte seulement** (vidéo décochée) + fréquence max (ex. 1 toutes les 10 min)
+- [ ] 👤 **« Confidentialité et messages »** : créer et publier le message **RGPD** et le message **« explication IDFA »** (fenêtre de suivi Apple), pour l'app Banco iOS — ⚠️ la page ne chargeait pas le 2026-10-20 : essayer en navigation privée, bloqueur de pub désactivé (uBlock, Brave…), un seul compte Google connecté, Chrome ; sinon réessayer plus tard (compte tout neuf). Non bloquant pour les tests, obligatoire avant la mise en ligne
 - [ ] 👤 Relire la politique AdMob sur les annonces avec récompense (texte « Jouez gratuitement avec ce pack »)
-- [ ] 👤 **M'envoyer** : l'identifiant de l'app iOS + les 2 identifiants d'emplacements
+- [x] 👤 Identifiants envoyés : app iOS `~4845563686`, « Essayer un pack » `/2385640044`, « Fin de partie » `/5963204236`
+- [ ] 👤 Infos de paiement AdMob (avant le 1er versement, ~70 €) : type **Organisation** avec la micro-entreprise ; d'abord **déclarer l'activité « édition d'applications »** sur le guichet unique INPI et valider la catégorie fiscale avec un comptable / l'URSSAF ; même nom que le compte Apple et App Store Connect
+- [ ] 👤 Après la publication par Apple : AdMob → app → **Associer à une plate-forme de téléchargement** (lance l'examen AdMob, quelques jours)
 
 Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le téléphone, sans compte ni serveur.
 
@@ -25,18 +27,24 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
 - [x] 🤖 Interstitiel de fin de partie : à partir de la 4e partie, 1 sur 2, en quittant l'écran final ; jamais si partie quittée ni après un essai
 - [x] 🤖 Texte ATT et liste SKAdNetwork (50 identifiants Google) dans `app.json`
 - [ ] 👤 AdMob → « Confidentialité et messages » : créer le message RGPD **et** le message « explication IDFA » (c'est lui qui déclenche la fenêtre de suivi Apple)
-- [ ] 🤖 Remplacer les identifiants de test : app iOS/Android dans `app.json`, emplacements dans `src/config/ads.ts`
+- [x] 🤖 Identifiants réels iOS en place (`app.json` + `src/config/ads.ts`) ; Android reste l'ID de test Google
+- [x] 🤖 Clé RevenueCat aussi dans le profil `development` d'`eas.json`
 
 ## Étape 3 — Tester sur ton téléphone (👤 + 🤖)
 
-- [ ] 🤖 Lancer un build de développement (`eas build --profile development`) — Expo Go ne peut pas tester pubs, achats ni cadeaux
+- [ ] 👤 Build de développement — Expo Go ne peut pas tester pubs, achats ni cadeaux :
+  1. `npx eas-cli@latest device:create` (une fois, enregistre l'iPhone)
+  2. `npx eas-cli@latest build --profile development --platform ios`
+  3. installer l'app, puis `npx expo start --dev-client`
 - [ ] 👤 Tester : essai de pack par pub, proposition d'achat en fin d'essai, achat réel (sandbox)
-- [ ] 👤 Tester : pack de bienvenue (fenêtre sur l'accueil après 3 parties, carte « Votre pack de bienvenue » dans la boutique)
+- [ ] 👤 + 🤖 Pack de bienvenue / cadeau : **à trancher** — le code (`useGifts`) décrit un cadeau « contre un partage », la carte boutique a été retirée ; décider ce qu'on garde avant de tester
 - [ ] 👤 Tester : demande d'avis (après 3 parties ; absente sur TestFlight)
 - [ ] 👤 Tester : interstitiel en fin de partie avec les pubs de test
 
 ## Étape 4 — Légal, avant la mise en ligne (👤)
 
+- [ ] 👤 App Store Connect : Tauk ! (soumise le 10/10) et Banco (16/10) toujours « En attente de vérification » le 20/10 → message envoyé à App Review ; vérifier la page Adhésion (developer.apple.com/account) et « Accords, taxes et services bancaires » (accord **apps payantes** actif, requis pour les achats intégrés)
+- [ ] 👤 App Store Connect : configurer les produits (achats intégrés) + RevenueCat — sinon la boutique affiche le prix de référence et l'achat échoue
 - [ ] 👤 Site, page Confidentialité : retirer « Aucune publicité », ajouter AdMob, les données collectées, le consentement ; **retirer les comptes** (Supabase, connexion Apple/Google, suppression de compte), y compris dans la FAQ de la page Assistance
 - [ ] 👤 Site : publier `app-ads.txt` (contenu fourni par AdMob) à la racine du site déclaré sur l'App Store
 - [ ] 👤 App Store Connect : « Confidentialité de l'app » → déclarer les données utilisées pour la publicité
