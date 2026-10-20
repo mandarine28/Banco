@@ -1,5 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,6 +15,33 @@ import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
+
+/**
+ * Barre de temps animée en continu (fil natif) : avec un tour court, les mises à jour du chrono
+ * toutes les 100 ms faisaient avancer la barre par à-coups visibles.
+ */
+function useSmoothElapsed(remainingMs: number, totalMs: number, running: boolean) {
+  const elapsed = useState(() => new Animated.Value(totalMs ? 1 - remainingMs / totalMs : 0))[0];
+  // Valeur lue au moment du démarrage ou de la reprise, sans relancer l'animation à chaque tick
+  const remainingRef = useRef(remainingMs);
+  useEffect(() => {
+    remainingRef.current = remainingMs;
+  });
+  useEffect(() => {
+    if (!running || !totalMs) return;
+    const remaining = remainingRef.current;
+    elapsed.setValue(1 - remaining / totalMs);
+    const anim = Animated.timing(elapsed, {
+      toValue: 1,
+      duration: remaining,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    });
+    anim.start();
+    return () => anim.stop();
+  }, [running, totalMs, elapsed]);
+  return elapsed;
+}
 const WARNING_SECONDS = 3;
 
 const PAUSE_PATH =
@@ -51,7 +79,10 @@ export function SurviePlayPhase({
   const currentTeam = state.teams[state.currentTeam];
 
   const seconds = Math.ceil(remainingMs / 1000);
-  const elapsedFraction = turnSeconds ? Math.max(0, Math.min(1, 1 - remainingMs / (turnSeconds * 1000))) : 0;
+  const elapsed = useSmoothElapsed(remainingMs, (turnSeconds ?? 0) * 1000, turnSeconds !== null && !isPaused);
+  const [trackWidth, setTrackWidth] = useState(0);
+  // La barre pleine glisse depuis la gauche : translateX reste animable sur le fil natif, pas width
+  const fillTranslateX = elapsed.interpolate({ inputRange: [0, 1], outputRange: [-trackWidth, 0], extrapolate: 'clamp' });
   const isWarning = seconds <= WARNING_SECONDS;
   const fillColor = isWarning ? colors.pink : '#fb940e';
 
@@ -64,8 +95,13 @@ export function SurviePlayPhase({
       {/* Timer row — absente quand le chrono est désactivé dans les paramètres */}
       {turnSeconds !== null ? (
       <View style={styles.timerRow}>
-        <View style={[styles.track, isPaused && styles.trackPaused]}>
-          <View style={[styles.fill, { width: `${elapsedFraction * 100}%`, backgroundColor: fillColor }]} />
+        <View
+          style={[styles.track, isPaused && styles.trackPaused]}
+          onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+        >
+          <Animated.View
+            style={[styles.fill, { width: trackWidth, backgroundColor: fillColor, transform: [{ translateX: fillTranslateX }] }]}
+          />
         </View>
         <Text style={[styles.seconds, isWarning && styles.secondsWarning]}>{seconds}</Text>
         <Pressable
