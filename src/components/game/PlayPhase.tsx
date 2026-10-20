@@ -313,7 +313,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
           <View style={styles.noResult}>
             <Text style={styles.noResultText}>{t.play.notInDatabase(query.trim().toUpperCase())}</Text>
             <View style={styles.noResultActions}>
-              <Pressable onPress={() => { handleToggle(query.trim().toUpperCase()); inputRef.current?.blur(); Keyboard.dismiss(); showToast(); }} sound="correct" style={styles.actionBtn} accessibilityRole="button">
+              <Pressable onPress={() => { handleToggle(query.trim().toUpperCase()); inputRef.current?.blur(); Keyboard.dismiss(); showToast(); }} sound="correct" haptic="light" style={styles.actionBtn} accessibilityRole="button">
                 <Text style={styles.actionBtnText}>{t.play.validateAnyway}</Text>
               </Pressable>
               <Pressable onPress={handleWebSearch} style={[styles.actionBtn, styles.actionBtnAlt]} accessibilityRole="button">
@@ -444,6 +444,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
                   onLayout={(e) => { chipLayouts.current[index] = { top: e.nativeEvent.layout.y, label }; }}
                   onPress={() => handleToggle(label)}
                   sound={found ? false : 'correct'}
+                  haptic={found ? undefined : 'light'}
                   soundOnRelease
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: found }}

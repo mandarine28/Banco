@@ -13,6 +13,7 @@ import { privacyUrl, supportEmail } from '@/config/links';
 import { canEditAdChoices, editAdChoices } from '@/lib/ads';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
+import { playHaptic, setHapticsEnabled, useHapticsEnabled } from '@/lib/haptics';
 import { playSound, setSoundEnabled, useSoundEnabled } from '@/lib/sounds';
 import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
@@ -59,6 +60,7 @@ export default function SettingsScreen() {
   const t = getT(lang);
   const s = t.support;
   const soundEnabled = useSoundEnabled();
+  const hapticsEnabled = useHapticsEnabled();
   // Lien obligatoire (RGPD) seulement quand Google l'exige pour cet utilisateur
   const [adChoicesAvailable, setAdChoicesAvailable] = useState(false);
   useEffect(() => {
@@ -101,11 +103,24 @@ export default function SettingsScreen() {
                   value={soundEnabled}
                   onValueChange={(value) => {
                     setSoundEnabled(value);
+                    playHaptic('selection');
                     // Retour immédiat : on entend tout de suite que le son est réactivé
                     if (value) playSound('tap');
                   }}
                   trackColor={{ false: 'rgba(254,246,215,0.25)', true: teamColors[1] }}
                   accessibilityLabel={t.prefs.soundEffects}
+                />
+              </View>
+              <View style={[styles.card, styles.switchRow, styles.switchCard]}>
+                <Text style={[styles.cardTitle, styles.switchLabel, styles.switchCardLabel]}>{t.prefs.haptics}</Text>
+                <Switch
+                  value={hapticsEnabled}
+                  onValueChange={(value) => {
+                    setHapticsEnabled(value);
+                    if (value) playHaptic('selection');
+                  }}
+                  trackColor={{ false: 'rgba(254,246,215,0.25)', true: teamColors[1] }}
+                  accessibilityLabel={t.prefs.haptics}
                 />
               </View>
             </View>

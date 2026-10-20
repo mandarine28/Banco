@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getAnswers, getSubject } from '@/game/answers';
 import { survieCurrentQuestion, type SurvieState } from '@/game/survie-engine';
 import { getT } from '@/lib/i18n';
+import { playHaptic } from '@/lib/haptics';
 import { useLang } from '@/lib/LangContext';
 import { playSound } from '@/lib/sounds';
 import { colors, fonts } from '@/theme';
@@ -25,7 +26,10 @@ export function SurvieResultPhase({ state, onNext, isLastRound }: Props) {
   const hasWinner = state.roundWinner !== null;
 
   useEffect(() => {
-    if (hasWinner) playSound('roundWon');
+    if (hasWinner) {
+      playSound('roundWon');
+      playHaptic('success');
+    }
   }, [hasWinner]);
   const question = survieCurrentQuestion(state);
 

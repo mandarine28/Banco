@@ -19,6 +19,7 @@ export function CounterFooter({ left, amount, onAdjust }: Props) {
           onPress={() => onAdjust(1)}
           // − compte une réponse trouvée : même son qu'une réponse cochée
           sound="correct"
+          haptic="light"
           accessibilityRole="button"
           accessibilityLabel="Valider une réponse"
           style={styles.btn}

@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getSubject } from '@/game/answers';
 import { canPass, currentQuestion, type GameState, MAX_BID, minimumBid, passConcludesAuction } from '@/game/engine';
+import { playHaptic } from '@/lib/haptics';
 import { useLang } from '@/lib/LangContext';
 import { playSound } from '@/lib/sounds';
 import { getT } from '@/lib/i18n';
@@ -125,6 +126,7 @@ export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props
       triggerToast();
       return;
     }
+    playHaptic('selection');
     step(dir);
     const timeoutRef = dir === -1 ? decTimeoutRef : incTimeoutRef;
     const intervalRef = dir === -1 ? decIntervalRef : incIntervalRef;

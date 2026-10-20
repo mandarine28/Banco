@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react';
 import { Pressable as RNPressable, type GestureResponderEvent } from 'react-native';
 
+import { playHaptic, type HapticKind } from '@/lib/haptics';
 import { playSound, type SoundName } from '@/lib/sounds';
 
 type Props = ComponentProps<typeof RNPressable> & {
@@ -11,12 +12,16 @@ type Props = ComponentProps<typeof RNPressable> & {
    * sinon le simple fait de commencer un défilement déclencherait le son.
    */
   soundOnRelease?: boolean;
+  /** Vibration jouée en même temps que le son (aucune par défaut). */
+  haptic?: HapticKind;
 };
 
 /** Pressable de React Native + son joué dès le contact du doigt (onPressIn) pour éviter toute latence. */
-export function Pressable({ sound = 'tap', soundOnRelease = false, onPress, onPressIn, ...rest }: Props) {
+export function Pressable({ sound = 'tap', soundOnRelease = false, haptic, onPress, onPressIn, ...rest }: Props) {
   const play = () => {
-    if (sound && rest.accessible !== false) playSound(sound);
+    if (rest.accessible === false) return;
+    if (sound) playSound(sound);
+    if (haptic) playHaptic(haptic);
   };
   return (
     <RNPressable

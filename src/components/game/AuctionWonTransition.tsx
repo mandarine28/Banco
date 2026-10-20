@@ -8,6 +8,7 @@ import { MASCOTTE_REMPORTE_XML } from '@/components/game/mascotteRemporteXml';
 import { TransitionTitle } from '@/components/game/TransitionTitle';
 import type { GameTeam } from '@/game/engine';
 import { useOverlayTimeline } from '@/hooks/useOverlayTimeline';
+import { playHaptic } from '@/lib/haptics';
 import { useLang } from '@/lib/LangContext';
 import { playSound } from '@/lib/sounds';
 import { getT } from '@/lib/i18n';
@@ -47,6 +48,7 @@ export function AuctionWonTransition({ team, onReveal, onDone }: Props) {
 
   useEffect(() => {
     playSound('roundWon');
+    playHaptic('heavy');
   }, []);
 
   const skip = useOverlayTimeline({

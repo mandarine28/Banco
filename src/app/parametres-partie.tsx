@@ -14,6 +14,7 @@ import { ConfirmModal } from '@/components/InfoModal';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { isRewardGranted, showRewardedAd } from '@/lib/ads';
+import { playHaptic } from '@/lib/haptics';
 import { useLang } from '@/lib/LangContext';
 import { loadUsedTrials } from '@/lib/trials';
 import { type Lang, getT } from '@/lib/i18n';
@@ -96,6 +97,7 @@ function StepperRow({ icon, label, value, min, max, onChange }: StepperRowProps)
         <Pressable
           onPress={() => onChange(Math.max(min, value - 1))}
           sound="upDown"
+          haptic="selection"
           disabled={atMin}
           hitSlop={12}
           accessibilityRole="button"
@@ -110,6 +112,7 @@ function StepperRow({ icon, label, value, min, max, onChange }: StepperRowProps)
         <Pressable
           onPress={() => onChange(Math.min(max, value + 1))}
           sound="upDown"
+          haptic="selection"
           disabled={atMax}
           hitSlop={12}
           accessibilityRole="button"
@@ -138,7 +141,10 @@ function TimerRow({ label, value, onChange }: TimerRowProps) {
         <RowLabel icon="timer-outline" label={label} />
         <Switch
           value={enabled}
-          onValueChange={(on) => onChange(on ? SURVIE_TIMER_OPTIONS[0] : null)}
+          onValueChange={(on) => {
+            playHaptic('selection');
+            onChange(on ? SURVIE_TIMER_OPTIONS[0] : null);
+          }}
           // Vert d'équipe : l'orange est réservé aux actions et aux prix
           trackColor={{ false: 'rgba(254,246,215,0.25)', true: teamColors[1] }}
           thumbColor={colors.cream}

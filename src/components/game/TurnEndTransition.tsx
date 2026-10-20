@@ -6,6 +6,7 @@ import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { TransitionTitle } from '@/components/game/TransitionTitle';
 import type { GameTeam } from '@/game/engine';
 import { useOverlayTimeline } from '@/hooks/useOverlayTimeline';
+import { playHaptic } from '@/lib/haptics';
 import { useLang } from '@/lib/LangContext';
 import { playSound } from '@/lib/sounds';
 import { getT } from '@/lib/i18n';
@@ -49,6 +50,7 @@ export function TurnEndTransition({ team, kind, count, onReveal, onDone }: Props
 
   useEffect(() => {
     if (success) playSound('roundWon');
+    playHaptic(success ? 'success' : 'error');
   }, [success]);
 
   const opacity = useState(() => new Animated.Value(0))[0];

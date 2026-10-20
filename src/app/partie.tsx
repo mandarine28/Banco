@@ -26,6 +26,7 @@ import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSucces
 import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
 import { useBackToQuitConfirm } from '@/hooks/useBackToQuitConfirm';
 import { useCountdown } from '@/hooks/useCountdown';
+import { useHapticWarning } from '@/hooks/useHapticWarning';
 import { usePauseOnBackground } from '@/hooks/usePauseOnBackground';
 import { preloadInterstitial, showInterstitial } from '@/lib/ads';
 import { shouldShowInterstitial } from '@/lib/adRule';
@@ -223,6 +224,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
   const remainingMs = useCountdown(state.phase === 'play', paused || playIntro === 'covering', TURN_SECONDS, () =>
     dispatch({ type: 'END_TURN', reason: 'time' }),
   );
+  useHapticWarning(remainingMs, 10);
   // App quittée en plein tour : même pause que la recherche web, avec la fenêtre « Reprendre » au retour
   usePauseOnBackground(state.phase === 'play', () => setPauseSource('search'));
 

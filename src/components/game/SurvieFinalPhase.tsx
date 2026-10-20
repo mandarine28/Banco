@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { survieRanking, type SurvieState } from '@/game/survie-engine';
 import { getT } from '@/lib/i18n';
+import { playHaptic } from '@/lib/haptics';
 import { useLang } from '@/lib/LangContext';
 import { playSound } from '@/lib/sounds';
 import { colors, fonts } from '@/theme';
@@ -24,6 +25,7 @@ export function SurvieFinalPhase({ state, onReplay, onHome }: Props) {
 
   useEffect(() => {
     playSound('gameWon');
+    playHaptic('success');
   }, []);
   const insets = useSafeAreaInsets();
   const rows = survieRanking(state);

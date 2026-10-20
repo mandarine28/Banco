@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getAnswers, getSubject, normalize } from '@/game/answers';
 import { survieCurrentQuestion, type SurvieState } from '@/game/survie-engine';
 import { useCountdown } from '@/hooks/useCountdown';
+import { useHapticWarning } from '@/hooks/useHapticWarning';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
@@ -86,6 +87,7 @@ export function SurviePlayPhase({
   const { lang } = useLang();
   const t = getT(lang);
   const remainingMs = useCountdown(turnSeconds !== null, isPaused, turnSeconds ?? 0, onTimeout);
+  useHapticWarning(remainingMs, 5);
   const question = survieCurrentQuestion(state);
   const currentTeam = state.teams[state.currentTeam];
 

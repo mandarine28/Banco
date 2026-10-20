@@ -162,6 +162,7 @@ type Translations = {
   prefs: {
     title: string;
     soundEffects: string;
+    haptics: string;
     adChoices: string;
   };
   rules: {
@@ -346,6 +347,7 @@ const translations: Record<Lang, Translations> = {
     prefs: {
       title: 'Préférences',
       soundEffects: 'Effets sonores',
+      haptics: 'Retour haptique',
       adChoices: 'Choix publicitaires',
     },
     rules: {
@@ -567,6 +569,7 @@ const translations: Record<Lang, Translations> = {
     prefs: {
       title: 'Preferences',
       soundEffects: 'Sound effects',
+      haptics: 'Haptic feedback',
       adChoices: 'Ad choices',
     },
     rules: {
@@ -788,6 +791,7 @@ const translations: Record<Lang, Translations> = {
     prefs: {
       title: 'Einstellungen',
       soundEffects: 'Soundeffekte',
+      haptics: 'Haptisches Feedback',
       adChoices: 'Werbeeinstellungen',
     },
     rules: {
@@ -1009,6 +1013,7 @@ const translations: Record<Lang, Translations> = {
     prefs: {
       title: 'Preferencias',
       soundEffects: 'Efectos de sonido',
+      haptics: 'Respuesta háptica',
       adChoices: 'Preferencias de anuncios',
     },
     rules: {
