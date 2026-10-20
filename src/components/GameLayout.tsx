@@ -111,7 +111,8 @@ export function GameLayout({ onHome, children, footer, scrollDisabled = false, o
           </KeyboardAvoidingView>
 
           {footer ? (
-            <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 16, 32) }]}>
+            // Marge basse réduite : le compteur descend, à mi-chemin entre la liste et le bas de l'écran
+            <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 4, 20) }]}>
               {footer}
             </View>
           ) : null}
