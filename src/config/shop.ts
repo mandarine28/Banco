@@ -10,6 +10,7 @@ export const offers: Record<ProductId, { label: string; price: string }> = {
 };
 
 // Identifiants produits tels que définis dans App Store Connect / Google Play
+// Ne jamais retirer packHarryPotter : le pack de bienvenue est enregistré sous cet identifiant, l'enlever le ferait perdre aux joueurs
 export const PRODUCT_IDS: Record<ProductId, string> = {
   streak: 'com.banco.mode_streak',
   jokers: 'com.banco.jokers',
