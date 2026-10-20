@@ -101,18 +101,8 @@ export function SurviePlayPhase({
         <Text style={styles.questionText}>{subject}</Text>
       </View>
 
-      {/* Pactole — centré dans l'espace restant */}
-      <View style={styles.jackpotMiddle}>
-        <View style={styles.jackpotSection}>
-          <Text style={styles.jackpotLabel}>{t.result.pointsAtStake}</Text>
-          <View style={styles.jackpotCard}>
-            <Text style={styles.jackpotValue}>{state.jackpot}</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Boutons */}
-      <View style={[styles.buttons, { paddingBottom: Math.max(insets.bottom + 16, 24) }]}>
+      {/* Boutons — centrés dans l'espace restant */}
+      <View style={styles.buttons}>
         <Pressable
           onPress={onValidate}
           sound="bid"
@@ -148,6 +138,15 @@ export function SurviePlayPhase({
             </View>
           </View>
         </Pressable>
+      </View>
+
+      {/* Pactole en bas, comme le compteur du mode enchères */}
+      <View style={[styles.jackpotFooter, { paddingBottom: Math.max(insets.bottom + 16, 32) }]}>
+        <View style={styles.jackpotCard}>
+          <Text style={styles.jackpotValue}>{state.jackpot}</Text>
+        </View>
+        {/* Libellé sous le chiffre : sans les deux-points de « Points en jeu : » */}
+        <Text style={styles.jackpotLabel}>{t.result.pointsAtStake.replace(/\s*:\s*$/, '')}</Text>
       </View>
     </View>
   );
@@ -234,38 +233,34 @@ const styles = StyleSheet.create({
     color: colors.cream,
   },
 
-  jackpotMiddle: {
+  buttons: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    gap: 12,
   },
-  jackpotSection: {
+  // Mêmes proportions que CounterFooter (mode enchères)
+  jackpotFooter: {
     alignItems: 'center',
-    gap: 10,
+    gap: 16,
+  },
+  jackpotCard: {
+    minWidth: 64,
+    height: 64,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: colors.cream,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  jackpotValue: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 40,
+    color: colors.purpleDeep,
   },
   jackpotLabel: {
     fontFamily: fonts.displayMedium,
-    fontSize: 18,
+    fontSize: 16,
     color: colors.cream,
-  },
-  jackpotCard: {
-    backgroundColor: colors.purpleDeep,
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 90,
-  },
-  jackpotValue: {
-    fontFamily: fonts.display,
-    fontSize: 48,
-    lineHeight: 58,
-    color: colors.cream,
-  },
-
-  buttons: {
-    gap: 12,
   },
   validerWrap: {
     width: '100%',
