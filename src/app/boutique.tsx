@@ -206,7 +206,8 @@ export default function BoutiqueScreen() {
           <Text style={styles.errorText}>{t.shop.errors[error]}</Text>
         )}
 
-        {PACKS.map(pack => (
+        {/* Pack de bienvenue déjà gagné : plus rien à proposer, la carte disparaît */}
+        {PACKS.filter((pack) => !(pack.gift && pack.productId && hasPurchased(pack.productId))).map(pack => (
           <PackCard
             key={pack.id}
             pack={pack}
