@@ -11,7 +11,8 @@
       "bundleIdentifier": "com.mandarine.banco",
       "buildNumber": "1",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleAllowMixedLocalizations": true
       },
       "appStoreUrl": "https://apps.apple.com/app/id6821200817"
     },
@@ -48,7 +49,7 @@
         {
           "androidAppId": "ca-app-pub-3940256099942544~3347511713",
           "iosAppId": "ca-app-pub-7673839117797871~4845563686",
-          "userTrackingUsageDescription": "Cet identifiant sert à vous proposer des publicités plus pertinentes. Banco reste gratuit grâce à elles.",
+          "userTrackingUsageDescription": "This identifier is used to show you more relevant ads. Banco stays free thanks to them.",
           "skAdNetworkItems": [
             "cstr6suwn9.skadnetwork",
             "4fzdc2evr5.skadnetwork",
@@ -116,6 +117,12 @@
       "eas": {
         "projectId": "ebce9ac2-79fd-4702-993d-57cce4659082"
       }
+    },
+    "locales": {
+      "fr": "./languages/fr.json",
+      "en": "./languages/en.json",
+      "de": "./languages/de.json",
+      "es": "./languages/es.json"
     }
   }
 }
