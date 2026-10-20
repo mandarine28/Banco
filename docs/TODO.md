@@ -11,7 +11,7 @@ Détails techniques : `docs/banco-doc.html` (sections « Publicité » et « Cad
 - [x] 👤 Créer l'emplacement « Essayer un pack » → type **Récompensé**
 - [x] 👤 Créer l'emplacement « Fin de partie » → type **Interstitiel**
 - [ ] 👤 Vérifier dans l'emplacement « Fin de partie » : **image et texte seulement** (vidéo décochée) + fréquence max (ex. 1 toutes les 10 min)
-- [ ] 👤 **« Confidentialité et messages »** : créer et publier le message **RGPD** et le message **« explication IDFA »** (fenêtre de suivi Apple), pour l'app Banco iOS — ⚠️ la page ne chargeait pas le 2026-10-20 : essayer en navigation privée, bloqueur de pub désactivé (uBlock, Brave…), un seul compte Google connecté, Chrome ; sinon réessayer plus tard (compte tout neuf). Non bloquant pour les tests, obligatoire avant la mise en ligne
+- [x] 👤 **« Confidentialité et messages »** : créer et publier le message **RGPD** et le message **« explication IDFA »** (fenêtre de suivi Apple), pour l'app Banco iOS — ⚠️ la page ne chargeait pas le 2026-10-20 : essayer en navigation privée, bloqueur de pub désactivé (uBlock, Brave…), un seul compte Google connecté, Chrome ; sinon réessayer plus tard (compte tout neuf). Non bloquant pour les tests, obligatoire avant la mise en ligne — fait le 2026-10-20
 - [ ] 👤 Relire la politique AdMob sur les annonces avec récompense (texte « Jouez gratuitement avec ce pack »)
 - [x] 👤 Identifiants envoyés : app iOS `~4845563686`, « Essayer un pack » `/2385640044`, « Fin de partie » `/5963204236`
 - [ ] 👤 Infos de paiement AdMob (avant le 1er versement, ~70 €) : type **Particulier ou Organisation : pas encore tranché** (piste : Organisation via la micro-entreprise, après avoir déclaré l'activité « édition d'applications » sur le guichet unique INPI ; catégorie fiscale à valider avec un comptable / l'URSSAF) — choix quasi définitif chez Google ; même nom que le compte Apple et App Store Connect
@@ -26,7 +26,7 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
 - [x] 🤖 Vraie vidéo récompensée pour « Essayer un pack » (`src/lib/ads.ts`)
 - [x] 🤖 Interstitiel de fin de partie : à partir de la 4e partie, 1 sur 2, en quittant l'écran final ; jamais si partie quittée ni après un essai
 - [x] 🤖 Texte ATT et liste SKAdNetwork (50 identifiants Google) dans `app.json`
-- [ ] 👤 AdMob → « Confidentialité et messages » : créer le message RGPD **et** le message « explication IDFA » (c'est lui qui déclenche la fenêtre de suivi Apple)
+- [x] 👤 AdMob → « Confidentialité et messages » : créer le message RGPD **et** le message « explication IDFA » (c'est lui qui déclenche la fenêtre de suivi Apple) — fait le 2026-10-20
 - [x] 🤖 Identifiants réels iOS en place (`app.json` + `src/config/ads.ts`) ; Android reste l'ID de test Google
 - [x] 🤖 Clé RevenueCat aussi dans le profil `development` d'`eas.json`
 
