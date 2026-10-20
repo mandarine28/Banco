@@ -230,7 +230,7 @@ const translations: Record<Lang, Translations> = {
       pause: 'Pause',
       resume: 'Reprendre',
       endTurn: 'Terminer le tour',
-      someAnswers: 'Quelques réponses possible...',
+      someAnswers: 'Quelques réponses possibles...',
       sortPopular: 'Tri par popularité',
       sortAlpha: 'Tri alphabétique',
     },

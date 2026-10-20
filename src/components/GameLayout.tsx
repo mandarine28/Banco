@@ -119,7 +119,7 @@ export function GameLayout({ onHome, children, footer, scrollDisabled = false, o
 
         {/* Overlay au-dessus de tout le contenu — dernier enfant = z-order max */}
         {overlay ? (
-          <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+          <View style={[StyleSheet.absoluteFill, styles.overlay]} pointerEvents="box-none">
             {overlay}
           </View>
         ) : null}
@@ -156,6 +156,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+  },
+  // zIndex explicite : sans lui, l'index A-Z (zIndex 2) passait par-dessus la pause (vues aplaties par le nouveau moteur)
+  overlay: {
+    zIndex: 100,
+    elevation: 100,
   },
   footer: {
     paddingHorizontal: 16,
