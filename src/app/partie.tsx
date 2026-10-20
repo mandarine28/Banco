@@ -19,7 +19,7 @@ import { SurvieResultPhase } from '@/components/game/SurvieResultPhase';
 import { ConfettiOverlay } from '@/components/ConfettiOverlay';
 import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal, PauseModal } from '@/components/InfoModal';
-import { PACK_THEME_IDS, type ProductId } from '@/config/shop';
+import { PACK_THEME_IDS, type ProductId, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSuccess, opponent, TURN_SECONDS } from '@/game/engine';
@@ -60,7 +60,7 @@ export default function GameScreen() {
       ? settings.teams
       : Array.from({ length: settings.teamCount }, (_, i) => ({ name: `ÉQUIPE ${i + 1}`, color: teamColors[i] }));
   const [gameId, setGameId] = useState(0);
-  const { hasPurchased, purchase, prices } = usePurchases();
+  const { hasPurchased, purchase, prices, claimGiftedPack } = usePurchases();
   const { lang } = useLang();
   const t = getT(lang);
   // Revanche : un pack en essai ne vaut que pour une partie, on le retire s'il n'a pas été acheté
@@ -125,8 +125,23 @@ export default function GameScreen() {
     }
   };
 
+  // Fenêtre « pack débloqué » sur l'écran final de la WELCOME_GAMES-ième partie
+  const [welcomeUnlocked, setWelcomeUnlocked] = useState(false);
+  const welcomePackTitle = t.shop.packTitles[PACK_THEME_IDS[WELCOME_PACK] ?? ''] ?? '';
+
   const onGameFinished = () => {
-    recordGameCompleted().then((count) => {
+    recordGameCompleted().then(async (count) => {
+      if (count >= WELCOME_GAMES && !hasPurchased(WELCOME_PACK)) {
+        try {
+          await claimGiftedPack(WELCOME_PACK);
+          // La fenêtre du cadeau occupe l'écran final : ni demande d'avis ni pub cette fois
+          setWelcomeUnlocked(true);
+          return;
+        } catch (e) {
+          // Échec d'écriture : nouvel essai à la prochaine partie terminée
+          if (__DEV__) console.warn('[partie] déblocage du pack de bienvenue impossible', e);
+        }
+      }
       // Pas après une partie d'essai : la proposition d'achat occupe déjà l'écran final
       if (!trialProduct) setTimeout(() => maybeRequestReview(count), REVIEW_DELAY_MS);
       // Pas non plus de pub après une partie d'essai : le joueur vient déjà d'en regarder une
@@ -157,6 +172,18 @@ export default function GameScreen() {
     />
   );
 
+  const welcomeModal = (
+    <ConfirmModal
+      visible={welcomeUnlocked}
+      title={t.gift.doneTitle}
+      message={t.gift.doneMsg(welcomePackTitle)}
+      confirmLabel={t.gift.ok}
+      confirmIcon="party-popper"
+      onConfirm={() => setWelcomeUnlocked(false)}
+      onDismiss={() => setWelcomeUnlocked(false)}
+    />
+  );
+
   if (settings.mode === 'survie') {
     return (
       <>
@@ -171,6 +198,7 @@ export default function GameScreen() {
           onFinished={onGameFinished}
         />
         {upsell}
+        {welcomeModal}
       </>
     );
   }
@@ -187,6 +215,7 @@ export default function GameScreen() {
         onFinished={onGameFinished}
       />
       {upsell}
+      {welcomeModal}
     </>
   );
 }

@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -6,11 +7,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
-import { offers, type ProductId } from '@/config/shop';
+import { offers, type ProductId, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
 import { questions } from '@/data/questions';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { usePurchases } from '@/state/purchases';
+import { useWelcomePack } from '@/state/useGifts';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -24,10 +26,12 @@ type Pack = {
   productId?: ProductId;
   image: ImageSourcePropType;
   comingSoon?: boolean;
+  /** Pack de bienvenue : jamais vendu, gagné en jouant. */
+  gift?: boolean;
 };
 
 const PACKS: Pack[] = [
-  { id: 'harry-potter', productId: 'packHarryPotter', image: require('../../assets/packs/harry-potter.png') },
+  { id: 'harry-potter', productId: WELCOME_PACK, gift: true, image: require('../../assets/packs/harry-potter.png') },
   { id: 'nintendo', comingSoon: true, image: require('../../assets/packs/retro-gaming.png') },
   { id: 'anime', comingSoon: true, image: require('../../assets/packs/anime.png') },
 ];
@@ -42,9 +46,11 @@ type PackCardProps = {
   purchased: boolean;
   purchasing: boolean;
   onPurchase: () => void;
+  /** Pack de bienvenue : progression « 1 partie sur 3 » (vide tant que le compteur n'est pas lu). */
+  giftProgress?: string;
 };
 
-function PackCard({ pack, price, purchased, purchasing, onPurchase }: PackCardProps) {
+function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress }: PackCardProps) {
   const { lang } = useLang();
   const t = getT(lang);
   const title = t.shop.packTitles[pack.id] ?? pack.id;
@@ -66,6 +72,11 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase }: PackCardPr
           {purchased ? (
             <View style={styles.unlockedButton}>
               <Text style={styles.unlockedText} numberOfLines={1} adjustsFontSizeToFit>{t.shop.unlocked}</Text>
+            </View>
+          ) : pack.gift ? (
+            <View style={[styles.ctaButton, styles.giftProgress]} accessibilityLabel={`${t.gift.welcomeTitle} ${giftProgress ?? ''}`}>
+              <MaterialCommunityIcons name="gift" size={18} color={colors.purpleDeep} />
+              <Text style={styles.ctaText} numberOfLines={1} adjustsFontSizeToFit>{giftProgress ?? ''}</Text>
             </View>
           ) : (
             <Pressable
@@ -113,6 +124,7 @@ export default function BoutiqueScreen() {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const { hasPurchased, prices, purchase, restorePurchases, isLoading, error } = usePurchases();
+  const { gamesPlayed } = useWelcomePack();
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
   const { lang } = useLang();
@@ -193,10 +205,11 @@ export default function BoutiqueScreen() {
             key={pack.id}
             pack={pack}
             // Prix localisé de l'App Store dès qu'il est chargé, sinon le prix de référence de la boutique
-            price={pack.productId ? (prices[pack.productId] ?? offers[pack.productId].price) : undefined}
+            price={pack.productId && !pack.gift ? (prices[pack.productId] ?? offers[pack.productId].price) : undefined}
             purchased={!!pack.productId && hasPurchased(pack.productId)}
             purchasing={purchasingId === pack.id}
             onPurchase={() => handlePurchase(pack)}
+            giftProgress={pack.gift && gamesPlayed !== null ? t.gift.progress(gamesPlayed, WELCOME_GAMES) : undefined}
           />
         ))}
 
@@ -310,6 +323,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  giftProgress: {
+    flexDirection: 'row',
+    gap: 6,
   },
   ctaText: {
     fontFamily: fonts.displayMedium,

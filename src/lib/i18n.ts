@@ -124,16 +124,13 @@ type Translations = {
   };
   gift: {
     welcomeTitle: string;
-    chooseMsg: string;
-    claim: string;
-    later: string;
+    welcomeMsg: (pack: string, games: number) => string;
     doneTitle: string;
-    doneMsg: string;
+    doneMsg: (pack: string) => string;
     ok: string;
-    failedMsg: string;
-    welcomeCardTitle: string;
-    welcomeCardMsg: (games: number) => string;
-    playBtn: string;
+    progress: (played: number, total: number) => string;
+    lockedMsg: (left: number) => string;
+    gotIt: string;
   };
   survie: {
     validate: string;
@@ -310,16 +307,13 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Cadeau de bienvenue !',
-      chooseMsg: 'Choisissez le pack qui vous est offert :',
-      claim: 'RÉCUPÉRER',
-      later: 'PLUS TARD',
+      welcomeMsg: (pack, games) => `Jouez ${games} parties et le pack « ${pack} » est à vous !`,
       doneTitle: "C'est à vous !",
-      doneMsg: 'Votre pack est débloqué. Bonne partie !',
+      doneMsg: (pack) => `Le pack « ${pack} » est débloqué. Bonne partie !`,
       ok: 'SUPER',
-      failedMsg: 'Impossible de récupérer le cadeau pour le moment. Réessayez plus tard.',
-      welcomeCardTitle: 'Votre pack de bienvenue',
-      welcomeCardMsg: (games) => `Recevez un pack offert après ${games} parties.`,
-      playBtn: 'JOUER',
+      progress: (played, total) => `${played} partie${played > 1 ? 's' : ''} sur ${total}`,
+      lockedMsg: (left) => `Jouez encore ${left} partie${left > 1 ? 's' : ''} pour débloquer ce pack offert !`,
+      gotIt: 'COMPRIS',
     },
     survie: {
       phoneTitle: 'Posez le téléphone au centre',
@@ -533,16 +527,13 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Welcome gift!',
-      chooseMsg: 'Choose your free pack:',
-      claim: 'CLAIM',
-      later: 'LATER',
+      welcomeMsg: (pack, games) => `Play ${games} games and the "${pack}" pack is yours!`,
       doneTitle: "It's yours!",
-      doneMsg: 'Your pack is unlocked. Have fun!',
+      doneMsg: (pack) => `The "${pack}" pack is unlocked. Have fun!`,
       ok: 'GREAT',
-      failedMsg: "We couldn't deliver your gift right now. Please try again later.",
-      welcomeCardTitle: 'Your welcome pack',
-      welcomeCardMsg: (games) => `Get a free pack after ${games} games.`,
-      playBtn: 'PLAY',
+      progress: (played, total) => `${played} of ${total} games`,
+      lockedMsg: (left) => `Play ${left} more game${left > 1 ? 's' : ''} to unlock this free pack!`,
+      gotIt: 'GOT IT',
     },
     survie: {
       phoneTitle: 'Put the phone in the middle',
@@ -756,16 +747,13 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Willkommensgeschenk!',
-      chooseMsg: 'Wähle dein Gratis-Paket:',
-      claim: 'ABHOLEN',
-      later: 'SPÄTER',
+      welcomeMsg: (pack, games) => `Spiel ${games} Partien und das Paket „${pack}" gehört dir!`,
       doneTitle: 'Es gehört dir!',
-      doneMsg: 'Dein Paket ist freigeschaltet. Viel Spaß!',
+      doneMsg: (pack) => `Das Paket „${pack}" ist freigeschaltet. Viel Spaß!`,
       ok: 'SUPER',
-      failedMsg: 'Das Geschenk kann gerade nicht abgeholt werden. Versuche es später erneut.',
-      welcomeCardTitle: 'Dein Willkommenspaket',
-      welcomeCardMsg: (games) => `Erhalte nach ${games} Spielen ein Gratis-Paket.`,
-      playBtn: 'SPIELEN',
+      progress: (played, total) => `${played} von ${total} Partien`,
+      lockedMsg: (left) => `Spiel noch ${left} ${left > 1 ? 'Partien' : 'Partie'}, um dieses Gratis-Paket freizuschalten!`,
+      gotIt: 'VERSTANDEN',
     },
     survie: {
       phoneTitle: 'Legt das Handy in die Mitte',
@@ -979,16 +967,13 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: '¡Regalo de bienvenida!',
-      chooseMsg: 'Elige tu pack gratis:',
-      claim: 'RECOGER',
-      later: 'MÁS TARDE',
+      welcomeMsg: (pack, games) => `¡Juega ${games} partidas y el pack «${pack}» es tuyo!`,
       doneTitle: '¡Es tuyo!',
-      doneMsg: 'Tu pack está desbloqueado. ¡A jugar!',
+      doneMsg: (pack) => `El pack «${pack}» está desbloqueado. ¡A jugar!`,
       ok: 'GENIAL',
-      failedMsg: 'No se ha podido entregar el regalo. Inténtalo más tarde.',
-      welcomeCardTitle: 'Tu pack de bienvenida',
-      welcomeCardMsg: (games) => `Recibe un pack gratis después de ${games} partidas.`,
-      playBtn: 'JUGAR',
+      progress: (played, total) => `${played} de ${total} partidas`,
+      lockedMsg: (left) => `¡Juega ${left} partida${left > 1 ? 's' : ''} más para desbloquear este pack gratis!`,
+      gotIt: 'ENTENDIDO',
     },
     survie: {
       phoneTitle: 'Poned el móvil en el centro',

@@ -1,11 +1,21 @@
-import { PACK_THEME_IDS, type ProductId } from '@/config/shop';
+import { useEffect, useState } from 'react';
+
+import { WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
+import { loadGamesCompleted } from '@/lib/engagement';
 import { usePurchases } from './purchases';
 
-/** Pack offert contre un partage du jeu : une fois par appareil, sans compte ni serveur. */
-export function useGifts() {
-  const { hasPurchased, giftedPack, claimGiftedPack } = usePurchases();
-  const giftablePacks = (Object.keys(PACK_THEME_IDS) as ProductId[]).filter((product) => !hasPurchased(product));
-  // undefined = lecture du trousseau en cours : rien n'est proposé avant de savoir
-  const canOfferGift = giftedPack === null && giftablePacks.length > 0;
-  return { giftablePacks, canOfferGift, claimGift: claimGiftedPack };
+/** Pack de bienvenue : offert après WELCOME_GAMES parties terminées, enregistré sur l'appareil. */
+export function useWelcomePack() {
+  const { hasPurchased } = usePurchases();
+  // null tant que le compteur n'est pas lu : la progression ne s'affiche pas avant
+  const [gamesCompleted, setGamesCompleted] = useState<number | null>(null);
+  useEffect(() => {
+    loadGamesCompleted().then(setGamesCompleted);
+  }, []);
+  const gamesPlayed = gamesCompleted === null ? null : Math.min(gamesCompleted, WELCOME_GAMES);
+  return {
+    unlocked: hasPurchased(WELCOME_PACK),
+    gamesPlayed,
+    gamesLeft: gamesPlayed === null ? null : WELCOME_GAMES - gamesPlayed,
+  };
 }

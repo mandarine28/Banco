@@ -37,14 +37,16 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
   2. `npx eas-cli@latest build --profile development --platform ios`
   3. installer l'app, puis `npx expo start --dev-client`
 - [ ] 👤 Tester : essai de pack par pub, proposition d'achat en fin d'essai, achat réel (sandbox)
-- [ ] 👤 + 🤖 Pack de bienvenue / cadeau : **à trancher** — le code (`useGifts`) décrit un cadeau « contre un partage », la carte boutique a été retirée ; décider ce qu'on garde avant de tester
+- [x] 🤖 Pack de bienvenue (décidé le 2026-10-20) : **Poudlard Express offert après 3 parties terminées** (toutes parties depuis l'installation), jamais vendu ni essayé contre une pub ; fenêtre au premier lancement, progression « 1 partie sur 3 » dans la boutique, fenêtre « pack débloqué » sur l'écran final
+- [ ] 👤 Tester : fenêtre de bienvenue au 1er lancement, progression boutique, déblocage à la 3e partie
 - [ ] 👤 Tester : demande d'avis (après 3 parties ; absente sur TestFlight)
 - [ ] 👤 Tester : interstitiel en fin de partie avec les pubs de test
 
 ## Étape 4 — Légal, avant la mise en ligne (👤)
 
 - [ ] 👤 App Store Connect : Tauk ! (soumise le 10/10) et Banco (16/10) toujours « En attente de vérification » le 20/10 → message envoyé à App Review ; vérifier la page Adhésion (developer.apple.com/account) et « Accords, taxes et services bancaires » (accord **apps payantes** actif, requis pour les achats intégrés)
-- [ ] 👤 App Store Connect : configurer les produits (achats intégrés) + RevenueCat — sinon la boutique affiche le prix de référence et l'achat échoue
+- [ ] 👤 App Store Connect : **retirer l'achat intégré `com.banco.pack_harry_potter` de la vérification** (le pack est désormais offert) — la v1 ne vend rien, Rétro-gaming et Anime & mangas restent « Bientôt »
+- [ ] 👤 + 🤖 Mise à jour suivante : écrire les packs Rétro-gaming et Anime & mangas, puis créer leurs produits (App Store Connect + RevenueCat + `src/config/shop.ts`)
 - [ ] 👤 Site, page Confidentialité : retirer « Aucune publicité », ajouter AdMob, les données collectées, le consentement ; **retirer les comptes** (Supabase, connexion Apple/Google, suppression de compte), y compris dans la FAQ de la page Assistance
 - [ ] 👤 Site : publier `app-ads.txt` (contenu fourni par AdMob) à la racine du site déclaré sur l'App Store
 - [ ] 👤 App Store Connect : « Confidentialité de l'app » → déclarer les données utilisées pour la publicité

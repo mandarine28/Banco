@@ -1,5 +1,5 @@
 import { type Href, router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
@@ -7,12 +7,16 @@ import Svg, { Path } from 'react-native-svg';
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { HomeMascot } from '@/components/HomeMascot';
+import { ConfirmModal } from '@/components/InfoModal';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { AnimatedLogo } from '@/components/Logo';
+import { PACK_THEME_IDS, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
+import { loadWelcomeIntroSeen, markWelcomeIntroSeen } from '@/lib/gifts';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
+import { useWelcomePack } from '@/state/useGifts';
 
 const MAX_WIDTH = 500;
 
@@ -53,6 +57,18 @@ export default function HomeScreen() {
   const [panelTop, setPanelTop] = useState(0);
   // Incrémenté à chaque toucher : la mascotte prend peur et son timer repart
   const [interactionKey, setInteractionKey] = useState(0);
+
+  // Premier lancement : annonce du pack offert après WELCOME_GAMES parties
+  const { unlocked } = useWelcomePack();
+  const [showWelcome, setShowWelcome] = useState(false);
+  useEffect(() => {
+    loadWelcomeIntroSeen().then((seen) => setShowWelcome(!seen));
+  }, []);
+  const closeWelcome = () => {
+    setShowWelcome(false);
+    markWelcomeIntroSeen();
+  };
+  const welcomePackTitle = t.shop.packTitles[PACK_THEME_IDS[WELCOME_PACK] ?? ''] ?? '';
 
   return (
     <View style={styles.page}>
@@ -131,6 +147,16 @@ export default function HomeScreen() {
         <Text style={[styles.subtitle, { top: subtitleTop }]}>
           {t.home.subtitle}
         </Text>
+
+        <ConfirmModal
+          visible={showWelcome && !unlocked}
+          title={t.gift.welcomeTitle}
+          message={t.gift.welcomeMsg(welcomePackTitle, WELCOME_GAMES)}
+          confirmLabel={t.gift.gotIt}
+          confirmIcon="gift"
+          onConfirm={closeWelcome}
+          onDismiss={closeWelcome}
+        />
 
       </View>
     </View>

@@ -11,6 +11,7 @@ const LOCK_PATH =
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { ConfirmModal } from '@/components/InfoModal';
+import { PACK_THEME_IDS, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { isRewardGranted, showRewardedAd } from '@/lib/ads';
@@ -20,6 +21,7 @@ import { loadUsedTrials } from '@/lib/trials';
 import { type Lang, getT } from '@/lib/i18n';
 import { ROUND_LIMITS, SURVIE_TIMER_OPTIONS, type SurvieTimer, TEAM_LIMITS, useGameSettings } from '@/state/gameSettings';
 import { usePurchases } from '@/state/purchases';
+import { useWelcomePack } from '@/state/useGifts';
 import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -195,7 +197,10 @@ export default function MatchSettingsScreen() {
     setLockedPack(null);
     router.push('/boutique');
   };
-  const hasHarryPotter = hasPurchased('packHarryPotter') || trialIds.has('harry-potter');
+  // Pack de bienvenue : gagné en jouant, jamais essayé contre une pub
+  const { gamesLeft } = useWelcomePack();
+  const lockedIsWelcome = lockedPack !== null && lockedPack.id === PACK_THEME_IDS[WELCOME_PACK];
+  const hasHarryPotter = hasPurchased(WELCOME_PACK);
   const CATEGORIES: Category[] = [
     ...BASE_CATEGORIES,
     {
@@ -352,9 +357,20 @@ export default function MatchSettingsScreen() {
             </View>
           </ScrollView>
 
+          {/* Pack de bienvenue verrouillé : nombre de parties restantes */}
+          <ConfirmModal
+            visible={lockedIsWelcome}
+            title={lockedPack ? (t.shop.packTitles[lockedPack.id] ?? lockedPack.label) : ''}
+            message={t.gift.lockedMsg(gamesLeft ?? WELCOME_GAMES)}
+            confirmLabel={t.gift.gotIt}
+            confirmIcon="gift"
+            onConfirm={() => setLockedPack(null)}
+            onDismiss={() => setLockedPack(null)}
+          />
+
           {/* Pack verrouillé : essai d'une partie contre une pub, ou boutique */}
           <ConfirmModal
-            visible={lockedPack !== null}
+            visible={lockedPack !== null && !lockedIsWelcome}
             title={lockedPack ? (t.shop.packTitles[lockedPack.id] ?? lockedPack.labelByLang?.[lang] ?? lockedPack.label) : ''}
             message={trialUsed ? t.shop.trialUsedMsg : t.shop.trialMsg}
             cancelLabel={t.shop.goToShop}

@@ -20,6 +20,10 @@ export const PRODUCT_IDS: Record<ProductId, string> = {
 };
 
 
+/** Pack offert (jamais vendu) après WELCOME_GAMES parties terminées. */
+export const WELCOME_PACK: ProductId = 'packHarryPotter';
+export const WELCOME_GAMES = 3;
+
 /** Thème de jeu correspondant à chaque pack de questions. */
 export const PACK_THEME_IDS: Partial<Record<ProductId, string>> = {
   packHarryPotter: 'harry-potter',
