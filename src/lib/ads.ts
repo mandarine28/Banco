@@ -43,15 +43,22 @@ function unitId(ads: typeof GoogleMobileAds, placement: AdPlacement): string | n
 }
 
 let started: Promise<boolean> | null = null;
+let markConsentDone: () => void = () => {};
+const consentDone = new Promise<void>((resolve) => {
+  markConsentDone = resolve;
+});
 
 /**
  * Consentement (RGPD, et fenêtre de suivi Apple si configurée dans AdMob) puis démarrage du SDK.
  * Une seule fois par lancement ; renvoie false si aucune pub ne peut être demandée.
  */
 export function initAds(): Promise<boolean> {
-  started ??= startAds();
+  started ??= startAds().finally(markConsentDone);
   return started;
 }
+
+/** Se résout une fois les fenêtres de consentement fermées : iOS bloque l'écran si une modale s'ouvre en même temps. */
+export const afterAdsConsent = () => consentDone;
 
 async function startAds(): Promise<boolean> {
   const ads = getAds();
