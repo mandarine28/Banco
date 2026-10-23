@@ -9,6 +9,7 @@ import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
+import { LanguagePicker } from '@/components/LanguagePicker';
 import { privacyUrl, supportEmail } from '@/config/links';
 import { canEditAdChoices, editAdChoices } from '@/lib/ads';
 import { useLang } from '@/lib/LangContext';
@@ -96,7 +97,11 @@ export default function SettingsScreen() {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.section}>
-              <Text style={styles.sectionTitle} accessibilityRole="header">{t.prefs.title}</Text>
+              {/* Langue à droite du titre ; aussi accessible en partie via l'écrou, le changement s'applique à chaud */}
+              <View style={styles.sectionHeaderRow}>
+                <Text style={styles.sectionTitle} accessibilityRole="header">{t.prefs.title}</Text>
+                <LanguagePicker showChevron />
+              </View>
               <View style={[styles.card, styles.switchRow, styles.switchCard]}>
                 <Text style={[styles.cardTitle, styles.switchLabel, styles.switchCardLabel]}>{t.prefs.soundEffects}</Text>
                 <Switch
@@ -206,6 +211,11 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: 16,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   sectionTitle: {
     fontFamily: fonts.display,

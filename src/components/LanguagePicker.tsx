@@ -1,14 +1,19 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Modal, StyleSheet, Text, View } from 'react-native';
 
 import { FlagIcon } from '@/components/FlagIcon';
 import { useLang } from '@/lib/LangContext';
-import { LANGUAGES } from '@/lib/i18n';
+import { getT, LANGUAGES } from '@/lib/i18n';
 import type { Lang } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
-export function LanguagePicker() {
+// Assez large pour « Português (Brasil) » : sert aussi à garder le menu dans l'écran
+const DROPDOWN_WIDTH = 232;
+
+/** showChevron : petite flèche qui signale le menu déroulant (réglages). */
+export function LanguagePicker({ showChevron = false }: { showChevron?: boolean }) {
   const { lang, setLang } = useLang();
   const [open, setOpen] = useState(false);
   const [dropdownTop, setDropdownTop] = useState(0);
@@ -19,7 +24,8 @@ export function LanguagePicker() {
     if (open) { setOpen(false); return; }
     wrapRef.current?.measureInWindow((x, y, _w, height) => {
       setDropdownTop(y + height + 6);
-      setDropdownLeft(x);
+      // Sélecteur collé à droite (réglages) : le menu reste dans l'écran
+      setDropdownLeft(Math.max(16, Math.min(x, Dimensions.get('window').width - DROPDOWN_WIDTH - 16)));
       setOpen(true);
     });
   };
@@ -33,15 +39,16 @@ export function LanguagePicker() {
     <>
       <View ref={wrapRef} collapsable={false}>
         <Pressable
-          style={({ pressed }) => [styles.pill, pressed && styles.pillPressed]}
+          style={({ pressed }) => [styles.pill, showChevron && styles.pillWithChevron, pressed && styles.pillPressed]}
           onPress={handleToggle}
           accessibilityRole="button"
-          accessibilityLabel="Changer de langue"
+          accessibilityLabel={getT(lang).prefs.language}
           hitSlop={6}
         >
           <View style={styles.flagCircle}>
             <FlagIcon lang={lang} size={34} />
           </View>
+          {showChevron && <MaterialCommunityIcons name="chevron-down" size={22} color={colors.purpleDeep} />}
         </Pressable>
       </View>
 
@@ -78,7 +85,7 @@ export function LanguagePicker() {
                   <View style={styles.flagSmall}>
                     <FlagIcon lang={code} size={30} />
                   </View>
-                  <Text style={[styles.label, isActive && styles.labelActive]}>{label}</Text>
+                  <Text style={[styles.label, isActive && styles.labelActive]} numberOfLines={1}>{label}</Text>
                   {isActive && <Text style={styles.check}>✓</Text>}
                 </Pressable>
               );
@@ -97,6 +104,12 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignSelf: 'flex-start',
   },
+  pillWithChevron: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    paddingRight: 6,
+  },
   pillPressed: { opacity: 0.75 },
   flagCircle: {
     width: 34,
@@ -110,11 +123,13 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: 'absolute',
+    // Même marge en haut et en bas : la dernière langue ne colle plus au bord
+    paddingVertical: 4,
     backgroundColor: '#fffbf5',
     borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(12,45,100,0.18)',
-    minWidth: 172,
+    minWidth: DROPDOWN_WIDTH,
     shadowColor: colors.purpleDeep,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.12,

@@ -5,7 +5,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-genres',
     theme: 'musique',
     subject: 'STYLES DE MUSIQUE OU GENRES MUSICAUX',
-    subjectByLang: { en: 'MUSIC GENRES OR STYLES', de: 'MUSIKGENRES ODER -STILE', es: 'GÉNEROS O ESTILOS MUSICALES' },
+    subjectByLang: { en: 'MUSIC GENRES OR STYLES', de: 'MUSIKGENRES ODER -STILE', es: 'GÉNEROS O ESTILOS MUSICALES', it: 'GENERI O STILI MUSICALI', pt: 'GÊNEROS OU ESTILOS MUSICAIS' },
     answers: [
       'ROCK', 'POP', 'JAZZ', 'HIP-HOP', 'RAP', 'REGGAE', 'CLASSIQUE', 'BLUES', 'SOUL', 'R&B', 'TECHNO',
       'HOUSE', 'ÉLECTRO', 'METAL', 'COUNTRY', 'FOLK', 'FUNK', 'DISCO', 'PUNK', 'BOSSA NOVA', 'GOSPEL',
@@ -32,6 +32,15 @@ export const questionsMusique: Question[] = [
         'BACHATA', 'MERENGUE', 'BOLERO', 'TRAP LATINO', 'VALLENATO', 'COPLA', 'SEVILLANAS', 'PASODOBLE',
         'RUMBA CATALANA', 'CANTE JONDO', 'RANCHERA', 'CORRIDO', 'MARIACHI', 'SON CUBANO',
       ],
+      it: [
+        'CANZONE ITALIANA', 'ITALO DISCO', 'CANZONE NAPOLETANA', 'CANTAUTORATO', 'TARANTELLA', 'LISCIO',
+        'BEL CANTO', 'RAP ITALIANO', 'PIZZICA', 'MUSICA NEOMELODICA', 'ITALO DANCE', 'STORNELLO',
+      ],
+      pt: [
+        'MPB', 'FORRÓ', 'SERTANEJO', 'PAGODE', 'FUNK CARIOCA', 'AXÉ', 'CHORINHO', 'FREVO', 'BAIÃO',
+        'MARACATU', 'TROPICÁLIA', 'BREGA', 'ARROCHA', 'PISEIRO', 'SAMBA-ENREDO', 'SAMBA-ROCK',
+        'MANGUEBEAT', 'LAMBADA', 'CARIMBÓ', 'XOTE', 'SERTANEJO UNIVERSITÁRIO', 'TECNOBREGA',
+      ],
     },
   },
 
@@ -39,7 +48,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-instruments',
     theme: 'musique',
     subject: 'INSTRUMENTS DE MUSIQUE',
-    subjectByLang: { en: 'MUSICAL INSTRUMENTS', de: 'MUSIKINSTRUMENTE', es: 'INSTRUMENTOS MUSICALES' },
+    subjectByLang: { en: 'MUSICAL INSTRUMENTS', de: 'MUSIKINSTRUMENTE', es: 'INSTRUMENTOS MUSICALES', it: 'STRUMENTI MUSICALI', pt: 'INSTRUMENTOS MUSICAIS' },
     answers: [
       'GUITARE', 'PIANO', 'VIOLON', 'BATTERIE', 'BASSE', 'TROMPETTE', 'SAXOPHONE', 'FLÛTE', 'VIOLONCELLE',
       'CONTREBASSE', 'HARMONICA', 'ACCORDÉON', 'HARPE', 'CLARINETTE', 'TROMBONE', 'BANJO', 'UKULÉLÉ',
@@ -67,6 +76,13 @@ export const questionsMusique: Question[] = [
       es: [
         'BANDURRIA', 'TXALAPARTA', 'GUITARRA ESPAÑOLA', 'TIMPLE', 'CUATRO',
       ],
+      it: [
+        'ZAMPOGNA', 'MARRANZANO', 'TAMMORRA', 'LAUNEDDAS', 'CIARAMELLA',
+      ],
+      pt: [
+        'CAVAQUINHO', 'PANDEIRO', 'BERIMBAU', 'CUÍCA', 'SURDO', 'AGOGÔ', 'VIOLA CAIPIRA', 'ZABUMBA',
+        'TAMBORIM', 'REPIQUE', 'RECO-RECO', 'GANZÁ', 'ATABAQUE', 'TIMBAL', 'RABECA', 'ALFAIA', 'CAXIXI',
+      ],
     },
   },
 
@@ -74,7 +90,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-radios',
     theme: 'musique',
     subject: 'RADIOS MUSICALES FRANÇAISES',
-    subjectByLang: { en: 'MUSIC RADIO STATIONS (UK/US)', de: 'MUSIKRADIOSENDER (DEUTSCHLAND)', es: 'EMISORAS DE RADIO MUSICALES (ESPAÑA)' },
+    subjectByLang: { en: 'MUSIC RADIO STATIONS (UK/US)', de: 'MUSIKRADIOSENDER (DEUTSCHLAND)', es: 'EMISORAS DE RADIO MUSICALES (ESPAÑA)', it: 'RADIO MUSICALI (ITALIA)', pt: 'RÁDIOS MUSICAIS (BRASIL)' },
     answers: [
       'NRJ', 'SKYROCK', 'FUN RADIO', 'RFM', 'VIRGIN RADIO', 'RADIO NOVA', 'RADIO FG',
       'CHÉRIE FM', 'MFM', 'RTL2', 'EUROPE 2', 'NOSTALGIE', 'OÜI FM', 'VOLTAGE',
@@ -112,6 +128,20 @@ export const questionsMusique: Question[] = [
         'RADIO GALICIA', 'RAC 1', 'CATALUNYA RÀDIO',
         'LOS 40 CLASSIC', 'LOS 40 URBAN', 'MEGASTAR FM', 'FLAIX FM', 'RADIO 3', 'LOCA FM', 'VAUGHAN RADIO', 'MELODÍA FM', 'RADIOLÉ', 'RAC 105', 'ICAT', 'HIT FM',
       ],
+      it: [
+        'RTL 102.5', 'RADIO DEEJAY', 'RDS', 'RADIO 105', 'RADIO ITALIA', 'RADIO KISS KISS',
+        'VIRGIN RADIO', 'RADIO CAPITAL', 'M2O', 'RADIO MONTE CARLO', 'R101', 'RAI RADIO 2', 'RAI RADIO 1',
+        'RAI RADIO 3', 'RADIO 24', 'RADIO FRECCIA', 'RADIO ZETA', 'RADIO NORBA', 'RADIO SUBASIO',
+        'RADIO BRUNO', 'RADIO CUORE', 'RADIO MARGHERITA', 'RADIO PIÙ', 'RADIO POPOLARE', 'RADIO MARTE',
+        'RADIO IBIZA', 'RADIO CRC', 'RADIO STUDIO PIÙ', 'RADIO GLOBO', 'ISORADIO', 'RADIO MARIA',
+      ],
+      pt: [
+        'JOVEM PAN FM', 'MIX FM', 'TRANSAMÉRICA', 'ANTENA 1', 'NATIVA FM', 'RÁDIO GLOBO', 'CBN', 'BAND FM',
+        'ALPHA FM', '89 FM A RÁDIO ROCK', 'KISS FM', 'METROPOLITANA FM', 'RÁDIO TUPI', 'RÁDIO CIDADE',
+        'MPB FM', 'RÁDIO ITATIAIA', 'RÁDIO GAÚCHA', 'ATLÂNTIDA FM', 'RÁDIO CULTURA FM', 'NOVA BRASIL FM',
+        'BANDNEWS FM', 'RÁDIO BANDEIRANTES', 'RÁDIO MEC', 'JB FM', 'FM O DIA', 'BEAT 98', 'MELODIA FM',
+        '98 FM', 'RÁDIO NACIONAL', 'ENERGIA 97', 'MASSA FM', 'TROPICAL FM', 'RÁDIO RECORD', 'EDUCADORA FM',
+      ],
     },
   },
 
@@ -119,7 +149,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-salles-concert',
     theme: 'musique',
     subject: 'SALLES OU LIEUX DE CONCERT CÉLÈBRES',
-    subjectByLang: { en: 'FAMOUS CONCERT VENUES', de: 'BERÜHMTE KONZERTSÄLE UND MUSIKSTÄTTEN', es: 'SALAS O LUGARES DE CONCIERTO FAMOSOS' },
+    subjectByLang: { en: 'FAMOUS CONCERT VENUES', de: 'BERÜHMTE KONZERTSÄLE UND MUSIKSTÄTTEN', es: 'SALAS O LUGARES DE CONCIERTO FAMOSOS', it: 'SALE O LUOGHI DA CONCERTO CELEBRI', pt: 'CASAS OU LOCAIS DE SHOW FAMOSOS' },
     answers: [
       'OLYMPIA', 'CARNEGIE HALL', 'MADISON SQUARE GARDEN', 'ROYAL ALBERT HALL', 'WEMBLEY',
       'OPÉRA GARNIER', 'RED ROCKS', 'SYDNEY OPERA HOUSE', 'SCALA DE MILAN', 'ARENA DE VÉRONE', 'SPHERE',
@@ -155,6 +185,19 @@ export const questionsMusique: Question[] = [
         'ESTADIO SANTIAGO BERNABÉU', 'TEATRO COLÓN', 'ESTADIO AZTECA', 'SALA BUT', 'SALA EL SOL',
         'BIZKAIA ARENA',
       ],
+      it: [
+        'STADIO SAN SIRO', 'FORUM DI ASSAGO', 'STADIO OLIMPICO', 'CIRCO MASSIMO', 'TEATRO SAN CARLO',
+        'LA FENICE', 'TEATRO ARISTON', 'AUDITORIUM PARCO DELLA MUSICA', 'PALAEUR', 'PALA ALPITOUR',
+        'RCF ARENA', 'TEATRO MASSIMO', "TEATRO DELL'OPERA DI ROMA", 'TEATRO DEGLI ARCIMBOLDI', 'ALCATRAZ',
+        'FABRIQUE', 'MAGAZZINI GENERALI', 'ATLANTICO', 'PIAZZA DEL PLEBISCITO',
+        'TEATRO ANTICO DI TAORMINA', 'IPPODROMO SNAI SAN SIRO',
+      ],
+      pt: [
+        'MARACANÃ', 'ALLIANZ PARQUE', 'MORUMBI', 'VIBRA SÃO PAULO', 'ESPAÇO UNIMED', 'CIRCO VOADOR',
+        'THEATRO MUNICIPAL DO RIO DE JANEIRO', 'THEATRO MUNICIPAL DE SÃO PAULO', 'SALA SÃO PAULO',
+        'VIVO RIO', 'QUALISTAGE', 'FUNDIÇÃO PROGRESSO', 'CANECÃO', 'TEATRO AMAZONAS', 'ARENA FONTE NOVA',
+        'MINEIRÃO', 'PRAIA DE COPACABANA', 'AUDITÓRIO IBIRAPUERA',
+      ],
     },
   },
 
@@ -162,7 +205,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-chanson-francaise',
     theme: 'musique',
     subject: 'ARTISTES CULTES DE LA CHANSON FRANÇAISE',
-    subjectByLang: { en: 'ICONIC CLASSIC BRITISH OR IRISH ARTISTS', de: 'KULTIGE DEUTSCHSPRACHIGE KÜNSTLER', es: 'ARTISTAS ICÓNICOS DE LA CANCIÓN ESPAÑOLA' },
+    subjectByLang: { en: 'ICONIC CLASSIC BRITISH OR IRISH ARTISTS', de: 'KULTIGE DEUTSCHSPRACHIGE KÜNSTLER', es: 'ARTISTAS ICÓNICOS DE LA CANCIÓN ESPAÑOLA', it: 'ARTISTI CULT DELLA CANZONE ITALIANA', pt: 'ARTISTAS ICÔNICOS DA MPB' },
     answers: [
       'ÉDITH PIAF', 'CHARLES AZNAVOUR', 'SERGE GAINSBOURG', 'BARBARA', 'GEORGES BRASSENS',
       'JACQUES BREL', 'CLAUDE FRANÇOIS', 'JOHNNY HALLYDAY', 'DALIDA', 'JULIETTE GRÉCO',
@@ -207,6 +250,26 @@ export const questionsMusique: Question[] = [
         'JOAQUÍN SABINA', 'JOAN MANUEL SERRAT', 'JOAN BAEZ ESPAÑOLA',
         'ISABEL PANTOJA', 'ROCÍO DÚRCAL', 'CAMARON DE LA ISLA', 'PACO DE LUCIA',
       ],
+      it: [
+        'DOMENICO MODUGNO', 'MINA', 'LUCIO BATTISTI', 'FABRIZIO DE ANDRÉ', 'LUCIO DALLA',
+        'ADRIANO CELENTANO', 'FRANCESCO DE GREGORI', 'FRANCO BATTIATO', 'VASCO ROSSI', 'GINO PAOLI',
+        'LUIGI TENCO', 'ORNELLA VANONI', 'PATTY PRAVO', 'RAFFAELLA CARRÀ', 'GIANNI MORANDI',
+        'RITA PAVONE', 'CLAUDIO BAGLIONI', 'RENATO ZERO', 'PINO DANIELE', 'FRANCESCO GUCCINI',
+        'PAOLO CONTE', 'MIA MARTINI', 'LOREDANA BERTÈ', 'UMBERTO TOZZI', 'MASSIMO RANIERI',
+        'FIORELLA MANNOIA', 'ANTONELLO VENDITTI', 'EDOARDO BENNATO', 'ZUCCHERO', 'GIANNA NANNINI',
+        'AL BANO', 'TOTO CUTUGNO', 'GIORGIO GABER', 'ENZO JANNACCI', 'SERGIO ENDRIGO', 'MILVA',
+        'IVA ZANICCHI', 'ANNA OXA', 'NADA', 'LIGABUE', 'EROS RAMAZZOTTI', 'LAURA PAUSINI',
+      ],
+      pt: [
+        'ELIS REGINA', 'CAETANO VELOSO', 'GILBERTO GIL', 'CHICO BUARQUE', 'ROBERTO CARLOS', 'TOM JOBIM',
+        'VINICIUS DE MORAES', 'JOÃO GILBERTO', 'GAL COSTA', 'MARIA BETHÂNIA', 'MILTON NASCIMENTO',
+        'DJAVAN', 'JORGE BEN JOR', 'TIM MAIA', 'RITA LEE', 'CAZUZA', 'NEY MATOGROSSO', 'CARTOLA',
+        'NOEL ROSA', 'PIXINGUINHA', 'CARMEN MIRANDA', 'ERASMO CARLOS', 'RAUL SEIXAS', 'MARISA MONTE',
+        'ALCEU VALENÇA', 'LUIZ GONZAGA', 'CLARA NUNES', 'BETH CARVALHO', 'ALCIONE', 'ZECA PAGODINHO',
+        'MARTINHO DA VILA', 'PAULINHO DA VIOLA', 'ADONIRAN BARBOSA', 'NARA LEÃO', 'ELZA SOARES',
+        'WILSON SIMONAL', 'BELCHIOR', 'FAGNER', 'ZÉ RAMALHO', 'GONZAGUINHA', 'IVAN LINS', 'JOÃO BOSCO',
+        'LULU SANTOS', 'DORIVAL CAYMMI',
+      ],
     },
   },
 
@@ -214,7 +277,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-rappeurs-fr',
     theme: 'musique',
     subject: 'RAPPEURS FRANÇAIS',
-    subjectByLang: { en: 'UK RAPPERS OR GRIME ARTISTS', de: 'DEUTSCHSPRACHIGE RAPPER', es: 'RAPEROS EN ESPAÑOL' },
+    subjectByLang: { en: 'UK RAPPERS OR GRIME ARTISTS', de: 'DEUTSCHSPRACHIGE RAPPER', es: 'RAPEROS EN ESPAÑOL', it: 'RAPPER ITALIANI', pt: 'RAPPERS BRASILEIROS' },
     answers: [
       'MC SOLAAR', 'IAM', 'SUPRÊME NTM', 'BOOBA', 'ROHFF', 'OXMO PUCCINO', 'AKHENATON',
       'JUL', 'NEKFEU', 'ORELSAN', 'NISKA', 'KAARIS', 'LACRIM', 'KERY JAMES',
@@ -254,6 +317,21 @@ export const questionsMusique: Question[] = [
         'QUEVEDO', 'BIZARRAP', 'TRUENO', 'LIT KILLAH', 'DUKI',
         'BHAVI', 'CAZZU', 'NICKI NICOLE', 'TIAGO PZK', 'SNOW THA PRODUCT',
       ],
+      it: [
+        'SFERA EBBASTA', 'FEDEZ', 'J-AX', 'MARRACASH', 'GUÈ', 'FABRI FIBRA', 'SALMO', 'LAZZA', 'GEOLIER',
+        'GHALI', 'EMIS KILLA', 'CAPAREZZA', 'CLUB DOGO', 'ARTICOLO 31', 'CLEMENTINO', 'ROCCO HUNT',
+        'ANNA', 'TEDUA', 'MADAME', 'CAPO PLAZA', 'COEZ', 'NOYZ NARCOS', 'GEMITAIZ', 'MADMAN', 'NITRO',
+        'ENSI', 'MONDO MARCIO', 'NEFFA', 'FRANKIE HI-NRG MC', 'RKOMI', 'IZI', 'SHIVA', 'BABY GANG',
+        'TONY EFFE', 'DARK POLO GANG', 'PAKY', 'SIMBA LA RUE', 'NAYT', 'MOSTRO', 'FRANCO126',
+      ],
+      pt: [
+        'RACIONAIS MC\'S', 'MANO BROWN', 'EMICIDA', 'CRIOLO', 'SABOTAGE', 'MARCELO D2', 'PLANET HEMP',
+        'MV BILL', 'GABRIEL O PENSADOR', 'THAÍDE', 'FACÇÃO CENTRAL', 'PROJOTA', 'RASHID', 'DJONGA', 'BK',
+        'BACO EXU DO BLUES', 'MATUÊ', 'FILIPE RET', 'L7NNON', 'TETO', 'WIU', 'KAYBLACK', 'XAMÃ',
+        'MC CABELINHO', 'ORUAM', 'TZ DA CORONEL', 'FBC', 'COSTA GOLD', 'NEGRA LI', 'KAROL CONKÁ',
+        'TASHA & TRACIE', 'RINCON SAPIÊNCIA', 'RAPPIN\' HOOD', 'FLORA MATOS', 'DE LEVE', 'SANT',
+        'DFIDELIZ', 'VEIGH', 'BORGES', 'KAWE', 'SIDOKA', 'YUNK VINO',
+      ],
     },
   },
 
@@ -261,7 +339,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-rappeurs-us',
     theme: 'musique',
     subject: 'RAPPEURS AMÉRICAINS',
-    subjectByLang: { en: 'AMERICAN RAPPERS', de: 'US-AMERIKANISCHE RAPPER', es: 'RAPEROS ESTADOUNIDENSES' },
+    subjectByLang: { en: 'AMERICAN RAPPERS', de: 'US-AMERIKANISCHE RAPPER', es: 'RAPEROS ESTADOUNIDENSES', it: 'RAPPER AMERICANI', pt: 'RAPPERS AMERICANOS' },
     answers: [
       'EMINEM', 'JAY-Z', 'KENDRICK LAMAR', 'DRAKE', 'NAS', 'TUPAC', 'THE NOTORIOUS B.I.G.',
       'SNOOP DOGG', 'DR. DRE', 'ICE CUBE', 'KANYE WEST', 'LIL WAYNE', 'TRAVIS SCOTT',
@@ -282,7 +360,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-tubes-80',
     theme: 'musique',
     subject: 'TUBES DES ANNÉES 80',
-    subjectByLang: { en: '80s HITS', de: 'HITS DER 80ER JAHRE', es: 'ÉXITOS DE LOS AÑOS 80' },
+    subjectByLang: { en: '80s HITS', de: 'HITS DER 80ER JAHRE', es: 'ÉXITOS DE LOS AÑOS 80', it: 'SUCCESSI DEGLI ANNI 80', pt: 'SUCESSOS DOS ANOS 80' },
     answers: [
       'THRILLER', 'LIKE A VIRGIN', 'EVERY BREATH YOU TAKE', 'WAKE ME UP BEFORE YOU GO-GO',
       'NEVER GONNA GIVE YOU UP', 'TAKE ON ME', 'WITH OR WITHOUT YOU', "SWEET CHILD O' MINE",
@@ -314,6 +392,16 @@ export const questionsMusique: Question[] = [
         'MUJER CONTRA MUJER', 'LA PUERTA DE ALCALÁ', 'A QUIÉN LE IMPORTA', 'BAILANDO', 'COMO UNA OLA',
         'CRUZ DE NAVAJAS',
       ],
+      it: [
+        "L'ITALIANO", 'SARÀ PERCHÉ TI AMO', 'VAMOS A LA PLAYA', 'VITA SPERICOLATA', 'TARZAN BOY',
+        'I LIKE CHOPIN', 'DOLCE VITA', 'BOLLICINE', 'MALEDETTA PRIMAVERA', 'FOTOROMANZA', 'PER ELISA',
+        'CENTRO DI GRAVITÀ PERMANENTE', 'SOLO NOI',
+      ],
+      pt: [
+        'TEMPO PERDIDO', 'EDUARDO E MÔNICA', 'FAROESTE CABOCLO', 'PAIS E FILHOS', 'EXAGERADO', 'IDEOLOGIA',
+        'PRO DIA NASCER FELIZ', 'BETE BALANÇO', 'INÚTIL', 'POLÍCIA', 'SONÍFERA ILHA', 'LANÇA PERFUME',
+        'ME CHAMA', 'ALAGADOS', 'ÓCULOS', 'COMO UMA ONDA', 'ILARIÊ',
+      ],
     },
   },
 
@@ -321,7 +409,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-dj-electro',
     theme: 'musique',
     subject: 'DJ / PRODUCTEURS DE MUSIQUE ÉLECTRO',
-    subjectByLang: { en: 'DJs / ELECTRONIC MUSIC PRODUCERS', de: 'DJs / ELEKTRONIKMUSIKCPRODUZENTEN', es: 'DJs Y PRODUCTORES ELECTRÓNICOS' },
+    subjectByLang: { en: 'DJs / ELECTRONIC MUSIC PRODUCERS', de: 'DJs / ELEKTRONIKMUSIKCPRODUZENTEN', es: 'DJs Y PRODUCTORES ELECTRÓNICOS', it: 'DJ / PRODUTTORI DI MUSICA ELETTRONICA', pt: 'DJs / PRODUTORES DE MÚSICA ELETRÔNICA' },
     answers: [
       'DAVID GUETTA', 'MARTIN GARRIX', 'DEADMAU5', 'DAFT PUNK', 'TIËSTO', 'AVICII', 'CALVIN HARRIS',
       'DIPLO', 'SKRILLEX', 'APHEX TWIN', 'CARL COX', 'PAUL VAN DYK', 'ARMIN VAN BUUREN', 'PAUL OAKENFOLD',
@@ -350,6 +438,15 @@ export const questionsMusique: Question[] = [
       es: [
         'JUAN MAGÁN', 'DJ NANO', 'CARLOS JEAN', 'JOHN TALABOT', 'HENRY SAIZ', 'ANGEL MOLINA', 'DJ VALDI',
       ],
+      it: [
+        'GIORGIO MORODER', "GIGI D'AGOSTINO", 'BENNY BENASSI', 'GABRY PONTE', 'EIFFEL 65', 'MEDUZA',
+        'ROBERT MILES', 'ALEX GAUDINO', 'MAURO PICOTTO', 'THE BLOODY BEETROOTS', 'CLAUDIO COCCOLUTO',
+        'MERK & KREMONT', 'ALBERTINO',
+      ],
+      pt: [
+        'ALOK', 'VINTAGE CULTURE', 'KVSH', 'CAT DEALERS', 'DUBDOGZ', 'BHASKAR', 'ANNA', 'MAZ',
+        'GUI BORATTO', 'DJ MARKY', 'DJ MARLBORO', 'MOCHAKK', 'FANCY INC', 'LIU', 'ILLUSIONIZE',
+      ],
     },
   },
 
@@ -357,7 +454,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-rock',
     theme: 'musique',
     subject: 'GROUPES DE ROCK LÉGENDAIRES',
-    subjectByLang: { en: 'LEGENDARY ROCK BANDS', de: 'LEGENDÄRE ROCKBANDS', es: 'GRUPOS DE ROCK LEGENDARIOS' },
+    subjectByLang: { en: 'LEGENDARY ROCK BANDS', de: 'LEGENDÄRE ROCKBANDS', es: 'GRUPOS DE ROCK LEGENDARIOS', it: 'GRUPPI ROCK LEGGENDARI', pt: 'BANDAS DE ROCK LENDÁRIAS' },
     answers: [
       'THE BEATLES', 'THE ROLLING STONES', 'LED ZEPPELIN', 'THE DOORS', 'PINK FLOYD', 'QUEEN', 'AC/DC',
       "GUNS N' ROSES", 'METALLICA', 'NIRVANA', 'U2', 'RED HOT CHILI PEPPERS', 'FOO FIGHTERS', 'RADIOHEAD',
@@ -388,6 +485,17 @@ export const questionsMusique: Question[] = [
         'EXTREMODURO', 'LA FUGA', 'MAREA', 'ROSENDO', 'BARÓN ROJO', 'SODA STEREO',
         'LOS FABULOSOS CADILLACS', 'MANÁ',
       ],
+      it: [
+        'MÅNESKIN', 'LITFIBA', 'PFM', 'AFTERHOURS', 'NEGRAMARO', 'SUBSONICA', 'NOMADI', 'LE VIBRAZIONI',
+        'MARLENE KUNTZ', 'VERDENA', 'LACUNA COIL', 'BANCO DEL MUTUO SOCCORSO', 'ELIO E LE STORIE TESE',
+        'CCCP', 'TIMORIA', 'GOBLIN',
+      ],
+      pt: [
+        'LEGIÃO URBANA', 'TITÃS', 'OS PARALAMAS DO SUCESSO', 'BARÃO VERMELHO', 'CAPITAL INICIAL',
+        'SEPULTURA', 'OS MUTANTES', 'ULTRAJE A RIGOR', 'IRA!', 'ENGENHEIROS DO HAWAII',
+        'CHARLIE BROWN JR.', 'RAIMUNDOS', 'SKANK', 'PITTY', 'CPM 22', 'O RAPPA', 'ANGRA', 'BLITZ',
+        'KID ABELHA', 'NAÇÃO ZUMBI', 'LOS HERMANOS',
+      ],
     },
   },
 
@@ -395,7 +503,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-pop-stars',
     theme: 'musique',
     subject: 'STARS INTERNATIONALES DE LA POP',
-    subjectByLang: { en: 'INTERNATIONAL POP STARS', de: 'INTERNATIONALE POPSTARS', es: 'ESTRELLAS INTERNACIONALES DEL POP' },
+    subjectByLang: { en: 'INTERNATIONAL POP STARS', de: 'INTERNATIONALE POPSTARS', es: 'ESTRELLAS INTERNACIONALES DEL POP', it: 'POPSTAR INTERNAZIONALI', pt: 'ESTRELAS INTERNACIONAIS DO POP' },
     answers: [
       'MICHAEL JACKSON', 'MADONNA', 'BEYONCÉ', 'RIHANNA', 'LADY GAGA', 'TAYLOR SWIFT', 'ADELE',
       'BRITNEY SPEARS', 'KATY PERRY', 'JUSTIN BIEBER', 'ARIANA GRANDE', 'ED SHEERAN', 'SELENA GOMEZ',
@@ -429,6 +537,16 @@ export const questionsMusique: Question[] = [
         'ISABEL PANTOJA', 'ALVARO SOLER', 'DAVID BISBAL', 'PABLO ALBORÁN', 'MALÚ', 'ROCÍO JURADO',
         'RAPHAEL', 'JULIO IGLESIAS', 'LOLA ÍNDIGO',
       ],
+      it: [
+        'LAURA PAUSINI', 'EROS RAMAZZOTTI', 'TIZIANO FERRO', 'ANDREA BOCELLI', 'JOVANOTTI', 'ZUCCHERO',
+        'ELISA', 'GIORGIA', 'MARCO MENGONI', 'MAHMOOD', 'ANNALISA', 'ELODIE', 'EMMA',
+        'ALESSANDRA AMOROSO', 'ULTIMO', 'ARISA', 'RAFFAELLA CARRÀ',
+      ],
+      pt: [
+        'ANITTA', 'IVETE SANGALO', 'LUDMILLA', 'PABLLO VITTAR', 'XUXA', 'CLAUDIA LEITTE', 'GLORIA GROOVE',
+        'LUAN SANTANA', 'MARÍLIA MENDONÇA', 'GUSTTAVO LIMA', 'DANIELA MERCURY', 'SANDY', 'JÃO',
+        'LUÍSA SONZA', 'IZA', 'VANESSA DA MATA', 'ROBERTO CARLOS',
+      ],
     },
   },
 
@@ -436,7 +554,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-tubes-2000',
     theme: 'musique',
     subject: 'TUBES DES ANNÉES 2000',
-    subjectByLang: { en: '2000s HITS', de: 'HITS DER 2000ER JAHRE', es: 'ÉXITOS DE LOS AÑOS 2000' },
+    subjectByLang: { en: '2000s HITS', de: 'HITS DER 2000ER JAHRE', es: 'ÉXITOS DE LOS AÑOS 2000', it: 'SUCCESSI DEGLI ANNI 2000', pt: 'SUCESSOS DOS ANOS 2000' },
     answers: [
       'CRAZY IN LOVE', 'HEY YA!', 'TOXIC', 'UMBRELLA', 'IN DA CLUB', 'LOSE YOURSELF', 'YEAH!',
       'BOULEVARD OF BROKEN DREAMS', 'HOT IN HERRE', 'BRING ME TO LIFE', 'SEVEN NATION ARMY', 'CLOCKS',
@@ -463,6 +581,14 @@ export const questionsMusique: Question[] = [
         'LO QUE PASÓ, PASÓ', 'ELLA ME LEVANTÓ', 'BULERÍA', 'A DIOS LE PIDO', 'LA CAMISA NEGRA',
         'OPA, YO VIAZÉ UN CORAZÓN',
       ],
+      it: [
+        'TI SCATTERÒ UNA FOTO', 'SALIRÒ', "SEI NELL'ANIMA", 'A TE', 'XDONO', 'LUCE (TRAMONTI A NORD EST)',
+        'IL MONDO CHE VORREI',
+      ],
+      pt: [
+        'VELHA INFÂNCIA', 'JÁ SEI NAMORAR', 'POEIRA', 'SÓ OS LOUCOS SABEM', 'CHORA, ME LIGA', 'É ISSO AÍ',
+        'DANÇA DO CRÉU',
+      ],
     },
   },
 
@@ -470,7 +596,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-festivals',
     theme: 'musique',
     subject: 'FESTIVALS DE MUSIQUE INCONTOURNABLES',
-    subjectByLang: { en: 'MUST-ATTEND MUSIC FESTIVALS', de: 'UNVERZICHTBARE MUSIKFESTIVALS', es: 'FESTIVALES DE MÚSICA IMPRESCINDIBLES' },
+    subjectByLang: { en: 'MUST-ATTEND MUSIC FESTIVALS', de: 'UNVERZICHTBARE MUSIKFESTIVALS', es: 'FESTIVALES DE MÚSICA IMPRESCINDIBLES', it: 'FESTIVAL MUSICALI DA NON PERDERE', pt: 'FESTIVAIS DE MÚSICA IMPERDÍVEIS' },
     answers: [
       'HELLFEST', 'COACHELLA', 'GLASTONBURY', 'TOMORROWLAND', 'ULTRA MUSIC FESTIVAL', 'BURNING MAN',
       'ROSKILDE', 'SZIGET', 'PRIMAVERA SOUND', 'MONTREUX JAZZ', 'FUJI ROCK', 'LOLLAPALOOZA',
@@ -502,6 +628,18 @@ export const questionsMusique: Question[] = [
         'MONEGROS DESERT FESTIVAL', 'BILBAO BBK LIVE', 'TOMAVISTAS', 'RESURRECTION FEST', 'SONORAMA',
         'DCODE', 'CRUÏLLA', 'MEDUSA FESTIVAL', 'VIVE LATINO', 'ROCK AL PARQUE',
       ],
+      it: [
+        'FESTIVAL DI SANREMO', 'CONCERTO DEL PRIMO MAGGIO', 'UMBRIA JAZZ', 'LUCCA SUMMER FESTIVAL',
+        'FIRENZE ROCKS', 'I-DAYS', 'ROCK IN ROMA', 'NOTTE DELLA TARANTA', 'FESTIVALBAR', 'BATTITI LIVE',
+        'KAPPA FUTURFESTIVAL', 'PISTOIA BLUES', "HEINEKEN JAMMIN' FESTIVAL", 'CLUB TO CLUB', 'MI AMI',
+      ],
+      pt: [
+        'LOLLAPALOOZA BRASIL', 'THE TOWN', 'PLANETA ATLÂNTIDA', 'PRIMAVERA SOUND SÃO PAULO',
+        'FESTIVAL DE VERÃO SALVADOR', 'TOMORROWLAND BRASIL', 'JOÃO ROCK', 'FESTIVAL DE PARINTINS',
+        'AFROPUNK BAHIA', 'COALA FESTIVAL', 'SÃO JOÃO DE CAMPINA GRANDE', 'SÃO JOÃO DE CARUARU',
+        'FESTIVAL DE INVERNO DE CAMPOS DO JORDÃO', 'POPLOAD FESTIVAL', 'ABRIL PRO ROCK',
+        'CARNAVAL DE SALVADOR',
+      ],
     },
   },
 
@@ -509,7 +647,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-boysbands',
     theme: 'musique',
     subject: 'BOYS BANDS ET GIRLS BANDS CÉLÈBRES',
-    subjectByLang: { en: 'FAMOUS BOY BANDS AND GIRL BANDS', de: 'BERÜHMTE BOY BANDS UND GIRL BANDS', es: 'BOY BANDS Y GIRL BANDS FAMOSOS' },
+    subjectByLang: { en: 'FAMOUS BOY BANDS AND GIRL BANDS', de: 'BERÜHMTE BOY BANDS UND GIRL BANDS', es: 'BOY BANDS Y GIRL BANDS FAMOSOS', it: 'BOY BAND E GIRL BAND FAMOSE', pt: 'BOY BANDS E GIRL BANDS FAMOSAS' },
     answers: [
       'ONE DIRECTION', 'BACKSTREET BOYS', 'NSYNC', 'NEW KIDS ON THE BLOCK', 'TAKE THAT', 'WESTLIFE',
       'SPICE GIRLS', "DESTINY'S CHILD", 'TLC', 'EN VOGUE', 'GIRLS ALOUD', 'LITTLE MIX', 'BTS',
@@ -534,6 +672,13 @@ export const questionsMusique: Question[] = [
       es: [
         'RBD', 'ERREWAY', 'LAS KETCHUP', "D'NASH", 'PARCHÍS', 'MENUDO', 'CNCO', 'SONRISAS', 'OBK',
       ],
+      it: [
+        'IL VOLO', 'LOLLIPOP',
+      ],
+      pt: [
+        'ROUGE', 'POLEGAR', 'DOMINÓ', 'KLB', 'TREM DA ALEGRIA', 'TURMA DO BALÃO MÁGICO', 'BFF GIRLS', 'P9',
+        'AS FRENÉTICAS',
+      ],
     },
   },
 
@@ -541,7 +686,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-latinos-reggaeton',
     theme: 'musique',
     subject: 'ARTISTES LATINOS OU DE REGGAETON',
-    subjectByLang: { en: 'LATIN OR REGGAETON ARTISTS', de: 'LATEINAMERIKANISCHE KÜNSTLER ODER REGGAETON', es: 'ARTISTAS LATINOS O DE REGGAETÓN' },
+    subjectByLang: { en: 'LATIN OR REGGAETON ARTISTS', de: 'LATEINAMERIKANISCHE KÜNSTLER ODER REGGAETON', es: 'ARTISTAS LATINOS O DE REGGAETÓN', it: 'ARTISTI LATINI O DI REGGAETON', pt: 'ARTISTAS LATINOS OU DE REGGAETON' },
     answers: [
       'SHAKIRA', 'JENNIFER LOPEZ', 'RICKY MARTIN', 'MARC ANTHONY', 'BAD BUNNY', 'J BALVIN',
       'MALUMA', 'DADDY YANKEE', 'DON OMAR', 'NICKY JAM', 'OZUNA', 'ANUEL AA', 'KAROL G',
@@ -561,7 +706,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-chansons-amour',
     theme: 'musique',
     subject: "CHANSONS D'AMOUR CÉLÈBRES",
-    subjectByLang: { en: 'FAMOUS LOVE SONGS', de: 'BERÜHMTE LIEBESSONGS', es: 'CANCIONES DE AMOR FAMOSAS' },
+    subjectByLang: { en: 'FAMOUS LOVE SONGS', de: 'BERÜHMTE LIEBESSONGS', es: 'CANCIONES DE AMOR FAMOSAS', it: "CANZONI D'AMORE CELEBRI", pt: 'CANÇÕES DE AMOR FAMOSAS' },
     answers: [
       'MY HEART WILL GO ON', 'I WILL ALWAYS LOVE YOU', 'LA VIE EN ROSE', 'NE ME QUITTE PAS',
       "CAN'T HELP FALLING IN LOVE", 'UNCHAINED MELODY', 'AT LAST', 'ENDLESS LOVE', 'WONDERFUL TONIGHT',
@@ -587,6 +732,15 @@ export const questionsMusique: Question[] = [
         'SABOR A MÍ', 'QUIZÁS, QUIZÁS, QUIZÁS', 'TE AMARÉ', 'UN BESO Y UNA FLOR', 'COMO UNA OLA',
         'CORAZÓN PARTÍO', 'SI TÚ ME OLVIDAS', 'TODO DE TI', 'CONTIGO EN LA DISTANCIA', 'PIENSA EN MÍ',
       ],
+      it: [
+        'TI AMO', 'IL CIELO IN UNA STANZA', 'CARUSO', 'CON TE PARTIRÒ', 'PIÙ BELLA COSA', 'LA SOLITUDINE',
+        'E PENSO A TE', 'SARÀ PERCHÉ TI AMO', "UNA LUNGA STORIA D'AMORE", 'ANCORA TU', 'GRANDE AMORE',
+      ],
+      pt: [
+        'EU SEI QUE VOU TE AMAR', 'DETALHES', 'COMO É GRANDE O MEU AMOR POR VOCÊ', 'EVIDÊNCIAS', 'OCEANO',
+        'SOZINHO', 'AMOR I LOVE YOU', 'FICO ASSIM SEM VOCÊ', 'PRA VOCÊ GUARDEI O AMOR',
+        'TROCANDO EM MIÚDOS',
+      ],
     },
   },
 
@@ -594,7 +748,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-groupes',
     theme: 'musique',
     subject: 'GROUPES DE MUSIQUE CÉLÈBRES',
-    subjectByLang: { en: 'FAMOUS MUSIC BANDS', de: 'BERÜHMTE MUSIKBANDS', es: 'GRUPOS DE MÚSICA FAMOSOS' },
+    subjectByLang: { en: 'FAMOUS MUSIC BANDS', de: 'BERÜHMTE MUSIKBANDS', es: 'GRUPOS DE MÚSICA FAMOSOS', it: 'GRUPPI MUSICALI FAMOSI', pt: 'BANDAS DE MÚSICA FAMOSAS' },
     answers: [
       'ABBA', 'FLEETWOOD MAC', 'EAGLES', 'BEE GEES', 'DEPECHE MODE', 'NEW ORDER', 'THE CURE', 'R.E.M.',
       'THE KILLERS', 'ARCADE FIRE', 'GORILLAZ', 'MASSIVE ATTACK', 'MUSE', 'COLDPLAY', 'DAFT PUNK',
@@ -625,6 +779,17 @@ export const questionsMusique: Question[] = [
         'EL CANTO DEL LOCO', 'LA QUINTA ESTACIÓN', 'ESTOPA', 'LOS PLANETAS', 'LAGARTIJA NICK', 'MECANO',
         'LOS SECRETOS', 'VETUSTA MORLA', 'LOVE OF LESBIAN', 'SIDONIE', 'JARABE DE PALO', 'MANÁ',
       ],
+      it: [
+        'MÅNESKIN', 'POOH', 'RICCHI E POVERI', 'MATIA BAZAR', 'NOMADI', 'NEGRAMARO', 'MODÀ', 'THE KOLORS',
+        'LITFIBA', 'SUBSONICA', '883', 'ARTICOLO 31', 'EIFFEL 65', 'LE VIBRAZIONI', 'BOOMDABASH',
+        'STADIO',
+      ],
+      pt: [
+        'LEGIÃO URBANA', 'TITÃS', 'SKANK', 'JOTA QUEST', 'OS PARALAMAS DO SUCESSO', 'KID ABELHA',
+        'MAMONAS ASSASSINAS', 'TRIBALISTAS', 'BANDA EVA', 'CHICLETE COM BANANA', 'SEPULTURA',
+        'OS MUTANTES', 'NOVOS BAIANOS', 'O RAPPA', 'CHARLIE BROWN JR.', 'NATIRUTS', 'RAÇA NEGRA',
+        'SÓ PRA CONTRARIAR', 'CALCINHA PRETA', 'BANDA CALYPSO',
+      ],
     },
   },
 
@@ -632,7 +797,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-comedies-musicales',
     theme: 'musique',
     subject: 'COMÉDIES MUSICALES CÉLÈBRES',
-    subjectByLang: { en: 'FAMOUS MUSICALS', de: 'BERÜHMTE MUSICALS', es: 'MUSICALES FAMOSOS' },
+    subjectByLang: { en: 'FAMOUS MUSICALS', de: 'BERÜHMTE MUSICALS', es: 'MUSICALES FAMOSOS', it: 'MUSICAL CELEBRI', pt: 'MUSICAIS FAMOSOS' },
     answers: [
       'LES MISÉRABLES', 'LE ROI LION', 'GREASE', 'CHICAGO', 'CATS', 'WEST SIDE STORY',
       'THE PHANTOM OF THE OPERA', 'HAMILTON', 'RENT', 'CABARET', 'MOULIN ROUGE', 'MY FAIR LADY',
@@ -661,6 +826,13 @@ export const questionsMusique: Question[] = [
       es: [
         'HOY NO ME PUEDO LEVANTAR', 'LA LLAMADA', 'EL MÉDICO',
       ],
+      it: [
+        'AGGIUNGI UN POSTO A TAVOLA', 'RUGANTINO', 'FORZA VENITE GENTE', 'PINOCCHIO', 'GIULIETTA E ROMEO',
+        'I PROMESSI SPOSI',
+      ],
+      pt: [
+        'ÓPERA DO MALANDRO', 'GOTA D\'ÁGUA', 'OS SALTIMBANCOS', 'RODA VIVA', 'ELIS, A MUSICAL',
+      ],
     },
   },
 
@@ -668,7 +840,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-reggae',
     theme: 'musique',
     subject: 'LÉGENDES DU REGGAE',
-    subjectByLang: { en: 'LEGENDARY REGGAE ARTISTS / BANDS', de: 'LEGENDÄRE REGGAE-KÜNSTLER / BANDS', es: 'ARTISTAS / GRUPOS MÍTICOS DEL REGGAE' },
+    subjectByLang: { en: 'LEGENDARY REGGAE ARTISTS / BANDS', de: 'LEGENDÄRE REGGAE-KÜNSTLER / BANDS', es: 'ARTISTAS / GRUPOS MÍTICOS DEL REGGAE', it: 'ARTISTI / GRUPPI LEGGENDARI DEL REGGAE', pt: 'ARTISTAS / BANDAS LENDÁRIOS DO REGGAE' },
     answers: [
       'BOB MARLEY', 'THE WAILERS', 'PETER TOSH', 'BUNNY WAILER', 'JIMMY CLIFF', 'BURNING SPEAR',
       'TOOTS AND THE MAYTALS', 'CULTURE', 'STEEL PULSE', 'LUCKY DUBE', 'SIZZLA', 'CAPLETON',
@@ -693,6 +865,13 @@ export const questionsMusique: Question[] = [
       es: [
         'MORODO', 'FYAHBWOY', 'GROUNDATION', 'LA PEGATINA', 'GREEN VALLEY',
       ],
+      it: [
+        'SUD SOUND SYSTEM', 'AFRICA UNITE', 'MELLOW MOOD', 'BOOMDABASH', 'VILLA ADA POSSE',
+      ],
+      pt: [
+        'NATIRUTS', 'TRIBO DE JAH', 'CIDADE NEGRA', 'EDSON GOMES', 'ARMANDINHO', 'PONTO DE EQUILÍBRIO',
+        'MANEVA', 'SINE CALMON',
+      ],
     },
   },
 
@@ -700,7 +879,7 @@ export const questionsMusique: Question[] = [
     id: 'musique-supports',
     theme: 'musique',
     subject: "SUPPORTS D'ÉCOUTE DE MUSIQUE",
-    subjectByLang: { en: 'MUSIC PLAYBACK FORMATS THROUGH THE AGES', de: 'MUSIKWIEDERGABEMEDIEN IM LAUFE DER ZEITEN', es: 'SOPORTES PARA ESCUCHAR MÚSICA' },
+    subjectByLang: { en: 'MUSIC PLAYBACK FORMATS THROUGH THE AGES', de: 'MUSIKWIEDERGABEMEDIEN IM LAUFE DER ZEITEN', es: 'SOPORTES PARA ESCUCHAR MÚSICA', it: 'SUPPORTI PER ASCOLTARE LA MUSICA', pt: 'SUPORTES PARA OUVIR MÚSICA' },
     answers: [
       'VINYLE', 'CASSETTE', 'CD', 'STREAMING', 'RADIO', 'WALKMAN', 'IPOD', 'JUKEBOX',
       'TOURNE-DISQUE', '45 TOURS', '33 TOURS', '78 TOURS', 'MINIDISC', 'BALADEUR',

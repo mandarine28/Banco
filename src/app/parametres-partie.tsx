@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -415,14 +416,21 @@ export default function MatchSettingsScreen() {
             <Toast toast={toast} message={t.matchSettings.pickCategoryFirst} />
             {/* Reste pressable même inactif : un appui explique pourquoi on ne peut pas continuer */}
             <Pressable
-              style={[styles.btnContinuer, noCategory && styles.btnContinuerDisabled]}
+              style={noCategory && styles.btnContinuerDisabled}
               accessibilityState={{ disabled: noCategory }}
               accessibilityHint={noCategory ? t.matchSettings.pickCategoryFirst : undefined}
               onPress={noCategory ? toast.show : () => { setSelectedThemes([...selected]); router.push('/equipes'); }}
               accessibilityRole="button"
               accessibilityLabel={t.matchSettings.continueBtn}
             >
-              <Text style={styles.btnContinuerText}>{t.matchSettings.continueBtn}</Text>
+              <LinearGradient
+                colors={['#fb940e', '#f2c512']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.btnContinuer}
+              >
+                <Text style={styles.btnContinuerText}>{t.matchSettings.continueBtn}</Text>
+              </LinearGradient>
             </Pressable>
           </View>
         </View>
@@ -651,12 +659,18 @@ const styles = StyleSheet.create({
   btnContinuerDisabled: {
     opacity: 0.4,
   },
+  // Même bouton que « Continuer » (choix du mode) et « Jouer » (accueil)
   btnContinuer: {
     height: 51,
     borderRadius: 16,
-    backgroundColor: colors.pink,
+    borderWidth: 2,
+    borderColor: '#a15c03',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#a15c03',
+    shadowOffset: { width: -1, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
   },
   btnContinuerText: {
     fontFamily: fonts.displayMedium,

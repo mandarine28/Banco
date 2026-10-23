@@ -5,7 +5,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-streaming',
     theme: 'divertissement',
     subject: 'PLATEFORMES DE STREAMING VIDÉO OU MUSICAL',
-    subjectByLang: { en: 'VIDEO OR MUSIC STREAMING PLATFORMS', de: 'STREAMING-DIENSTE FÜR VIDEO ODER MUSIK', es: 'PLATAFORMAS DE STREAMING DE VÍDEO O MÚSICA' },
+    subjectByLang: { en: 'VIDEO OR MUSIC STREAMING PLATFORMS', de: 'STREAMING-DIENSTE FÜR VIDEO ODER MUSIK', es: 'PLATAFORMAS DE STREAMING DE VÍDEO O MÚSICA', it: 'PIATTAFORME DI STREAMING VIDEO O MUSICALE', pt: 'PLATAFORMAS DE STREAMING DE VÍDEO OU MÚSICA' },
     answers: [
       'NETFLIX', 'SPOTIFY', 'DISNEY+', 'YOUTUBE', 'AMAZON PRIME VIDEO', 'DEEZER', 'APPLE MUSIC', 'TWITCH',
       'TIDAL', 'SOUNDCLOUD', 'APPLE TV+', 'PARAMOUNT+', 'CRUNCHYROLL', 'MUBI', 'PLUTO TV', 'HBO MAX',
@@ -32,6 +32,14 @@ export const questionsDisvertissement: Question[] = [
         'RTVE PLAY', 'MOVISTAR+', 'ATRESPLAYER', 'FILMIN', 'MITELE', '3CAT', 'FLIXOLÉ', 'PLAYZ', 'LALIGA+',
         'EITB', 'À PUNT', 'VIX', 'CLARO VIDEO',
       ],
+      it: [
+        'RAIPLAY', 'MEDIASET INFINITY', 'NOW', 'SKY GO', 'TIMVISION', 'CHILI', 'RAIPLAY SOUND', 'LA7', 'SKY',
+        'MYMOVIES ONE', 'IWONDERFULL',
+      ],
+      pt: [
+        'GLOBOPLAY', 'TELECINE', 'CLARO TV+', 'PLAYPLUS', 'UNIVERSAL+', 'SKY+', 'VIX', 'PALCO MP3',
+        'SUA MÚSICA', 'LOOKE', 'NETMOVIES', 'BAND PLAY',
+      ],
     },
   },
 
@@ -39,7 +47,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-parcs',
     theme: 'divertissement',
     subject: "PARCS D'ATTRACTIONS OU ZOOS",
-    subjectByLang: { en: 'THEME PARKS, WATER PARKS OR ZOOS', de: 'FREIZEITPARKS, WASSERPARKS ODER ZOOS', es: 'PARQUES TEMÁTICOS, ACUÁTICOS O ZOOS' },
+    subjectByLang: { en: 'THEME PARKS, WATER PARKS OR ZOOS', de: 'FREIZEITPARKS, WASSERPARKS ODER ZOOS', es: 'PARQUES TEMÁTICOS, ACUÁTICOS O ZOOS', it: 'PARCHI DIVERTIMENTO, ACQUATICI O ZOO', pt: 'PARQUES DE DIVERSÃO OU ZOOLÓGICOS' },
     answers: [
       'DISNEYLAND PARIS', 'EUROPA-PARK', 'CENTER PARCS', 'PORTAVENTURA', 'LEGOLAND', 'WALT DISNEY WORLD',
       'UNIVERSAL STUDIOS', 'SEAWORLD', 'EFTELING', 'TIVOLI', 'LISEBERG', 'LORO PARQUE', 'GARDALAND',
@@ -76,6 +84,18 @@ export const questionsDisvertissement: Question[] = [
         'PARQUE DE ATRACCIONES DE MADRID', 'MUNDOMAR', 'ZOO AQUARIUM DE MADRID', 'ZOO DE BARCELONA',
         'AQUALANDIA', 'PUY DU FOU ESPAÑA', 'SIOUX CITY', 'XCARET',
       ],
+      it: [
+        'MOVIELAND', 'ZOOMARINE', 'RAINBOW MAGICLAND', 'CINECITTÀ WORLD', 'LEOLANDIA', 'ACQUARIO DI GENOVA',
+        'ITALIA IN MINIATURA', 'FIABILANDIA', 'AQUAFAN', 'ETNALAND', 'BIOPARCO DI ROMA', 'PARCO NATURA VIVA',
+        'EDENLANDIA', 'OLTREMARE', 'CAVALLINO MATTO', 'ACQUAWORLD', 'LE CORNELLE',
+        'SAFARI RAVENNA', 'ZOOSAFARI FASANOLANDIA',
+      ],
+      pt: [
+        'BETO CARRERO WORLD', 'BEACH PARK', 'HOPI HARI', 'THERMAS DOS LARANJAIS', 'HOT PARK', "WET'N WILD",
+        'PLAYCENTER', 'ZOOLÓGICO DE SÃO PAULO', 'ZOO POMERODE', 'AQUARIO', 'BIOPARQUE DO RIO', 'SNOWLAND',
+        'PARQUE DA MÔNICA', 'MUNDO A VAPOR', 'ACQUA MUNDO', 'RIO WATER PLANET', 'ALPEN PARK', 'ZOO SAFARI',
+        'BIOPARQUE PANTANAL',
+      ],
     },
   },
 
@@ -83,7 +103,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-jeux-societe',
     theme: 'divertissement',
     subject: 'JEUX DE SOCIÉTÉ INCONTOURNABLES',
-    subjectByLang: { en: 'MUST-PLAY BOARD GAMES', de: 'UNVERZICHTBARE GESELLSCHAFTSSPIELE', es: 'JUEGOS DE MESA IMPRESCINDIBLES' },
+    subjectByLang: { en: 'MUST-PLAY BOARD GAMES', de: 'UNVERZICHTBARE GESELLSCHAFTSSPIELE', es: 'JUEGOS DE MESA IMPRESCINDIBLES', it: 'GIOCHI DA TAVOLO IMPERDIBILI', pt: 'JOGOS DE TABULEIRO IMPERDÍVEIS' },
     answers: [
       'MONOPOLY', 'SCRABBLE', 'UNO', 'TRIVIAL PURSUIT', 'RISK', 'CLUEDO', 'DOBBLE', '7 WONDERS', 'CATAN',
       'DIXIT', 'CODENAMES', 'TICKET TO RIDE', 'PANDEMIC', 'SPLENDOR', 'LES LOUPS-GAROUS', 'PUISSANCE 4',
@@ -115,6 +135,13 @@ export const questionsDisvertissement: Question[] = [
       es: [
         'PARTY & CO', 'VIRUS!', 'PICTUREKA',
       ],
+      it: [
+        'TOMBOLA', 'SCARABEO', 'BANG!', 'SAPIENTINO', 'PARTY & CO',
+      ],
+      pt: [
+        'PERFIL', 'PULA PIRATA', 'JOGO DA VELHA', 'CILADA', 'SUPER TRUNFO', 'QUEBRA-GELO', 'CAI NÃO CAI',
+        'JOGO DA MEMÓRIA',
+      ],
     },
   },
 
@@ -122,7 +149,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-telerealite',
     theme: 'divertissement',
     subject: 'ÉMISSIONS DE TÉLÉRÉALITÉ',
-    subjectByLang: { en: 'REALITY TV SHOWS', de: 'REALITY-TV-SENDUNGEN', es: 'PROGRAMAS DE TELERREALIDAD' },
+    subjectByLang: { en: 'REALITY TV SHOWS', de: 'REALITY-TV-SENDUNGEN', es: 'PROGRAMAS DE TELERREALIDAD', it: 'REALITY SHOW', pt: 'REALITY SHOWS' },
     answers: [
       'PÉKIN EXPRESS', 'TOP CHEF', 'THE VOICE', "L'AMOUR EST DANS LE PRÉ", "N'OUBLIEZ PAS LES PAROLES",
       'DANSE AVEC LES STARS', 'NINJA WARRIOR', 'LE MEILLEUR PÂTISSIER', 'MASTERCHEF', 'INCROYABLE TALENT',
@@ -161,6 +188,15 @@ export const questionsDisvertissement: Question[] = [
         'GRAN HERMANO VIP', 'LA ISLA DE LAS TENTACIONES', 'PESADILLA EN LA COCINA', 'GANDÍA SHORE',
         'ACAPULCO SHORE', 'LA CASA DE LOS FAMOSOS', 'SUPERVIVIENTES: TIERRA DE NADIE',
       ],
+      it: [
+        'GRANDE FRATELLO VIP', "L'ISOLA DEI FAMOSI", 'UOMINI E DONNE', 'AMICI', 'IL COLLEGIO', 'LA FATTORIA',
+        'PRIMO APPUNTAMENTO', 'CUCINE DA INCUBO', 'ALESSANDRO BORGHESE - 4 RISTORANTI',
+        'CORTESIE PER GLI OSPITI', 'IL BOSS DELLE CERIMONIE',
+      ],
+      pt: [
+        'BBB', 'A FAZENDA', 'NO LIMITE', 'CASA DOS ARTISTAS', 'ILHA RECORD', 'POWER COUPLE BRASIL',
+        'DE FÉRIAS COM O EX', 'ESTRELA DA CASA', 'FAMA', 'POPSTARS', 'SUPERSTAR',
+      ],
     },
   },
 
@@ -168,7 +204,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-perso-jv',
     theme: 'divertissement',
     subject: 'PERSONNAGES ICONIQUES DE JEUX VIDÉO',
-    subjectByLang: { en: 'ICONIC VIDEO GAME CHARACTERS', de: 'IKONISCHE VIDEOSPIEL-CHARAKTERE', es: 'PERSONAJES ICÓNICOS DE VIDEOJUEGOS' },
+    subjectByLang: { en: 'ICONIC VIDEO GAME CHARACTERS', de: 'IKONISCHE VIDEOSPIEL-CHARAKTERE', es: 'PERSONAJES ICÓNICOS DE VIDEOJUEGOS', it: 'PERSONAGGI ICONICI DEI VIDEOGIOCHI', pt: 'PERSONAGENS ICÔNICOS DE VIDEOGAME' },
     answers: [
       'MARIO', 'SONIC', 'PIKACHU', 'LINK', 'LARA CROFT', 'MASTER CHIEF',
       'KRATOS', 'CLOUD STRIFE', 'MEGA MAN', 'KIRBY', 'DONKEY KONG',
@@ -196,7 +232,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-consoles',
     theme: 'divertissement',
     subject: 'CONSOLES DE JEUX VIDÉO DE SALON',
-    subjectByLang: { en: 'HOME VIDEO GAME CONSOLES', de: 'HEIMVIDEOSPIELKONSOLEN', es: 'CONSOLAS DE VIDEOJUEGOS DE SALÓN' },
+    subjectByLang: { en: 'HOME VIDEO GAME CONSOLES', de: 'HEIMVIDEOSPIELKONSOLEN', es: 'CONSOLAS DE VIDEOJUEGOS DE SALÓN', it: 'CONSOLE PER VIDEOGIOCHI DA CASA', pt: 'CONSOLES DE VIDEOGAME CASEIROS' },
     answers: [
       'PLAYSTATION 5', 'PLAYSTATION 4', 'PLAYSTATION 3', 'PLAYSTATION 2', 'PLAYSTATION', 'XBOX SERIES X',
       'XBOX ONE', 'XBOX 360', 'XBOX', 'NINTENDO SWITCH', 'WII', 'WII U', 'GAMECUBE', 'NINTENDO 64',
@@ -214,6 +250,9 @@ export const questionsDisvertissement: Question[] = [
       en: [
         'SEGA GENESIS', 'SUPER NES',
       ],
+      pt: [
+        'ZEEBO', 'PHANTOM SYSTEM', 'DYNAVISION', 'POLYSTATION', 'ODYSSEY',
+      ],
     },
   },
 
@@ -221,7 +260,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-super-heros',
     theme: 'divertissement',
     subject: 'SUPER-HÉROS ISSUS DES UNIVERS MARVEL OU DC',
-    subjectByLang: { en: 'SUPERHEROES FROM MARVEL OR DC', de: 'SUPERHELDEN VON MARVEL ODER DC', es: 'SUPERHÉROES DE LOS UNIVERSOS MARVEL O DC' },
+    subjectByLang: { en: 'SUPERHEROES FROM MARVEL OR DC', de: 'SUPERHELDEN VON MARVEL ODER DC', es: 'SUPERHÉROES DE LOS UNIVERSOS MARVEL O DC', it: 'SUPEREROI DEGLI UNIVERSI MARVEL O DC', pt: 'SUPER-HERÓIS DOS UNIVERSOS MARVEL OU DC' },
     answers: [
       'SPIDER-MAN', 'SUPERMAN', 'BATMAN', 'WONDER WOMAN', 'IRON MAN',
       'CAPTAIN AMERICA', 'THOR', 'HULK', 'BLACK WIDOW', 'HAWKEYE',
@@ -247,7 +286,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-mechants',
     theme: 'divertissement',
     subject: 'MÉCHANTS CULTES DE FILMS, SÉRIES OU JEUX',
-    subjectByLang: { en: 'ICONIC VILLAINS: FILMS / SERIES / VIDEO GAMES', de: 'KULTIGE BÖSEWICHTE AUS FILM UND SPIEL', es: 'VILLANOS DE CINE, SERIES O VIDEOJUEGOS' },
+    subjectByLang: { en: 'ICONIC VILLAINS: FILMS / SERIES / VIDEO GAMES', de: 'KULTIGE BÖSEWICHTE AUS FILM UND SPIEL', es: 'VILLANOS DE CINE, SERIES O VIDEOJUEGOS', it: 'CATTIVI CULT DI FILM, SERIE O VIDEOGIOCHI', pt: 'VILÕES ICÔNICOS DE FILMES, SÉRIES OU JOGOS' },
     answers: [
       'DARK VADOR', 'JOKER', 'THANOS', 'VOLDEMORT', 'HANNIBAL LECTER',
       'SAURON', 'MALÉFIQUE', 'CRUELLA', 'FREDDY KRUEGER', 'JASON VOORHEES',
@@ -272,7 +311,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-animes',
     theme: 'divertissement',
     subject: 'ANIMÉS / MANGAS JAPONAIS POPULAIRES',
-    subjectByLang: { en: 'POPULAR JAPANESE ANIME / MANGA', de: 'BELIEBTE JAPANISCHE ANIME / MANGA', es: 'ANIMES / MANGAS JAPONESES POPULARES' },
+    subjectByLang: { en: 'POPULAR JAPANESE ANIME / MANGA', de: 'BELIEBTE JAPANISCHE ANIME / MANGA', es: 'ANIMES / MANGAS JAPONESES POPULARES', it: 'ANIME / MANGA GIAPPONESI POPOLARI', pt: 'ANIMES / MANGÁS JAPONESES POPULARES' },
     answers: [
       'DRAGON BALL Z', 'NARUTO', 'ONE PIECE', 'ATTACK ON TITAN', 'DEMON SLAYER', 'MY HERO ACADEMIA',
       'DEATH NOTE', 'FULLMETAL ALCHEMIST', 'HUNTER X HUNTER', 'BLEACH', 'SAILOR MOON',
@@ -305,6 +344,16 @@ export const questionsDisvertissement: Question[] = [
         'CAMPEONES', 'MAZINGER Z', 'MARCO', 'CHICHO TERREMOTO', 'DOCTOR SLUMP',
        
       ],
+      it: [
+        'LUPIN III', 'GOLDRAKE', 'MAZINGA Z', "JEEG ROBOT D'ACCIAIO", 'CAPITAN HARLOCK', "L'UOMO TIGRE",
+        'OCCHI DI GATTO', 'LADY OSCAR', 'CANDY CANDY', 'MILA E SHIRO', 'KISS ME LICIA', 'HELLO SPANK',
+        "L'INCANTEVOLE CREAMY", 'ANNA DAI CAPELLI ROSSI',
+      ],
+      pt: [
+        'YU YU HAKUSHO', 'SHURATO', 'SAMURAI WARRIORS', 'GUERREIRAS MÁGICAS DE RAYEARTH',
+        'SAKURA CARD CAPTORS', 'SHAMAN KING', 'BEYBLADE', 'MEDABOTS', 'ZILLION', 'SAMURAI PIZZA CATS',
+        'SPEED RACER', 'PATRULHA ESTELAR',
+      ],
     },
   },
 
@@ -312,7 +361,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-influenceurs',
     theme: 'divertissement',
     subject: 'INFLUENCEURS / YOUTUBEURS / CRÉATEURS',
-    subjectByLang: { en: 'INFLUENCERS / YOUTUBERS / CREATORS', de: 'INFLUENCER / YOUTUBER / CREATOR', es: 'INFLUENCERS / YOUTUBERS / CREADORES' },
+    subjectByLang: { en: 'INFLUENCERS / YOUTUBERS / CREATORS', de: 'INFLUENCER / YOUTUBER / CREATOR', es: 'INFLUENCERS / YOUTUBERS / CREADORES', it: 'INFLUENCER / YOUTUBER / CREATOR', pt: 'INFLUENCIADORES / YOUTUBERS / CRIADORES' },
     answers: [
       'PEWDIEPIE', 'MR. BEAST', 'NINJA', 'POKIMANE', 'KURZGESAGT', 'KSI', 'LOGAN PAUL', 'JAKE PAUL',
     ],
@@ -349,6 +398,19 @@ export const questionsDisvertissement: Question[] = [
         'WISMICHU', 'LUZU', 'ALEXELCAPO', 'ELMILLOR', 'ILLOJUAN', 'JORDI WILD', 'JUANPA ZURITA', 'ROBLEIS',
         'DALAS REVIEW', 'JPELIRROJO', 'MAYICHI', 'PAULA GONU', 'ROCÍO OSORNO', 'QUACKITY',
       ],
+      it: [
+        'FAVIJ', 'ST3PNY', 'CICCIOGAMER89', 'ANIMA', 'ME CONTRO TE', 'IPANTS', 'THE JACKAL', 'CLIO MAKE UP',
+        'CHIARA FERRAGNI', 'KHABY LAME', 'GIULIA DE LELLIS', 'LUIS SAL', 'GIANMARCO ZAGATO', 'DARIO MOCCIA',
+        'MARZA', 'BLUR', 'IL MASSEO', 'POW3R', 'FRANK MATANO', 'GIANLUCA VACCHI', 'FEDEZ', 'HIMORTA',
+        'BARBASCURA X',
+      ],
+      pt: [
+        'WHINDERSSON NUNES', 'FELIPE NETO', 'LUCCAS NETO', 'CASIMIRO', 'GAULES', 'VIRGINIA FONSECA',
+        'CARLINHOS MAIA', 'ENALDINHO', 'AUTHENTICGAMES', 'REZENDE EVIL', 'T3DDY', 'KÉFERA', 'CELLBIT',
+        'ALANZOKA', 'MANUAL DO MUNDO', 'CANAL NOSTALGIA', 'PORTA DOS FUNDOS', 'BOCA ROSA', 'NATH FINANÇAS',
+        'CAUÊ MOURA', 'PC SIQUEIRA', 'JOUT JOUT', 'JULIO COCIELO', 'TATA ESTANIECKI', 'LOUD CORINGA', 'NOBRU',
+        'MAYA MASSAFERA', 'GKAY', 'LUBA',
+      ],
     },
   },
 
@@ -356,7 +418,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-humoristes',
     theme: 'divertissement',
     subject: 'HUMORISTES OU STAND-UPPERS',
-    subjectByLang: { en: 'COMEDIANS OR STAND-UP COMICS', de: 'KOMIKER ODER STAND-UP-COMEDIANS', es: 'HUMORISTAS O COMEDIANTES DE STAND-UP' },
+    subjectByLang: { en: 'COMEDIANS OR STAND-UP COMICS', de: 'KOMIKER ODER STAND-UP-COMEDIANS', es: 'HUMORISTAS O COMEDIANTES DE STAND-UP', it: 'COMICI O STAND-UP COMEDIAN', pt: 'HUMORISTAS OU COMEDIANTES DE STAND-UP' },
     answers: [
       'KEVIN HART', 'DAVE CHAPPELLE', 'JERRY SEINFELD', 'ROBIN WILLIAMS', 'EDDIE MURPHY', 'CHRIS ROCK',
       'TREVOR NOAH', 'RICKY GERVAIS', 'JIM CARREY', 'ROWAN ATKINSON', 'CHARLIE CHAPLIN',
@@ -399,6 +461,24 @@ export const questionsDisvertissement: Question[] = [
         "ÁLEX O'DOGHERTY", 'CANTINFLAS', 'CHESPIRITO', 'MIGUEL GILA', 'TIP Y COLL', 'EUGENIO',
         'PACO ARÉVALO', 'TONI MOOG', 'PEPE VIYUELA', 'MANU SÁNCHEZ', 'SILVIA ABRIL', 'ÁNGEL GARÓ',
       ],
+      it: [
+        'ROBERTO BENIGNI', 'CHECCO ZALONE', 'ALDO GIOVANNI E GIACOMO', 'FICARRA E PICONE', 'TOTÒ',
+        'ALBERTO SORDI', 'PAOLO VILLAGGIO', 'CARLO VERDONE', 'GIGI PROIETTI', 'MAURIZIO CROZZA',
+        'ENRICO BRIGNANO', 'MASSIMO TROISI', 'LUCA E PAOLO', 'GIORGIO PANARIELLO', 'LEONARDO PIERACCIONI',
+        'VIRGINIA RAFFAELE', 'LUCIANA LITTIZZETTO', 'PAOLA CORTELLESI', 'ANGELO DURO', 'EDOARDO FERRARIO',
+        'DANIELE FABBRI', 'PIO E AMEDEO', 'MAURIZIO BATTISTA', 'TERESA MANNINO', 'ALESSANDRO SIANI',
+        'VINCENZO SALEMME', 'DIEGO ABATANTUONO', 'ANTONIO ALBANESE', 'CLAUDIO BISIO', 'NINO FRASSICA',
+        'LILLO E GREG', 'MAX GIUSTI', 'GIGI E ANDREA', 'FRANCO FRANCHI', 'CICCIO INGRASSIA', 'BEPPE GRILLO',
+        'DARIO FO', 'ENRICO MONTESANO', 'CHRISTIAN DE SICA', 'MASSIMO BOLDI',
+      ],
+      pt: [
+        'CHICO ANYSIO', 'JÔ SOARES', 'RENATO ARAGÃO', 'MUSSUM', 'DEDÉ SANTANA', 'ZACARIAS', 'DANILO GENTILI',
+        'FÁBIO PORCHAT', 'MARCELO ADNET', 'PAULO GUSTAVO', 'TATÁ WERNECK', 'LEANDRO HASSUM', 'MARCUS MAJELLA',
+        'RAFINHA BASTOS', 'MARCELO MARROM', 'TIRULLIPA', 'WHINDERSSON NUNES', 'THIAGO VENTURA',
+        'AFONSO PADILHA', 'MURILO COUTO', 'BRUNA LOUISE', 'DIOGO PORTUGAL', 'OSCARITO', 'GRANDE OTELO',
+        'RONALD GOLIAS', 'TOM CAVALCANTE', 'BUSSUNDA', 'HÉLIO DE LA PEÑA', 'AGILDO RIBEIRO', 'COSTINHA',
+        'PAULO VIEIRA', 'INGRID GUIMARÃES', 'NANY PEOPLE', 'MAZZAROPI',
+      ],
     },
   },
 
@@ -406,7 +486,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-sports-extremes',
     theme: 'divertissement',
     subject: 'SPORTS EXTRÊMES / SENSATIONS FORTES',
-    subjectByLang: { en: 'EXTREME SPORTS / THRILL ACTIVITIES', de: 'EXTREMSPORT / ADRENALINERLEBNISSE', es: 'DEPORTES EXTREMOS Y DE RIESGO' },
+    subjectByLang: { en: 'EXTREME SPORTS / THRILL ACTIVITIES', de: 'EXTREMSPORT / ADRENALINERLEBNISSE', es: 'DEPORTES EXTREMOS Y DE RIESGO', it: 'SPORT ESTREMI / ADRENALINA', pt: 'ESPORTES RADICAIS / EMOÇÕES FORTES' },
     answers: [
       'PARACHUTISME', 'PARAPENTE', 'BUNGEE JUMPING', 'BASE JUMP', 'SURF',
       'SKATEBOARD', 'BMX', 'MOTO CROSS', 'SKI EXTRÊME', 'SNOWBOARD',
@@ -430,7 +510,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-loisirs-interieur',
     theme: 'divertissement',
     subject: 'ACTIVITÉS DE LOISIRS EN INTÉRIEUR',
-    subjectByLang: { en: 'INDOOR LEISURE ACTIVITIES', de: 'FREIZEITAKTIVITÄTEN IN INNENRÄUMEN', es: 'ACTIVIDADES DE OCIO EN INTERIOR' },
+    subjectByLang: { en: 'INDOOR LEISURE ACTIVITIES', de: 'FREIZEITAKTIVITÄTEN IN INNENRÄUMEN', es: 'ACTIVIDADES DE OCIO EN INTERIOR', it: 'ATTIVITÀ DI SVAGO AL CHIUSO', pt: 'ATIVIDADES DE LAZER EM LOCAIS FECHADOS' },
     answers: [
       'BOWLING', 'LASER GAME', 'BILLARD', 'PING-PONG', 'BABY-FOOT',
       'ESCAPE GAME', 'KARTING INDOOR', 'TRAMPOLINES', 'FLIPPER', 'RÉALITÉ VIRTUELLE',
@@ -455,7 +535,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-sports-plein-air',
     theme: 'divertissement',
     subject: 'SPORTS PLEIN AIR / GLISSE URBAINE',
-    subjectByLang: { en: 'OUTDOOR SPORTS / URBAN GLIDING', de: 'OUTDOOR-SPORT / URBANE GLEITAKTIVITÄTEN', es: 'DEPORTES URBANOS Y AL AIRE LIBRE' },
+    subjectByLang: { en: 'OUTDOOR SPORTS / URBAN GLIDING', de: 'OUTDOOR-SPORT / URBANE GLEITAKTIVITÄTEN', es: 'DEPORTES URBANOS Y AL AIRE LIBRE', it: "SPORT ALL'APERTO E URBANI", pt: 'ESPORTES AO AR LIVRE / URBANOS' },
     answers: [
       'SKATE', 'TROTTINETTE FREESTYLE', 'ROLLER', 'BMX', 'VTT', 'TRAIL', 'RANDONNÉE', 'PARKOUR',
       'LONGBOARD', 'SURF', 'KITESURF', 'WINDSURF', 'STAND UP PADDLE', 'KAYAK', 'CANOË', 'BEACH VOLLEY',
@@ -481,6 +561,12 @@ export const questionsDisvertissement: Question[] = [
       es: [
         'FRONTÓN', 'PELOTA VASCA',
       ],
+      it: [
+        'BOCCE', 'RACCHETTONI', 'TAMBURELLO', 'CALCETTO',
+      ],
+      pt: [
+        'FUTEVÔLEI', 'FRESCOBOL', 'PETECA', 'ALTINHA', 'CAPOEIRA',
+      ],
     },
   },
 
@@ -488,7 +574,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-bd',
     theme: 'divertissement',
     subject: 'PERSONNAGES DE BANDES DESSINÉES',
-    subjectByLang: { en: 'COMIC BOOK OR COMIC STRIP CHARACTERS', de: 'COMIC-FIGUREN', es: 'PERSONAJES DE CÓMIC O TEBEO' },
+    subjectByLang: { en: 'COMIC BOOK OR COMIC STRIP CHARACTERS', de: 'COMIC-FIGUREN', es: 'PERSONAJES DE CÓMIC O TEBEO', it: 'PERSONAGGI DEI FUMETTI', pt: 'PERSONAGENS DE HISTÓRIAS EM QUADRINHOS' },
     answers: [
       'TINTIN', 'ASTÉRIX', 'OBÉLIX', 'LUCKY LUKE', 'SPIROU', 'LES SCHTROUMPFS', 'BLAKE ET MORTIMER',
       'CORTO MALTESE', 'IZNOGOUD', 'IDÉFIX', 'HADDOCK', 'MILOU', 'DUPONT ET DUPOND', 'SUPERMAN', 'BATMAN',
@@ -518,6 +604,16 @@ export const questionsDisvertissement: Question[] = [
         'SUPERLÓPEZ', 'ANACLETO', 'CAPITÁN TRUENO', 'EL JABATO', 'ZIPI Y ZAPE', 'CARPANTA', 'ROMPETECHOS',
         'PEPE GOTERA Y OTILIO', '13 RUE DEL PERCEBE', 'EL REPORTERO TRIBULETE', 'CONDORITO',
       ],
+      it: [
+        'DYLAN DOG', 'TEX WILLER', 'DIABOLIK', 'ZAGOR', 'MARTIN MYSTÈRE', 'NATHAN NEVER', 'LUPO ALBERTO',
+        'CATTIVIK', 'MISTER NO', 'JULIA', 'PAPERINIK', 'LA PIMPA', 'SIGNOR BONAVENTURA', 'ALAN FORD',
+        'KRIMINAL', 'SATANIK', 'VALENTINA', 'RAT-MAN', 'COCCO BILL', 'GEPPO', 'TIRAMOLLA', 'CIPPUTI',
+      ],
+      pt: [
+        'MÔNICA', 'CEBOLINHA', 'CASCÃO', 'MAGALI', 'CHICO BENTO', 'BIDU', 'HORÁCIO', 'PAPA-CAPIM', 'PITECO',
+        'ANJINHO', 'FRANJINHA', 'ASTRONAUTA', 'PENADINHO', 'JOTALHÃO', 'O MENINO MALUQUINHO', 'PERERÊ',
+        'RÊ BORDOSA', 'GERALDÃO', 'NÍQUEL NÁUSEA', 'BOB CUSPE', 'ZÉ CARIOCA', 'PIRATAS DO TIETÊ',
+      ],
     },
   },
 
@@ -525,7 +621,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-jeux-cartes',
     theme: 'divertissement',
     subject: 'JEUX DE CARTES TRADITIONNELS OU POPULAIRES',
-    subjectByLang: { en: 'TRADITIONAL OR POPULAR CARD GAMES', de: 'TRADITIONELLE ODER POPULÄRE KARTENSPIELE', es: 'JUEGOS DE CARTAS TRADICIONALES O POPULARES' },
+    subjectByLang: { en: 'TRADITIONAL OR POPULAR CARD GAMES', de: 'TRADITIONELLE ODER POPULÄRE KARTENSPIELE', es: 'JUEGOS DE CARTAS TRADICIONALES O POPULARES', it: 'GIOCHI DI CARTE TRADIZIONALI O POPOLARI', pt: 'JOGOS DE CARTAS TRADICIONAIS OU POPULARES' },
     answers: [
       'TAROT', 'POKER', 'BRIDGE', 'RUMMY', 'BATAILLE', 'UNO', 'SIX QUI PREND', '8 AMÉRICAIN', 'CŒURS',
       'SOLITAIRE', 'BLACK JACK', 'BACCARA', 'CANASTA', 'RAMI', 'CONCENTRATION', '7 FAMILLES', 'SKIP-BO',
@@ -550,6 +646,14 @@ export const questionsDisvertissement: Question[] = [
         'BRISCA', 'TRUCO', 'MUS', 'TUTE', 'CHINCHÓN', 'SIETE Y MEDIA', 'BURRO', 'ESCOBA', 'CINQUILLO',
         'GUIÑOTE', 'POCHA', 'MENTIROSO', 'PESCA',
       ],
+      it: [
+        'SCOPONE SCIENTIFICO', 'BURRACO', 'SETTE E MEZZO', 'ASSO PIGLIATUTTO', 'RUBAMAZZETTO', 'CIRULLA',
+        'MERCANTE IN FIERA', 'STRACCIACAMICIA', 'MACHIAVELLI', 'PINNACOLA', 'CUCÙ', 'BESTIA',
+      ],
+      pt: [
+        'TRUCO', 'BURACO', 'CACHETA', 'PIFE', 'TRANCA', 'FODINHA', 'SUECA', 'ESCOVA', 'BISCA', 'ROUBA-MONTE',
+        'MAU-MAU', 'BURRO',
+      ],
     },
   },
 
@@ -557,7 +661,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-monstres',
     theme: 'divertissement',
     subject: 'CRÉATURES MYTHIQUES DE LA POP CULTURE',
-    subjectByLang: { en: 'MYTHICAL CREATURES FROM POP CULTURE', de: 'MYTHISCHE KREATUREN DER POPKULTUR', es: 'CRIATURAS MÍTICAS DE LA POP CULTURE' },
+    subjectByLang: { en: 'MYTHICAL CREATURES FROM POP CULTURE', de: 'MYTHISCHE KREATUREN DER POPKULTUR', es: 'CRIATURAS MÍTICAS DE LA POP CULTURE', it: 'CREATURE MITICHE DELLA CULTURA POP', pt: 'CRIATURAS MÍTICAS DA CULTURA POP' },
     answers: [
       'ZOMBIE', 'VAMPIRE', 'LOUP-GAROU', 'DRACULA', 'FRANKENSTEIN', 'XÉNOMORPHE', 'PREDATOR', 'GODZILLA',
       'KING KONG', 'KRAKEN', 'CYCLOPE', 'MÉDUSE', 'MINOTAURE', 'CHIMÈRE', 'BANSHEE', 'FANTÔME', 'MOMIE',
@@ -584,6 +688,13 @@ export const questionsDisvertissement: Question[] = [
         'EL COCO', 'LA LLORONA', 'SANTA COMPAÑA', 'NUBERU', 'TRASGO', 'CUÉLEBRE', 'EL SILBÓN',
         'EL SOMBRERÓN',
       ],
+      it: [
+        'MONACIELLO', 'JANARA', 'MAZZAMURELLO', 'LINCHETTO', 'SCAZZAMURIEDDHU', 'ORCO', 'BEFANA',
+      ],
+      pt: [
+        'SACI', 'CURUPIRA', 'MULA SEM CABEÇA', 'BOITATÁ', 'IARA', 'BOTO COR-DE-ROSA', 'CUCA', 'CAIPORA',
+        'CORPO-SECO', 'LOIRA DO BANHEIRO',
+      ],
     },
   },
 
@@ -591,7 +702,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-mascottes',
     theme: 'divertissement',
     subject: 'MASCOTTES PUBLICITAIRES ICONIQUES',
-    subjectByLang: { en: 'ICONIC ADVERTISING MASCOTS', de: 'IKONISCHE WERBE-MASKOTTCHEN', es: 'MASCOTAS PUBLICITARIAS ICÓNICAS' },
+    subjectByLang: { en: 'ICONIC ADVERTISING MASCOTS', de: 'IKONISCHE WERBE-MASKOTTCHEN', es: 'MASCOTAS PUBLICITARIAS ICÓNICAS', it: 'MASCOTTE PUBBLICITARIE ICONICHE', pt: 'MASCOTES PUBLICITÁRIOS ICÔNICOS' },
     answers: [
       'BIBENDUM (MICHELIN)', 'RONALD MCDONALD', 'LAPIN DURACELL', 'TONY LE TIGRE', "M&M'S ROUGE",
       'CAPITAINE IGLOO', 'LAPIN NESQUIK', 'MR. PROPRE', 'NOUNOURS HARIBO', 'SNAP CRACKLE POP',
@@ -619,6 +730,16 @@ export const questionsDisvertissement: Question[] = [
         'OSITO BIMBO', 'CONGUITO', 'MIMOSÍN', 'COBI', 'NARANJITO', 'PANTERA ROSA (BIMBO)', 'CURRO',
         'CACHORRO DE SCOTTEX', 'CAPITÁN PESCANOVA',
       ],
+      it: [
+        'CALIMERO', 'OMINO BIANCO', 'CARMENCITA (LAVAZZA)', 'OMINO COI BAFFI (BIALETTI)', 'MUCCA CAROLINA',
+        'PIPPO (LINES)', 'LA LINEA (LAGOSTINA)',
+        'JO CONDOR (FERRERO)', 'ORSETTO COCCOLINO', 'PAPALLA (PHILCO)', "CORNELIUS (KELLOGG'S)",
+      ],
+      pt: [
+        'LU DO MAGALU', 'BAIXINHO DA KAISER', 'GAROTO BOMBRIL', 'LEQUETREQUE (SADIA)',
+        'MAMÍFEROS DA PARMALAT', 'BAHIANINHO (CASAS BAHIA)', 'ZÉ GOTINHA', 'PINGUIM DA ANTARCTICA',
+        'DOLLYNHO', 'TIGRE DA ESSO',
+      ],
     },
   },
 
@@ -626,7 +747,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-camping',
     theme: 'divertissement',
     subject: 'ÉQUIPEMENTS DE CAMPING / RANDONNÉE',
-    subjectByLang: { en: 'CAMPING / HIKING GEAR', de: 'CAMPING / WANDER-AUSRÜSTUNG', es: 'EQUIPAMIENTO DE CAMPING / SENDERISMO' },
+    subjectByLang: { en: 'CAMPING / HIKING GEAR', de: 'CAMPING / WANDER-AUSRÜSTUNG', es: 'EQUIPAMIENTO DE CAMPING / SENDERISMO', it: 'ATTREZZATURA DA CAMPEGGIO / ESCURSIONISMO', pt: 'EQUIPAMENTOS DE CAMPING / TRILHA' },
     answers: [
       'TENTE', 'SAC DE COUCHAGE', 'SAC À DOS', 'RÉCHAUD', 'GOURDE',
       'LAMPE FRONTALE', 'COUTEAU SUISSE', 'CARTE TOPOGRAPHIQUE', 'BOUSSOLE',
@@ -654,7 +775,7 @@ export const questionsDisvertissement: Question[] = [
     id: 'divertissement-danses',
     theme: 'divertissement',
     subject: 'TYPES DE DANSES / STYLES DE DANSE',
-    subjectByLang: { en: 'DANCE TYPES / DANCE STYLES', de: 'TANZARTEN / TANZSTILE', es: 'TIPOS DE BAILE / ESTILOS DE DANZA' },
+    subjectByLang: { en: 'DANCE TYPES / DANCE STYLES', de: 'TANZARTEN / TANZSTILE', es: 'TIPOS DE BAILE / ESTILOS DE DANZA', it: 'TIPI DI BALLO / STILI DI DANZA', pt: 'TIPOS DE DANÇA / ESTILOS DE DANÇA' },
     answers: [
       'SALSA', 'TANGO', 'FLAMENCO', 'HIP-HOP', 'BREAKDANCE', 'BALLET', 'VALSE', 'FOXTROT', 'RUMBA',
       'CHA-CHA-CHA', 'SAMBA', 'ROCK', 'TWIST', 'DISCO', 'BACHATA', 'KIZOMBA', 'ZUMBA', 'POLE DANCE',
@@ -679,6 +800,13 @@ export const questionsDisvertissement: Question[] = [
       es: [
         'SEVILLANAS', 'FANDANGO', 'JOTA', 'SARDANA', 'MUIÑEIRA', 'CHOTIS', 'MARINERA', 'CUECA',
         'JARABE TAPATÍO',
+      ],
+      it: [
+        'TARANTELLA', 'PIZZICA', 'SALTARELLO', 'LISCIO', 'TAMMURRIATA', 'FURLANA', 'MONFERRINA',
+      ],
+      pt: [
+        'FREVO', 'MARACATU', 'CARIMBÓ', 'FUNK', 'PASSINHO', 'XAXADO', 'BAIÃO', 'QUADRILHA',
+        'SAMBA DE GAFIEIRA', 'ARROCHA',
       ],
     },
   },

@@ -80,7 +80,10 @@ function ModeCard({ title, description, activeXml, inactiveXml, onPress, onInfo,
     >
       <View style={styles.modeText}>
         <View style={styles.modeTitleRow}>
-          <Text style={[styles.modeTitle, { color: textColor }]}>{title}</Text>
+          {/* Titres longs (Sopravvivenza, Sobrevivência) réduits : le bouton info reste hors de l'illustration */}
+          <Text style={[styles.modeTitle, { color: textColor }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
+            {title}
+          </Text>
           {/* Pressable imbriqué : ouvre les règles sans sélectionner le mode */}
           <Pressable onPress={onInfo} hitSlop={12} accessibilityRole="button" accessibilityLabel={infoLabel}>
             <View style={[styles.infoIcon, { borderColor: textColor }]}>
@@ -306,6 +309,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   modeTitle: {
+    flexShrink: 1,
     fontFamily: fonts.display,
     fontSize: 20,
   },

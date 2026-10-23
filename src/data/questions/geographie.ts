@@ -5,7 +5,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-grandes-villes',
     theme: 'geographie',
     subject: 'GRANDES VILLES DE FRANCE',
-    subjectByLang: { en: 'MAJOR CITIES IN THE UNITED KINGDOM', de: 'GROßSTÄDTE DEUTSCHLANDS', es: 'GRANDES CIUDADES DE ESPAÑA' },
+    subjectByLang: { en: 'MAJOR CITIES IN THE UNITED KINGDOM', de: 'GROßSTÄDTE DEUTSCHLANDS', es: 'GRANDES CIUDADES DE ESPAÑA', it: 'GRANDI CITTÀ ITALIANE', pt: 'GRANDES CIDADES DO BRASIL' },
     answers: [
       'PARIS', 'LYON', 'MARSEILLE', 'TOULOUSE', 'NICE', 'NANTES', 'STRASBOURG',
       'MONTPELLIER', 'BORDEAUX', 'LILLE', 'RENNES', 'REIMS', 'LE HAVRE',
@@ -61,6 +61,31 @@ export const questionsGeographie: Question[] = [
         'LORCA', 'GUADALAJARA', 'PONTEVEDRA', 'PALENCIA', 'TORREJÓN DE ARDOZ',
         'PARLA', 'BARAKALDO', 'TALAVERA DE LA REINA', 'MOLLET DEL VALLÈS',
       ],
+      it: [
+        'ROMA', 'MILANO', 'NAPOLI', 'TORINO', 'PALERMO', 'GENOVA', 'BOLOGNA',
+        'FIRENZE', 'BARI', 'CATANIA', 'VENEZIA', 'VERONA', 'MESSINA', 'PADOVA',
+        'TRIESTE', 'BRESCIA', 'PARMA', 'TARANTO', 'PRATO', 'MODENA',
+        'REGGIO CALABRIA', 'REGGIO EMILIA', 'PERUGIA', 'RAVENNA', 'LIVORNO',
+        'CAGLIARI', 'FOGGIA', 'RIMINI', 'SALERNO', 'FERRARA', 'SASSARI', 'LATINA',
+        'GIUGLIANO IN CAMPANIA', 'MONZA', 'SIRACUSA', 'PESCARA', 'BERGAMO', 'FORLÌ',
+        'TRENTO', 'VICENZA', 'TERNI', 'BOLZANO', 'NOVARA', 'PIACENZA', 'ANCONA',
+        'ANDRIA', 'AREZZO', 'UDINE', 'CESENA', 'LECCE', 'PESARO', 'LA SPEZIA',
+        'ALESSANDRIA', 'BARLETTA', 'PISA', 'CATANZARO', 'PISTOIA', 'LUCCA', 'COMO',
+        'BRINDISI', 'TREVISO', 'MATERA', "L'AQUILA", 'SIENA',
+      ],
+      pt: [
+        'SÃO PAULO', 'RIO DE JANEIRO', 'BRASÍLIA', 'SALVADOR', 'FORTALEZA', 'BELO HORIZONTE',
+        'MANAUS', 'CURITIBA', 'RECIFE', 'GOIÂNIA', 'BELÉM', 'PORTO ALEGRE',
+        'GUARULHOS', 'CAMPINAS', 'SÃO LUÍS', 'SÃO GONÇALO', 'MACEIÓ', 'DUQUE DE CAXIAS',
+        'NATAL', 'CAMPO GRANDE', 'TERESINA', 'SÃO BERNARDO DO CAMPO', 'NOVA IGUAÇU', 'JOÃO PESSOA',
+        'SANTO ANDRÉ', 'OSASCO', 'SÃO JOSÉ DOS CAMPOS', 'JABOATÃO DOS GUARARAPES', 'RIBEIRÃO PRETO', 'UBERLÂNDIA',
+        'CONTAGEM', 'SOROCABA', 'ARACAJU', 'FEIRA DE SANTANA', 'CUIABÁ', 'JOINVILLE',
+        'APARECIDA DE GOIÂNIA', 'LONDRINA', 'JUIZ DE FORA', 'ANANINDEUA', 'PORTO VELHO', 'SERRA',
+        'NITERÓI', 'CAXIAS DO SUL', 'FLORIANÓPOLIS', 'MACAPÁ', 'VILA VELHA', 'MAUÁ',
+        'SÃO JOÃO DE MERITI', 'SANTOS', 'MOGI DAS CRUZES', 'BETIM', 'DIADEMA', 'CAMPINA GRANDE',
+        'JUNDIAÍ', 'MARINGÁ', 'MONTES CLAROS', 'PIRACICABA', 'CARIACICA', 'BAURU',
+        'VITÓRIA', 'BOA VISTA', 'RIO BRANCO', 'PALMAS',
+      ],
     },
   },
 
@@ -68,7 +93,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-capitales-monde',
     theme: 'geographie',
     subject: 'CAPITALES DU MONDE',
-    subjectByLang: { en: 'WORLD CAPITALS', de: 'HAUPTSTÄDTE DER WELT', es: 'CAPITALES DEL MUNDO' },
+    subjectByLang: { en: 'WORLD CAPITALS', de: 'HAUPTSTÄDTE DER WELT', es: 'CAPITALES DEL MUNDO', it: 'CAPITALI DEL MONDO', pt: 'CAPITAIS DO MUNDO' },
     answers: [
       'PARIS', 'LONDRES', 'BERLIN', 'MADRID', 'ROME', 'WASHINGTON', 'TOKYO',
       'PÉKIN', 'MOSCOU', 'OTTAWA', 'CANBERRA', 'BUENOS AIRES', 'BRASÍLIA',
@@ -91,7 +116,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-pays-ue',
     theme: 'geographie',
     subject: "PAYS DE L'UE OU CANDIDATS À L'ADHÉSION",
-    subjectByLang: { en: 'EU MEMBER OR CANDIDATE COUNTRIES', de: 'EU-STAATEN ODER KANDIDATEN', es: 'PAÍSES DE LA UE O CANDIDATOS' },
+    subjectByLang: { en: 'EU MEMBER OR CANDIDATE COUNTRIES', de: 'EU-STAATEN ODER KANDIDATEN', es: 'PAÍSES DE LA UE O CANDIDATOS', it: "PAESI DELL'UE O CANDIDATI", pt: 'PAÍSES DA UE OU CANDIDATOS' },
     answers: [
       'ALLEMAGNE', 'AUTRICHE', 'BELGIQUE', 'BULGARIE', 'CHYPRE', 'CROATIE',
       'DANEMARK', 'ESPAGNE', 'ESTONIE', 'FINLANDE', 'FRANCE', 'GRÈCE',
@@ -106,7 +131,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-pays-anglophones',
     theme: 'geographie',
     subject: 'PAYS ANGLOPHONES DANS LE MONDE',
-    subjectByLang: { en: 'ENGLISH-SPEAKING COUNTRIES', de: 'ENGLISCHSPRACHIGE LÄNDER', es: 'PAÍSES DE HABLA INGLESA' },
+    subjectByLang: { en: 'ENGLISH-SPEAKING COUNTRIES', de: 'ENGLISCHSPRACHIGE LÄNDER', es: 'PAÍSES DE HABLA INGLESA', it: 'PAESI ANGLOFONI', pt: 'PAÍSES DE LÍNGUA INGLESA' },
     answers: [
       'ÉTATS-UNIS', 'ROYAUME-UNI', 'CANADA', 'AUSTRALIE', 'NOUVELLE-ZÉLANDE',
       'IRLANDE', 'AFRIQUE DU SUD', 'JAMAÏQUE', 'NIGERIA', 'KENYA', 'GHANA',
@@ -126,7 +151,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-pays-hispanophones',
     theme: 'geographie',
     subject: 'PAYS HISPANOPHONES OU LUSOPHONES',
-    subjectByLang: { en: 'SPANISH OR PORTUGUESE-SPEAKING COUNTRIES', de: 'SPANISCH- ODER PORTUGIESISCHSPRACHIGE LÄNDER', es: 'PAÍSES DE HABLA HISPANA O PORTUGUESA' },
+    subjectByLang: { en: 'SPANISH OR PORTUGUESE-SPEAKING COUNTRIES', de: 'SPANISCH- ODER PORTUGIESISCHSPRACHIGE LÄNDER', es: 'PAÍSES DE HABLA HISPANA O PORTUGUESA', it: 'PAESI DI LINGUA SPAGNOLA O PORTOGHESE', pt: 'PAÍSES DE LÍNGUA ESPANHOLA OU PORTUGUESA' },
     answers: [
       'ESPAGNE', 'MEXIQUE', 'COLOMBIE', 'ARGENTINE', 'VENEZUELA', 'PÉROU',
       'CHILI', 'ÉQUATEUR', 'CUBA', 'GUATEMALA', 'BOLIVIE',
@@ -141,7 +166,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-pays-afrique',
     theme: 'geographie',
     subject: 'PAYS DU CONTINENT AFRICAIN',
-    subjectByLang: { en: 'AFRICAN COUNTRIES', de: 'AFRIKANISCHE LÄNDER', es: 'PAÍSES DEL CONTINENTE AFRICANO' },
+    subjectByLang: { en: 'AFRICAN COUNTRIES', de: 'AFRIKANISCHE LÄNDER', es: 'PAÍSES DEL CONTINENTE AFRICANO', it: 'PAESI AFRICANI', pt: 'PAÍSES AFRICANOS' },
     answers: [
       'NIGERIA', 'ÉTHIOPIE', 'ÉGYPTE', 'RD CONGO', 'TANZANIE', 'AFRIQUE DU SUD',
       'KENYA', 'ALGÉRIE', 'SOUDAN', 'OUGANDA', 'MOZAMBIQUE', 'GHANA', 'MAROC',
@@ -160,7 +185,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-pays-europeens',
     theme: 'geographie',
     subject: 'PAYS EUROPÉENS',
-    subjectByLang: { en: 'EUROPEAN COUNTRIES', de: 'EUROPÄISCHE LÄNDER', es: 'PAÍSES EUROPEOS' },
+    subjectByLang: { en: 'EUROPEAN COUNTRIES', de: 'EUROPÄISCHE LÄNDER', es: 'PAÍSES EUROPEOS', it: 'PAESI EUROPEI', pt: 'PAÍSES EUROPEUS' },
     answers: [
       'FRANCE', 'ALLEMAGNE', 'ITALIE', 'ESPAGNE', 'ROYAUME-UNI', 'POLOGNE',
       'ROUMANIE', 'PAYS-BAS', 'BELGIQUE', 'SUÈDE', 'AUTRICHE', 'SUISSE',
@@ -177,7 +202,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-pays-amerique',
     theme: 'geographie',
     subject: "PAYS D'AMÉRIQUE DU NORD ET DU SUD",
-    subjectByLang: { en: 'COUNTRIES OF NORTH AND SOUTH AMERICA', de: 'LÄNDER NORD- UND SÜDAMERIKAS', es: 'PAÍSES DE AMÉRICA DEL NORTE Y DEL SUR' },
+    subjectByLang: { en: 'COUNTRIES OF NORTH AND SOUTH AMERICA', de: 'LÄNDER NORD- UND SÜDAMERIKAS', es: 'PAÍSES DE AMÉRICA DEL NORTE Y DEL SUR', it: 'PAESI DEL NORD E SUD AMERICA', pt: 'PAÍSES DA AMÉRICA DO NORTE E DO SUL' },
     answers: [
       'ÉTATS-UNIS', 'CANADA', 'MEXIQUE', 'BRÉSIL', 'ARGENTINE', 'COLOMBIE',
       'CHILI', 'PÉROU', 'VENEZUELA', 'ÉQUATEUR', 'BOLIVIE', 'PARAGUAY',
@@ -195,7 +220,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-pays-asie',
     theme: 'geographie',
     subject: "PAYS D'ASIE",
-    subjectByLang: { en: 'ASIAN COUNTRIES', de: 'ASIATISCHE LÄNDER', es: 'PAÍSES DE ASIA' },
+    subjectByLang: { en: 'ASIAN COUNTRIES', de: 'ASIATISCHE LÄNDER', es: 'PAÍSES DE ASIA', it: 'PAESI ASIATICI', pt: 'PAÍSES ASIÁTICOS' },
     answers: [
       'CHINE', 'INDE', 'JAPON', 'INDONÉSIE', 'PAKISTAN', 'BANGLADESH',
       'PHILIPPINES', 'VIETNAM', 'TURQUIE', 'IRAN', 'THAÏLANDE', 'MYANMAR',
@@ -213,7 +238,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-commonwealth',
     theme: 'geographie',
     subject: 'PAYS MEMBRES DU COMMONWEALTH BRITANNIQUE',
-    subjectByLang: { en: 'COMMONWEALTH OF NATIONS MEMBER STATES', de: 'MITGLIEDSTAATEN DES COMMONWEALTH', es: 'PAÍSES DE LA COMMONWEALTH' },
+    subjectByLang: { en: 'COMMONWEALTH OF NATIONS MEMBER STATES', de: 'MITGLIEDSTAATEN DES COMMONWEALTH', es: 'PAÍSES DE LA COMMONWEALTH', it: 'PAESI DEL COMMONWEALTH', pt: 'PAÍSES DA COMMONWEALTH' },
     answers: [
       'ROYAUME-UNI', 'CANADA', 'AUSTRALIE', 'NOUVELLE-ZÉLANDE', 'INDE', 'PAKISTAN',
       'BANGLADESH', 'AFRIQUE DU SUD', 'NIGERIA', 'KENYA', 'GHANA', 'TANZANIE',
@@ -230,7 +255,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-massifs-montagnes',
     theme: 'geographie',
     subject: 'CHAÎNES DE MONTAGNES OU MASSIFS CÉLÈBRES',
-    subjectByLang: { en: 'FAMOUS MOUNTAIN RANGES OR MASSIFS', de: 'BERÜHMTE GEBIRGE ODER MASSIFS', es: 'CADENAS MONTAÑOSAS O MACIZOS CÉLEBRES' },
+    subjectByLang: { en: 'FAMOUS MOUNTAIN RANGES OR MASSIFS', de: 'BERÜHMTE GEBIRGE ODER MASSIFS', es: 'CADENAS MONTAÑOSAS O MACIZOS CÉLEBRES', it: 'CATENE MONTUOSE O MASSICCI CELEBRI', pt: 'CORDILHEIRAS OU MACIÇOS CÉLEBRES' },
     answers: [
       'ALPES', 'HIMALAYA', 'ANDES', 'ROCHEUSES', 'ATLAS', 'PYRÉNÉES', 'CARPATES', 'APENNINS', 'OURAL',
       'CAUCASE', 'SIERRA NEVADA', 'DRAKENSBERG', 'ZAGROS', 'HINDU KUSH', 'TIAN SHAN', 'ALTAÏ',
@@ -257,6 +282,14 @@ export const questionsGeographie: Question[] = [
         'SIERRA MORENA', 'PICOS DE EUROPA', 'SISTEMA CENTRAL', 'SIERRA DE GUADARRAMA', 'MONTSERRAT',
         'SISTEMA IBÉRICO', 'TEIDE', 'MONCAYO', 'MULHACÉN', 'SIERRA DE GREDOS', 'ANETO',
       ],
+      it: [
+        'GRAN SASSO', 'MONTE ROSA', 'GRAN PARADISO', 'MARMOLADA', 'MONVISO', 'ALPI APUANE', 'MAIELLA',
+        'SILA', 'ASPROMONTE', 'MONTI SIBILLINI', 'STROMBOLI', 'MONTE BALDO',
+      ],
+      pt: [
+        'SERRA DO MAR', 'SERRA DA MANTIQUEIRA', 'PICO DA NEBLINA', 'PICO DA BANDEIRA', 'CHAPADA DIAMANTINA', 'CHAPADA DOS VEADEIROS',
+        'SERRA DOS ÓRGÃOS', 'SERRA GERAL', 'SERRA DO ESPINHAÇO', 'MONTE RORAIMA', 'PÃO DE AÇÚCAR', 'CORCOVADO',
+      ],
     },
   },
 
@@ -264,7 +297,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-deserts',
     theme: 'geographie',
     subject: 'DÉSERTS CÉLÈBRES DU MONDE',
-    subjectByLang: { en: 'FAMOUS DESERTS OF THE WORLD', de: 'BERÜHMTE WÜSTEN DER WELT', es: 'DESIERTOS CÉLEBRES DEL MUNDO' },
+    subjectByLang: { en: 'FAMOUS DESERTS OF THE WORLD', de: 'BERÜHMTE WÜSTEN DER WELT', es: 'DESIERTOS CÉLEBRES DEL MUNDO', it: 'DESERTI CELEBRI DEL MONDO', pt: 'DESERTOS CÉLEBRES DO MUNDO' },
     answers: [
       'SAHARA', 'GOBI', 'NAMIB', 'KALAHARI', 'ATACAMA', 'SONORAN', 'MOJAVE',
       'TAKLAMAKAN', 'RUB AL-KHALI', 'PATAGONIE', 'GRAND BASSIN', 'CHIHUAHUA',
@@ -282,7 +315,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-oceans-mers',
     theme: 'geographie',
     subject: 'OCÉANS ET MERS DU MONDE',
-    subjectByLang: { en: 'OCEANS AND SEAS OF THE WORLD', de: 'OZEANE UND MEERE DER WELT', es: 'OCÉANOS Y MARES DEL MUNDO' },
+    subjectByLang: { en: 'OCEANS AND SEAS OF THE WORLD', de: 'OZEANE UND MEERE DER WELT', es: 'OCÉANOS Y MARES DEL MUNDO', it: 'OCEANI E MARI DEL MONDO', pt: 'OCEANOS E MARES DO MUNDO' },
     answers: [
       'ATLANTIQUE', 'PACIFIQUE', 'INDIEN', 'OCÉAN ARCTIQUE', 'OCÉAN ANTARCTIQUE',
       'MÉDITERRANÉE', 'MER ROUGE', 'MER DES CARAÏBES', 'MER DU NORD',
@@ -304,7 +337,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-fleuves',
     theme: 'geographie',
     subject: 'FLEUVES OU RIVIÈRES CÉLÈBRES',
-    subjectByLang: { en: 'FAMOUS RIVERS', de: 'BERÜHMTE FLÜSSE', es: 'RÍOS CÉLEBRES' },
+    subjectByLang: { en: 'FAMOUS RIVERS', de: 'BERÜHMTE FLÜSSE', es: 'RÍOS CÉLEBRES', it: 'FIUMI CELEBRI', pt: 'RIOS CÉLEBRES' },
     answers: [
       'NIL', 'AMAZONE', 'YANGTSÉ', 'MISSISSIPPI', 'IENISSEÏ', 'OB', 'HUANG HE', 'FLEUVE CONGO', 'AMOUR',
       'LÉNA', 'MACKENZIE', 'NIGER', 'MÉKONG', 'VOLGA', 'MURRAY', 'RIO GRANDE', 'DANUBE', 'LOIRE', 'RHIN',
@@ -330,6 +363,14 @@ export const questionsGeographie: Question[] = [
         'DUERO', 'GUADIANA', 'JÚCAR', 'MIÑO', 'SEGURA', 'NERVIÓN', 'GENIL', 'TURIA', 'MANZANARES',
         'PISUERGA',
       ],
+      it: [
+        'ARNO', 'ADIGE', 'PIAVE', 'TICINO', 'ADDA', 'BRENTA', 'TAGLIAMENTO', 'ISONZO', 'VOLTURNO', 'TANARO',
+        'OGLIO',
+      ],
+      pt: [
+        'XINGU', 'ARAGUAIA', 'TAPAJÓS', 'RIO NEGRO', 'MADEIRA', 'TIETÊ',
+        'PARNAÍBA', 'SOLIMÕES', 'PARAGUAI', 'IGUAÇU', 'URUGUAI',
+      ],
     },
   },
 
@@ -337,7 +378,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-capitales-asiatiques',
     theme: 'geographie',
     subject: 'CAPITALES DE PAYS ASIATIQUES',
-    subjectByLang: { en: 'ASIAN COUNTRY CAPITALS', de: 'HAUPTSTÄDTE ASIATISCHER LÄNDER', es: 'CAPITALES DE PAÍSES ASIÁTICOS' },
+    subjectByLang: { en: 'ASIAN COUNTRY CAPITALS', de: 'HAUPTSTÄDTE ASIATISCHER LÄNDER', es: 'CAPITALES DE PAÍSES ASIÁTICOS', it: 'CAPITALI DI PAESI ASIATICI', pt: 'CAPITAIS DE PAÍSES ASIÁTICOS' },
     answers: [
       'TOKYO', 'PÉKIN', 'NEW DELHI', 'SÉOUL', 'JAKARTA', 'BANGKOK',
       'ANKARA', 'TÉHÉRAN', 'BAGDAD', 'RIYAD', 'ISLAMABAD', 'DACCA',
@@ -355,7 +396,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-capitales-europeennes',
     theme: 'geographie',
     subject: 'CAPITALES DE PAYS EUROPÉENS',
-    subjectByLang: { en: 'EUROPEAN COUNTRY CAPITALS', de: 'HAUPTSTÄDTE EUROPÄISCHER LÄNDER', es: 'CAPITALES DE PAÍSES EUROPEOS' },
+    subjectByLang: { en: 'EUROPEAN COUNTRY CAPITALS', de: 'HAUPTSTÄDTE EUROPÄISCHER LÄNDER', es: 'CAPITALES DE PAÍSES EUROPEOS', it: 'CAPITALI DI PAESI EUROPEI', pt: 'CAPITAIS DE PAÍSES EUROPEUS' },
     answers: [
       'PARIS', 'BERLIN', 'MADRID', 'ROME', 'VARSOVIE', 'BUCAREST', 'AMSTERDAM',
       'BRUXELLES', 'STOCKHOLM', 'VIENNE', 'OSLO', 'COPENHAGUE', 'HELSINKI',
@@ -373,7 +414,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-pays-mediterranee',
     theme: 'geographie',
     subject: 'PAYS OU ÎLES DE LA MÉDITERRANÉE',
-    subjectByLang: { en: 'MEDITERRANEAN COUNTRIES OR ISLANDS', de: 'MITTELMEERLÄNDER ODER -INSELN', es: 'PAÍSES O ISLAS DEL MEDITERRÁNEO' },
+    subjectByLang: { en: 'MEDITERRANEAN COUNTRIES OR ISLANDS', de: 'MITTELMEERLÄNDER ODER -INSELN', es: 'PAÍSES O ISLAS DEL MEDITERRÁNEO', it: 'PAESI O ISOLE DEL MEDITERRANEO', pt: 'PAÍSES OU ILHAS DO MEDITERRÂNEO' },
     answers: [
       'FRANCE', 'ESPAGNE', 'ITALIE', 'GRÈCE', 'TURQUIE', 'CHYPRE', 'LIBAN',
       'ISRAËL', 'SYRIE', 'ÉGYPTE', 'LIBYE', 'TUNISIE', 'ALGÉRIE', 'MAROC',
@@ -387,7 +428,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-pays-sans-euro',
     theme: 'geographie',
     subject: "PAYS EUROPÉENS SANS L'EURO OU LEUR MONNAIE",
-    subjectByLang: { en: 'NON-EURO COUNTRIES OR CURRENCIES', de: 'LÄNDER OHNE EURO ODER IHRE WÄHRUNG', es: 'PAÍSES SIN EURO O SU MONEDA' },
+    subjectByLang: { en: 'NON-EURO COUNTRIES OR CURRENCIES', de: 'LÄNDER OHNE EURO ODER IHRE WÄHRUNG', es: 'PAÍSES SIN EURO O SU MONEDA', it: 'PAESI SENZA EURO O LA LORO VALUTA', pt: 'PAÍSES SEM EURO OU SUAS MOEDAS' },
     answers: [
       'ROYAUME-UNI', 'SUÈDE', 'DANEMARK', 'NORVÈGE', 'SUISSE', 'ISLANDE',
       'POLOGNE', 'HONGRIE', 'TCHÉQUIE', 'ROUMANIE', 'SERBIE',
@@ -404,7 +445,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-pays-moyen-orient',
     theme: 'geographie',
     subject: 'PAYS DU MOYEN-ORIENT',
-    subjectByLang: { en: 'MIDDLE EASTERN COUNTRIES', de: 'LÄNDER DES NAHEN OSTENS', es: 'PAÍSES DE ORIENTE MEDIO' },
+    subjectByLang: { en: 'MIDDLE EASTERN COUNTRIES', de: 'LÄNDER DES NAHEN OSTENS', es: 'PAÍSES DE ORIENTE MEDIO', it: 'PAESI DEL MEDIO ORIENTE', pt: 'PAÍSES DO ORIENTE MÉDIO' },
     answers: [
       'ARABIE SAOUDITE', 'IRAN', 'IRAK', 'TURQUIE', 'ÉGYPTE', 'SYRIE',
       'YÉMEN', 'JORDANIE', 'ISRAËL', 'LIBAN', 'ÉMIRATS ARABES UNIS', 'KOWEÏT',
@@ -420,7 +461,7 @@ export const questionsGeographie: Question[] = [
     id: 'geographie-iles-archipels',
     theme: 'geographie',
     subject: 'ÎLES ET ARCHIPELS DU MONDE',
-    subjectByLang: { en: 'ISLANDS AND ARCHIPELAGOS OF THE WORLD', de: 'INSELN UND ARCHIPELE DER WELT', es: 'ISLAS Y ARCHIPIÉLAGOS DEL MUNDO' },
+    subjectByLang: { en: 'ISLANDS AND ARCHIPELAGOS OF THE WORLD', de: 'INSELN UND ARCHIPELE DER WELT', es: 'ISLAS Y ARCHIPIÉLAGOS DEL MUNDO', it: 'ISOLE E ARCIPELAGHI DEL MONDO', pt: 'ILHAS E ARQUIPÉLAGOS DO MUNDO' },
     answers: [
       'ISLANDE', 'IRLANDE', 'GRANDE-BRETAGNE', 'CORSE', 'SARDAIGNE', 'SICILE', 'CRÈTE', 'CHYPRE', 'MALTE',
       'CUBA', 'HAÏTI', 'JAMAÏQUE', 'MADAGASCAR', 'SRI LANKA', 'JAPON', 'INDONÉSIE', 'PHILIPPINES',
@@ -447,6 +488,14 @@ export const questionsGeographie: Question[] = [
       es: [
         'MALLORCA', 'MENORCA', 'IBIZA', 'FORMENTERA', 'FUERTEVENTURA', 'GRAN CANARIA', 'LA GOMERA',
         'EL HIERRO', 'LA PALMA', 'ISLAS CÍES',
+      ],
+      it: [
+        'CAPRI', 'ISCHIA', 'ELBA', 'ISOLE EOLIE', 'LAMPEDUSA', 'PANTELLERIA', 'PROCIDA', 'ISOLA DEL GIGLIO',
+        'ISOLE EGADI', 'ISOLE TREMITI', 'LA MADDALENA',
+      ],
+      pt: [
+        'FERNANDO DE NORONHA', 'ILHA DO MEL', 'ILHABELA', 'ILHA GRANDE', 'ILHA DE MARAJÓ', 'ILHA DE SANTA CATARINA',
+        'ABROLHOS', 'BOIPEBA', 'ILHA DE ITAPARICA', 'TINHARÉ', 'ILHA COMPRIDA',
       ],
     },
   },

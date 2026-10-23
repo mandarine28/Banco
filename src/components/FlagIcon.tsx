@@ -1,5 +1,6 @@
-import Svg, { ClipPath, Defs, G, Mask, Path, Rect } from 'react-native-svg';
+import Svg, { ClipPath, Defs, G, Mask, Path, Rect, SvgXml } from 'react-native-svg';
 
+import { FLAG_PORTUGAL_XML } from '@/components/flagPortugalXml';
 import type { Lang } from '@/lib/i18n';
 
 function FlagFR({ size }: { size: number }) {
@@ -93,11 +94,34 @@ function FlagES({ size }: { size: number }) {
   );
 }
 
+function FlagIT({ size }: { size: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 128 128">
+      <Defs>
+        <ClipPath id="clip-it-a">
+          <Rect width="128" height="128" rx="64" />
+        </ClipPath>
+      </Defs>
+      <G clipPath="url(#clip-it-a)">
+        <Rect width="128" height="128" fill="white" />
+        <Rect width="42.7" height="128" fill="#009246" />
+        <Rect x="85.3" width="42.7" height="128" fill="#CE2B37" />
+      </G>
+    </Svg>
+  );
+}
+
+function FlagPT({ size }: { size: number }) {
+  return <SvgXml xml={FLAG_PORTUGAL_XML} width={size} height={size} />;
+}
+
 export function FlagIcon({ lang, size = 34 }: { lang: Lang; size?: number }) {
   switch (lang) {
     case 'fr': return <FlagFR size={size} />;
     case 'en': return <FlagEN size={size} />;
     case 'de': return <FlagDE size={size} />;
     case 'es': return <FlagES size={size} />;
+    case 'it': return <FlagIT size={size} />;
+    case 'pt': return <FlagPT size={size} />;
   }
 }

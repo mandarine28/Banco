@@ -122,7 +122,9 @@
       "fr": "./languages/fr.json",
       "en": "./languages/en.json",
       "de": "./languages/de.json",
-      "es": "./languages/es.json"
+      "es": "./languages/es.json",
+      "it": "./languages/it.json",
+      "pt": "./languages/pt.json"
     }
   }
 }

@@ -5,7 +5,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-autos',
     theme: 'marques',
     subject: 'CONSTRUCTEURS AUTOMOBILES',
-    subjectByLang: { en: 'CAR MANUFACTURERS', de: 'AUTOHERSTELLER', es: 'FABRICANTES DE AUTOMÓVILES' },
+    subjectByLang: { en: 'CAR MANUFACTURERS', de: 'AUTOHERSTELLER', es: 'FABRICANTES DE AUTOMÓVILES', it: 'CASE AUTOMOBILISTICHE', pt: 'MONTADORAS DE AUTOMÓVEIS' },
     answers: [
       'TOYOTA', 'RENAULT', 'VOLKSWAGEN', 'PEUGEOT', 'CITROËN', 'FORD', 'BMW', 'MERCEDES', 'AUDI',
       'NISSAN', 'HONDA', 'KIA', 'HYUNDAI', 'TESLA', 'OPEL', 'FIAT', 'DACIA', 'PORSCHE', 'VOLVO',
@@ -34,6 +34,14 @@ export const questionsMarques: Question[] = [
       es: [
         'HISPANO-SUIZA', 'PEGASO', 'SANTANA', 'TRAMONTANA', 'GTA SPANO', 'EBRO', 'URO', 'COMARTH',
       ],
+      it: [
+        'ABARTH', 'AUTOBIANCHI', 'INNOCENTI', 'ISO RIVOLTA', 'BIZZARRINI', 'CISITALIA', 'DR', 'DALLARA',
+        'PIAGGIO', 'IVECO',
+      ],
+      pt: [
+        'GURGEL', 'TROLLER', 'PUMA', 'MIURA', 'ENVEMO', 'AGRALE', 'WILLYS', 'VEMAG', 'JAC', 'SANTA MATILDE',
+        'LOBINI', 'FNM',
+      ],
     },
   },
 
@@ -41,7 +49,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-apps-sociales',
     theme: 'marques',
     subject: 'APPLICATIONS DE RÉSEAUX SOCIAUX OU MESSAGERIE',
-    subjectByLang: { en: 'SOCIAL MEDIA & MESSAGING APPS', de: 'SOCIAL-MEDIA- UND MESSAGING-APPS', es: 'APPS DE REDES SOCIALES O MENSAJERÍA' },
+    subjectByLang: { en: 'SOCIAL MEDIA & MESSAGING APPS', de: 'SOCIAL-MEDIA- UND MESSAGING-APPS', es: 'APPS DE REDES SOCIALES O MENSAJERÍA', it: 'APP DI SOCIAL O MESSAGGISTICA', pt: 'APPS DE REDES SOCIAIS OU MENSAGENS' },
     answers: [
       'WHATSAPP', 'INSTAGRAM', 'SNAPCHAT', 'TIKTOK', 'FACEBOOK', 'X (TWITTER)', 'MESSENGER', 'TELEGRAM',
       'DISCORD', 'YOUTUBE', 'LINKEDIN', 'PINTEREST', 'TWITCH', 'BEREAL', 'SKYPE', 'SIGNAL', 'VIBER',
@@ -66,6 +74,12 @@ export const questionsMarques: Question[] = [
       es: [
         'MEETIC', 'TUENTI', 'FOTOLOG', 'TARINGA!',
       ],
+      it: [
+        'MEETIC', 'NETLOG', 'SPLINDER', 'MSN MESSENGER',
+      ],
+      pt: [
+        'ORKUT', 'MSN MESSENGER', 'FOTOLOG', 'HABBO', 'PAR PERFEITO', 'SONICO',
+      ],
     },
   },
 
@@ -73,7 +87,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-confiseries',
     theme: 'marques',
     subject: 'MARQUES DE CONFISERIE OU BISCUITS',
-    subjectByLang: { en: 'CHOCOLATE, BISCUIT OR CANDY BRANDS', de: 'SÜSSWAREN- UND KEKSMARKEN', es: 'MARCAS DE DULCES O GALLETAS' },
+    subjectByLang: { en: 'CHOCOLATE, BISCUIT OR CANDY BRANDS', de: 'SÜSSWAREN- UND KEKSMARKEN', es: 'MARCAS DE DULCES O GALLETAS', it: 'MARCHI DI DOLCIUMI O BISCOTTI', pt: 'MARCAS DE DOCES OU BISCOITOS' },
     answers: [
       'MILKA', 'KINDER', 'HARIBO', 'OREO', "M&M'S", 'FERRERO ROCHER', 'TOBLERONE', 'LINDT', 'TWIX',
       'SNICKERS', 'KIT KAT', 'MARS', 'BOUNTY', 'MALTESERS', 'TIC TAC', 'MENTOS', 'SKITTLES', 'SMARTIES',
@@ -105,6 +119,18 @@ export const questionsMarques: Question[] = [
         'TOSTA RICA', 'PRÍNCIPE', 'CHIQUILÍN', 'DONETTES', 'HUESITOS', 'VALOR', 'FINI', 'DAMEL', 'CUÉTARA',
         'GULLÓN', 'ARTIACH', 'DINOSAURUS', 'FONTANEDA', 'CHUPA CHUPS', 'PÉPITO', 'TIGRETÓN', 'MIKADO',
       ],
+      it: [
+        'MULINO BIANCO', 'PAN DI STELLE', 'GOCCIOLE', 'PAVESINI', 'RINGO', 'ORO SAIWA', 'BALOCCO',
+        'LOACKER', 'BACI PERUGINA', 'POCKET COFFEE', 'MON CHÉRI', 'FIESTA', 'GRISBI', 'ABBRACCI', 'MOTTA',
+        'BUONDÌ', 'CAFFAREL', 'VENCHI', 'NOVI', 'SPERLARI', 'GOLIA', 'BROOKLYN', 'ROSSANA', 'GALBUSERA',
+        'PLASMON',
+      ],
+      pt: [
+        'BIS', 'SONHO DE VALSA', 'GAROTO', 'TALENTO', 'LACTA', 'DIAMANTE NEGRO', 'BATON', 'PRESTÍGIO',
+        'CHOKITO', 'SUFLAIR', 'CHARGE', 'LAKA', 'OURO BRANCO', 'SERENATA DE AMOR', 'TORTUGUITA', 'FINI',
+        '7 BELO', 'HALLS', 'TRIDENT', 'PIRAQUÊ', 'TRAKINAS', 'PASSATEMPO', 'NEGRESCO', 'CLUBE SOCIAL',
+        'BAUDUCCO', 'MARILAN', 'BONO', 'FREEGELLS', 'ARCOR', 'DORI', 'KOPENHAGEN', 'CACAU SHOW',
+      ],
     },
   },
 
@@ -112,7 +138,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-fast-food',
     theme: 'marques',
     subject: 'ENSEIGNES DE RESTAURATION RAPIDE',
-    subjectByLang: { en: 'FAST FOOD CHAINS', de: 'FAST-FOOD-KETTEN', es: 'CADENAS DE COMIDA RÁPIDA' },
+    subjectByLang: { en: 'FAST FOOD CHAINS', de: 'FAST-FOOD-KETTEN', es: 'CADENAS DE COMIDA RÁPIDA', it: 'CATENE DI FAST FOOD', pt: 'REDES DE FAST FOOD' },
     answers: [
       "MCDONALD'S", 'KFC', 'SUBWAY', 'FIVE GUYS', 'STARBUCKS', 'PIZZA HUT', "DOMINO'S", 'CHIPOTLE',
       'SHAKE SHACK', 'POPEYES', "PAPA JOHN'S", 'LE PAIN QUOTIDIEN', 'POKE HOUSE', "DUNKIN'",
@@ -145,6 +171,16 @@ export const questionsMarques: Question[] = [
         'GOIKO GRILL', 'GINOS', 'GROSSO NAPOLETANO', 'POLLO CAMPERO', 'LIZARRAN', 'TGB', 'LA TAGLIATELLA',
         'MUERDE LA PASTA', 'SANTAGLORIA', 'BOCATTA', 'GRANIER', 'LA SUREÑA', 'PIZZA MÓVIL', 'TACO BELL',
       ],
+      it: [
+        'BURGER KING', 'AUTOGRILL', 'SPIZZICO', 'CIAO', 'BURGHY', 'ROADHOUSE', 'OLD WILD WEST',
+        'AMERICA GRAFFITI', 'WIENER HAUS', 'LA PIADINERIA', 'ALICE PIZZA', 'SPONTINI', 'ROSSOPOMODORO',
+        'CHEF EXPRESS', 'I LOVE POKE', 'DOPPIO MALTO', 'FLOWER BURGER', 'BREK', 'BURGEZ', 'TACO BELL',
+      ],
+      pt: [
+        'BURGER KING', "HABIB'S", "BOB'S", 'GIRAFFAS', 'SPOLETO', 'CHINA IN BOX', 'OUTBACK', 'MADERO',
+        'CASA DO PÃO DE QUEIJO', 'RAGAZZO', 'JERONIMO', 'MANIA DE CHURRASCO', 'VIVENDA DO CAMARÃO',
+        'GENDAI', 'DIVINO FOGÃO', 'MONTANA GRILL', 'COCO BAMBU', 'FRANGO ASSADO',
+      ],
     },
   },
 
@@ -152,7 +188,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-luxe',
     theme: 'marques',
     subject: 'GRANDES MAISONS DE LUXE OU DE HAUTE COUTURE',
-    subjectByLang: { en: 'LUXURY FASHION HOUSES', de: 'LUXUSMODEADRESSEN', es: 'GRANDES CASAS DE MODA DE LUJO' },
+    subjectByLang: { en: 'LUXURY FASHION HOUSES', de: 'LUXUSMODEADRESSEN', es: 'GRANDES CASAS DE MODA DE LUJO', it: 'GRANDI CASE DI MODA DI LUSSO', pt: 'GRIFES DE LUXO OU DE ALTA-COSTURA' },
     answers: [
       'CHANEL', 'LOUIS VUITTON', 'DIOR', 'HERMÈS', 'GUCCI', 'PRADA', 'VERSACE', 'GIVENCHY', 'BALENCIAGA',
       'CÉLINE', 'VALENTINO', 'ARMANI', 'BURBERRY', 'FENDI', 'DOLCE & GABBANA', 'BOTTEGA VENETA', 'LOEWE',
@@ -184,6 +220,15 @@ export const questionsMarques: Question[] = [
         'ROBERTO VERINO', 'AGATHA RUIZ DE LA PRADA', 'CUSTO BARCELONA', 'DELPOZO', 'PRONOVIAS',
         'MANOLO BLAHNIK',
       ],
+      it: [
+        'SALVATORE FERRAGAMO', 'MISSONI', 'MAX MARA', 'ZEGNA', 'LORO PIANA', 'BRUNELLO CUCINELLI',
+        "TOD'S", 'BRIONI', 'MIU MIU', 'TRUSSARDI', 'GIANFRANCO FERRÉ', 'ALBERTA FERRETTI', 'BLUMARINE',
+      ],
+      pt: [
+        'OSKLEN', 'ALEXANDRE HERCHCOVITCH', 'CARLOS MIELE', 'REINALDO LOURENÇO', 'GLÓRIA COELHO',
+        'LENNY NIEMEYER', 'ANIMALE', 'DUDALINA', 'PEDRO LOURENÇO', 'ISABELA CAPETO', 'SAINT LAURENT',
+        'SALVATORE FERRAGAMO', 'MIU MIU', 'MICHAEL KORS',
+      ],
     },
   },
 
@@ -191,7 +236,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-supermarches',
     theme: 'marques',
     subject: "ENSEIGNES DE SUPERMARCHÉS OU D'HYPERMARCHÉS",
-    subjectByLang: { en: 'SUPERMARKET CHAINS', de: 'SUPERMARKTKETTEN', es: 'CADENAS DE SUPERMERCADOS' },
+    subjectByLang: { en: 'SUPERMARKET CHAINS', de: 'SUPERMARKTKETTEN', es: 'CADENAS DE SUPERMERCADOS', it: 'CATENE DI SUPERMERCATI', pt: 'REDES DE SUPERMERCADOS' },
     answers: [
       'LIDL', 'ALDI', 'IKEA', 'DÉCATHLON', 'SPAR', 'WALMART', 'COSTCO', 'METRO',
     ],
@@ -225,6 +270,20 @@ export const questionsMarques: Question[] = [
         'SUPERSOL', 'CLAREL', 'LA PLAÇA', 'BONPREU', 'LEROY MERLIN', 'BRICO DÉPÔT', 'ACTION', 'BAUHAUS',
         'AHORRAMÁS', 'GADIS', 'BM SUPERMERCADOS', 'LUPA', 'ALIMERKA', 'SUPERMERCADOS MAS',
       ],
+      it: [
+        'CONAD', 'ESSELUNGA', 'COOP', 'IPERCOOP', 'EUROSPIN', 'PAM', 'PANORAMA', 'CARREFOUR', 'CRAI',
+        'IPER', 'BENNET', 'FAMILA', 'SIGMA', 'TIGRE', "IN'S MERCATO", 'MD', 'PENNY', 'TODIS',
+        'IL GIGANTE', 'UNES', 'U2 SUPERMERCATI', 'TUODÌ', 'DECÒ', 'EMISFERO', 'NATURASÌ', 'TIGROS', 'ALÌ',
+        'GROS', 'AUCHAN', 'SIMPLY', 'LEROY MERLIN', 'BRICOMAN', 'BRICOCENTER', 'OBI', 'ACQUA & SAPONE',
+        'TIGOTÀ', 'ACTION',
+      ],
+      pt: [
+        'CARREFOUR', 'PÃO DE AÇÚCAR', 'ASSAÍ', 'ATACADÃO', 'EXTRA', 'GUANABARA', "SAM'S CLUB", 'ZAFFARI',
+        'BIG', 'BOMPREÇO', 'MAKRO', 'DIA', 'ST MARCHE', 'OBA HORTIFRUTI', 'SONDA', 'SAVEGNAGO', 'CONDOR',
+        'ANGELONI', 'MUFFATO', 'BH SUPERMERCADOS', 'GIASSI', 'MART MINAS', 'SUPERNOSSO', 'COOP', 'NAGUMO',
+        'TENDA ATACADO', 'ROLDÃO', 'COMPRE BEM', 'MAMBO', 'HIROTA', 'PREZUNIC', 'MUNDIAL', 'LEROY MERLIN',
+        'TELHANORTE', 'C&C',
+      ],
     },
   },
 
@@ -232,7 +291,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-hightech',
     theme: 'marques',
     subject: 'MARQUES DE HIGH-TECH',
-    subjectByLang: { en: 'TECH BRANDS', de: 'TECH-MARKEN', es: 'MARCAS DE TECNOLOGÍA' },
+    subjectByLang: { en: 'TECH BRANDS', de: 'TECH-MARKEN', es: 'MARCAS DE TECNOLOGÍA', it: 'MARCHI DI TECNOLOGIA', pt: 'MARCAS DE TECNOLOGIA' },
     answers: [
       'APPLE', 'SAMSUNG', 'SONY', 'LG', 'HUAWEI', 'XIAOMI', 'PHILIPS', 'DYSON', 'BOSE', 'SENNHEISER',
       'DELL', 'HP', 'LENOVO', 'ASUS', 'ACER', 'MICROSOFT', 'ONEPLUS', 'OPPO', 'NOKIA', 'MOTOROLA', 'JBL',
@@ -260,6 +319,15 @@ export const questionsMarques: Question[] = [
         'BALAY', 'CECOTEC', 'FAGOR', 'TAURUS', 'ORBEGOZO', 'SPC', 'BQ', 'ENERGY SISTEM', 'JATA', 'UFESA',
         'MOULINEX', 'ROWENTA',
       ],
+      it: [
+        'SMEG', 'OLIVETTI', 'IMETEC', 'ARIETE', 'BRIONVEGA', 'ZANUSSI', 'REX', 'POLTI', 'NGM', 'BRONDI',
+        'GAGGIA', 'SAECO', 'MIVAR', 'GIRMI',
+      ],
+      pt: [
+        'POSITIVO', 'MULTILASER', 'ELECTROLUX', 'BRASTEMP', 'CONSUL', 'MONDIAL', 'BRITÂNIA', 'PHILCO',
+        'ARNO', 'WALITA', 'CCE', 'GRADIENTE', 'INTELBRAS', 'SEMP', 'ESMALTEC', 'CADENCE', 'OSTER', 'ELGIN',
+        'ATLAS', 'CONTINENTAL',
+      ],
     },
   },
 
@@ -267,7 +335,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-sodas',
     theme: 'marques',
     subject: 'SODAS, THÉS GLACÉS OU ENERGY DRINKS',
-    subjectByLang: { en: 'SODAS, ICED TEAS & ENERGY DRINKS', de: 'SOFTDRINKS, EISTEES & ENERGYDRINKS', es: 'REFRESCOS, TÉS HELADOS O ENERGÉTICAS' },
+    subjectByLang: { en: 'SODAS, ICED TEAS & ENERGY DRINKS', de: 'SOFTDRINKS, EISTEES & ENERGYDRINKS', es: 'REFRESCOS, TÉS HELADOS O ENERGÉTICAS', it: 'BIBITE, TÈ FREDDI O ENERGY DRINK', pt: 'REFRIGERANTES, CHÁS GELADOS OU ENERGÉTICOS' },
     answers: [
       'COCA-COLA', 'PEPSI', 'FANTA', 'SPRITE', 'RED BULL', 'MONSTER', 'LIPTON', 'SCHWEPPES', '7UP',
       'NESTEA', 'DR PEPPER', 'GATORADE', 'POWERADE', 'ARIZONA', 'BURN', 'MINUTE MAID', 'TROPICANA',
@@ -294,6 +362,16 @@ export const questionsMarques: Question[] = [
         'KAS', 'TRINA', 'BIFRUTAS', 'LA CASERA', 'AQUARIUS', 'MIRINDA', 'CACAOLAT', 'ZUMOSOL', 'JARRITOS',
         'INKA KOLA', 'SIDRAL MUNDET', 'POSTOBÓN', 'BIG COLA', 'GUARANÁ ANTARCTICA',
       ],
+      it: [
+        'SANPELLEGRINO', 'ESTATHÉ', 'SAN BENEDETTO', 'CHINÒ', 'CHINOTTO NERI', 'CEDRATA TASSONI',
+        'CRODINO', 'SANBITTER', 'BRIO BLU', 'GALVANINA', 'MOLECOLA', 'POLARA', 'YOGA', 'SANTAL', 'ZUEGG',
+        'SKIPPER',
+      ],
+      pt: [
+        'GUARANÁ ANTARCTICA', 'KUAT', 'SUKITA', 'SODA LIMONADA', 'H2OH!', 'ITUBAÍNA', 'DOLLY',
+        'GUARANÁ JESUS', 'MATE COURO', 'GUARAVITA', 'MATTE LEÃO', 'DEL VALLE', 'TNT', 'FYS', 'AQUARIUS',
+        'SCHIN', 'CONVENÇÃO',
+      ],
     },
   },
 
@@ -301,7 +379,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-montres',
     theme: 'marques',
     subject: 'MARQUES DE MONTRES OU DE JOAILLERIE DE LUXE',
-    subjectByLang: { en: 'WATCH OR LUXURY JEWELLERY BRANDS', de: 'UHR- ODER LUXUSSCHMUCKMARKEN', es: 'MARCAS DE RELOJES O JOYERÍA DE LUJO' },
+    subjectByLang: { en: 'WATCH OR LUXURY JEWELLERY BRANDS', de: 'UHR- ODER LUXUSSCHMUCKMARKEN', es: 'MARCAS DE RELOJES O JOYERÍA DE LUJO', it: 'MARCHI DI OROLOGI O GIOIELLI DI LUSSO', pt: 'MARCAS DE RELÓGIOS OU JOIAS DE LUXO' },
     answers: [
       'ROLEX', 'CARTIER', 'OMEGA', 'BREITLING', 'TAG HEUER', 'PATEK PHILIPPE', 'AUDEMARS PIGUET',
       'BVLGARI', 'VAN CLEEF & ARPELS', 'TIFFANY', 'SWATCH', 'LONGINES', 'TUDOR', 'IWC',
@@ -329,6 +407,14 @@ export const questionsMarques: Question[] = [
       es: [
         'TOUS', 'CALYPSO', 'FESTINA', 'LOTUS', 'VICEROY', 'MAREA', 'RADIANT', 'NOWLEY',
       ],
+      it: [
+        'DAMIANI', 'POMELLATO', 'BUCCELLATI', 'MORELLATO', 'NOMINATION', 'PHILIP WATCH', 'LOCMAN',
+        'U-BOAT', 'STROILI', 'BROSWAY', 'CHANTECLER', 'UNOAERRE',
+      ],
+      pt: [
+        'VIVARA', 'LIFE BY VIVARA', 'H.STERN', 'MONTE CARLO', 'TECHNOS', 'MONDAINE', 'CHAMPION', 'ROMMANEL',
+        'NATAN', 'AMSTERDAM SAUER', 'DRYZUN',
+      ],
     },
   },
 
@@ -336,7 +422,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-compagnies-aeriennes',
     theme: 'marques',
     subject: 'COMPAGNIES AÉRIENNES',
-    subjectByLang: { en: 'AIRLINES', de: 'FLUGGESELLSCHAFTEN', es: 'AEROLÍNEAS' },
+    subjectByLang: { en: 'AIRLINES', de: 'FLUGGESELLSCHAFTEN', es: 'AEROLÍNEAS', it: 'COMPAGNIE AEREE', pt: 'COMPANHIAS AÉREAS' },
     answers: [
       'AIR FRANCE', 'EMIRATES', 'RYANAIR', 'EASYJET', 'BRITISH AIRWAYS', 'LUFTHANSA', 'KLM',
       'QATAR AIRWAYS', 'SINGAPORE AIRLINES', 'TURKISH AIRLINES', 'AMERICAN AIRLINES', 'DELTA',
@@ -368,6 +454,14 @@ export const questionsMarques: Question[] = [
         'AIR NOSTRUM', 'SPANAIR', 'CANARYFLY', 'PLUS ULTRA', 'EVELOP', 'WORLD2FLY', 'AVIANCA', 'LATAM',
         'AEROMÉXICO', 'COPA AIRLINES', 'AEROLÍNEAS ARGENTINAS', 'VIVA AEROBUS',
       ],
+      it: [
+        'ITA AIRWAYS', 'ALITALIA', 'NEOS', 'AIR DOLOMITI', 'VOLOTEA', 'AEROITALIA', 'MERIDIANA',
+        'AIR ONE', 'WINDJET', 'BLUE PANORAMA', 'AIR ITALY', 'ALPI EAGLES', 'EUROFLY', 'SKYALPS',
+      ],
+      pt: [
+        'GOL', 'AZUL', 'LATAM', 'VOEPASS', 'PASSAREDO', 'TAM', 'VARIG', 'VASP', 'TRANSBRASIL', 'WEBJET',
+        'OCEANAIR', 'TRIP', 'PANTANAL', 'ITAPEMIRIM', 'AVIANCA', 'AEROLÍNEAS ARGENTINAS', 'COPA AIRLINES',
+      ],
     },
   },
 
@@ -375,7 +469,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-alcool',
     theme: 'marques',
     subject: 'MARQUES DE BOISSONS ALCOOLISÉES',
-    subjectByLang: { en: 'ALCOHOLIC BEVERAGE BRANDS', de: 'ALKOHOLMARKEN', es: 'MARCAS DE BEBIDAS ALCOHÓLICAS' },
+    subjectByLang: { en: 'ALCOHOLIC BEVERAGE BRANDS', de: 'ALKOHOLMARKEN', es: 'MARCAS DE BEBIDAS ALCOHÓLICAS', it: 'MARCHI DI BEVANDE ALCOLICHE', pt: 'MARCAS DE BEBIDAS ALCOÓLICAS' },
     answers: [
       'HEINEKEN', 'DESPERADOS', 'STELLA ARTOIS', 'CORONA', "JACK DANIEL'S", 'JAMESON', 'BACARDI',
       'CAPTAIN MORGAN', 'ABSOLUT', 'SMIRNOFF', "BALLANTINE'S", 'JOHNNIE WALKER', 'GREY GOOSE',
@@ -411,6 +505,18 @@ export const questionsMarques: Question[] = [
         'BRUGAL', 'VOLL-DAMM', 'AMBAR', 'KELER', 'ESTRELLA LEVANTE', 'LARIOS', 'PUERTO DE INDIAS', 'NORDÉS',
         'TÍO PEPE', 'OSBORNE', 'SOBERANO', 'TERRY', 'CARLOS I', 'MAGNO', 'ANÍS DEL MONO',
       ],
+      it: [
+        'NASTRO AZZURRO', 'ICHNUSA', 'MENABREA', 'FORST', 'DREHER', 'BIRRA MESSINA', 'RAFFO', 'BALADIN',
+        'CINZANO', 'RAMAZZOTTI', 'MONTENEGRO', 'AVERNA', 'AMARO LUCANO', 'FERNET-BRANCA', 'BRAULIO',
+        'VECCHIA ROMAGNA', 'STOCK', 'MOLINARI', 'STREGA', 'CYNAR', 'SELECT', 'GALLIANO', 'NONINO',
+        'NARDINI', 'VILLA MASSA', 'MARZADRO', 'ZUCCA',
+      ],
+      pt: [
+        'BRAHMA', 'SKOL', 'ANTARCTICA', 'ITAIPAVA', 'BOHEMIA', 'ORIGINAL', 'SCHIN', 'DEVASSA', 'EISENBAHN',
+        'KAISER', 'SERRAMALTE', 'PETRA', 'COLORADO', 'CARACU', '51', 'YPIÓCA', 'VELHO BARREIRO', 'SAGATIBA',
+        'PITÚ', 'SELETA', 'SALINAS', 'CATUABA SELVAGEM', 'DREHER', 'SÃO FRANCISCO', 'MIOLO', 'SALTON',
+        'AURORA',
+      ],
     },
   },
 
@@ -418,7 +524,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-cereales-spreads',
     theme: 'marques',
     subject: 'MARQUES DE CÉRÉALES OU PÂTES À TARTINER',
-    subjectByLang: { en: 'BREAKFAST CEREAL OR SPREAD BRANDS', de: 'CEREALIEN- ODER AUFSTRICHMARKEN', es: 'MARCAS DE CEREALES O CREMAS UNTABLES' },
+    subjectByLang: { en: 'BREAKFAST CEREAL OR SPREAD BRANDS', de: 'CEREALIEN- ODER AUFSTRICHMARKEN', es: 'MARCAS DE CEREALES O CREMAS UNTABLES', it: 'MARCHI DI CEREALI O CREME SPALMABILI', pt: 'MARCAS DE CEREAIS OU PASTAS PARA PÃO' },
     answers: [
       'NUTELLA', 'LOTUS BISCOFF', "KELLOGG'S", 'CORN FLAKES', 'SPECIAL K', 'FROSTIES', 'ALL-BRAN',
       'NATURE VALLEY', 'COUNTRY CRISP', 'CHEERIOS', 'QUAKER', 'NESQUIK', 'SKIPPY', 'OVOMALTINE',
@@ -447,6 +553,15 @@ export const questionsMarques: Question[] = [
         'NOCILLA', 'EL ALMENDRO', 'SANTIVERI', 'COLA CAO', 'LA PIARA', 'HACENDADO', 'CHOCO KRISPIES',
         'CHOCAPIC', 'MIEL POPS', 'TRÉSOR', 'HERO', 'CLUSTERS', 'FITNESS',
       ],
+      it: [
+        'NUTKAO', 'CREMA PAN DI STELLE', 'NOVI', 'RIGONI DI ASIAGO', 'FIOR DI FRUTTA', 'ZUEGG', 'VALSOIA',
+        'MISURA', 'CHOCAPIC', 'FITNESS', 'TRÉSOR',
+      ],
+      pt: [
+        'SUCRILHOS', 'NESCAU CEREAL', 'SNOW FLAKES', 'NESFIT', 'NESTON', 'MUCILON', 'CHOCAPIC', 'CATUPIRY',
+        'VIGOR', 'DORIANA', 'QUALY', 'BECEL', 'DELÍCIA', 'DR. PEANUT', 'JASMINE', 'MÃE TERRA',
+        'QUEENSBERRY', 'RITTER', 'PREDILECTA', 'CICA', 'MOÇA',
+      ],
     },
   },
 
@@ -454,7 +569,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-surgeles',
     theme: 'marques',
     subject: 'MARQUES DE SURGELÉS OU PLATS CUISINÉS',
-    subjectByLang: { en: 'FROZEN FOOD OR READY MEAL BRANDS', de: 'MARKEN FÜR TK- UND FERTIGGERICHTE', es: 'MARCAS DE CONGELADOS O PLATOS LISTOS' },
+    subjectByLang: { en: 'FROZEN FOOD OR READY MEAL BRANDS', de: 'MARKEN FÜR TK- UND FERTIGGERICHTE', es: 'MARCAS DE CONGELADOS O PLATOS LISTOS', it: 'MARCHI DI SURGELATI O PIATTI PRONTI', pt: 'MARCAS DE CONGELADOS OU PRATOS PRONTOS' },
     answers: [
       'FINDUS', 'KNORR', 'MAGGI', 'BONDUELLE', 'MCCAIN', 'DR. OETKER', 'WEIGHT WATCHERS', 'RANA',
       'BARILLA FRAIS', "BEN & JERRY'S", 'HÄAGEN-DAZS', 'GREEN GIANT', "CARTE D'OR", 'MAGNUM', 'CORNETTO',
@@ -483,6 +598,14 @@ export const questionsMarques: Question[] = [
         'PESCANOVA', 'LA COCINERA', 'CAMPOFRÍO', 'NESTLÉ HELADOS', 'FRUDESA', 'LITORAL', 'CARRETILLA',
         'GALLINA BLANCA', 'FRIPOZO', 'LA SIRENA', 'CASA TARRADELLAS', 'BUITONI',
       ],
+      it: [
+        'ALGIDA', 'SAMMONTANA', 'MOTTA', 'BUITONI', 'STAR', 'CIRIO', 'VALFRUTTA', 'AMADORI', 'AIA',
+        'OROGEL', 'COPPA DEL NONNO', 'MAXIBON', 'BOFROST',
+      ],
+      pt: [
+        'SADIA', 'PERDIGÃO', 'SEARA', 'AURORA', 'SWIFT', 'PIF PAF', 'FRIMESA', 'FORNO DE MINAS',
+        'MASSA LEVE', 'KIBON', 'VAPZA',
+      ],
     },
   },
 
@@ -490,7 +613,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-champagne',
     theme: 'marques',
     subject: 'MARQUES DE CHAMPAGNE OU VINS MOUSSEUX',
-    subjectByLang: { en: 'CHAMPAGNE OR SPARKLING WINE BRANDS', de: 'CHAMPAGNER- ODER SEKTMARKEN', es: 'MARCAS DE CAVA O VINOS ESPUMOSOS' },
+    subjectByLang: { en: 'CHAMPAGNE OR SPARKLING WINE BRANDS', de: 'CHAMPAGNER- ODER SEKTMARKEN', es: 'MARCAS DE CAVA O VINOS ESPUMOSOS', it: 'MARCHI DI CHAMPAGNE O SPUMANTI', pt: 'MARCAS DE CHAMPANHE OU ESPUMANTES' },
     answers: [
       'MOËT & CHANDON', 'VEUVE CLICQUOT', 'DOM PÉRIGNON', 'MUMM', 'LAURENT-PERRIER', 'BOLLINGER',
       'NICOLAS FEUILLATTE', 'PIPER-HEIDSIECK', 'TAITTINGER', 'RUINART', 'KRUG', 'POL ROGER',
@@ -520,6 +643,15 @@ export const questionsMarques: Question[] = [
         'MARQUÉS DE MONISTROL', 'VILLA CONCHI', 'JAUME SERRA', 'MONT MARÇAL', 'CANALS & MUNNÉ', 'RECAREDO',
         'PERE VENTURA', 'CONDE DE CARALT', 'PORTA',
       ],
+      it: [
+        'FERRARI', 'BERLUCCHI', 'BELLAVISTA', "CA' DEL BOSCO", 'CONTADI CASTALDI', 'GANCIA', 'CINZANO',
+        'VALDO', 'CARPENÈ MALVOLTI', 'BISOL', 'ZONIN', 'VILLA SANDI', 'NINO FRANCO', 'ASTORIA',
+        'LA MARCA', 'ROTARI', 'CAVIT', 'MASCHIO', 'RIONDO', 'SANTERO', 'FONTANAFREDDA', 'MONTENISA',
+      ],
+      pt: [
+        'MIOLO', 'SALTON', 'AURORA', 'CASA VALDUGA', 'CAVE GEISSE', 'PERICÓ', 'CASA PERINI', 'GARIBALDI',
+        'PIZZATO', 'DON GUERINO', 'PETERLONGO', 'LIDIO CARRARO', 'DAL PIZZOL', 'ADOLFO LONA',
+      ],
     },
   },
 
@@ -527,7 +659,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-jouets',
     theme: 'marques',
     subject: 'JOUETS OU JEUX DE SOCIÉTÉ CULTES',
-    subjectByLang: { en: 'CLASSIC TOYS OR BOARD GAMES', de: 'SPIELZEUG-KLASSIKER UND BRETTSPIELE', es: 'JUGUETES O JUEGOS DE MESA CLÁSICOS' },
+    subjectByLang: { en: 'CLASSIC TOYS OR BOARD GAMES', de: 'SPIELZEUG-KLASSIKER UND BRETTSPIELE', es: 'JUGUETES O JUEGOS DE MESA CLÁSICOS', it: 'GIOCATTOLI O GIOCHI DA TAVOLO CULT', pt: 'BRINQUEDOS OU JOGOS CLÁSSICOS' },
     answers: [
       'LEGO', 'PLAYMOBIL', 'BARBIE', 'HOT WHEELS', 'MONOPOLY', 'SCRABBLE', 'UNO', 'TRIVIAL PURSUIT',
       'RISK', 'CLUEDO', 'MECCANO', 'BRIO', 'FISHER-PRICE', 'NERF', 'DUPLO', 'JENGA', 'PICTIONARY',
@@ -559,6 +691,16 @@ export const questionsMarques: Question[] = [
         'DISET', 'GEYPER', 'BARRIGUITAS', 'TENTE', 'SCALEXTRIC', 'EXIN CASTILLOS', 'SERPIENTES Y ESCALERAS',
         'TRAGABOLAS',
       ],
+      it: [
+        'CLEMENTONI', 'GIOCHI PREZIOSI', 'LISCIANI', 'QUERCETTI', 'CICCIOBELLO', 'SAPIENTINO', 'GORMITI',
+        'BBURAGO', 'POLISTIL', 'GIG', 'EDITRICE GIOCHI', 'SCARABEO', 'TOMBOLA', "GIOCO DELL'OCA",
+        'MERCANTE IN FIERA', 'DOLCE FORNO',
+      ],
+      pt: [
+        'ESTRELA', 'BANCO IMOBILIÁRIO', 'JOGO DA VIDA', 'DETETIVE', 'WAR', 'SUPER TRUNFO', 'COMBATE',
+        'PULA PIRATA', 'CAI NÃO CAI', 'FALCON', 'SUSI', 'GENIUS', 'FERRORAMA', 'AUTORAMA', 'POGOBOL',
+        'IMAGEM & AÇÃO', 'PERFIL', 'GROW', 'XALINGO', 'CANDIDE', 'BABY ALIVE',
+      ],
     },
   },
 
@@ -566,7 +708,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-pret-a-porter',
     theme: 'marques',
     subject: 'MARQUES DE VÊTEMENTS GRAND PUBLIC',
-    subjectByLang: { en: 'MASS-MARKET CLOTHING BRANDS', de: 'MODEMARKEN FÜR ALLE', es: 'MARCAS DE ROPA ASEQUIBLE' },
+    subjectByLang: { en: 'MASS-MARKET CLOTHING BRANDS', de: 'MODEMARKEN FÜR ALLE', es: 'MARCAS DE ROPA ASEQUIBLE', it: 'MARCHI DI ABBIGLIAMENTO ACCESSIBILI', pt: 'MARCAS DE ROUPA POPULARES' },
     answers: [
       'ZARA', 'H&M', 'PRIMARK', 'UNIQLO', 'PULL & BEAR', 'BERSHKA', 'MANGO', 'C&A', 'SHEIN', 'ASOS',
       'GAP', 'TOMMY HILFIGER', 'CALVIN KLEIN', "LEVI'S", 'GUESS', 'WRANGLER', 'HOLLISTER', 'ABERCROMBIE',
@@ -602,6 +744,16 @@ export const questionsMarques: Question[] = [
         'MISAKO', 'TRUCCO', 'BLANCO', 'EL GANSO', 'SCALPERS', 'HOSS INTROPIA', 'CUSTO BARCELONA', 'MAYORAL',
         'TUC TUC',
       ],
+      it: [
+        'OVS', 'CALZEDONIA', 'INTIMISSIMI', 'TEZENIS', 'TERRANOVA', 'PIAZZA ITALIA', 'MOTIVI', 'YAMAMAY',
+        'SISLEY', 'STEFANEL', 'CONBIPEL', 'ALCOTT', 'KAPPA', 'DIADORA', 'LOTTO', 'GEOX', 'NAPAPIJRI',
+        'COLMAR', 'LIU JO', 'PINKO', 'TWINSET', 'PATRIZIA PEPE', 'HARMONT & BLAINE', 'MISS SIXTY', 'GAS',
+      ],
+      pt: [
+        'HERING', 'RIACHUELO', 'RENNER', 'MARISA', 'PERNAMBUCANAS', 'RESERVA', 'FARM', 'COLCCI', 'FORUM',
+        'ELLUS', 'CANTÃO', 'AREZZO', 'HAVAIANAS', 'MELISSA', 'TACO', 'YOUCOM', 'ZINZANE', 'TNG', 'MALWEE',
+        'LUPO', 'DZARM', 'OLYMPIKUS', 'MIZUNO', 'TORRA', 'CENTAURO', 'AEROPOSTALE',
+      ],
     },
   },
 
@@ -609,7 +761,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-hotels',
     theme: 'marques',
     subject: "CHAÎNES D'HÔTELS OU GROUPES HÔTELIERS",
-    subjectByLang: { en: 'HOTEL CHAINS OR GROUPS', de: 'HOTELKETTEN ODER -GRUPPEN', es: 'CADENAS U OPERADORES HOTELEROS' },
+    subjectByLang: { en: 'HOTEL CHAINS OR GROUPS', de: 'HOTELKETTEN ODER -GRUPPEN', es: 'CADENAS U OPERADORES HOTELEROS', it: 'CATENE O GRUPPI ALBERGHIERI', pt: 'REDES OU GRUPOS HOTELEIROS' },
     answers: [
       'ACCOR', 'IBIS', 'NOVOTEL', 'SOFITEL', 'MERCURE', 'MARRIOTT', 'HILTON', 'BEST WESTERN',
       'HOLIDAY INN', 'SHERATON', 'HYATT', 'FOUR SEASONS', 'RADISSON', 'INTERCONTINENTAL', 'RIU',
@@ -641,6 +793,15 @@ export const questionsMarques: Question[] = [
         'GRUPOTEL', 'H10 HOTELS', 'HOTUSA', 'SERCOTEL', 'PALLADIUM', 'BAHIA PRINCIPE', 'HIPOTELS', 'ZENIT',
         'SILKEN', 'ILUNION', 'ABBA HOTELES',
       ],
+      it: [
+        'STARHOTELS', 'UNAHOTELS', 'ATAHOTELS', 'BAGLIONI', 'BOSCOLO', 'BETTOJA', 'LUNGARNO COLLECTION',
+        'BLU HOTELS', 'VOIHOTELS', 'VALTUR', 'BLUSERENA', 'TH RESORTS', 'IH HOTELS', 'CLUB DEL SOLE',
+      ],
+      pt: [
+        'ATLANTICA HOTELS', 'BLUE TREE', 'NACIONAL INN', 'TRANSAMERICA', 'GJP HOTÉIS', 'BOURBON',
+        'VILA GALÉ', 'PESTANA', 'SLAVIERO', 'TAUÁ', 'BEACH PARK', 'COPACABANA PALACE', 'ROYAL PALM',
+        'NOBILE', 'WINDSOR', 'OTHON', 'TULIP INN',
+      ],
     },
   },
 
@@ -648,7 +809,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-ecommerce',
     theme: 'marques',
     subject: 'PLATEFORMES E-COMMERCE OU DE LIVRAISON',
-    subjectByLang: { en: 'E-COMMERCE OR DELIVERY PLATFORMS', de: 'ONLINESHOPS ODER LIEFERDIENSTE', es: 'PLATAFORMAS DE E-COMMERCE O ENTREGA' },
+    subjectByLang: { en: 'E-COMMERCE OR DELIVERY PLATFORMS', de: 'ONLINESHOPS ODER LIEFERDIENSTE', es: 'PLATAFORMAS DE E-COMMERCE O ENTREGA', it: 'PIATTAFORME DI E-COMMERCE O CONSEGNA', pt: 'PLATAFORMAS DE E-COMMERCE OU DELIVERY' },
     answers: [
       'AMAZON', 'EBAY', 'VINTED', 'ZALANDO', 'SHEIN', 'ALIEXPRESS', 'BACK MARKET', 'UBER EATS',
       'DELIVEROO', 'JUST EAT', 'RAKUTEN', 'WISH', 'TEMU', 'BOOKING.COM', 'AIRBNB', 'BLABLACAR', 'ETSY',
@@ -677,6 +838,16 @@ export const questionsMarques: Question[] = [
         'MILANUNCIOS', 'ATRÁPALO', 'DRUNI', 'MERCADO LIBRE', 'RAPPI', 'LA CASA DEL LIBRO', 'TRADEINN',
         'FNAC', 'MEDIAMARKT', 'VEEPEE', 'MANOMANO',
       ],
+      it: [
+        'SUBITO', 'GLOVO', 'EPRICE', 'UNIEURO', 'MEDIAWORLD', 'IBS', 'FELTRINELLI', 'LIBRACCIO',
+        'PRIVALIA', 'VEEPEE', 'LUISAVIAROMA', 'EVERLI', 'ESSELUNGA A CASA', 'TROVAPREZZI', 'IDEALO',
+        'ZOOPLUS', 'MANOMANO',
+      ],
+      pt: [
+        'MERCADO LIVRE', 'MAGALU', 'AMERICANAS', 'IFOOD', 'RAPPI', 'SHOPEE', 'CASAS BAHIA', 'OLX', 'ENJOEI',
+        'NETSHOES', 'SUBMARINO', 'SHOPTIME', 'PONTO', 'KABUM', 'DAFITI', 'ZÉ DELIVERY', 'LOGGI', '99FOOD',
+        'ESTANTE VIRTUAL', 'AIQFOME', 'BELEZA NA WEB', 'HURB',
+      ],
     },
   },
 
@@ -684,7 +855,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-parfum',
     theme: 'marques',
     subject: 'MARQUES DE PARFUM',
-    subjectByLang: { en: 'PERFUME BRANDS', de: 'PARFÜMMARKEN', es: 'MARCAS DE PERFUME' },
+    subjectByLang: { en: 'PERFUME BRANDS', de: 'PARFÜMMARKEN', es: 'MARCAS DE PERFUME', it: 'MARCHI DI PROFUMI', pt: 'MARCAS DE PERFUME' },
     answers: [
       'CHANEL', 'DIOR', 'YVES SAINT LAURENT', 'GUERLAIN', 'GIVENCHY', 'HERMÈS', 'PACO RABANNE',
       'JEAN-PAUL GAULTIER', 'THIERRY MUGLER', 'CALVIN KLEIN', 'HUGO BOSS', 'VERSACE', 'ARMANI',
@@ -716,6 +887,16 @@ export const questionsMarques: Question[] = [
         'SHAKIRA', 'ADOLFO DOMÍNGUEZ', 'ANTONIO BANDERAS', 'MYRURGIA', 'AGUA DE SEVILLA', 'ÁLVAREZ GÓMEZ',
         'NENUCO', 'INSTITUTO ESPAÑOL', 'TOUS', 'ZARA',
       ],
+      it: [
+        'PRADA', 'SALVATORE FERRAGAMO', 'ROBERTO CAVALLI', 'MOSCHINO', 'TRUSSARDI', 'LAURA BIAGIOTTI',
+        'MISSONI', 'BLUMARINE', 'XERJOFF', 'PROFUMUM ROMA', "ACQUA DELL'ELBA", "L'ERBOLARIO",
+        'BOTTEGA VERDE', 'BORSARI', 'ETRO',
+      ],
+      pt: [
+        'O BOTICÁRIO', 'NATURA', 'EUDORA', 'JEQUITI', 'QUEM DISSE, BERENICE?', 'GRANADO', 'PHEBO',
+        "L'OCCITANE AU BRÉSIL", 'MAHOGANY', 'LANCÔME', 'CACHAREL', 'NINA RICCI', 'RALPH LAUREN', 'AZZARO',
+        'ANTONIO BANDERAS',
+      ],
     },
   },
 
@@ -723,7 +904,7 @@ export const questionsMarques: Question[] = [
     id: 'marques-eau',
     theme: 'marques',
     subject: "MARQUES D'EAU EN BOUTEILLE",
-    subjectByLang: { en: 'BOTTLED WATER BRANDS', de: 'MINERALWASSERMARKEN', es: 'MARCAS DE AGUA EMBOTELLADA' },
+    subjectByLang: { en: 'BOTTLED WATER BRANDS', de: 'MINERALWASSERMARKEN', es: 'MARCAS DE AGUA EMBOTELLADA', it: 'MARCHI DI ACQUA IN BOTTIGLIA', pt: 'MARCAS DE ÁGUA MINERAL' },
     answers: [
       'EVIAN', 'VOLVIC', 'PERRIER', 'VITTEL', 'SAN PELLEGRINO', 'ACQUA PANNA', 'NESTLÉ PURE LIFE', 'FIJI',
       'SMARTWATER', 'APOLLINARIS', 'VOSS', 'ICELANDIC GLACIAL', 'GEROLSTEINER', 'LURISIA',
@@ -753,6 +934,16 @@ export const questionsMarques: Question[] = [
         'RIBES', 'AGUASANA', 'FUENTE EN SEGURES', 'FONTER', 'SAN NARCISO', 'FUENTE PRIMAVERA', 'PEDRAS',
         'LUSO', 'SALUS', 'BONAQUA', 'FONT NATURA', 'AQUAREL', 'SIERRA DE CAZORLA', 'PEÑACLARA',
         'FONTECELTA', 'CONTREX',
+      ],
+      it: [
+        'LEVISSIMA', "SANT'ANNA", 'SAN BENEDETTO', 'FERRARELLE', 'ROCCHETTA', 'VERA', 'NEPI', 'BOARIO',
+        'FIUGGI', 'LETE', 'NORDA', 'GUIZZA', 'SANGEMINI', 'PLOSE', 'SURGIVA', 'ULIVETO', 'SAN BERNARDO',
+        'MANIVA', 'BRACCA', 'SANTA CROCE', 'SAN FAUSTINO', 'GAUDIANELLO', 'CERELIA', 'FONTE TAVINA',
+        'PRATA', 'GOCCIA DI CARNIA', 'LILIA', 'VITASNELLA', 'SOLE',
+      ],
+      pt: [
+        'CRYSTAL', 'BONAFONT', 'MINALBA', 'SÃO LOURENÇO', 'LINDOYA', 'PRATA', 'INDAIÁ', 'SCHIN', 'CAXAMBU',
+        'IBIRÁ', 'PUREZA VITAL', 'LAMBARI', 'CAMBUQUIRA', 'AQUAREL', 'OURO FINO', 'AMA',
       ],
     },
   },

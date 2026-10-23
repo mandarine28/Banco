@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { type Href, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -98,24 +99,30 @@ export default function HomeScreen() {
         <View style={[styles.bluePanel, { width }]} onLayout={(e) => setPanelTop(e.nativeEvent.layout.y)}>
           <CreamPatternSvg width={width} height={360} opacity={0.04} fill="#ffffff" />
           <View style={[styles.panelContent, { paddingBottom: Math.max(64, insets.bottom + 30) }]}>
-            {/* Jouer — fond crème, texte marine */}
+            {/* Jouer — dégradé orange, même style que « Miser » et « Continuer » */}
             <Pressable
               onPress={go('/parametres')}
               accessibilityRole="button"
               accessibilityLabel={t.home.play}
-              style={styles.btnJouer}
             >
-              <Text style={[styles.btnText, { color: colors.purpleDeep }]}>{t.home.play}</Text>
+              <LinearGradient
+                colors={['#fb940e', '#f2c512']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.btnJouer}
+              >
+                <Text style={[styles.btnText, { color: colors.cream }]}>{t.home.play}</Text>
+              </LinearGradient>
             </Pressable>
 
-            {/* Boutique — fond orange, texte crème */}
+            {/* Boutique — fond crème, contour marine, comme « Suivant » (équipes) */}
             <Pressable
               onPress={go('/boutique')}
               accessibilityRole="button"
               accessibilityLabel={t.home.shop}
               style={styles.btnBoutique}
             >
-              <Text style={[styles.btnText, { color: colors.cream }]}>{t.home.shop}</Text>
+              <Text style={[styles.btnText, { color: colors.purpleDeep }]}>{t.home.shop}</Text>
             </Pressable>
 
             {/* Règle — contour blanc, texte crème */}
@@ -197,16 +204,27 @@ const styles = StyleSheet.create({
   btnJouer: {
     height: 56,
     borderRadius: 16,
-    backgroundColor: colors.cream,
+    borderWidth: 2,
+    borderColor: '#a15c03',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#a15c03',
+    shadowOffset: { width: -1, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
   },
   btnBoutique: {
     height: 56,
     borderRadius: 16,
-    backgroundColor: colors.pink,
+    backgroundColor: '#fffbf5',
+    borderWidth: 2,
+    borderColor: colors.purpleDeep,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: colors.purpleDeep,
+    shadowOffset: { width: -1, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
   },
   btnRegle: {
     height: 56,
