@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Keyboard, PanResponder, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import type { ScrollViewInstance, TextInputInstance } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import { getSubject, hiddenAnswers, indexLetter, localizedQuestion, normalize, searchAnswers, sortAlphabetically, suggestions } from '@/game/answers';
@@ -63,7 +64,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
   const [query, setQuery] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<TextInputInstance>(null);
   const toastOpacity = useRef(new Animated.Value(0)).current;
   const toastTranslateY = useRef(new Animated.Value(8)).current;
   const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -102,7 +103,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
   const [isAlpha, setIsAlpha] = useState(false);
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [activeLetter, setActiveLetter] = useState<string | null>(null);
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ScrollViewInstance>(null);
   // Mesures lues par le PanResponder (créé une seule fois) : écrites dans les handlers de layout
   const scrubMetrics = useRef({ containerH: 0, contentH: 0, startY: 0 });
   const chipLayouts = useRef<{ top: number; label: string }[]>([]);

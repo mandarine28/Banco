@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
 import { Dimensions, Modal, StyleSheet, Text, View } from 'react-native';
+import type { ViewInstance } from 'react-native';
 
 import { FlagIcon } from '@/components/FlagIcon';
 import { useLang } from '@/lib/LangContext';
@@ -18,7 +19,7 @@ export function LanguagePicker({ showChevron = false }: { showChevron?: boolean 
   const [open, setOpen] = useState(false);
   const [dropdownTop, setDropdownTop] = useState(0);
   const [dropdownLeft, setDropdownLeft] = useState(0);
-  const wrapRef = useRef<View>(null);
+  const wrapRef = useRef<ViewInstance>(null);
 
   const handleToggle = () => {
     if (open) { setOpen(false); return; }
