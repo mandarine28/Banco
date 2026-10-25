@@ -8,13 +8,16 @@ import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
+import { CategoryBadge } from './CategoryBadge';
 
 type Props = {
   state: SurvieState;
   onStart: () => void;
+  /** Au moins 2 catégories choisies : on rappelle celle de la question. */
+  showCategory?: boolean;
 };
 
-export function SurvieReadyPhase({ state, onStart }: Props) {
+export function SurvieReadyPhase({ state, onStart, showCategory = false }: Props) {
   const insets = useSafeAreaInsets();
   const { lang } = useLang();
   const t = getT(lang);
@@ -26,10 +29,13 @@ export function SurvieReadyPhase({ state, onStart }: Props) {
     <View style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom + 20, 36) }]}>
       {/* Round + question centrés entre l'en-tête et le bouton : même écart au-dessus et en dessous */}
       <View style={styles.questionArea}>
-        <View style={styles.roundBadge}>
-          <Text style={styles.roundText}>
-            {t.ready.round} {state.round + 1}/{state.roundCount}
-          </Text>
+        <View style={styles.pillRow}>
+          <View style={styles.roundBadge}>
+            <Text style={styles.roundText}>
+              {t.ready.round} {state.round + 1}/{state.roundCount}
+            </Text>
+          </View>
+          {showCategory ? <CategoryBadge themeId={question.theme} /> : null}
         </View>
 
         <View style={styles.questionCard}>
@@ -75,6 +81,12 @@ const styles = StyleSheet.create({
   // Garde le bouton à peu près à sa hauteur d'avant (sous le milieu de l'écran) au lieu de le coller en bas
   bottomSpacer: {
     flex: BUTTON_BOTTOM_SPACE,
+  },
+  pillRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
   },
   roundBadge: {
     alignSelf: 'center',

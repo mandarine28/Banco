@@ -3,6 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import { NextButton } from '@/components/PillButton';
 import { SevenSegment } from '@/components/SevenSegment';
 import { TURN_SECONDS } from '@/game/engine';
+import { getT } from '@/lib/i18n';
+import { useLang } from '@/lib/LangContext';
 import { colors } from '@/theme';
 
 const WARNING_SECONDS = 10;
@@ -14,13 +16,14 @@ type Props = {
 
 /** Barre fixée en bas pendant le jeu : chrono et bouton pour terminer le tour. */
 export function TimerBar({ remainingMs, onSkip }: Props) {
+  const t = getT(useLang().lang);
   const seconds = Math.ceil(remainingMs / 1000);
   const color = seconds <= WARNING_SECONDS ? colors.pink : colors.orange;
   const progress = remainingMs / (TURN_SECONDS * 1000);
 
   return (
     <View style={styles.row}>
-      <View style={styles.timer} accessibilityLabel={`${seconds} secondes restantes`}>
+      <View style={styles.timer} accessibilityLabel={t.common.secondsLeft(seconds)}>
         <SevenSegment value={String(seconds).padStart(2, '0')} height={28} color={color} />
         <View style={styles.track}>
           <View style={[styles.fill, { width: `${progress * 100}%`, backgroundColor: color }]}>
@@ -28,7 +31,7 @@ export function TimerBar({ remainingMs, onSkip }: Props) {
           </View>
         </View>
       </View>
-      <NextButton accessibilityLabel="Terminer le tour" onPress={onSkip} />
+      <NextButton accessibilityLabel={t.play.endTurn} onPress={onSkip} />
     </View>
   );
 }

@@ -1,6 +1,5 @@
-import Svg, { ClipPath, Defs, G, Mask, Path, Rect, SvgXml } from 'react-native-svg';
+import Svg, { Circle, ClipPath, Defs, G, Mask, Path, Rect } from 'react-native-svg';
 
-import { FLAG_PORTUGAL_XML } from '@/components/flagPortugalXml';
 import type { Lang } from '@/lib/i18n';
 
 function FlagFR({ size }: { size: number }) {
@@ -111,8 +110,23 @@ function FlagIT({ size }: { size: number }) {
   );
 }
 
-function FlagPT({ size }: { size: number }) {
-  return <SvgXml xml={FLAG_PORTUGAL_XML} width={size} height={size} />;
+// Portugais du Brésil : contenu brésilien, donc drapeau du Brésil
+function FlagBR({ size }: { size: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 128 128">
+      <Defs>
+        <ClipPath id="clip-br-a">
+          <Rect width="128" height="128" rx="64" />
+        </ClipPath>
+      </Defs>
+      <G clipPath="url(#clip-br-a)">
+        <Rect width="128" height="128" fill="#009C3B" />
+        <Path d="M64 20L120 64L64 108L8 64Z" fill="#FFDF00" />
+        <Circle cx="64" cy="64" r="25" fill="#002776" />
+        <Path d="M40.5 56.5C56 52 75 54.5 88.5 66" stroke="white" strokeWidth={5} fill="none" />
+      </G>
+    </Svg>
+  );
 }
 
 export function FlagIcon({ lang, size = 34 }: { lang: Lang; size?: number }) {
@@ -122,6 +136,6 @@ export function FlagIcon({ lang, size = 34 }: { lang: Lang; size?: number }) {
     case 'de': return <FlagDE size={size} />;
     case 'es': return <FlagES size={size} />;
     case 'it': return <FlagIT size={size} />;
-    case 'pt': return <FlagPT size={size} />;
+    case 'pt': return <FlagBR size={size} />;
   }
 }

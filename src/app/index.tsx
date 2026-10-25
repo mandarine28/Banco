@@ -143,7 +143,7 @@ export default function HomeScreen() {
           <Pressable
             onPress={go('/reglages')}
             accessibilityRole="button"
-            accessibilityLabel="Paramètres"
+            accessibilityLabel={t.pages.settings}
             hitSlop={10}
           >
             <SettingIcon size={Math.min(width * 0.08, 32)} />

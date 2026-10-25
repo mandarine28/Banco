@@ -234,6 +234,8 @@ type GameProps = {
 type Confirm = 'quit' | 'skip' | null;
 
 function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFinished }: GameProps) {
+  const showCategory = selectedThemes.length > 1;
+  const t = getT(useLang().lang);
   const filteredQuestions =
     selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
   const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, filteredQuestions));
@@ -338,6 +340,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
           key={`${state.round}-${state.auction.current}`}
           state={state}
           justRaised={lastAuctionAction === 'bid'}
+          showCategory={showCategory}
           onBid={(amount) => {
             setLastAuctionAction('bid');
             dispatch({ type: 'BID', amount });
@@ -373,9 +376,9 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
 
       <ConfirmModal
         visible={confirm === 'quit'}
-        title="Quitter la partie ?"
-        message="La partie en cours sera perdue."
-        confirmLabel="QUITTER"
+        title={t.common.quitTitle}
+        message={t.common.quitMsg}
+        confirmLabel={t.common.quit}
         onCancel={() => setConfirm(null)}
         onConfirm={() => {
           setConfirm(null);
@@ -384,9 +387,9 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
       />
       <ConfirmModal
         visible={confirm === 'skip'}
-        title="Terminer le tour ?"
-        message="Si la mise n’est pas atteinte, elle revient à l’adversaire."
-        confirmLabel="TERMINER"
+        title={t.common.endTurnTitle}
+        message={t.common.endTurnMsg}
+        confirmLabel={t.common.endTurnBtn}
         onCancel={() => setConfirm(null)}
         onConfirm={() => {
           setConfirm(null);
@@ -398,6 +401,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
 }
 
 function SurvieGame({ teams, roundCount, selectedThemes, turnSeconds, onReplay, beforeLeave, onFinished }: GameProps & { turnSeconds: number | null }) {
+  const showCategory = selectedThemes.length > 1;
   const filteredQuestions =
     selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
   const [state, dispatch] = useReducer(survieReducer, null, () =>
@@ -484,6 +488,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, turnSeconds, onReplay, 
       {state.phase === 'ready' && elimination?.stage !== 'covering' ? (
         <SurvieReadyPhase
           state={state}
+          showCategory={showCategory}
           onStart={() => { dispatch({ type: 'START' }); setPauseSource(null); }}
         />
       ) : null}
@@ -544,9 +549,9 @@ function SurvieGame({ teams, roundCount, selectedThemes, turnSeconds, onReplay, 
       />
       <ConfirmModal
         visible={confirmQuit}
-        title="Quitter la partie ?"
-        message="La partie en cours sera perdue."
-        confirmLabel="QUITTER"
+        title={t.common.quitTitle}
+        message={t.common.quitMsg}
+        confirmLabel={t.common.quit}
         onCancel={() => setConfirmQuit(false)}
         onConfirm={() => { setConfirmQuit(false); goHome(); }}
       />

@@ -2,6 +2,8 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text } from 'react-native';
 
+import { getT } from '@/lib/i18n';
+import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -64,12 +66,13 @@ type NextProps = {
 };
 
 /** Bouton « suivant » (double flèche) en bas à droite des écrans. */
-export function NextButton({ onPress, accessibilityLabel = 'Suivant' }: NextProps) {
+export function NextButton({ onPress, accessibilityLabel }: NextProps) {
+  const t = getT(useLang().lang);
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
+      accessibilityLabel={accessibilityLabel ?? t.teams.nextBtn}
       style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.95 : 1 }] })}
     >
       <LinearGradient colors={[colors.teal, colors.tealDark]} style={[styles.pill, styles.next]}>

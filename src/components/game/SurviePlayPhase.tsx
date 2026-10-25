@@ -107,7 +107,7 @@ export function SurviePlayPhase({
         <Pressable
           onPress={onTogglePause}
           accessibilityRole="button"
-          accessibilityLabel={isPaused ? 'Reprendre' : 'Pause'}
+          accessibilityLabel={isPaused ? t.play.resume : t.play.pause}
           style={styles.pauseBtn}
         >
           <View pointerEvents="none">

@@ -301,7 +301,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
               onPress={() => setIsCollapsed(v => !v)}
               hitSlop={16}
               accessibilityRole="button"
-              accessibilityLabel={isCollapsed ? 'Agrandir la zone question' : 'Réduire la zone question'}
+              accessibilityLabel={isCollapsed ? t.common.expandQuestion : t.common.collapseQuestion}
             >
               <Svg width={24} height={24} viewBox="0 0 24 24">
                 {!isCollapsed ? (

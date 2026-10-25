@@ -223,7 +223,7 @@ export default function TeamSetupScreen() {
           <Pressable
             onPress={goBack}
             accessibilityRole="button"
-            accessibilityLabel="Retour"
+            accessibilityLabel={t.comingSoon.back}
             hitSlop={10}
           >
             <BackArrow size={Math.min(width * 0.09, 36)} />
@@ -231,7 +231,7 @@ export default function TeamSetupScreen() {
           <Pressable
             onPress={() => router.push('/reglages')}
             accessibilityRole="button"
-            accessibilityLabel="Paramètres"
+            accessibilityLabel={t.pages.settings}
             hitSlop={10}
           >
             <SettingIcon size={Math.min(width * 0.08, 32)} />

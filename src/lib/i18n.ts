@@ -21,6 +21,32 @@ export function pickLang(preferred: readonly (string | null | undefined)[]): Lan
 }
 
 type Translations = {
+  common: {
+    cancel: string;
+    quitTitle: string;
+    quitMsg: string;
+    quit: string;
+    endTurnTitle: string;
+    endTurnMsg: string;
+    endTurnBtn: string;
+    pausedTitle: string;
+    pausedMsg: string;
+    auctionSettings: string;
+    survieSettings: string;
+    selectAll: string;
+    deselectAll: string;
+    locked: string;
+    answersFound: (n: number) => string;
+    outOf: (found: number, total: number) => string;
+    removeAnswer: string;
+    addAnswer: string;
+    expandQuestion: string;
+    collapseQuestion: string;
+    secondsLeft: (n: number) => string;
+    decreaseBid: string;
+    bidAmount: string;
+    increaseBid: string;
+  };
   auction: {
     instruction: string;
     opens: string;
@@ -202,6 +228,32 @@ type Translations = {
 
 const translations: Record<Lang, Translations> = {
   fr: {
+    common: {
+      cancel: 'ANNULER',
+      quitTitle: 'Quitter la partie ?',
+      quitMsg: 'La partie en cours sera perdue.',
+      quit: 'QUITTER',
+      endTurnTitle: 'Terminer le tour ?',
+      endTurnMsg: 'Si la mise n’est pas atteinte, elle revient à l’adversaire.',
+      endTurnBtn: 'TERMINER',
+      pausedTitle: 'Jeu en pause',
+      pausedMsg: 'Vérifiez la réponse puis\nreprenez la partie.',
+      auctionSettings: 'Paramètre des enchères',
+      survieSettings: 'Paramètre de la survie',
+      selectAll: 'Tout sélectionner',
+      deselectAll: 'Tout désélectionner',
+      locked: 'verrouillé',
+      answersFound: (n) => `réponse${n > 1 ? 's' : ''} trouvée${n > 1 ? 's' : ''}`,
+      outOf: (f, t) => `${f} sur ${t}`,
+      removeAnswer: 'Annuler une réponse',
+      addAnswer: 'Valider une réponse',
+      expandQuestion: 'Agrandir la zone question',
+      collapseQuestion: 'Réduire la zone question',
+      secondsLeft: (n) => `${n} secondes restantes`,
+      decreaseBid: 'Diminuer la mise',
+      bidAmount: 'Montant de la mise',
+      increaseBid: 'Augmenter la mise',
+    },
     auction: {
       instruction: 'Vous aurez 60 secondes. Combien pouvez-vous en citer ?',
       opens: 'ouvre les enchères',
@@ -247,7 +299,7 @@ const translations: Record<Lang, Translations> = {
       modesTitle: 'Modes de jeux',
       classic: 'Enchères',
       charades: 'Survie',
-      classicDesc: 'Misez sur votre nombre de réponses en 60 secondes !',
+      classicDesc: 'Une seule équipe répond en 60 secondes',
       survieDesc: 'Répondez en chaîne, le premier qui sèche perd',
       continueBtn: 'Continuer',
       pickModeFirst: "Choisissez d'abord un mode de jeu",
@@ -424,6 +476,32 @@ const translations: Record<Lang, Translations> = {
     },
   },
   en: {
+    common: {
+      cancel: 'CANCEL',
+      quitTitle: 'Quit the game?',
+      quitMsg: 'The current game will be lost.',
+      quit: 'QUIT',
+      endTurnTitle: 'End the turn?',
+      endTurnMsg: 'If the bid isn’t reached, the points go to the opponent.',
+      endTurnBtn: 'END TURN',
+      pausedTitle: 'Game paused',
+      pausedMsg: 'Check the answer, then\nresume the game.',
+      auctionSettings: 'Auction settings',
+      survieSettings: 'Survival settings',
+      selectAll: 'Select all',
+      deselectAll: 'Deselect all',
+      locked: 'locked',
+      answersFound: (n) => (n === 1 ? 'answer found' : 'answers found'),
+      outOf: (f, t) => `${f} of ${t}`,
+      removeAnswer: 'Remove an answer',
+      addAnswer: 'Count an answer',
+      expandQuestion: 'Expand the question area',
+      collapseQuestion: 'Collapse the question area',
+      secondsLeft: (n) => `${n} seconds left`,
+      decreaseBid: 'Lower the bid',
+      bidAmount: 'Bid amount',
+      increaseBid: 'Raise the bid',
+    },
     auction: {
       instruction: "You'll have 60 seconds. How many can you name?",
       opens: 'opens the bidding',
@@ -469,7 +547,7 @@ const translations: Record<Lang, Translations> = {
       modesTitle: 'Game modes',
       classic: 'Auctions',
       charades: 'Survival',
-      classicDesc: 'Bet on how many answers you can give in 60 seconds!',
+      classicDesc: 'Only one team answers, in 60 seconds',
       survieDesc: 'Answer in turn, the first to dry up loses',
       continueBtn: 'Continue',
       pickModeFirst: 'Choose a game mode first',
@@ -646,6 +724,32 @@ const translations: Record<Lang, Translations> = {
     },
   },
   de: {
+    common: {
+      cancel: 'ABBRECHEN',
+      quitTitle: 'Spiel verlassen?',
+      quitMsg: 'Das laufende Spiel geht verloren.',
+      quit: 'VERLASSEN',
+      endTurnTitle: 'Runde beenden?',
+      endTurnMsg: 'Wird das Gebot nicht erreicht, gehen die Punkte an den Gegner.',
+      endTurnBtn: 'BEENDEN',
+      pausedTitle: 'Spiel pausiert',
+      pausedMsg: 'Prüft die Antwort und\nsetzt das Spiel fort.',
+      auctionSettings: 'Auktionseinstellungen',
+      survieSettings: 'Überleben-Einstellungen',
+      selectAll: 'Alle auswählen',
+      deselectAll: 'Alle abwählen',
+      locked: 'gesperrt',
+      answersFound: (n) => (n === 1 ? 'Antwort gefunden' : 'Antworten gefunden'),
+      outOf: (f, t) => `${f} von ${t}`,
+      removeAnswer: 'Antwort zurücknehmen',
+      addAnswer: 'Antwort zählen',
+      expandQuestion: 'Fragebereich vergrößern',
+      collapseQuestion: 'Fragebereich verkleinern',
+      secondsLeft: (n) => `Noch ${n} Sekunden`,
+      decreaseBid: 'Gebot senken',
+      bidAmount: 'Gebotshöhe',
+      increaseBid: 'Gebot erhöhen',
+    },
     auction: {
       instruction: 'Sie haben 60 Sekunden. Wie viele können Sie nennen?',
       opens: 'eröffnet das Gebot',
@@ -691,7 +795,7 @@ const translations: Record<Lang, Translations> = {
       modesTitle: 'Spielmodi',
       classic: 'Auktionen',
       charades: 'Überleben',
-      classicDesc: 'Wettet, wie viele Antworten ihr in 60 Sekunden findet!',
+      classicDesc: 'Nur ein Team antwortet, in 60 Sekunden',
       survieDesc: 'Antwortet nacheinander, wer zuerst passt, verliert',
       continueBtn: 'Weiter',
       pickModeFirst: 'Wählen Sie zuerst einen Spielmodus',
@@ -868,6 +972,32 @@ const translations: Record<Lang, Translations> = {
     },
   },
   es: {
+    common: {
+      cancel: 'CANCELAR',
+      quitTitle: '¿Salir de la partida?',
+      quitMsg: 'Se perderá la partida en curso.',
+      quit: 'SALIR',
+      endTurnTitle: '¿Terminar el turno?',
+      endTurnMsg: 'Si no se alcanza la apuesta, los puntos son para el rival.',
+      endTurnBtn: 'TERMINAR',
+      pausedTitle: 'Juego en pausa',
+      pausedMsg: 'Comprobad la respuesta y\nreanudad la partida.',
+      auctionSettings: 'Ajustes de subasta',
+      survieSettings: 'Ajustes de supervivencia',
+      selectAll: 'Seleccionar todo',
+      deselectAll: 'Deseleccionar todo',
+      locked: 'bloqueado',
+      answersFound: (n) => (n === 1 ? 'respuesta encontrada' : 'respuestas encontradas'),
+      outOf: (f, t) => `${f} de ${t}`,
+      removeAnswer: 'Quitar una respuesta',
+      addAnswer: 'Contar una respuesta',
+      expandQuestion: 'Ampliar la zona de la pregunta',
+      collapseQuestion: 'Reducir la zona de la pregunta',
+      secondsLeft: (n) => `Quedan ${n} segundos`,
+      decreaseBid: 'Bajar la apuesta',
+      bidAmount: 'Importe de la apuesta',
+      increaseBid: 'Subir la apuesta',
+    },
     auction: {
       instruction: 'Tendrás 60 segundos. ¿Cuántas puedes decir?',
       opens: 'abre la puja',
@@ -913,7 +1043,7 @@ const translations: Record<Lang, Translations> = {
       modesTitle: 'Modos de juego',
       classic: 'Subastas',
       charades: 'Supervivencia',
-      classicDesc: '¡Apostad cuántas respuestas daréis en 60 segundos!',
+      classicDesc: 'Solo un equipo responde, en 60 segundos',
       survieDesc: 'Responded por turnos, el primero que se quede en blanco pierde',
       continueBtn: 'Continuar',
       pickModeFirst: 'Elija primero un modo de juego',
@@ -1090,6 +1220,32 @@ const translations: Record<Lang, Translations> = {
     },
   },
   it: {
+    common: {
+      cancel: 'ANNULLA',
+      quitTitle: 'Uscire dalla partita?',
+      quitMsg: 'La partita in corso andrà persa.',
+      quit: 'ESCI',
+      endTurnTitle: 'Terminare il turno?',
+      endTurnMsg: 'Se la puntata non viene raggiunta, i punti vanno all’avversario.',
+      endTurnBtn: 'TERMINA',
+      pausedTitle: 'Gioco in pausa',
+      pausedMsg: 'Controllate la risposta e\nriprendete la partita.',
+      auctionSettings: 'Impostazioni asta',
+      survieSettings: 'Impostazioni sopravvivenza',
+      selectAll: 'Seleziona tutto',
+      deselectAll: 'Deseleziona tutto',
+      locked: 'bloccato',
+      answersFound: (n) => (n === 1 ? 'risposta trovata' : 'risposte trovate'),
+      outOf: (f, t) => `${f} su ${t}`,
+      removeAnswer: 'Annulla una risposta',
+      addAnswer: 'Conta una risposta',
+      expandQuestion: 'Ingrandisci la zona domanda',
+      collapseQuestion: 'Riduci la zona domanda',
+      secondsLeft: (n) => `${n} secondi rimasti`,
+      decreaseBid: 'Abbassa la puntata',
+      bidAmount: 'Importo della puntata',
+      increaseBid: 'Alza la puntata',
+    },
     auction: {
       instruction: 'Avrete 60 secondi. Quante riuscite a dirne?',
       opens: 'apre le aste',
@@ -1135,7 +1291,7 @@ const translations: Record<Lang, Translations> = {
       modesTitle: 'Modalità di gioco',
       classic: 'Aste',
       charades: 'Sopravvivenza',
-      classicDesc: 'Scommettete quante risposte direte in 60 secondi!',
+      classicDesc: 'Una sola squadra risponde, in 60 secondi',
       survieDesc: 'Rispondete a turno, chi resta senza risposta perde',
       continueBtn: 'Continua',
       pickModeFirst: 'Scegli prima una modalità di gioco',
@@ -1313,6 +1469,32 @@ const translations: Record<Lang, Translations> = {
   },
   // Portugais du Brésil
   pt: {
+    common: {
+      cancel: 'CANCELAR',
+      quitTitle: 'Sair da partida?',
+      quitMsg: 'A partida em andamento será perdida.',
+      quit: 'SAIR',
+      endTurnTitle: 'Encerrar a vez?',
+      endTurnMsg: 'Se a aposta não for atingida, os pontos vão para o adversário.',
+      endTurnBtn: 'ENCERRAR',
+      pausedTitle: 'Jogo pausado',
+      pausedMsg: 'Confiram a resposta e\ncontinuem a partida.',
+      auctionSettings: 'Configurações do leilão',
+      survieSettings: 'Configurações da sobrevivência',
+      selectAll: 'Selecionar tudo',
+      deselectAll: 'Desmarcar tudo',
+      locked: 'bloqueado',
+      answersFound: (n) => (n === 1 ? 'resposta encontrada' : 'respostas encontradas'),
+      outOf: (f, t) => `${f} de ${t}`,
+      removeAnswer: 'Remover uma resposta',
+      addAnswer: 'Contar uma resposta',
+      expandQuestion: 'Ampliar a área da pergunta',
+      collapseQuestion: 'Reduzir a área da pergunta',
+      secondsLeft: (n) => `${n} segundos restantes`,
+      decreaseBid: 'Diminuir a aposta',
+      bidAmount: 'Valor da aposta',
+      increaseBid: 'Aumentar a aposta',
+    },
     auction: {
       instruction: 'Vocês terão 60 segundos. Quantas conseguem dizer?',
       opens: 'abre o leilão',
@@ -1358,7 +1540,7 @@ const translations: Record<Lang, Translations> = {
       modesTitle: 'Modos de jogo',
       classic: 'Leilão',
       charades: 'Sobrevivência',
-      classicDesc: 'Apostem quantas respostas vão dar em 60 segundos!',
+      classicDesc: 'Só uma equipe responde, em 60 segundos',
       survieDesc: 'Respondam por turnos, quem ficar sem resposta perde',
       continueBtn: 'Continuar',
       pickModeFirst: 'Escolha primeiro um modo de jogo',

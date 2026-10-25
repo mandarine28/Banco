@@ -1,3 +1,4 @@
+import { getT, type Lang } from '../lib/i18n';
 import type { Theme } from './types';
 
 export const themes: Theme[] = [
@@ -32,3 +33,9 @@ export const themes: Theme[] = [
 ];
 
 export const themeById = (id: string) => themes.find((t) => t.id === id);
+
+/** Nom affiché d'un thème ou d'un pack dans la langue du joueur. */
+export const themeLabel = (id: string, lang: Lang): string => {
+  const theme = themeById(id);
+  return getT(lang).shop.packTitles[id] ?? theme?.labelByLang?.[lang] ?? theme?.label ?? id;
+};

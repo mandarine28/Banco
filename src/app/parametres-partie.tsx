@@ -191,7 +191,6 @@ export default function MatchSettingsScreen() {
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
   const { mode, teamCount, setTeamCount, roundCount, setRoundCount, setSelectedThemes, survieTimer, setSurvieTimer } = useGameSettings();
-  const settingsTitle = mode === 'survie' ? 'Paramètre de la survie' : 'Paramètre des enchères';
   const { hasPurchased } = usePurchases();
   const [selected, setSelected] = useState<Set<string>>(() => new Set());
   const toast = useToast();
@@ -226,6 +225,7 @@ export default function MatchSettingsScreen() {
   ];
   const { lang } = useLang();
   const t = getT(lang);
+  const settingsTitle = mode === 'survie' ? t.common.survieSettings : t.common.auctionSettings;
 
   const panelTop = insets.top + 68;
 
@@ -307,11 +307,11 @@ export default function MatchSettingsScreen() {
                       hitSlop={8}
                       accessibilityRole="checkbox"
                       accessibilityState={{ checked: allSelected }}
-                      accessibilityLabel={allSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
+                      accessibilityLabel={allSelected ? t.common.deselectAll : t.common.selectAll}
                       style={styles.selectAllRow}
                     >
                       <Text style={styles.selectAllLabel}>
-                        {allSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
+                        {allSelected ? t.common.deselectAll : t.common.selectAll}
                       </Text>
                       <Svg width={28} height={28} viewBox="0 0 24 24">
                         {allSelected ? (
@@ -350,7 +350,7 @@ export default function MatchSettingsScreen() {
                         soundOnRelease
                         accessibilityRole="checkbox"
                         accessibilityState={{ checked: isActive, disabled: isLocked }}
-                        accessibilityLabel={isLocked ? `${displayLabel} — verrouillé` : displayLabel}
+                        accessibilityLabel={isLocked ? `${displayLabel} — ${t.common.locked}` : displayLabel}
                       >
                         {isPack ? (
                           <MaterialCommunityIcons
@@ -445,7 +445,7 @@ export default function MatchSettingsScreen() {
           <Pressable
             onPress={() => router.back()}
             accessibilityRole="button"
-            accessibilityLabel="Retour"
+            accessibilityLabel={t.comingSoon.back}
             hitSlop={10}
           >
             <BackArrow size={Math.min(width * 0.09, 36)} />
@@ -453,7 +453,7 @@ export default function MatchSettingsScreen() {
           <Pressable
             onPress={() => router.push('/reglages')}
             accessibilityRole="button"
-            accessibilityLabel="Paramètres"
+            accessibilityLabel={t.pages.settings}
             hitSlop={10}
           >
             <SettingIcon size={Math.min(width * 0.08, 32)} />

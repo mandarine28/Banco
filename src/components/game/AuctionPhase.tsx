@@ -11,6 +11,7 @@ import { playSound } from '@/lib/sounds';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
+import { CategoryBadge } from './CategoryBadge';
 
 // Pulse du carré de mise après une surenchère : gonfle vite (+18 %), la nouvelle mise s'affiche au sommet, puis revient
 const PULSE_SCALE = 0.18;
@@ -27,9 +28,11 @@ type Props = {
   onPass: () => void;
   /** L'équipe précédente vient de miser (pas de passer) : pulse de la nouvelle mise à l'arrivée. */
   justRaised?: boolean;
+  /** Au moins 2 catégories choisies : on rappelle celle de la question. */
+  showCategory?: boolean;
 };
 
-export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props) {
+export function AuctionPhase({ state, onBid, onPass, justRaised = false, showCategory = false }: Props) {
   const insets = useSafeAreaInsets();
   const { lang } = useLang();
   const t = getT(lang);
@@ -154,8 +157,11 @@ export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props
     <View style={styles.wrapper}>
       {/* Zone bleue — round + carte question + instruction */}
       <View style={styles.blueZone}>
-        <View style={styles.roundPill}>
-          <Text style={styles.roundLabel}>{t.ready.round} {state.round + 1}/{state.roundCount}</Text>
+        <View style={styles.pillRow}>
+          <View style={styles.roundPill}>
+            <Text style={styles.roundLabel}>{t.ready.round} {state.round + 1}/{state.roundCount}</Text>
+          </View>
+          {showCategory ? <CategoryBadge themeId={currentQuestion(state).theme} /> : null}
         </View>
 
         <View style={styles.questionCard}>
@@ -198,7 +204,7 @@ export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props
             onPressOut={() => stopHold(-1)}
             hitSlop={16}
             accessibilityRole="button"
-            accessibilityLabel="Diminuer la mise"
+            accessibilityLabel={t.common.decreaseBid}
             style={{ opacity: amount <= min ? 0.3 : 1 }}
           >
             <Text style={styles.stepBtn}>-</Text>
@@ -212,7 +218,7 @@ export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props
               keyboardType="number-pad"
               selectTextOnFocus
               style={styles.bidValue}
-              accessibilityLabel="Montant de la mise"
+              accessibilityLabel={t.common.bidAmount}
             />
           </Animated.View>
 
@@ -221,7 +227,7 @@ export function AuctionPhase({ state, onBid, onPass, justRaised = false }: Props
             onPressOut={() => stopHold(1)}
             hitSlop={16}
             accessibilityRole="button"
-            accessibilityLabel="Augmenter la mise"
+            accessibilityLabel={t.common.increaseBid}
           >
             <Text style={styles.stepBtn}>+</Text>
           </Pressable>
@@ -273,6 +279,12 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     gap: 32,
     alignItems: 'center',
+  },
+  pillRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
   },
   roundPill: {
     backgroundColor: 'rgba(255,255,255,0.1)',

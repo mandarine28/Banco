@@ -5,6 +5,8 @@ import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { getT } from '@/lib/i18n';
+import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -28,6 +30,7 @@ function titleSize(title: string, width: number) {
 
 /** Écran standard : en-tête blanc avec retour et titre, fond violet dégradé. */
 export function ScreenLayout({ title, children, footer, onBack = () => router.back() }: Props) {
+  const t = getT(useLang().lang);
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
@@ -40,7 +43,7 @@ export function ScreenLayout({ title, children, footer, onBack = () => router.ba
         style={[styles.screen, { width }]}
       >
         <View style={[styles.header, { paddingTop: insets.top + Math.min(40, height * 0.03), paddingBottom: Math.min(26, height * 0.025) }]}>
-          <Pressable onPress={onBack} accessibilityRole="button" accessibilityLabel="Retour" hitSlop={10}>
+          <Pressable onPress={onBack} accessibilityRole="button" accessibilityLabel={t.comingSoon.back} hitSlop={10}>
             <View style={styles.back}>
               <MaterialCommunityIcons name="arrow-left" size={24} color={colors.white} />
             </View>

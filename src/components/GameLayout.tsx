@@ -6,6 +6,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
+import { getT } from '@/lib/i18n';
+import { useLang } from '@/lib/LangContext';
 import { colors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -36,6 +38,7 @@ type Props = {
 };
 
 export function GameLayout({ onHome, children, footer, scrollDisabled = false, overlay, closeIcon = false }: Props) {
+  const t = getT(useLang().lang);
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
@@ -60,7 +63,7 @@ export function GameLayout({ onHome, children, footer, scrollDisabled = false, o
             onPress={() => { Keyboard.dismiss(); onHome(); }}
             hitSlop={10}
             accessibilityRole="button"
-            accessibilityLabel={closeIcon ? 'Fermer' : 'Retour'}
+            accessibilityLabel={closeIcon ? t.shop.close : t.comingSoon.back}
           >
             <View pointerEvents="none">
               {closeIcon ? (
@@ -78,7 +81,7 @@ export function GameLayout({ onHome, children, footer, scrollDisabled = false, o
             onPress={() => router.push('/reglages')}
             hitSlop={10}
             accessibilityRole="button"
-            accessibilityLabel="Paramètres"
+            accessibilityLabel={t.pages.settings}
           >
             <View pointerEvents="none">
               <Svg width={settingsSize} height={settingsSize} viewBox="0 0 24 24">

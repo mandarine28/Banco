@@ -1,5 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { getT } from '@/lib/i18n';
+import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -12,6 +14,7 @@ type Props = {
 };
 
 export function CounterFooter({ progress, amount, onAdjust }: Props) {
+  const t = getT(useLang().lang);
   const minusDisabled = progress <= 0;
 
   return (
@@ -22,13 +25,13 @@ export function CounterFooter({ progress, amount, onAdjust }: Props) {
           sound="upDown"
           disabled={minusDisabled}
           accessibilityRole="button"
-          accessibilityLabel="Annuler une réponse"
+          accessibilityLabel={t.common.removeAnswer}
           style={[styles.btn, minusDisabled && styles.btnDisabled]}
         >
           <Text style={styles.btnText}>−</Text>
         </Pressable>
 
-        <View style={styles.badge} accessibilityLabel={`${progress} sur ${amount}`}>
+        <View style={styles.badge} accessibilityLabel={t.common.outOf(progress, amount)}>
           <Text style={styles.badgeText}>
             {progress}/{amount}
           </Text>
@@ -40,7 +43,7 @@ export function CounterFooter({ progress, amount, onAdjust }: Props) {
           sound="correct"
           haptic="light"
           accessibilityRole="button"
-          accessibilityLabel="Valider une réponse"
+          accessibilityLabel={t.common.addAnswer}
           style={styles.btn}
         >
           <Text style={styles.btnText}>+</Text>
@@ -48,7 +51,7 @@ export function CounterFooter({ progress, amount, onAdjust }: Props) {
       </View>
 
       <Text style={styles.caption}>
-        réponse{progress > 1 ? 's' : ''} trouvée{progress > 1 ? 's' : ''}
+        {t.common.answersFound(progress)}
       </Text>
     </View>
   );

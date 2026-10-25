@@ -3,6 +3,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import type { ComponentProps, ReactNode } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
 
+import { getT } from '@/lib/i18n';
+import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -15,9 +17,10 @@ type Props = {
 
 /** Fenêtre d'explication (remplace Alert, qui ne s'affiche pas sur le web). */
 export function InfoModal({ content, onClose }: Props) {
+  const t = getT(useLang().lang);
   return (
     <Modal visible={content !== null} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel="Fermer">
+      <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel={t.shop.close}>
         <Pressable style={styles.card} onPress={() => {}}>
           <Text style={styles.title}>{content?.title}</Text>
           <Text style={styles.message}>{content?.message}</Text>
@@ -63,25 +66,27 @@ export function ConfirmModal({
   message,
   children,
   confirmLabel,
-  cancelLabel = 'ANNULER',
+  cancelLabel,
   confirmIcon,
   cancelIcon,
   onConfirm,
   onCancel,
   onDismiss = onCancel,
   onClose,
-  closeLabel = 'Fermer',
+  closeLabel,
 }: ConfirmProps) {
+  const t = getT(useLang().lang);
+  const cancelText = cancelLabel ?? t.common.cancel;
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onDismiss}>
-      <Pressable style={pauseStyles.backdrop} onPress={onDismiss} accessibilityLabel={cancelLabel}>
+      <Pressable style={pauseStyles.backdrop} onPress={onDismiss} accessibilityLabel={cancelText}>
         <Pressable style={pauseStyles.card} onPress={() => {}}>
           {onClose ? (
             <Pressable
               onPress={onClose}
               hitSlop={12}
               accessibilityRole="button"
-              accessibilityLabel={closeLabel}
+              accessibilityLabel={closeLabel ?? t.shop.close}
               style={confirmStyles.closeBtn}
             >
               <MaterialCommunityIcons name="close" size={28} color={colors.purpleDeep} />
@@ -99,7 +104,7 @@ export function ConfirmModal({
                 <View style={confirmStyles.labelRow}>
                   {cancelIcon ? <MaterialCommunityIcons name={cancelIcon} size={26} color={colors.purpleDeep} /> : null}
                   <Text style={[confirmStyles.cancelText, confirmStyles.labelText]} numberOfLines={1} adjustsFontSizeToFit>
-                    {cancelLabel}
+                    {cancelText}
                   </Text>
                 </View>
               </Pressable>
@@ -136,12 +141,13 @@ type PauseProps = {
  * pointerEvents="box-none" sur le fond — touches passent au travers, sauf sur la carte.
  */
 export function PauseModal({ visible, onResume }: PauseProps) {
+  const t = getT(useLang().lang);
   if (!visible) return null;
   return (
     <View style={pauseStyles.backdrop} pointerEvents="box-none">
       <View style={pauseStyles.card}>
-        <Text style={pauseStyles.title}>Jeu en pause</Text>
-        <Text style={pauseStyles.message}>Vérifiez la réponse puis{'\n'}reprenez la partie.</Text>
+        <Text style={pauseStyles.title}>{t.common.pausedTitle}</Text>
+        <Text style={pauseStyles.message}>{t.common.pausedMsg}</Text>
         <Pressable onPress={onResume} accessibilityRole="button" style={pauseStyles.btnWrap}>
           <LinearGradient
             colors={['#fb940e', '#f2c512']}
@@ -149,7 +155,7 @@ export function PauseModal({ visible, onResume }: PauseProps) {
             end={{ x: 1, y: 0 }}
             style={pauseStyles.btnInner}
           >
-            <Text style={pauseStyles.btnText}>REPRENDRE</Text>
+            <Text style={pauseStyles.btnText}>{t.survie.resume}</Text>
           </LinearGradient>
         </Pressable>
       </View>

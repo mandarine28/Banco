@@ -84,12 +84,8 @@ export function ReadyPhase({ state, onStart }: Props) {
 
   return (
     <View style={styles.wrapper}>
-      {/* Zone bleue — round + badge équipe + question + objectif */}
+      {/* Zone bleue — badge équipe + question + objectif */}
       <View style={styles.topContent}>
-        <View style={styles.roundPill}>
-          <Text style={styles.roundLabel}>{t.ready.round} {state.round + 1}/{state.roundCount}</Text>
-        </View>
-
         <View style={[styles.teamBadge, { backgroundColor: answering.color }]}>
           <Text style={[styles.teamBadgeText, { color: answeringTextColor }]} numberOfLines={1}>
             {answering.name}
@@ -112,7 +108,7 @@ export function ReadyPhase({ state, onStart }: Props) {
       <Pressable
         onPress={onStart}
         accessibilityRole="button"
-        accessibilityLabel="Jouer"
+        accessibilityLabel={t.ready.play}
         style={styles.btnWrap}
       >
         <LinearGradient
@@ -162,17 +158,6 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 32,
     alignItems: 'center',
-  },
-  roundPill: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  roundLabel: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 16,
-    color: colors.cream,
   },
   teamBadge: {
     borderRadius: 12,
