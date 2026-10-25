@@ -160,6 +160,10 @@ type Translations = {
     progress: (played: number, total: number) => string;
     lockedMsg: (left: number) => string;
     gotIt: string;
+    /** Annonce du pack offert suivant, après en avoir gagné un. */
+    nextGoal: (pack: string, games: number) => string;
+    /** Pack offert pas encore en jeu : gagné après le précédent. */
+    after: (pack: string) => string;
   };
   survie: {
     validate: string;
@@ -340,7 +344,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} questions`,
       unlocked: 'Pack débloqué ✓',
       comingSoon: 'Bientôt disponible',
-      packTitles: { 'harry-potter': 'Poudlard Express', nintendo: 'Rétro-gaming', anime: 'Anime & mangas' },
+      packTitles: { 'harry-potter': 'Poudlard Express', 'rap-francais': 'Rap français', nintendo: 'Rétro-gaming', anime: 'Anime & mangas' },
       restore: 'Restaurer les achats',
       restoredTitle: 'Achats restaurés',
       restoredMsg: 'Vos packs sont de nouveau débloqués.',
@@ -371,6 +375,8 @@ const translations: Record<Lang, Translations> = {
       progress: (played, total) => `${played} partie${played > 1 ? 's' : ''} sur ${total}`,
       lockedMsg: (left) => `Jouez encore ${left} partie${left > 1 ? 's' : ''} pour débloquer ce pack offert !`,
       gotIt: 'COMPRIS',
+      nextGoal: (pack, games) => `Prochain objectif : encore ${games} parties pour débloquer « ${pack} » !`,
+      after: (pack) => `Après ${pack}`,
     },
     survie: {
       phoneTitle: 'Posez le téléphone au centre',
@@ -588,7 +594,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} questions`,
       unlocked: 'Pack unlocked ✓',
       comingSoon: 'Coming soon',
-      packTitles: { 'harry-potter': 'Hogwarts Express', nintendo: 'Retro gaming', anime: 'Anime & manga' },
+      packTitles: { 'harry-potter': 'Hogwarts Express', 'rap-francais': 'French Rap', nintendo: 'Retro gaming', anime: 'Anime & manga' },
       restore: 'Restore purchases',
       restoredTitle: 'Purchases restored',
       restoredMsg: 'Your packs are unlocked again.',
@@ -619,6 +625,8 @@ const translations: Record<Lang, Translations> = {
       progress: (played, total) => `${played} of ${total} games`,
       lockedMsg: (left) => `Play ${left} more game${left > 1 ? 's' : ''} to unlock this free pack!`,
       gotIt: 'GOT IT',
+      nextGoal: (pack, games) => `Next goal: ${games} more games to unlock “${pack}”!`,
+      after: (pack) => `After ${pack}`,
     },
     survie: {
       phoneTitle: 'Put the phone in the middle',
@@ -836,7 +844,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} Fragen`,
       unlocked: 'Paket freigeschaltet ✓',
       comingSoon: 'Demnächst verfügbar',
-      packTitles: { 'harry-potter': 'Hogwarts-Express', nintendo: 'Retro-Gaming', anime: 'Anime & Manga' },
+      packTitles: { 'harry-potter': 'Hogwarts-Express', 'rap-francais': 'Französischer Rap', nintendo: 'Retro-Gaming', anime: 'Anime & Manga' },
       restore: 'Käufe wiederherstellen',
       restoredTitle: 'Käufe wiederhergestellt',
       restoredMsg: 'Deine Pakete sind wieder freigeschaltet.',
@@ -867,6 +875,8 @@ const translations: Record<Lang, Translations> = {
       progress: (played, total) => `${played} von ${total} Partien`,
       lockedMsg: (left) => `Spiel noch ${left} ${left > 1 ? 'Partien' : 'Partie'}, um dieses Gratis-Paket freizuschalten!`,
       gotIt: 'VERSTANDEN',
+      nextGoal: (pack, games) => `Nächstes Ziel: noch ${games} Partien, um „${pack}“ freizuschalten!`,
+      after: (pack) => `Nach ${pack}`,
     },
     survie: {
       phoneTitle: 'Legt das Handy in die Mitte',
@@ -1084,7 +1094,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} preguntas`,
       unlocked: 'Pack desbloqueado ✓',
       comingSoon: 'Próximamente',
-      packTitles: { 'harry-potter': 'Expreso de Hogwarts', nintendo: 'Retro gaming', anime: 'Anime y manga' },
+      packTitles: { 'harry-potter': 'Expreso de Hogwarts', 'rap-francais': 'Rap francés', nintendo: 'Retro gaming', anime: 'Anime y manga' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Tus packs vuelven a estar desbloqueados.',
@@ -1115,6 +1125,8 @@ const translations: Record<Lang, Translations> = {
       progress: (played, total) => `${played} de ${total} partidas`,
       lockedMsg: (left) => `¡Juega ${left} partida${left > 1 ? 's' : ''} más para desbloquear este pack gratis!`,
       gotIt: 'ENTENDIDO',
+      nextGoal: (pack, games) => `¡Próximo objetivo: ${games} partidas más para desbloquear «${pack}»!`,
+      after: (pack) => `Después de ${pack}`,
     },
     survie: {
       phoneTitle: 'Poned el móvil en el centro',
@@ -1332,7 +1344,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} domande`,
       unlocked: 'Pack sbloccato ✓',
       comingSoon: 'Prossimamente',
-      packTitles: { 'harry-potter': 'Espresso per Hogwarts', nintendo: 'Retro gaming', anime: 'Anime e manga' },
+      packTitles: { 'harry-potter': 'Espresso per Hogwarts', 'rap-francais': 'Rap francese', nintendo: 'Retro gaming', anime: 'Anime e manga' },
       restore: 'Ripristina acquisti',
       restoredTitle: 'Acquisti ripristinati',
       restoredMsg: 'I tuoi pack sono di nuovo sbloccati.',
@@ -1363,6 +1375,8 @@ const translations: Record<Lang, Translations> = {
       progress: (played, total) => `${played} partite su ${total}`,
       lockedMsg: (left) => `Gioca ancora ${left} partit${left > 1 ? 'e' : 'a'} per sbloccare gratis questo pack!`,
       gotIt: 'HO CAPITO',
+      nextGoal: (pack, games) => `Prossimo obiettivo: altre ${games} partite per sbloccare «${pack}»!`,
+      after: (pack) => `Dopo ${pack}`,
     },
     survie: {
       phoneTitle: 'Mettete il telefono al centro',
@@ -1581,7 +1595,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} perguntas`,
       unlocked: 'Pacote desbloqueado ✓',
       comingSoon: 'Em breve',
-      packTitles: { 'harry-potter': 'Expresso de Hogwarts', nintendo: 'Retro gaming', anime: 'Anime e mangá' },
+      packTitles: { 'harry-potter': 'Expresso de Hogwarts', 'rap-francais': 'Rap francês', nintendo: 'Retro gaming', anime: 'Anime e mangá' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Seus pacotes estão desbloqueados de novo.',
@@ -1612,6 +1626,8 @@ const translations: Record<Lang, Translations> = {
       progress: (played, total) => `${played} de ${total} partidas`,
       lockedMsg: (left) => `Jogue mais ${left} partida${left > 1 ? 's' : ''} para desbloquear este pacote de graça!`,
       gotIt: 'ENTENDI',
+      nextGoal: (pack, games) => `Próximo objetivo: mais ${games} partidas para desbloquear “${pack}”!`,
+      after: (pack) => `Depois de ${pack}`,
     },
     survie: {
       phoneTitle: 'Coloquem o celular no meio',

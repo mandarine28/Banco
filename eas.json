@@ -23,6 +23,13 @@
       "env": {
         "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_wWLDKUUohnRlqbYSzbSPvUnwXba"
       }
+    },
+    "test": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_REVENUECAT_IOS_KEY": "appl_wWLDKUUohnRlqbYSzbSPvUnwXba",
+        "EXPO_PUBLIC_TEST_TOOLS": "1"
+      }
     }
   },
   "submit": {
@@ -32,6 +39,9 @@
         "ascAppId": "6821200817",
         "appleTeamId": "C2GF493ACB"
       }
+    },
+    "test": {
+      "extends": "production"
     }
   }
 }

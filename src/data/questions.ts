@@ -6,6 +6,7 @@ import { questionsCinema } from './questions/cinema';
 import { questionsSport } from './questions/sport';
 import { questionsMusique } from './questions/musique';
 import { questionsHarryPotter } from './questions/harry-potter';
+import { questionsRapFrancais } from './questions/rap-francais';
 
 export const questions = [
   ...questionsMarques,
@@ -16,4 +17,5 @@ export const questions = [
   ...questionsSport,
   ...questionsMusique,
   ...questionsHarryPotter,
+  ...questionsRapFrancais,
 ];

@@ -19,7 +19,7 @@ import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 import { usePurchases } from '@/state/purchases';
-import { useWelcomePack } from '@/state/useGifts';
+import { useGiftChain } from '@/state/useGifts';
 
 const MAX_WIDTH = 500;
 
@@ -62,14 +62,14 @@ export default function HomeScreen() {
   const [interactionKey, setInteractionKey] = useState(0);
 
   // Premier lancement : annonce du pack offert après WELCOME_GAMES parties
-  const { unlocked } = useWelcomePack();
-  const { giftedPack, isLoading: purchasesLoading } = usePurchases();
+  const { welcomeUnlocked } = useGiftChain();
+  const { giftedPacks, isLoading: purchasesLoading } = usePurchases();
   const [showWelcome, setShowWelcome] = useState(false);
   useEffect(() => {
     Promise.all([loadWelcomeIntroSeen(), afterAdsConsent()]).then(([seen]) => setShowWelcome(!seen));
   }, []);
   // Après réinstallation, le pack reste dans le trousseau : attendre sa lecture évite d'ouvrir puis refermer aussitôt la modale (écran figé sur iOS)
-  const welcomeReady = giftedPack !== undefined && !purchasesLoading;
+  const welcomeReady = giftedPacks !== undefined && !purchasesLoading;
   const closeWelcome = () => {
     setShowWelcome(false);
     markWelcomeIntroSeen();
@@ -161,7 +161,7 @@ export default function HomeScreen() {
         </Text>
 
         <ConfirmModal
-          visible={showWelcome && welcomeReady && !unlocked}
+          visible={showWelcome && welcomeReady && !welcomeUnlocked}
           title={t.gift.welcomeTitle}
           message={t.gift.welcomeMsg(welcomePackTitle, WELCOME_GAMES)}
           confirmLabel={t.gift.gotIt}

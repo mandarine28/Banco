@@ -7,12 +7,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
-import { offers, type ProductId, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
+import { offers, PACK_THEME_IDS, type ProductId, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
+import { giftBefore } from '@/lib/giftChain';
 import { questions } from '@/data/questions';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { usePurchases } from '@/state/purchases';
-import { useWelcomePack } from '@/state/useGifts';
+import { useGiftChain } from '@/state/useGifts';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -32,6 +33,7 @@ type Pack = {
 
 const PACKS: Pack[] = [
   { id: 'harry-potter', productId: WELCOME_PACK, gift: true, image: require('../../assets/packs/harry-potter.png') },
+  { id: 'rap-francais', productId: 'packRapFrancais', gift: true, image: require('../../assets/packs/rap-francais.png') },
   { id: 'nintendo', comingSoon: true, image: require('../../assets/packs/retro-gaming.png') },
   { id: 'anime', comingSoon: true, image: require('../../assets/packs/anime.png') },
 ];
@@ -130,11 +132,18 @@ export default function BoutiqueScreen() {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const { hasPurchased, prices, purchase, restorePurchases, isLoading, error } = usePurchases();
-  const { gamesPlayed } = useWelcomePack();
+  const { chain } = useGiftChain();
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
   const { lang } = useLang();
   const t = getT(lang);
+  // Pack offert : progression s'il est le prochain à gagner, sinon le pack à gagner avant lui
+  const giftLabel = (productId: ProductId): string | undefined => {
+    if (!chain) return undefined;
+    if (chain.next === productId) return t.gift.progress(chain.played, WELCOME_GAMES);
+    const before = giftBefore(productId);
+    return before ? t.gift.after(t.shop.packTitles[PACK_THEME_IDS[before] ?? ''] ?? '') : undefined;
+  };
 
   async function handlePurchase(pack: Pack) {
     if (!pack.productId) return;
@@ -206,7 +215,7 @@ export default function BoutiqueScreen() {
           <Text style={styles.errorText}>{t.shop.errors[error]}</Text>
         )}
 
-        {/* Pack de bienvenue déjà gagné : plus rien à proposer, la carte disparaît */}
+        {/* Pack offert déjà gagné : plus rien à proposer, la carte disparaît */}
         {PACKS.filter((pack) => !(pack.gift && pack.productId && hasPurchased(pack.productId))).map(pack => (
           <PackCard
             key={pack.id}
@@ -216,7 +225,7 @@ export default function BoutiqueScreen() {
             purchased={!!pack.productId && hasPurchased(pack.productId)}
             purchasing={purchasingId === pack.id}
             onPurchase={() => handlePurchase(pack)}
-            giftProgress={pack.gift && gamesPlayed !== null ? t.gift.progress(gamesPlayed, WELCOME_GAMES) : undefined}
+            giftProgress={pack.gift && pack.productId ? giftLabel(pack.productId) : undefined}
           />
         ))}
 

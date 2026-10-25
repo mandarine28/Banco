@@ -11,11 +11,15 @@ import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { privacyUrl, supportEmail } from '@/config/links';
+import { GIFT_PACKS } from '@/config/shop';
+import { TEST_TOOLS } from '@/config/testTools';
 import { canEditAdChoices, editAdChoices } from '@/lib/ads';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { playHaptic, setHapticsEnabled, useHapticsEnabled } from '@/lib/haptics';
 import { playSound, setSoundEnabled, useSoundEnabled } from '@/lib/sounds';
+import { resetPlayerProgress } from '@/lib/testTools';
+import { usePurchases } from '@/state/purchases';
 import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -75,6 +79,25 @@ export default function SettingsScreen() {
   }, []);
 
   const panelTop = insets.top + 68;
+
+  // Build de test uniquement : voir l'app comme un joueur neuf, ou avec tout débloqué
+  const { claimGiftedPack, resetGiftedPacks } = usePurchases();
+  const unlockAll = async () => {
+    try {
+      for (const product of GIFT_PACKS) await claimGiftedPack(product);
+      Alert.alert('Outils de test', 'Tous les packs offerts sont débloqués.');
+    } catch {
+      Alert.alert('Outils de test', 'Déblocage impossible.');
+    }
+  };
+  const startOver = async () => {
+    try {
+      await Promise.all([resetGiftedPacks(), resetPlayerProgress()]);
+      Alert.alert('Outils de test', 'Progression remise à zéro. Ferme puis relance l’app pour revoir le premier lancement.');
+    } catch {
+      Alert.alert('Outils de test', 'Remise à zéro impossible.');
+    }
+  };
 
   const contact = () => {
     // Version + OS pré-remplis : premières infos demandées pour reproduire un bug
@@ -155,6 +178,25 @@ export default function SettingsScreen() {
                 ))}
               </View>
             </View>
+
+            {TEST_TOOLS ? (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle} accessibilityRole="header">Outils de test</Text>
+                <View style={styles.card}>
+                  <Text style={styles.cardText}>Visible uniquement dans le build de test.</Text>
+                  <Pressable onPress={unlockAll} accessibilityRole="button" accessibilityLabel="Tout débloquer">
+                    <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btn}>
+                      <Text style={styles.btnText}>Tout débloquer</Text>
+                    </LinearGradient>
+                  </Pressable>
+                  <Pressable onPress={startOver} accessibilityRole="button" accessibilityLabel="Repartir de zéro">
+                    <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btn}>
+                      <Text style={styles.btnText}>Repartir de zéro</Text>
+                    </LinearGradient>
+                  </Pressable>
+                </View>
+              </View>
+            ) : null}
 
             <View style={styles.footer}>
               <Pressable

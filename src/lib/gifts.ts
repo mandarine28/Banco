@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 
-import { PRODUCT_IDS, type ProductId } from '@/config/shop';
+import type { ProductId } from '@/config/shop';
+import { parseGiftedPacks } from '@/lib/giftChain';
 
 // Trousseau sécurisé plutôt qu'AsyncStorage : sur iOS il survit à la désinstallation, ce qui limite les cadeaux à répétition
 const GIFT_KEY = 'banco.giftedPack';
@@ -25,22 +26,17 @@ export async function markWelcomeIntroSeen(): Promise<void> {
   }
 }
 
-/** Accepte uniquement un identifiant de pack connu (une valeur corrompue ne débloque rien). */
-export function parseGiftedPack(value: string | null): ProductId | null {
-  return value !== null && value in PRODUCT_IDS ? (value as ProductId) : null;
-}
-
-/** Pack reçu en cadeau de bienvenue sur cet appareil, ou null s'il n'a pas encore été offert. */
-export async function loadGiftedPack(): Promise<ProductId | null> {
+/** Packs reçus en cadeau sur cet appareil (vide si aucun). */
+export async function loadGiftedPacks(): Promise<ProductId[]> {
   try {
-    return parseGiftedPack(await SecureStore.getItemAsync(GIFT_KEY));
+    return parseGiftedPacks(await SecureStore.getItemAsync(GIFT_KEY));
   } catch (e) {
-    if (__DEV__) console.warn('[gifts] lecture du cadeau impossible', e);
-    return null;
+    if (__DEV__) console.warn('[gifts] lecture des cadeaux impossible', e);
+    return [];
   }
 }
 
-/** Enregistre le pack offert ; lève une erreur si l'appareil refuse l'écriture (la fenêtre l'affiche). */
-export async function saveGiftedPack(productId: ProductId): Promise<void> {
-  await SecureStore.setItemAsync(GIFT_KEY, productId);
+/** Enregistre les packs offerts ; lève une erreur si l'appareil refuse l'écriture (la fenêtre l'affiche). */
+export async function saveGiftedPacks(productIds: ProductId[]): Promise<void> {
+  await SecureStore.setItemAsync(GIFT_KEY, productIds.join(','));
 }

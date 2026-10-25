@@ -13,7 +13,8 @@ import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { ConfirmModal } from '@/components/InfoModal';
 import { Toast, useToast } from '@/components/Toast';
-import { PACK_THEME_IDS, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
+import { GIFT_PACKS, PACK_THEME_IDS, type ProductId, WELCOME_GAMES } from '@/config/shop';
+import { gamesUntil } from '@/lib/giftChain';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { isRewardGranted, showRewardedAd } from '@/lib/ads';
@@ -23,7 +24,7 @@ import { loadUsedTrials } from '@/lib/trials';
 import { type Lang, getT } from '@/lib/i18n';
 import { ROUND_LIMITS, SURVIE_TIMER_OPTIONS, type SurvieTimer, TEAM_LIMITS, useGameSettings } from '@/state/gameSettings';
 import { usePurchases } from '@/state/purchases';
-import { useWelcomePack } from '@/state/useGifts';
+import { useGiftChain } from '@/state/useGifts';
 import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -209,18 +210,17 @@ export default function MatchSettingsScreen() {
     setLockedPack(null);
     router.push('/boutique');
   };
-  // Pack de bienvenue : gagné en jouant, jamais essayé contre une pub
-  const { gamesLeft } = useWelcomePack();
-  const lockedIsWelcome = lockedPack !== null && lockedPack.id === PACK_THEME_IDS[WELCOME_PACK];
-  const hasHarryPotter = hasPurchased(WELCOME_PACK);
-  // Packs premium en tête de liste, avant les catégories de base
+  // Packs offerts : gagnés en jouant, jamais essayés contre une pub
+  const { chain } = useGiftChain();
+  const lockedGift: ProductId | undefined = lockedPack ? GIFT_PACKS.find((product) => PACK_THEME_IDS[product] === lockedPack.id) : undefined;
+  // Packs offerts en tête de liste, dans l'ordre où on les gagne, avant les catégories de base
   const CATEGORIES: Category[] = [
-    {
-      id: 'harry-potter',
-      label: 'Poudlard Express',
-      available: hasHarryPotter,
-      locked: !hasHarryPotter,
-    },
+    ...GIFT_PACKS.map((product) => ({
+      id: PACK_THEME_IDS[product] ?? product,
+      label: PACK_THEME_IDS[product] ?? product,
+      available: hasPurchased(product),
+      locked: !hasPurchased(product),
+    })),
     ...BASE_CATEGORIES,
   ];
   const { lang } = useLang();
@@ -381,11 +381,11 @@ export default function MatchSettingsScreen() {
             </View>
           </ScrollView>
 
-          {/* Pack de bienvenue verrouillé : nombre de parties restantes */}
+          {/* Pack offert verrouillé : nombre de parties restantes */}
           <ConfirmModal
-            visible={lockedIsWelcome}
+            visible={lockedGift !== undefined}
             title={lockedPack ? (t.shop.packTitles[lockedPack.id] ?? lockedPack.label) : ''}
-            message={t.gift.lockedMsg(gamesLeft ?? WELCOME_GAMES)}
+            message={t.gift.lockedMsg(chain && lockedGift ? gamesUntil(chain, lockedGift) : WELCOME_GAMES)}
             confirmLabel={t.gift.gotIt}
             confirmIcon="gift"
             onConfirm={() => setLockedPack(null)}
@@ -394,7 +394,7 @@ export default function MatchSettingsScreen() {
 
           {/* Pack verrouillé : essai d'une partie contre une pub, ou boutique */}
           <ConfirmModal
-            visible={lockedPack !== null && !lockedIsWelcome}
+            visible={lockedPack !== null && lockedGift === undefined}
             title={lockedPack ? (t.shop.packTitles[lockedPack.id] ?? lockedPack.labelByLang?.[lang] ?? lockedPack.label) : ''}
             message={trialUsed ? t.shop.trialUsedMsg : t.shop.trialMsg}
             cancelLabel={t.shop.goToShop}

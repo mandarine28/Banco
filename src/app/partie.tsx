@@ -19,7 +19,8 @@ import { SurvieResultPhase } from '@/components/game/SurvieResultPhase';
 import { ConfettiOverlay } from '@/components/ConfettiOverlay';
 import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal, PauseModal } from '@/components/InfoModal';
-import { PACK_THEME_IDS, type ProductId, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
+import { PACK_THEME_IDS, type ProductId, WELCOME_GAMES } from '@/config/shop';
+import { giftAfter, giftChain } from '@/lib/giftChain';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSuccess, opponent, TURN_SECONDS } from '@/game/engine';
@@ -125,21 +126,24 @@ export default function GameScreen() {
     }
   };
 
-  // Fenêtre « pack débloqué » sur l'écran final de la WELCOME_GAMES-ième partie
-  const [welcomeUnlocked, setWelcomeUnlocked] = useState(false);
-  const welcomePackTitle = t.shop.packTitles[PACK_THEME_IDS[WELCOME_PACK] ?? ''] ?? '';
+  // Fenêtre « pack débloqué » sur l'écran final de la partie qui complète un objectif
+  const [unlockedGift, setUnlockedGift] = useState<ProductId | null>(null);
+  const packTitle = (product: ProductId | undefined) => (product ? (t.shop.packTitles[PACK_THEME_IDS[product] ?? ''] ?? '') : '');
+  const nextGift = unlockedGift ? giftAfter(unlockedGift) : undefined;
 
   const onGameFinished = () => {
-    recordGameCompleted().then(async (count) => {
-      if (count >= WELCOME_GAMES && !hasPurchased(WELCOME_PACK)) {
+    // Plancher : après réinstallation, le compteur repart de 0 alors que les packs gagnés restent
+    recordGameCompleted(giftChain(hasPurchased, 0).floor).then(async (count) => {
+      const { next, played } = giftChain(hasPurchased, count);
+      if (next && played >= WELCOME_GAMES) {
         try {
-          await claimGiftedPack(WELCOME_PACK);
+          await claimGiftedPack(next);
           // La fenêtre du cadeau occupe l'écran final : ni demande d'avis ni pub cette fois
-          setWelcomeUnlocked(true);
+          setUnlockedGift(next);
           return;
         } catch (e) {
           // Échec d'écriture : nouvel essai à la prochaine partie terminée
-          if (__DEV__) console.warn('[partie] déblocage du pack de bienvenue impossible', e);
+          if (__DEV__) console.warn('[partie] déblocage du pack offert impossible', e);
         }
       }
       // Pas après une partie d'essai : la proposition d'achat occupe déjà l'écran final
@@ -174,13 +178,14 @@ export default function GameScreen() {
 
   const welcomeModal = (
     <ConfirmModal
-      visible={welcomeUnlocked}
+      visible={unlockedGift !== null}
       title={t.gift.doneTitle}
-      message={t.gift.doneMsg(welcomePackTitle)}
+      // Objectif suivant annoncé tout de suite : le compteur repart de 0 pour le pack d'après
+      message={nextGift ? `${t.gift.doneMsg(packTitle(unlockedGift ?? undefined))}\n\n${t.gift.nextGoal(packTitle(nextGift), WELCOME_GAMES)}` : t.gift.doneMsg(packTitle(unlockedGift ?? undefined))}
       confirmLabel={t.gift.ok}
       confirmIcon="party-popper"
-      onConfirm={() => setWelcomeUnlocked(false)}
-      onDismiss={() => setWelcomeUnlocked(false)}
+      onConfirm={() => setUnlockedGift(null)}
+      onDismiss={() => setUnlockedGift(null)}
     />
   );
 

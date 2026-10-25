@@ -20,9 +20,12 @@ export async function loadGamesCompleted(): Promise<number> {
   }
 }
 
-/** Compte une partie menée jusqu'à l'écran final ; renvoie le nouveau total. */
-export async function recordGameCompleted(): Promise<number> {
-  const count = (await loadGamesCompleted()) + 1;
+/**
+ * Compte une partie menée jusqu'à l'écran final ; renvoie le nouveau total.
+ * floor : minimum déjà atteint (les cadeaux survivent à une réinstallation, pas le compteur).
+ */
+export async function recordGameCompleted(floor = 0): Promise<number> {
+  const count = Math.max(await loadGamesCompleted(), floor) + 1;
   try {
     await AsyncStorage.setItem(GAMES_KEY, String(count));
   } catch (e) {

@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import {
   ENTITLEMENT_IDS,
@@ -8,7 +8,7 @@ import {
   type CustomerInfo,
 } from '@/lib/revenuecat';
 import { PRODUCT_IDS, type ProductId } from '@/config/shop';
-import { loadGiftedPack, saveGiftedPack } from '@/lib/gifts';
+import { loadGiftedPacks, saveGiftedPacks } from '@/lib/gifts';
 
 /** Clé traduite par l'écran (t.shop.errors). */
 export type PurchaseError = 'load' | 'purchase' | 'restore';
@@ -26,10 +26,12 @@ type PurchasesContextValue = {
   restorePurchases: () => Promise<CustomerInfo | null>;
   /** Recharge les droits depuis RevenueCat. */
   refresh: () => Promise<void>;
-  /** Pack offert contre un partage, sur cet appareil : undefined pendant la lecture, null s'il n'a pas encore été offert. */
-  giftedPack: ProductId | null | undefined;
+  /** Packs gagnés en jouant, sur cet appareil : undefined pendant la lecture. */
+  giftedPacks: ProductId[] | undefined;
   /** Offre le pack choisi : il compte aussitôt comme acheté. */
   claimGiftedPack: (productId: ProductId) => Promise<void>;
+  /** Retire tous les packs offerts (outils de test). */
+  resetGiftedPacks: () => Promise<void>;
 };
 
 const PurchasesContext = createContext<PurchasesContextValue | null>(null);
@@ -93,23 +95,34 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const [giftedPack, setGiftedPack] = useState<ProductId | null | undefined>(undefined);
+  const [giftedPacks, setGiftedPacks] = useState<ProductId[] | undefined>(undefined);
+  // Dernière liste écrite : deux cadeaux enchaînés ne s'écrasent pas
+  const giftedRef = useRef<ProductId[]>([]);
   useEffect(() => {
-    loadGiftedPack().then(setGiftedPack);
+    loadGiftedPacks().then((packs) => {
+      giftedRef.current = packs;
+      setGiftedPacks(packs);
+    });
   }, []);
 
-  const claimGiftedPack = useCallback(async (productId: ProductId) => {
-    await saveGiftedPack(productId);
-    setGiftedPack(productId);
+  const saveGifts = useCallback(async (next: ProductId[]) => {
+    await saveGiftedPacks(next);
+    giftedRef.current = next;
+    setGiftedPacks(next);
   }, []);
+  const claimGiftedPack = useCallback(
+    (productId: ProductId) => saveGifts([...giftedRef.current.filter((id) => id !== productId), productId]),
+    [saveGifts],
+  );
+  const resetGiftedPacks = useCallback(() => saveGifts([]), [saveGifts]);
 
   const hasPurchased = useCallback(
     (productId: ProductId): boolean => {
-      if (giftedPack === productId) return true;
+      if (giftedPacks?.includes(productId)) return true;
       if (!customerInfo) return false;
       return hasEntitlement(customerInfo, ENTITLEMENT_IDS[productId]);
     },
-    [customerInfo, giftedPack],
+    [customerInfo, giftedPacks],
   );
 
   const purchase = useCallback(async (productId: ProductId): Promise<boolean> => {
@@ -160,8 +173,8 @@ export function PurchasesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<PurchasesContextValue>(
-    () => ({ customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases, refresh, giftedPack, claimGiftedPack }),
-    [customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases, refresh, giftedPack, claimGiftedPack],
+    () => ({ customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases, refresh, giftedPacks, claimGiftedPack, resetGiftedPacks }),
+    [customerInfo, prices, isLoading, error, hasPurchased, purchase, restorePurchases, refresh, giftedPacks, claimGiftedPack, resetGiftedPacks],
   );
 
   return <PurchasesContext.Provider value={value}>{children}</PurchasesContext.Provider>;
