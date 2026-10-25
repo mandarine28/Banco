@@ -9,13 +9,16 @@ import Svg, { Path } from 'react-native-svg';
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { offers, PACK_THEME_IDS, type ProductId, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
 import { giftBefore } from '@/lib/giftChain';
+import { GIFT_PACKS } from '@/config/shop';
 import { questions } from '@/data/questions';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { usePurchases } from '@/state/purchases';
 import { useGiftChain } from '@/state/useGifts';
+import { useTutorialTarget } from '@/state/tutorial';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
+import { Toast, useToast } from '@/components/Toast';
 
 const BACK_PATH = 'M20 12H4M10 6L4 12L10 18';
 
@@ -33,7 +36,7 @@ type Pack = {
 
 const PACKS: Pack[] = [
   { id: 'harry-potter', productId: WELCOME_PACK, gift: true, image: require('../../assets/packs/harry-potter.png') },
-  { id: 'rap-francais', productId: 'packRapFrancais', gift: true, image: require('../../assets/packs/rap-francais.png') },
+  { id: 'rap-francais', productId: 'packRap', gift: true, image: require('../../assets/packs/rap-francais.png') },
   { id: 'nintendo', comingSoon: true, image: require('../../assets/packs/retro-gaming.png') },
   { id: 'anime', comingSoon: true, image: require('../../assets/packs/anime.png') },
 ];
@@ -48,11 +51,17 @@ type PackCardProps = {
   purchased: boolean;
   purchasing: boolean;
   onPurchase: () => void;
-  /** Pack de bienvenue : progression « 1 partie sur 3 » (vide tant que le compteur n'est pas lu). */
+  /** Pack offert : progression « 1 partie sur 3 » (vide tant que le compteur n'est pas lu). */
   giftProgress?: string;
+  /** Pack offert à gagner avant celui-ci : légende « Après X », bouton cadenassé, toast explicatif au toucher. */
+  giftAfter?: string;
 };
 
-function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress }: PackCardProps) {
+function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress, giftAfter }: PackCardProps) {
+  const toast = useToast();
+  // Didacticiel : les cartes des packs offerts sont éclairées dans l'ordre où on les gagne
+  const giftIndex = pack.gift && pack.productId ? GIFT_PACKS.indexOf(pack.productId) : -1;
+  const tutorialTarget = useTutorialTarget(giftIndex === 1 ? 'shop-gift-1' : 'shop-gift-0');
   const { lang } = useLang();
   const t = getT(lang);
   const title = t.shop.packTitles[pack.id] ?? pack.id;
@@ -60,7 +69,11 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress
 
   return (
     <View>
-      <View style={[styles.card, pack.comingSoon && styles.cardDimmed]}>
+      <View
+        ref={giftIndex === 0 || giftIndex === 1 ? tutorialTarget : undefined}
+        collapsable={false}
+        style={[styles.card, pack.comingSoon && styles.cardDimmed]}
+      >
         <View style={styles.cardLeft}>
           <View style={styles.cardTexts}>
             <Text style={styles.cardTitle} numberOfLines={2}>{title}</Text>
@@ -70,6 +83,7 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress
                 <Text style={styles.countText}>{t.shop.questionCount(count)}</Text>
               </View>
             ) : null}
+            {giftAfter ? <Text style={styles.giftAfterText} numberOfLines={2}>{t.gift.after(giftAfter)}</Text> : null}
           </View>
           {purchased ? (
             <View style={styles.unlockedButton}>
@@ -77,15 +91,19 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress
             </View>
           ) : pack.gift ? (
             // Le pack se gagne en jouant : le bouton mène directement au choix du mode
+            <View>
+            {giftAfter ? <Toast toast={toast} message={t.gift.unlockFirst(giftAfter)} light style={styles.giftToast} /> : null}
             <Pressable
-              style={[styles.ctaButton, styles.giftProgress]}
-              onPress={() => router.push('/parametres')}
+              style={[styles.ctaButton, styles.giftProgress, giftAfter ? styles.giftWaiting : null]}
+              // En attente du pack d'avant : on explique plutôt que d'ouvrir le jeu
+              onPress={giftAfter ? toast.show : () => router.push('/parametres')}
               accessibilityRole="button"
-              accessibilityLabel={`${t.gift.welcomeTitle} ${giftProgress ?? ''}`}
+              accessibilityLabel={`${t.gift.welcomeTitle} ${giftProgress ?? ''} ${giftAfter ?? ''}`}
             >
-              <MaterialCommunityIcons name="gift" size={18} color={colors.purpleDeep} />
-              <Text style={styles.ctaText} numberOfLines={1} adjustsFontSizeToFit>{giftProgress ?? ''}</Text>
+              <MaterialCommunityIcons name={giftAfter ? 'lock' : 'gift'} size={18} color={colors.purpleDeep} />
+              <Text style={[styles.ctaText, styles.giftProgressText]} numberOfLines={1} adjustsFontSizeToFit>{giftProgress ?? ''}</Text>
             </Pressable>
+            </View>
           ) : (
             <Pressable
               style={styles.ctaButton}
@@ -137,12 +155,14 @@ export default function BoutiqueScreen() {
   const [restoring, setRestoring] = useState(false);
   const { lang } = useLang();
   const t = getT(lang);
-  // Pack offert : progression s'il est le prochain à gagner, sinon le pack à gagner avant lui
-  const giftLabel = (productId: ProductId): string | undefined => {
-    if (!chain) return undefined;
-    if (chain.next === productId) return t.gift.progress(chain.played, WELCOME_GAMES);
+  // Pack offert : progression s'il est le prochain à gagner ; sinon 0 sur 3, en attente du pack d'avant
+  const giftProgressOf = (productId: ProductId): string | undefined =>
+    chain ? t.gift.progress(chain.next === productId ? chain.played : 0, WELCOME_GAMES) : undefined;
+  // Titre du pack offert à gagner avant celui-ci, tant qu'il ne l'est pas
+  const giftAfterOf = (productId: ProductId): string | undefined => {
     const before = giftBefore(productId);
-    return before ? t.gift.after(t.shop.packTitles[PACK_THEME_IDS[before] ?? ''] ?? '') : undefined;
+    if (!chain || chain.next === productId || !before) return undefined;
+    return t.shop.packTitles[PACK_THEME_IDS[before] ?? ''] ?? '';
   };
 
   async function handlePurchase(pack: Pack) {
@@ -209,7 +229,10 @@ export default function BoutiqueScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 32 }]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.sectionTitle}>{t.shop.packsTitle}</Text>
+        <View>
+          <Text style={styles.sectionTitle}>{t.shop.packsTitle}</Text>
+          <Text style={styles.earlyText}>{t.shop.earlyAccess}</Text>
+        </View>
 
         {error && (
           <Text style={styles.errorText}>{t.shop.errors[error]}</Text>
@@ -225,7 +248,8 @@ export default function BoutiqueScreen() {
             purchased={!!pack.productId && hasPurchased(pack.productId)}
             purchasing={purchasingId === pack.id}
             onPurchase={() => handlePurchase(pack)}
-            giftProgress={pack.gift && pack.productId ? giftLabel(pack.productId) : undefined}
+            giftProgress={pack.gift && pack.productId ? giftProgressOf(pack.productId) : undefined}
+            giftAfter={pack.gift && pack.productId ? giftAfterOf(pack.productId) : undefined}
           />
         ))}
 
@@ -273,6 +297,21 @@ const styles = StyleSheet.create({
     color: colors.cream,
     marginBottom: 4,
   },
+  earlyText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.cream,
+    opacity: 0.8,
+  },
+  // Collé au-dessus du bouton « 0 partie sur 3 », assez large pour 2 lignes
+  giftToast: {
+    top: 'auto',
+    bottom: '100%',
+    marginBottom: 8,
+    alignSelf: 'flex-start',
+    width: 240,
+  },
   errorText: {
     fontFamily: fonts.displayMedium,
     fontSize: 14,
@@ -301,6 +340,8 @@ const styles = StyleSheet.create({
   cardLeft: {
     flex: 1,
     gap: 12,
+    // Au-dessus de l'image : le toast du bouton peut déborder sur elle
+    zIndex: 1,
   },
   cardTexts: {
     gap: 6,
@@ -343,6 +384,19 @@ const styles = StyleSheet.create({
   giftProgress: {
     flexDirection: 'row',
     gap: 6,
+  },
+  // Le texte rétrécit dans le bouton au lieu de déborder du padding
+  giftProgressText: {
+    flexShrink: 1,
+  },
+  giftWaiting: {
+    opacity: 0.6,
+  },
+  giftAfterText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 14,
+    color: colors.cream,
+    opacity: 0.75,
   },
   ctaText: {
     fontFamily: fonts.displayMedium,

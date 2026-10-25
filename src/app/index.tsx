@@ -14,12 +14,14 @@ import { AnimatedLogo } from '@/components/Logo';
 import { PACK_THEME_IDS, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
 import { afterAdsConsent } from '@/lib/ads';
 import { loadWelcomeIntroSeen, markWelcomeIntroSeen } from '@/lib/gifts';
+import { loadTutorialSeen } from '@/lib/tutorial';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 import { usePurchases } from '@/state/purchases';
 import { useGiftChain } from '@/state/useGifts';
+import { useTutorial, useTutorialTarget } from '@/state/tutorial';
 
 const MAX_WIDTH = 500;
 
@@ -65,9 +67,22 @@ export default function HomeScreen() {
   const { welcomeUnlocked } = useGiftChain();
   const { giftedPacks, isLoading: purchasesLoading } = usePurchases();
   const [showWelcome, setShowWelcome] = useState(false);
+  // Premier lancement : le didacticiel présente les packs offerts ; s'il est passé, la fenêtre cadeau prend le relais
+  const { start: startTutorial, step: tutorialStep } = useTutorial();
+  const playTarget = useTutorialTarget('home-play');
+  const shopTarget = useTutorialTarget('home-shop');
   useEffect(() => {
-    Promise.all([loadWelcomeIntroSeen(), afterAdsConsent()]).then(([seen]) => setShowWelcome(!seen));
-  }, []);
+    Promise.all([loadWelcomeIntroSeen(), loadTutorialSeen(), afterAdsConsent()]).then(([seen, tutorialSeen]) => {
+      if (tutorialSeen) {
+        setShowWelcome(!seen);
+        return;
+      }
+      startTutorial((completed) => {
+        if (completed) markWelcomeIntroSeen();
+        else setShowWelcome(!seen);
+      });
+    });
+  }, [startTutorial]);
   // Après réinstallation, le pack reste dans le trousseau : attendre sa lecture évite d'ouvrir puis refermer aussitôt la modale (écran figé sur iOS)
   const welcomeReady = giftedPacks !== undefined && !purchasesLoading;
   const closeWelcome = () => {
@@ -93,13 +108,14 @@ export default function HomeScreen() {
         </View>
 
         {/* Mascotte en idle — rendue avant le panneau pour passer derrière */}
-        <HomeMascot width={width} panelTop={panelTop} interactionKey={interactionKey} />
+        <HomeMascot width={width} panelTop={panelTop} interactionKey={interactionKey} paused={tutorialStep !== null} />
 
         {/* Panneau bleu (arrondi en haut) — auto-sized, collé en bas */}
         <View style={[styles.bluePanel, { width }]} onLayout={(e) => setPanelTop(e.nativeEvent.layout.y)}>
           <CreamPatternSvg width={width} height={360} opacity={0.04} fill="#ffffff" />
           <View style={[styles.panelContent, { paddingBottom: Math.max(64, insets.bottom + 30) }]}>
             {/* Jouer — dégradé orange, même style que « Miser » et « Continuer » */}
+            <View ref={playTarget} collapsable={false}>
             <Pressable
               onPress={go('/parametres')}
               accessibilityRole="button"
@@ -114,16 +130,19 @@ export default function HomeScreen() {
                 <Text style={[styles.btnText, { color: colors.cream }]}>{t.home.play}</Text>
               </LinearGradient>
             </Pressable>
+            </View>
 
             {/* Boutique — fond crème, contour marine, comme « Suivant » (équipes) */}
-            <Pressable
-              onPress={go('/boutique')}
-              accessibilityRole="button"
-              accessibilityLabel={t.home.shop}
-              style={styles.btnBoutique}
-            >
-              <Text style={[styles.btnText, { color: colors.purpleDeep }]}>{t.home.shop}</Text>
-            </Pressable>
+            <View ref={shopTarget} collapsable={false}>
+              <Pressable
+                onPress={go('/boutique')}
+                accessibilityRole="button"
+                accessibilityLabel={t.home.shop}
+                style={styles.btnBoutique}
+              >
+                <Text style={[styles.btnText, { color: colors.purpleDeep }]}>{t.home.shop}</Text>
+              </Pressable>
+            </View>
 
             {/* Règle — contour blanc, texte crème */}
             <Pressable

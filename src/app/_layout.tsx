@@ -12,11 +12,13 @@ import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 
 import { SplashScreenAnimator } from '@/components/SplashScreenAnimator';
+import { TutorialOverlay } from '@/components/TutorialOverlay';
 import { initAds } from '@/lib/ads';
 import { LangProvider } from '@/lib/LangContext';
 import { preloadSounds } from '@/lib/sounds';
 import { GameSettingsProvider } from '@/state/gameSettings';
 import { PurchasesProvider } from '@/state/purchases';
+import { TutorialProvider } from '@/state/tutorial';
 import { colors } from '@/theme';
 
 export default function RootLayout() {
@@ -43,11 +45,15 @@ export default function RootLayout() {
         <PurchasesProvider>
           <LangProvider>
             <GameSettingsProvider>
-              <StatusBar style="dark" />
-              <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
-                {/* Pas de swipe retour en partie : on quitte uniquement via la croix */}
-                <Stack.Screen name="partie" options={{ gestureEnabled: false }} />
-              </Stack>
+              <TutorialProvider>
+                <StatusBar style="dark" />
+                <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+                  {/* Pas de swipe retour en partie : on quitte uniquement via la croix */}
+                  <Stack.Screen name="partie" options={{ gestureEnabled: false }} />
+                </Stack>
+                {/* Au-dessus de tous les écrans : le didacticiel navigue de l'un à l'autre */}
+                <TutorialOverlay />
+              </TutorialProvider>
             </GameSettingsProvider>
           </LangProvider>
         </PurchasesProvider>

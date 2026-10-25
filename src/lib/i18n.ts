@@ -21,6 +21,19 @@ export function pickLang(preferred: readonly (string | null | undefined)[]): Lan
 }
 
 type Translations = {
+  tutorial: {
+    next: string;
+    skip: string;
+    done: string;
+    welcome: string;
+    shop: string;
+    giftFirst: (pack: string, games: number) => string;
+    giftNext: (pack: string, games: number) => string;
+    play: string;
+    auction: string;
+    survie: string;
+    teams: string;
+  };
   common: {
     cancel: string;
     quitTitle: string;
@@ -128,6 +141,8 @@ type Translations = {
   };
   shop: {
     packsTitle: string;
+    /** Sous le titre : packs offerts aux premiers joueurs, payants plus tard. */
+    earlyAccess: string;
     unlock: string;
     unlockA11y: (pack: string) => string;
     questionCount: (n: number) => string;
@@ -164,6 +179,8 @@ type Translations = {
     nextGoal: (pack: string, games: number) => string;
     /** Pack offert pas encore en jeu : gagné après le précédent. */
     after: (pack: string) => string;
+    /** Toast au toucher d'un pack offert en attente du précédent. */
+    unlockFirst: (pack: string) => string;
   };
   survie: {
     validate: string;
@@ -232,6 +249,19 @@ type Translations = {
 
 const translations: Record<Lang, Translations> = {
   fr: {
+    tutorial: {
+      next: 'Suivant',
+      skip: 'Passer',
+      done: 'C\'est parti !',
+      welcome: 'Bienvenue dans Banco ! Je vous fais faire le tour en 30 secondes.',
+      shop: 'Ici, la Boutique : des packs de questions à gagner en jouant.',
+      giftFirst: (pack, n) => `Terminez ${n} parties et le pack « ${pack} » est à vous, offert !`,
+      giftNext: (pack, n) => `Ensuite, le compteur repart à 0 : ${n} parties de plus pour « ${pack} ». Offerts aux premiers joueurs, profitez-en !`,
+      play: 'Prêts ? Tout commence par ce bouton.',
+      auction: 'Enchères : misez sur le nombre de réponses que vous pouvez citer. Une seule équipe répond, en 60 secondes.',
+      survie: 'Survie : une réponse chacun son tour. L\'équipe qui n\'a plus d\'idée est éliminée !',
+      teams: 'Ici, c\'est le nombre d\'équipes, pas de joueurs ! Réunissez autant de cerveaux que vous voulez dans chaque équipe : il n\'y a pas de limite. Bonne partie !',
+    },
     common: {
       cancel: 'ANNULER',
       quitTitle: 'Quitter la partie ?',
@@ -339,6 +369,7 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Pack de questions',
+      earlyAccess: 'Merci d\'être parmi les premiers ! Ces packs sont offerts aujourd\'hui et deviendront payants : profitez-en.',
       unlock: 'Débloquer',
       unlockA11y: (pack) => `Débloquer ${pack}`,
       questionCount: (n) => `${n} questions`,
@@ -377,6 +408,7 @@ const translations: Record<Lang, Translations> = {
       gotIt: 'COMPRIS',
       nextGoal: (pack, games) => `Prochain objectif : encore ${games} parties pour débloquer « ${pack} » !`,
       after: (pack) => `Après ${pack}`,
+      unlockFirst: (pack) => `Débloquez d’abord le cadeau gratuit « ${pack} » pour gagner celui-ci !`,
     },
     survie: {
       phoneTitle: 'Posez le téléphone au centre',
@@ -482,6 +514,19 @@ const translations: Record<Lang, Translations> = {
     },
   },
   en: {
+    tutorial: {
+      next: 'Next',
+      skip: 'Skip',
+      done: 'Let\'s go!',
+      welcome: 'Welcome to Banco! Let me show you around in 30 seconds.',
+      shop: 'This is the Shop: question packs you earn by playing.',
+      giftFirst: (pack, n) => `Finish ${n} games and the “${pack}” pack is yours, free!`,
+      giftNext: (pack, n) => `Then the counter resets: ${n} more games for “${pack}”. Free for early players, enjoy!`,
+      play: 'Ready? It all starts with this button.',
+      auction: 'Auctions: bet on how many answers you can name. Only one team answers, in 60 seconds.',
+      survie: 'Survival: one answer each, in turn. The team that runs out of ideas is out!',
+      teams: 'This is the number of teams, not players! Gather as many brains as you like in each team: there\'s no limit. Have a great game!',
+    },
     common: {
       cancel: 'CANCEL',
       quitTitle: 'Quit the game?',
@@ -589,6 +634,7 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Question packs',
+      earlyAccess: 'Thanks for being one of the first! These packs are free today and will become paid later: grab them now.',
       unlock: 'Unlock',
       unlockA11y: (pack) => `Unlock ${pack}`,
       questionCount: (n) => `${n} questions`,
@@ -627,6 +673,7 @@ const translations: Record<Lang, Translations> = {
       gotIt: 'GOT IT',
       nextGoal: (pack, games) => `Next goal: ${games} more games to unlock “${pack}”!`,
       after: (pack) => `After ${pack}`,
+      unlockFirst: (pack) => `Unlock the free “${pack}” gift first to earn this one!`,
     },
     survie: {
       phoneTitle: 'Put the phone in the middle',
@@ -732,6 +779,19 @@ const translations: Record<Lang, Translations> = {
     },
   },
   de: {
+    tutorial: {
+      next: 'Weiter',
+      skip: 'Überspringen',
+      done: 'Los geht\'s!',
+      welcome: 'Willkommen bei Banco! Ich zeige euch in 30 Sekunden alles.',
+      shop: 'Das ist der Shop: Fragenpakete, die ihr beim Spielen gewinnt.',
+      giftFirst: (pack, n) => `Spielt ${n} Partien zu Ende und das Paket „${pack}“ gehört euch, gratis!`,
+      giftNext: (pack, n) => `Danach startet der Zähler neu: ${n} weitere Partien für „${pack}“. Gratis für die ersten Spieler, nutzt es!`,
+      play: 'Bereit? Alles beginnt mit diesem Button.',
+      auction: 'Auktionen: Wettet, wie viele Antworten ihr nennen könnt. Nur ein Team antwortet, in 60 Sekunden.',
+      survie: 'Überleben: Abwechselnd eine Antwort. Wem nichts mehr einfällt, der fliegt raus!',
+      teams: 'Hier zählen Teams, nicht Spieler! Holt so viele kluge Köpfe ins Team, wie ihr wollt: Es gibt kein Limit. Viel Spaß beim Spielen!',
+    },
     common: {
       cancel: 'ABBRECHEN',
       quitTitle: 'Spiel verlassen?',
@@ -839,6 +899,7 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Fragenpakete',
+      earlyAccess: 'Danke, dass ihr zu den Ersten gehört! Diese Pakete sind jetzt gratis und werden später kostenpflichtig: holt sie euch.',
       unlock: 'Freischalten',
       unlockA11y: (pack) => `Freischalten: ${pack}`,
       questionCount: (n) => `${n} Fragen`,
@@ -877,6 +938,7 @@ const translations: Record<Lang, Translations> = {
       gotIt: 'VERSTANDEN',
       nextGoal: (pack, games) => `Nächstes Ziel: noch ${games} Partien, um „${pack}“ freizuschalten!`,
       after: (pack) => `Nach ${pack}`,
+      unlockFirst: (pack) => `Schaltet zuerst das Gratis-Geschenk „${pack}“ frei, um dieses zu bekommen!`,
     },
     survie: {
       phoneTitle: 'Legt das Handy in die Mitte',
@@ -982,6 +1044,19 @@ const translations: Record<Lang, Translations> = {
     },
   },
   es: {
+    tutorial: {
+      next: 'Siguiente',
+      skip: 'Saltar',
+      done: '¡Vamos!',
+      welcome: '¡Bienvenidos a Banco! Os lo enseño todo en 30 segundos.',
+      shop: 'Esta es la Tienda: packs de preguntas que se ganan jugando.',
+      giftFirst: (pack, n) => `¡Terminad ${n} partidas y el pack «${pack}» es vuestro, gratis!`,
+      giftNext: (pack, n) => `Después, el contador vuelve a 0: ${n} partidas más para «${pack}». ¡Gratis para los primeros jugadores, aprovechad!`,
+      play: '¿Listos? Todo empieza con este botón.',
+      auction: 'Subastas: apostad cuántas respuestas podéis decir. Solo un equipo responde, en 60 segundos.',
+      survie: 'Supervivencia: una respuesta por turno. ¡El equipo que se queda sin ideas queda eliminado!',
+      teams: '¡Aquí se cuentan equipos, no jugadores! Reunid en cada equipo todos los cerebros que queráis: no hay límite. ¡Buena partida!',
+    },
     common: {
       cancel: 'CANCELAR',
       quitTitle: '¿Salir de la partida?',
@@ -1089,6 +1164,7 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Packs de preguntas',
+      earlyAccess: '¡Gracias por estar entre los primeros! Estos packs son gratis hoy y serán de pago más adelante: aprovechad.',
       unlock: 'Desbloquear',
       unlockA11y: (pack) => `Desbloquear ${pack}`,
       questionCount: (n) => `${n} preguntas`,
@@ -1127,6 +1203,7 @@ const translations: Record<Lang, Translations> = {
       gotIt: 'ENTENDIDO',
       nextGoal: (pack, games) => `¡Próximo objetivo: ${games} partidas más para desbloquear «${pack}»!`,
       after: (pack) => `Después de ${pack}`,
+      unlockFirst: (pack) => `¡Desbloquead primero el regalo gratis «${pack}» para ganar este!`,
     },
     survie: {
       phoneTitle: 'Poned el móvil en el centro',
@@ -1232,6 +1309,19 @@ const translations: Record<Lang, Translations> = {
     },
   },
   it: {
+    tutorial: {
+      next: 'Avanti',
+      skip: 'Salta',
+      done: 'Si parte!',
+      welcome: 'Benvenuti in Banco! Vi faccio fare il giro in 30 secondi.',
+      shop: 'Questo è il Negozio: pacchetti di domande da vincere giocando.',
+      giftFirst: (pack, n) => `Finite ${n} partite e il pacchetto «${pack}» è vostro, in regalo!`,
+      giftNext: (pack, n) => `Poi il contatore riparte da 0: altre ${n} partite per «${pack}». Gratis per i primi giocatori, approfittatene!`,
+      play: 'Pronti? Tutto inizia da questo pulsante.',
+      auction: 'Aste: scommettete quante risposte sapete dire. Risponde una sola squadra, in 60 secondi.',
+      survie: 'Sopravvivenza: una risposta a turno. La squadra che resta senza idee è eliminata!',
+      teams: 'Qui si contano le squadre, non i giocatori! Riunite in ogni squadra tutti i cervelli che volete: non c\'è limite. Buona partita!',
+    },
     common: {
       cancel: 'ANNULLA',
       quitTitle: 'Uscire dalla partita?',
@@ -1339,6 +1429,7 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Pack di domande',
+      earlyAccess: 'Grazie di essere tra i primi! Questi pacchetti oggi sono gratis e in futuro saranno a pagamento: approfittatene.',
       unlock: 'Sblocca',
       unlockA11y: (pack) => `Sblocca ${pack}`,
       questionCount: (n) => `${n} domande`,
@@ -1377,6 +1468,7 @@ const translations: Record<Lang, Translations> = {
       gotIt: 'HO CAPITO',
       nextGoal: (pack, games) => `Prossimo obiettivo: altre ${games} partite per sbloccare «${pack}»!`,
       after: (pack) => `Dopo ${pack}`,
+      unlockFirst: (pack) => `Sbloccate prima il regalo gratuito «${pack}» per ottenere questo!`,
     },
     survie: {
       phoneTitle: 'Mettete il telefono al centro',
@@ -1483,6 +1575,19 @@ const translations: Record<Lang, Translations> = {
   },
   // Portugais du Brésil
   pt: {
+    tutorial: {
+      next: 'Próximo',
+      skip: 'Pular',
+      done: 'Vamos lá!',
+      welcome: 'Bem-vindos ao Banco! Mostro tudo em 30 segundos.',
+      shop: 'Esta é a Loja: pacotes de perguntas que vocês ganham jogando.',
+      giftFirst: (pack, n) => `Terminem ${n} partidas e o pacote “${pack}” é de vocês, grátis!`,
+      giftNext: (pack, n) => `Depois, o contador volta a 0: mais ${n} partidas para “${pack}”. Grátis para os primeiros jogadores, aproveitem!`,
+      play: 'Prontos? Tudo começa por este botão.',
+      auction: 'Leilão: apostem quantas respostas conseguem dizer. Só uma equipe responde, em 60 segundos.',
+      survie: 'Sobrevivência: uma resposta por vez. A equipe que ficar sem ideias está eliminada!',
+      teams: 'Aqui é o número de equipes, não de jogadores! Juntem quantos cérebros quiserem em cada equipe: não tem limite. Boa partida!',
+    },
     common: {
       cancel: 'CANCELAR',
       quitTitle: 'Sair da partida?',
@@ -1590,6 +1695,7 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Pacotes de perguntas',
+      earlyAccess: 'Obrigado por estar entre os primeiros! Estes pacotes são grátis hoje e depois serão pagos: aproveitem.',
       unlock: 'Desbloquear',
       unlockA11y: (pack) => `Desbloquear ${pack}`,
       questionCount: (n) => `${n} perguntas`,
@@ -1628,6 +1734,7 @@ const translations: Record<Lang, Translations> = {
       gotIt: 'ENTENDI',
       nextGoal: (pack, games) => `Próximo objetivo: mais ${games} partidas para desbloquear “${pack}”!`,
       after: (pack) => `Depois de ${pack}`,
+      unlockFirst: (pack) => `Desbloqueiem primeiro o presente grátis “${pack}” para ganhar este!`,
     },
     survie: {
       phoneTitle: 'Coloquem o celular no meio',

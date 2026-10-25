@@ -18,6 +18,7 @@ import { Toast, useToast } from '@/components/Toast';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { type GameMode, useGameSettings } from '@/state/gameSettings';
+import { useTutorialTarget } from '@/state/tutorial';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -116,6 +117,8 @@ export default function GameConfigScreen() {
   };
 
   const toast = useToast();
+  const auctionTarget = useTutorialTarget('mode-auction');
+  const survieTarget = useTutorialTarget('mode-survie');
 
   // Panneau bleu juste sous l'en-tête (flèche ~21px + offset 14px + marge 20px)
   const panelTop = insets.top + 68;
@@ -140,6 +143,7 @@ export default function GameConfigScreen() {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t.gameMode.modesTitle}</Text>
               <View style={styles.modeList} accessibilityRole="radiogroup">
+                <View ref={auctionTarget} collapsable={false}>
                 <ModeCard
                   title={t.gameMode.classic}
                   description={t.gameMode.classicDesc}
@@ -150,6 +154,8 @@ export default function GameConfigScreen() {
                   onInfo={() => setRulesMode('auction')}
                   infoLabel={`${t.pages.rules} : ${t.gameMode.classic}`}
                 />
+                </View>
+                <View ref={survieTarget} collapsable={false}>
                 <ModeCard
                   title={t.gameMode.charades}
                   description={t.gameMode.survieDesc}
@@ -162,6 +168,7 @@ export default function GameConfigScreen() {
                   onInfo={() => setRulesMode('survie')}
                   infoLabel={`${t.pages.rules} : ${t.gameMode.charades}`}
                 />
+                </View>
               </View>
             </View>
 

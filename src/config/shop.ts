@@ -1,4 +1,4 @@
-export type ProductId = 'streak' | 'jokers' | 'packFootball' | 'packJeuxVideo' | 'laTotale' | 'packHarryPotter' | 'packRapFrancais';
+export type ProductId = 'streak' | 'jokers' | 'packFootball' | 'packJeuxVideo' | 'laTotale' | 'packHarryPotter' | 'packRap';
 
 export const offers: Record<ProductId, { label: string; price: string }> = {
   streak: { label: 'Mode Streak', price: '0,99 €' },
@@ -7,7 +7,7 @@ export const offers: Record<ProductId, { label: string; price: string }> = {
   packJeuxVideo: { label: 'Pack Jeux Vidéo', price: '0,99 €' },
   laTotale: { label: 'La Totale', price: '1,99 €' },
   packHarryPotter: { label: 'Pack Poudlard Express', price: '0,99 €' },
-  packRapFrancais: { label: 'Pack Rap français', price: '0,99 €' },
+  packRap: { label: 'Pack Rap', price: '0,99 €' },
 };
 
 // Identifiants produits tels que définis dans App Store Connect / Google Play
@@ -19,7 +19,7 @@ export const PRODUCT_IDS: Record<ProductId, string> = {
   packJeuxVideo: 'com.banco.pack_jeux_video',
   laTotale: 'com.banco.la_totale',
   packHarryPotter: 'com.banco.pack_harry_potter',
-  packRapFrancais: 'com.banco.pack_rap_francais',
+  packRap: 'com.banco.pack_rap',
 };
 
 
@@ -27,12 +27,13 @@ export const PRODUCT_IDS: Record<ProductId, string> = {
  * Packs offerts (jamais vendus), gagnés l'un après l'autre : chacun demande WELCOME_GAMES parties
  * terminées de plus que le précédent. Ajouter un pack à la fin ; ne jamais réordonner (progression des joueurs).
  */
-export const GIFT_PACKS: ProductId[] = ['packHarryPotter', 'packRapFrancais'];
+export const GIFT_PACKS: ProductId[] = ['packHarryPotter', 'packRap'];
 export const WELCOME_PACK: ProductId = GIFT_PACKS[0];
 export const WELCOME_GAMES = 3;
 
 /** Thème de jeu correspondant à chaque pack de questions. */
 export const PACK_THEME_IDS: Partial<Record<ProductId, string>> = {
   packHarryPotter: 'harry-potter',
-  packRapFrancais: 'rap-francais',
+  // Rap : rap français pour l'instant, d'autres pays viendront s'ajouter sous le même pack
+  packRap: 'rap-francais',
 };

@@ -1581,20 +1581,6 @@ export const questionsRapFrancais: Question[] = [
     ],
   },
   {
-    id: 'rap-invite-l2b',
-    theme: 'rap-francais',
-    subject: 'MORCEAUX OÙ L2B EST INVITÉ',
-    subjectByLang: { en: 'SONGS FEATURING L2B', de: 'SONGS MIT L2B ALS GAST', es: 'CANCIONES CON L2B DE INVITADO', it: 'BRANI CON L2B OSPITE', pt: 'MÚSICAS COM PARTICIPAÇÃO DE L2B' },
-    answers: [
-      'À L\'AISE', 'BLOQUÉ', 'CONGOLAISE', 'FLYING BLUE', 'FRENCH RIVIERA',
-      'REMISE EN QUESTION', 'BESTIE', 'COMME UN SHEGUEY', 'MATHÉMATIQUE', '2.80',
-      'VELAR', 'GOAT', 'DAYTONA', 'TOPBOY', 'MODE AVION',
-      'DOSER', 'NIRVANA', 'VOD', 'SELEÇÃO', 'KEHLANI',
-      'PAKET BLÉ', 'SANS BRUIT', 'DOUCEMENT', '3 X 1', 'MON COMBAT',
-      'ÇA FAIT LONGTEMPS', 'T\'ÉTAIS OÙ', 'TOUT EST NOIR', 'TROPHÉE', 'SALAIRE DE ZIDANE',
-    ],
-  },
-  {
     id: 'rap-invite-lamano19',
     theme: 'rap-francais',
     subject: 'MORCEAUX OÙ LA MANO 1.9 EST INVITÉ',
@@ -1682,8 +1668,8 @@ export const questionsRapFrancais: Question[] = [
     subject: 'MORCEAUX OÙ NISKA EST INVITÉ',
     subjectByLang: { en: 'SONGS FEATURING NISKA', de: 'SONGS MIT NISKA ALS GAST', es: 'CANCIONES CON NISKA DE INVITADO', it: 'BRANI CON NISKA OSPITE', pt: 'MÚSICAS COM PARTICIPAÇÃO DE NISKA' },
     answers: [
-      'COCO', 'OG', 'COLLABO', 'CANON', '+91',
-      'BALADER', 'TENDANCE', 'AUTHENTIQUE', 'SANS COEUR', 'FAME',
+      'COCO', 'MÉDICAMENT', 'OG', 'COLLABO', 'CANON', '+91',
+      'BALADER', 'TENDANCE', 'M.D', 'AUTHENTIQUE', 'SANS COEUR', 'FAME',
       'G.A.N.G', 'JOLI BÉBÉ', 'B22', 'MODE AV', 'ÇA DONNE',
       'JUNGLE', 'WARIBANA', 'REMEMBER', 'HEALTHY', 'ON SAIT JAMAIS',
       'BOUCHERIE', 'A QUI LA FAUTE', 'MALSAIN', 'ARRÊT DE BUS', 'GUITARE',
@@ -2225,16 +2211,15 @@ export const questionsRapFrancais: Question[] = [
     subject: 'ARTISTES EN FEAT AVEC IAM',
     subjectByLang: { en: 'ARTISTS FEATURED WITH IAM', de: 'FEAT-PARTNER VON IAM', es: 'ARTISTAS EN FEAT CON IAM', it: 'ARTISTI IN FEAT CON IAM', pt: 'ARTISTAS EM FEAT COM IAM' },
     answers: [
-      'AKHENATON', 'SHURIK\'N', 'NUTTEA', 'FAF LARAGE', 'KHEOPS',
-      'SAÏD', 'DEF BOND', 'EAST', 'FABE', 'METHOD MAN',
-      'REDMAN', 'BEYONCÉ', 'ALLEN AKINO', 'RELO', 'LINO',
-      'KALASH', 'MOÏSE', 'PSY 4 DE LA RIME', 'KAYNA SAMET', 'KHALED',
-      'FONKY FAMILY', 'SENTENZA', 'PIT BACCARDI', 'SOPRANO', 'BOUGA',
-      'ÄRSENIK', 'JMK$', 'TYLER WOODS', 'MERYEM SACI', 'BEN L\'ONCLE SOUL',
-      'ROHFF', 'IMHOTEP', 'SAKO', 'MC JANIK', 'OXMO PUCCINO',
-      'HIFI', 'SYLEENA JOHNSON', 'PRIMO STYLE', 'SMOOTH LORDION', 'LYRICIST MIC FORCING',
-      'DJ DAZ', 'PASSI', 'FEMI KUTI', 'SKYZOO', 'VEUST LYRICIST',
-      'R.E.D.K.', 'WALLEN', 'SLY JOHNSON', 'ELODIE RAMA',
+      'NUTTEA', 'FAF LARAGE', 'SAÏD', 'DEF BOND', 'EAST',
+      'FABE', 'METHOD MAN', 'REDMAN', 'BEYONCÉ', 'ALLEN AKINO',
+      'RELO', 'LINO', 'KALASH', 'MOÏSE', 'PSY 4 DE LA RIME',
+      'KAYNA SAMET', 'KHALED', 'FONKY FAMILY', 'SENTENZA', 'PIT BACCARDI',
+      'SOPRANO', 'BOUGA', 'ÄRSENIK', 'JMK$', 'TYLER WOODS',
+      'MERYEM SACI', 'BEN L\'ONCLE SOUL', 'ROHFF', 'SAKO', 'MC JANIK',
+      'OXMO PUCCINO', 'HIFI', 'SYLEENA JOHNSON', 'PRIMO STYLE', 'SMOOTH LORDION',
+      'LYRICIST MIC FORCING', 'DJ DAZ', 'PASSI', 'FEMI KUTI', 'SKYZOO',
+      'VEUST LYRICIST', 'R.E.D.K.', 'WALLEN', 'SLY JOHNSON', 'ELODIE RAMA',
     ],
   },
   {
@@ -2273,7 +2258,7 @@ export const questionsRapFrancais: Question[] = [
     subject: 'ARTISTES EN FEAT AVEC L2B',
     subjectByLang: { en: 'ARTISTS FEATURED WITH L2B', de: 'FEAT-PARTNER VON L2B', es: 'ARTISTAS EN FEAT CON L2B', it: 'ARTISTI IN FEAT CON L2B', pt: 'ARTISTAS EM FEAT COM L2B' },
     answers: [
-      'IDS', 'KLN', 'D2', 'RSKO', 'KOBA LAD',
+      'RSKO', 'KOBA LAD',
       'LETO', 'FRANGLISH', 'KEBLACK', 'GENEZIO', 'NISKA',
       'UZI', 'GRADUR', 'LA FOUINE', 'RNBOI', 'LA MANO 1.9',
       'SDM', 'ALONZO', 'GAZO', 'TRIANGLE DES BERMUDES', 'MC YOSHI',
@@ -2706,8 +2691,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-emptythebinvol4',
     theme: 'rap-francais',
-    subject: 'TITRES DE « EMPTY THE BIN VOL. 4 »',
-    subjectByLang: { en: 'SONGS ON “EMPTY THE BIN VOL. 4”', de: 'SONGS AUF „EMPTY THE BIN VOL. 4“', es: 'CANCIONES DE «EMPTY THE BIN VOL. 4»', it: 'BRANI DI «EMPTY THE BIN VOL. 4»', pt: 'MÚSICAS DE “EMPTY THE BIN VOL. 4”' },
+    subject: 'TITRES DE L\'ALBUM « EMPTY THE BIN VOL. 4 »',
+    subjectByLang: { en: 'SONGS ON THE ALBUM “EMPTY THE BIN VOL. 4”', de: 'SONGS AUF DEM ALBUM „EMPTY THE BIN VOL. 4“', es: 'CANCIONES DEL ÁLBUM «EMPTY THE BIN VOL. 4»', it: 'BRANI DELL\'ALBUM «EMPTY THE BIN VOL. 4»', pt: 'MÚSICAS DO ÁLBUM “EMPTY THE BIN VOL. 4”' },
     answers: [
       'BIG LOUIS', 'CALME', 'ROYAL', 'C\'EST LES GENS ILS ENGRAINENT', '14 JUILLET',
       'SOUS LES ETOILES', 'COLLAGE', 'DES CANICHES ET DES PITS', 'BB & CHAMPAGNE', 'GOOFY',
@@ -2724,8 +2709,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-emptythebinvol3',
     theme: 'rap-francais',
-    subject: 'TITRES DE « EMPTY THE BIN VOL. 3 »',
-    subjectByLang: { en: 'SONGS ON “EMPTY THE BIN VOL. 3”', de: 'SONGS AUF „EMPTY THE BIN VOL. 3“', es: 'CANCIONES DE «EMPTY THE BIN VOL. 3»', it: 'BRANI DI «EMPTY THE BIN VOL. 3»', pt: 'MÚSICAS DE “EMPTY THE BIN VOL. 3”' },
+    subject: 'TITRES DE L\'ALBUM « EMPTY THE BIN VOL. 3 »',
+    subjectByLang: { en: 'SONGS ON THE ALBUM “EMPTY THE BIN VOL. 3”', de: 'SONGS AUF DEM ALBUM „EMPTY THE BIN VOL. 3“', es: 'CANCIONES DEL ÁLBUM «EMPTY THE BIN VOL. 3»', it: 'BRANI DELL\'ALBUM «EMPTY THE BIN VOL. 3»', pt: 'MÚSICAS DO ÁLBUM “EMPTY THE BIN VOL. 3”' },
     answers: [
       'ERRR', 'CRAMÉ A VIE', 'POLI', 'L4F', 'BICHLOVE',
       'NO MAKE UP', 'BREAK YA NECK', 'RIHANNA', 'BB', 'LA PIRE',
@@ -2740,8 +2725,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-emptythebinvol2',
     theme: 'rap-francais',
-    subject: 'TITRES DE « EMPTY THE BIN VOL. 2 »',
-    subjectByLang: { en: 'SONGS ON “EMPTY THE BIN VOL. 2”', de: 'SONGS AUF „EMPTY THE BIN VOL. 2“', es: 'CANCIONES DE «EMPTY THE BIN VOL. 2»', it: 'BRANI DI «EMPTY THE BIN VOL. 2»', pt: 'MÚSICAS DE “EMPTY THE BIN VOL. 2”' },
+    subject: 'TITRES DE L\'ALBUM « EMPTY THE BIN VOL. 2 »',
+    subjectByLang: { en: 'SONGS ON THE ALBUM “EMPTY THE BIN VOL. 2”', de: 'SONGS AUF DEM ALBUM „EMPTY THE BIN VOL. 2“', es: 'CANCIONES DEL ÁLBUM «EMPTY THE BIN VOL. 2»', it: 'BRANI DELL\'ALBUM «EMPTY THE BIN VOL. 2»', pt: 'MÚSICAS DO ÁLBUM “EMPTY THE BIN VOL. 2”' },
     answers: [
       'GRAND SAFARI', 'MES PEINES', 'PETIT SEUM', 'LES BIJOUX QUE JE VOYAIS', 'ACHILLE',
       'FRENESIE', '7E SENS', 'TROZONÉ', 'LES ETOILES ONT DES OREILLES', 'FRIGO FREESTYLE',
@@ -2785,8 +2770,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-capodeicapivoliiiii',
     theme: 'rap-francais',
-    subject: 'TITRES DE « CAPO DEI CAPI VOL. II & III »',
-    subjectByLang: { en: 'SONGS ON “CAPO DEI CAPI VOL. II & III”', de: 'SONGS AUF „CAPO DEI CAPI VOL. II & III“', es: 'CANCIONES DE «CAPO DEI CAPI VOL. II & III»', it: 'BRANI DI «CAPO DEI CAPI VOL. II & III»', pt: 'MÚSICAS DE “CAPO DEI CAPI VOL. II & III”' },
+    subject: 'TITRES DE L\'ALBUM « CAPO DEI CAPI VOL. II & III »',
+    subjectByLang: { en: 'SONGS ON THE ALBUM “CAPO DEI CAPI VOL. II & III”', de: 'SONGS AUF DEM ALBUM „CAPO DEI CAPI VOL. II & III“', es: 'CANCIONES DEL ÁLBUM «CAPO DEI CAPI VOL. II & III»', it: 'BRANI DELL\'ALBUM «CAPO DEI CAPI VOL. II & III»', pt: 'MÚSICAS DO ÁLBUM “CAPO DEI CAPI VOL. II & III”' },
     answers: [
       'VÉRIFIE', 'FOURNISSEUR', 'GOYARD', 'FILATURE', '280',
       'AMI OU ENNEMI', 'ARRIVEDERCI', 'MARIÉ À LA STREET', 'MARRAS', 'MAYDAY',
@@ -2815,8 +2800,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-lesetoilesvagabondes',
     theme: 'rap-francais',
-    subject: 'TITRES DE « LES ÉTOILES VAGABONDES »',
-    subjectByLang: { en: 'SONGS ON “LES ÉTOILES VAGABONDES”', de: 'SONGS AUF „LES ÉTOILES VAGABONDES“', es: 'CANCIONES DE «LES ÉTOILES VAGABONDES»', it: 'BRANI DI «LES ÉTOILES VAGABONDES»', pt: 'MÚSICAS DE “LES ÉTOILES VAGABONDES”' },
+    subject: 'TITRES DE L\'ALBUM « LES ÉTOILES VAGABONDES »',
+    subjectByLang: { en: '“LES ÉTOILES VAGABONDES” TRACKLIST', de: 'TRACKLIST „LES ÉTOILES VAGABONDES“', es: 'TRACKLIST DE «LES ÉTOILES VAGABONDES»', it: 'BRANI DELL\'ALBUM «LES ÉTOILES VAGABONDES»', pt: 'FAIXAS DE “LES ÉTOILES VAGABONDES”' },
     answers: [
       'LES ÉTOILES VAGABONDES', 'ALUNISSONS', 'CHEUM', 'NATSUKASHII', 'TAKOTSUBO',
       'MENTEUR MENTEUR', 'ECRIRE', 'CIEL NOIR', 'L\'AIR DU TEMPS', 'DE MON MIEUX',
@@ -2916,8 +2901,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-cyclemouvement',
     theme: 'rap-francais',
-    subject: 'TITRES DE « CYCLE / MOUVEMENT »',
-    subjectByLang: { en: 'SONGS ON “CYCLE / MOUVEMENT”', de: 'SONGS AUF „CYCLE / MOUVEMENT“', es: 'CANCIONES DE «CYCLE / MOUVEMENT»', it: 'BRANI DI «CYCLE / MOUVEMENT»', pt: 'MÚSICAS DE “CYCLE / MOUVEMENT”' },
+    subject: 'TITRES DE LA SÉRIE « CYCLE / MOUVEMENT »',
+    subjectByLang: { en: '“CYCLE / MOUVEMENT” TRACKLIST', de: 'SONGS DER REIHE „CYCLE / MOUVEMENT“', es: 'CANCIONES DE LA SERIE «CYCLE / MOUVEMENT»', it: 'BRANI DELLA SERIE «CYCLE / MOUVEMENT»', pt: 'MÚSICAS DA SÉRIE “CYCLE / MOUVEMENT”' },
     answers: [
       'FAUSSE COCAÏNE', 'LE SUCRE', 'PREMIER PORNO', 'SHÉHÉRAZADE', 'COULEURS FROIDES',
       'BIENVENUE À GATTACA', 'INTELLIGENT', 'DROMADAIRE', 'MÉTAPHYSIQUE', 'L\'EAU CHAUDE',
@@ -2932,8 +2917,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-23joursplustard',
     theme: 'rap-francais',
-    subject: 'TITRES DE « 23 JOURS PLUS TARD »',
-    subjectByLang: { en: 'SONGS ON “23 JOURS PLUS TARD”', de: 'SONGS AUF „23 JOURS PLUS TARD“', es: 'CANCIONES DE «23 JOURS PLUS TARD»', it: 'BRANI DI «23 JOURS PLUS TARD»', pt: 'MÚSICAS DE “23 JOURS PLUS TARD”' },
+    subject: 'TITRES DE LA SÉRIE « 23 JOURS PLUS TARD »',
+    subjectByLang: { en: 'SONGS FROM THE “23 JOURS PLUS TARD” SERIES', de: 'SONGS DER REIHE „23 JOURS PLUS TARD“', es: 'CANCIONES DE LA SERIE «23 JOURS PLUS TARD»', it: 'BRANI DELLA SERIE «23 JOURS PLUS TARD»', pt: 'MÚSICAS DA SÉRIE “23 JOURS PLUS TARD”' },
     answers: [
       'MONSTRES&DEMONS', 'JAPANEXPO', 'LOCKED UP', 'CRUELLA', 'PHANTOM',
       'KADYROV', 'MON CARTOON', 'BLEUDECHANEL', '2319', 'INAZUMA11',
@@ -2978,8 +2963,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-osohattrick',
     theme: 'rap-francais',
-    subject: 'TITRES DE « OSO / HAT TRICK »',
-    subjectByLang: { en: 'SONGS ON “OSO / HAT TRICK”', de: 'SONGS AUF „OSO / HAT TRICK“', es: 'CANCIONES DE «OSO / HAT TRICK»', it: 'BRANI DI «OSO / HAT TRICK»', pt: 'MÚSICAS DE “OSO / HAT TRICK”' },
+    subject: 'TITRES DE L\'ALBUM « OSO / HAT TRICK »',
+    subjectByLang: { en: 'SONGS ON THE ALBUM “OSO / HAT TRICK”', de: 'SONGS AUF DEM ALBUM „OSO / HAT TRICK“', es: 'CANCIONES DEL ÁLBUM «OSO / HAT TRICK»', it: 'BRANI DELL\'ALBUM «OSO / HAT TRICK»', pt: 'MÚSICAS DO ÁLBUM “OSO / HAT TRICK”' },
     answers: [
       'BETHLEEM', 'ARRIBA', 'ALTESSE', 'POLAIRE', 'MOI MAINTENANT',
       'DRIP ADVISOR', 'BLANCO', '2.24.12', 'HAKI', 'YA NO SÉ',
@@ -2994,8 +2979,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-highfinesherbes',
     theme: 'rap-francais',
-    subject: 'TITRES DE « HIGH & FINES HERBES »',
-    subjectByLang: { en: 'SONGS ON “HIGH & FINES HERBES”', de: 'SONGS AUF „HIGH & FINES HERBES“', es: 'CANCIONES DE «HIGH & FINES HERBES»', it: 'BRANI DI «HIGH & FINES HERBES»', pt: 'MÚSICAS DE “HIGH & FINES HERBES”' },
+    subject: 'TITRES DE LA SÉRIE « HIGH & FINES HERBES »',
+    subjectByLang: { en: 'SONGS FROM THE “HIGH & FINES HERBES” SERIES', de: 'SONGS DER REIHE „HIGH & FINES HERBES“', es: 'CANCIONES DE LA SERIE «HIGH & FINES HERBES»', it: 'BRANI DELLA SERIE «HIGH & FINES HERBES»', pt: 'MÚSICAS DA SÉRIE “HIGH & FINES HERBES”' },
     answers: [
       'IL FAIT BEAU', 'UN CADEAU', 'SONIC', 'LA TEUF', 'TOUT S’ARRÊTE',
       'FLASH', 'VIE ORDINAIRE', 'YELLOW', 'FONS', 'SKIT-EULZ',
@@ -3016,8 +3001,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-vibestarssaison2',
     theme: 'rap-francais',
-    subject: 'TITRES DE « VIBESTARS : SAISON 2 »',
-    subjectByLang: { en: 'SONGS ON “VIBESTARS : SAISON 2”', de: 'SONGS AUF „VIBESTARS : SAISON 2“', es: 'CANCIONES DE «VIBESTARS : SAISON 2»', it: 'BRANI DI «VIBESTARS : SAISON 2»', pt: 'MÚSICAS DE “VIBESTARS : SAISON 2”' },
+    subject: 'TITRES DE L\'ALBUM « VIBESTARS : SAISON 2 »',
+    subjectByLang: { en: 'SONGS ON THE ALBUM “VIBESTARS : SAISON 2”', de: 'SONGS AUF DEM ALBUM „VIBESTARS : SAISON 2“', es: 'TRACKLIST DE «VIBESTARS : SAISON 2»', it: 'BRANI DELL\'ALBUM «VIBESTARS : SAISON 2»', pt: 'MÚSICAS DO ÁLBUM “VIBESTARS : SAISON 2”' },
     answers: [
       'SI', 'GÉ VOULAIT', 'ENFANT DU GHETTO', 'GÉ TROP DONNÉ', 'GÉ TRACÉ',
       'GÉ PERDU ESPOIR', 'PAPOTÉ', 'GÉ RAISON', 'AMBITIEUSE', 'GÉ L\'HISTOIRE',
@@ -3068,8 +3053,8 @@ export const questionsRapFrancais: Question[] = [
   {
     id: 'rap-tracklist-lesmarchesdelempereur',
     theme: 'rap-francais',
-    subject: 'TITRES DE « LES MARCHES DE L\'EMPEREUR »',
-    subjectByLang: { en: 'SONGS ON “LES MARCHES DE L\'EMPEREUR”', de: 'SONGS AUF „LES MARCHES DE L\'EMPEREUR“', es: 'CANCIONES DE «LES MARCHES DE L\'EMPEREUR»', it: 'BRANI DI «LES MARCHES DE L\'EMPEREUR»', pt: 'MÚSICAS DE “LES MARCHES DE L\'EMPEREUR”' },
+    subject: 'TITRES DE LA SÉRIE « LES MARCHES DE L\'EMPEREUR »',
+    subjectByLang: { en: '“LES MARCHES DE L\'EMPEREUR” TRACKLIST', de: 'SONGS DER REIHE „LES MARCHES DE L\'EMPEREUR“', es: 'TRACKLIST DE «LES MARCHES DE L\'EMPEREUR»', it: 'BRANI DELLA SERIE «LES MARCHES DE L\'EMPEREUR»', pt: 'MÚSICAS DA SÉRIE “LES MARCHES DE L\'EMPEREUR”' },
     answers: [
       'MANGE MES GROSEILLES', 'LE GRAND AIGLE', 'SIMPLE PUTE', 'JEUNE IGO', 'ULTRAPUTE',
       'STRING 2 COUGAR', 'TRAFIQUANTS', 'CANDYMAN', 'FANTOMAS', 'TRICÉRATOPS',

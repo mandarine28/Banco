@@ -25,6 +25,7 @@ import { type Lang, getT } from '@/lib/i18n';
 import { ROUND_LIMITS, SURVIE_TIMER_OPTIONS, type SurvieTimer, TEAM_LIMITS, useGameSettings } from '@/state/gameSettings';
 import { usePurchases } from '@/state/purchases';
 import { useGiftChain } from '@/state/useGifts';
+import { useTutorialTarget } from '@/state/tutorial';
 import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
@@ -226,6 +227,7 @@ export default function MatchSettingsScreen() {
   const { lang } = useLang();
   const t = getT(lang);
   const settingsTitle = mode === 'survie' ? t.common.survieSettings : t.common.auctionSettings;
+  const teamsTarget = useTutorialTarget('match-teams');
 
   const panelTop = insets.top + 68;
 
@@ -272,14 +274,16 @@ export default function MatchSettingsScreen() {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{settingsTitle}</Text>
               <View style={styles.rowList}>
-                <StepperRow
-                  icon="account-group"
-                  label={t.matchSettings.teamCount}
-                  value={teamCount}
-                  min={TEAM_LIMITS.min}
-                  max={TEAM_LIMITS.max}
-                  onChange={setTeamCount}
-                />
+                <View ref={teamsTarget} collapsable={false}>
+                  <StepperRow
+                    icon="account-group"
+                    label={t.matchSettings.teamCount}
+                    value={teamCount}
+                    min={TEAM_LIMITS.min}
+                    max={TEAM_LIMITS.max}
+                    onChange={setTeamCount}
+                  />
+                </View>
                 <StepperRow
                   icon="flag-checkered"
                   label={t.matchSettings.roundCount}

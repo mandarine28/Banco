@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, StyleSheet, Text } from 'react-native';
+import { Animated, type StyleProp, StyleSheet, Text, type ViewStyle } from 'react-native';
 
 import { colors, fonts } from '@/theme';
 
@@ -32,14 +32,27 @@ export function useToast() {
   return { opacity, translateY, show };
 }
 
-/** À placer dans le conteneur (position relative) du bouton concerné. */
-export function Toast({ toast, message }: { toast: ReturnType<typeof useToast>; message: string }) {
+/**
+ * À placer dans le conteneur (position relative) du bouton concerné.
+ * light : fond blanc, pour ressortir sur un fond bleu foncé (cartes de la boutique).
+ */
+export function Toast({
+  toast,
+  message,
+  light = false,
+  style,
+}: {
+  toast: ReturnType<typeof useToast>;
+  message: string;
+  light?: boolean;
+  style?: StyleProp<ViewStyle>;
+}) {
   return (
     <Animated.View
-      style={[styles.toast, { opacity: toast.opacity, transform: [{ translateY: toast.translateY }] }]}
+      style={[styles.toast, light && styles.toastLight, style, { opacity: toast.opacity, transform: [{ translateY: toast.translateY }] }]}
       pointerEvents="none"
     >
-      <Text style={styles.toastText}>{message}</Text>
+      <Text style={[styles.toastText, light && styles.toastTextLight]}>{message}</Text>
     </Animated.View>
   );
 }
@@ -59,6 +72,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 4,
     elevation: 5,
+  },
+  toastLight: {
+    backgroundColor: '#fffbf5',
+    borderWidth: 2,
+    borderColor: colors.purpleDeep,
+  },
+  toastTextLight: {
+    color: colors.purpleDeep,
   },
   toastText: {
     fontFamily: fonts.displayMedium,

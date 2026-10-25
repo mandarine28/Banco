@@ -25,6 +25,8 @@ type Props = {
   panelTop: number;
   /** Change à chaque toucher sur l'écran : la mascotte « prend peur » et le timer repart. */
   interactionKey: number;
+  /** Didacticiel en cours : sa mascotte suffit, celle de l'accueil reste cachée. */
+  paused?: boolean;
 };
 
 const randomGap = () => MIN_GAP_MS + Math.random() * (MAX_GAP_MS - MIN_GAP_MS);
@@ -34,7 +36,7 @@ const randomGap = () => MIN_GAP_MS + Math.random() * (MAX_GAP_MS - MIN_GAP_MS);
  * regarde à gauche et à droite, puis se recache.
  * Doit être rendue AVANT le panneau bleu pour passer derrière lui.
  */
-export function HomeMascot({ width, panelTop, interactionKey }: Props) {
+export function HomeMascot({ width, panelTop, interactionKey, paused = false }: Props) {
   const rise = useState(() => new Animated.Value(0))[0];
   const tilt = useState(() => new Animated.Value(0))[0];
   const [spot, setSpot] = useState(0);
@@ -55,7 +57,7 @@ export function HomeMascot({ width, panelTop, interactionKey }: Props) {
   );
 
   const spots = [EDGE, width * 0.55 - SIZE / 2, width - EDGE - SIZE];
-  const active = focused && !reduceMotion && panelTop > 0;
+  const active = focused && !reduceMotion && panelTop > 0 && !paused;
 
   // Une apparition complète ; `next` est rappelé à la fin pour programmer la suivante
   const appear = useEffectEvent((next: () => void) => {
