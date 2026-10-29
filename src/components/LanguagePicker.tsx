@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRef, useState } from 'react';
 import { Dimensions, Modal, StyleSheet, Text, View } from 'react-native';
 import type { ViewInstance } from 'react-native';

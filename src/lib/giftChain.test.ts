@@ -7,11 +7,13 @@ import { gamesUntil, giftAfter, giftChain, parseGiftedPacks } from './giftChain.
 
 const owns = (...ids: string[]) => (id: string) => ids.includes(id);
 
-test('chaîne de cadeaux : 3 parties pour Poudlard, puis le compteur repart de 0 pour le Rap', () => {
+test('chaîne de cadeaux : 3 parties pour Poudlard, puis le compteur repart de 0 pour le Rap, puis le Dresseur et l’Art', () => {
   assert.deepEqual(giftChain(owns(), 2), { next: 'packHarryPotter', played: 2, floor: 0 });
   assert.deepEqual(giftChain(owns('packHarryPotter'), 3), { next: 'packRap', played: 0, floor: 3 });
   assert.deepEqual(giftChain(owns('packHarryPotter'), 5), { next: 'packRap', played: 2, floor: 3 });
-  assert.equal(giftChain(owns('packHarryPotter', 'packRap'), 9).next, null);
+  assert.deepEqual(giftChain(owns('packHarryPotter', 'packRap'), 7), { next: 'packDresseur', played: 1, floor: 6 });
+  assert.deepEqual(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur'), 10), { next: 'packArt', played: 1, floor: 9 });
+  assert.equal(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt'), 15).next, null);
 });
 
 test('chaîne de cadeaux : après réinstallation, le compteur à 0 ne fait pas reculer la progression', () => {
@@ -22,7 +24,11 @@ test('parties restantes : le pack suivant attend la fin du précédent', () => {
   const chain = giftChain(owns(), 1);
   assert.equal(gamesUntil(chain, 'packHarryPotter'), 2);
   assert.equal(gamesUntil(chain, 'packRap'), 5);
+  assert.equal(gamesUntil(chain, 'packDresseur'), 8);
   assert.equal(giftAfter('packHarryPotter'), 'packRap');
+  assert.equal(giftAfter('packRap'), 'packDresseur');
+  assert.equal(giftAfter('packDresseur'), 'packArt');
+  assert.equal(gamesUntil(chain, 'packArt'), 11);
 });
 
 test('packs offerts : l’ancien format (un seul pack) reste lu, les valeurs inconnues sont ignorées', () => {

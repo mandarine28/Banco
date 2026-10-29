@@ -1,9 +1,11 @@
 import type { Question } from '../data/types';
-import { planQuestions, type GameTeam } from './engine';
+import { planQuestions, type GameTeam } from './engine.ts';
 
 export const SURVIE_TURN_SECONDS = 10;
 /** La cagnotte démarre à 1 : même si la 1re équipe sèche d'entrée, la manche rapporte un point. */
 export const SURVIE_START_JACKPOT = 1;
+/** Chrono Turbo : 15 s au 1er tour de table, 2 s de moins à chaque tour, jamais sous 5 s. */
+export const SURVIE_TURBO = { start: 15, step: 2, min: 5 } as const;
 
 export type SurviePhase = 'ready' | 'play' | 'result' | 'final';
 
@@ -23,6 +25,8 @@ export type SurvieState = {
   scores: number[];
   /** Canonical answers validated this round (for result screen chips). */
   found: string[];
+  /** Tours de table bouclés dans la manche (chrono Turbo). */
+  lap: number;
 };
 
 export type SurvieAction =
@@ -52,10 +56,14 @@ export function createSurvieGame(
     roundWinner: null,
     scores: teams.map(() => 0),
     found: [],
+    lap: 0,
   };
 }
 
 export const survieCurrentQuestion = (state: SurvieState) => state.plan[state.round];
+export const survieTurboSeconds = (state: SurvieState) =>
+  Math.max(SURVIE_TURBO.min, SURVIE_TURBO.start - state.lap * SURVIE_TURBO.step);
+
 export const isLastSurvieRound = (state: SurvieState) => state.round === state.roundCount - 1;
 
 export function survieRanking(state: SurvieState) {
@@ -77,6 +85,15 @@ function nextAliveTeam(aliveTeams: boolean[], from: number): number {
   return from;
 }
 
+/** Tour de table bouclé quand le jeu repasse par l'équipe qui a ouvert la manche (même éliminée). */
+function nextLap(state: SurvieState, next: number): number {
+  const n = state.teams.length;
+  const starter = state.round % n;
+  const toNext = (next - state.currentTeam + n) % n || n;
+  const toStarter = (starter - state.currentTeam + n) % n || n;
+  return toStarter <= toNext ? state.lap + 1 : state.lap;
+}
+
 function eliminateAndAdvance(state: SurvieState): SurvieState {
   const aliveTeams = [...state.aliveTeams];
   aliveTeams[state.currentTeam] = false;
@@ -96,7 +113,7 @@ function eliminateAndAdvance(state: SurvieState): SurvieState {
   }
 
   const next = nextAliveTeam(aliveTeams, state.currentTeam);
-  return { ...state, aliveTeams, currentTeam: next, phase: 'ready' };
+  return { ...state, aliveTeams, currentTeam: next, phase: 'ready', lap: nextLap(state, next) };
 }
 
 export function survieReducer(state: SurvieState, action: SurvieAction): SurvieState {
@@ -111,7 +128,7 @@ export function survieReducer(state: SurvieState, action: SurvieAction): SurvieS
       const jackpot = state.jackpot + 1;
       const next = nextAliveTeam(state.aliveTeams, state.currentTeam);
       const found = action.answer ? [...state.found, action.answer] : state.found;
-      return { ...state, jackpot, currentTeam: next, found };
+      return { ...state, jackpot, currentTeam: next, found, lap: nextLap(state, next) };
     }
 
     case 'PASS':
@@ -133,6 +150,7 @@ export function survieReducer(state: SurvieState, action: SurvieAction): SurvieS
         jackpot: SURVIE_START_JACKPOT,
         roundWinner: null,
         found: [],
+        lap: 0,
       };
     }
   }

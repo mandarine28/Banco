@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import { LinearGradient } from 'expo-linear-gradient';
 import { type Href, router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -13,6 +14,8 @@ import { LanguagePicker } from '@/components/LanguagePicker';
 import { AnimatedLogo } from '@/components/Logo';
 import { PACK_THEME_IDS, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
 import { afterAdsConsent } from '@/lib/ads';
+import { UpdateModal } from '@/components/UpdateModal';
+import { fetchStoreVersion, isNewerVersion } from '@/lib/appUpdate';
 import { loadWelcomeIntroSeen, markWelcomeIntroSeen } from '@/lib/gifts';
 import { loadTutorialSeen } from '@/lib/tutorial';
 import { useLang } from '@/lib/LangContext';
@@ -45,7 +48,7 @@ export default function HomeScreen() {
   const { lang } = useLang();
   const t = getT(lang);
 
-  // Logo BANCO paysage 324 × 84
+  // Logo BANGO paysage 324 × 84
   const logoWidth = Math.min(width * 0.78, 310);
   const logoHeight = (logoWidth * 84) / 324;
 
@@ -71,10 +74,19 @@ export default function HomeScreen() {
   const { start: startTutorial, step: tutorialStep } = useTutorial();
   const playTarget = useTutorialTarget('home-play');
   const shopTarget = useTutorialTarget('home-shop');
+  // Nouvelle version sur l'App Store : proposée à chaque lancement, tant que l'app n'est pas à jour
+  const [showUpdate, setShowUpdate] = useState(false);
   useEffect(() => {
     Promise.all([loadWelcomeIntroSeen(), loadTutorialSeen(), afterAdsConsent()]).then(([seen, tutorialSeen]) => {
       if (tutorialSeen) {
         setShowWelcome(!seen);
+        // Jamais par-dessus la fenêtre cadeau : deux modales qui s'enchaînent figent l'écran sur iOS
+        if (seen) {
+          fetchStoreVersion().then((latest) => {
+            const current = Constants.expoConfig?.version;
+            if (latest && current && isNewerVersion(latest, current)) setShowUpdate(true);
+          });
+        }
         return;
       }
       startTutorial((completed) => {
@@ -169,7 +181,7 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
-        {/* Logo BANCO */}
+        {/* Logo BANGO */}
         <View style={[styles.logoWrap, { top: logoTop }]}>
           <AnimatedLogo width={logoWidth} />
         </View>
@@ -188,6 +200,8 @@ export default function HomeScreen() {
           onConfirm={closeWelcome}
           onDismiss={closeWelcome}
         />
+
+        <UpdateModal visible={showUpdate} onClose={() => setShowUpdate(false)} />
 
       </View>
     </View>

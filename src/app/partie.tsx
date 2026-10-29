@@ -24,7 +24,7 @@ import { giftAfter, giftChain } from '@/lib/giftChain';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSuccess, opponent, TURN_SECONDS } from '@/game/engine';
-import { createSurvieGame, isLastSurvieRound, survieReducer } from '@/game/survie-engine';
+import { createSurvieGame, isLastSurvieRound, survieReducer, survieTurboSeconds } from '@/game/survie-engine';
 import { useBackToQuitConfirm } from '@/hooks/useBackToQuitConfirm';
 import { useCountdown } from '@/hooks/useCountdown';
 import { useHapticWarning } from '@/hooks/useHapticWarning';
@@ -35,7 +35,7 @@ import { maybeRequestReview, recordGameCompleted } from '@/lib/engagement';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { markTrialUsed } from '@/lib/trials';
-import { useGameSettings } from '@/state/gameSettings';
+import { type SurvieTimer, useGameSettings } from '@/state/gameSettings';
 import { usePurchases } from '@/state/purchases';
 import { SurviePulseBorder } from '@/state/survieOverlay';
 import { colors, fonts, teamColors } from '@/theme';
@@ -197,7 +197,7 @@ export default function GameScreen() {
           teams={teams}
           roundCount={settings.roundCount}
           selectedThemes={playableThemes}
-          turnSeconds={settings.survieTimer}
+          timer={settings.survieTimer}
           onReplay={replay}
           beforeLeave={beforeLeave}
           onFinished={onGameFinished}
@@ -405,7 +405,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
   );
 }
 
-function SurvieGame({ teams, roundCount, selectedThemes, turnSeconds, onReplay, beforeLeave, onFinished }: GameProps & { turnSeconds: number | null }) {
+function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, beforeLeave, onFinished }: GameProps & { timer: SurvieTimer | null }) {
   const showCategory = selectedThemes.length > 1;
   const filteredQuestions =
     selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
@@ -504,7 +504,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, turnSeconds, onReplay, 
           onValidate={() => dispatch({ type: 'VALIDATE' })}
           onPass={() => setConfirmElim('pass')}
           onTimeout={() => setConfirmElim('timeout')}
-          turnSeconds={turnSeconds}
+          turnSeconds={timer === 'turbo' ? survieTurboSeconds(state) : timer}
           isPaused={isPaused}
           onTogglePause={() =>
             setPauseSource((s) => (s === null ? 'manual' : s === 'manual' ? null : s))

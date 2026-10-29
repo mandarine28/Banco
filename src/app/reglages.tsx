@@ -10,6 +10,7 @@ import Svg, { Path } from 'react-native-svg';
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { LanguagePicker } from '@/components/LanguagePicker';
+import { UpdateModal } from '@/components/UpdateModal';
 import { privacyUrl, supportEmail } from '@/config/links';
 import { GIFT_PACKS } from '@/config/shop';
 import { TEST_TOOLS } from '@/config/testTools';
@@ -82,6 +83,7 @@ export default function SettingsScreen() {
 
   // Build de test uniquement : voir l'app comme un joueur neuf, ou avec tout débloqué
   const { claimGiftedPack, resetGiftedPacks } = usePurchases();
+  const [showUpdate, setShowUpdate] = useState(false);
   const unlockAll = async () => {
     try {
       for (const product of GIFT_PACKS) await claimGiftedPack(product);
@@ -101,7 +103,7 @@ export default function SettingsScreen() {
 
   const contact = () => {
     // Version + OS pré-remplis : premières infos demandées pour reproduire un bug
-    const body = `\n\n—\nBanco ${APP_VERSION} · ${Platform.OS} ${Platform.Version}`;
+    const body = `\n\n—\nBango ${APP_VERSION} · ${Platform.OS} ${Platform.Version}`;
     const url = `mailto:${supportEmail}?subject=${encodeURIComponent(s.mailSubject)}&body=${encodeURIComponent(body)}`;
     Linking.openURL(url).catch(() => Alert.alert(s.title, `${s.noMailApp}\n${supportEmail}`));
   };
@@ -183,7 +185,7 @@ export default function SettingsScreen() {
               <View style={styles.section}>
                 <Text style={styles.sectionTitle} accessibilityRole="header">Outils de test</Text>
                 <View style={styles.card}>
-                  <Text style={styles.cardText}>Visible uniquement dans le build de test.</Text>
+                  <Text style={styles.cardText}>Visible uniquement en développement et dans le build de test.</Text>
                   <Pressable onPress={unlockAll} accessibilityRole="button" accessibilityLabel="Tout débloquer">
                     <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btn}>
                       <Text style={styles.btnText}>Tout débloquer</Text>
@@ -194,6 +196,12 @@ export default function SettingsScreen() {
                       <Text style={styles.btnText}>Repartir de zéro</Text>
                     </LinearGradient>
                   </Pressable>
+                  <Pressable onPress={() => setShowUpdate(true)} accessibilityRole="button" accessibilityLabel="Voir la fenêtre de mise à jour">
+                    <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btn}>
+                      <Text style={styles.btnText}>Fenêtre de mise à jour</Text>
+                    </LinearGradient>
+                  </Pressable>
+                  <UpdateModal visible={showUpdate} onClose={() => setShowUpdate(false)} />
                 </View>
               </View>
             ) : null}

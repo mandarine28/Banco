@@ -53,8 +53,19 @@ export function normalize(text: string): string {
 
 /** Boutons affichés sans recherche : toutes les réponses, plus celles déjà validées ailleurs. */
 export function suggestions(question: Question, found: readonly string[]): string[] {
-  const extra = found.filter((label) => !question.answers.includes(label));
-  return [...question.answers, ...extra];
+  return visibleAnswers(question.answers, found);
+}
+
+/** Au-delà, la liste de puces (toutes rendues d'un coup) devient lente sur Android d'entrée de gamme. */
+export const MAX_VISIBLE_ANSWERS = 150;
+
+/**
+ * Puces affichées : les MAX_VISIBLE_ANSWERS premières réponses, plus toutes celles déjà trouvées.
+ * Les listes plus longues restent entières pour la recherche et la validation.
+ */
+export function visibleAnswers(answers: readonly string[], found: readonly string[]): string[] {
+  const shown = answers.slice(0, MAX_VISIBLE_ANSWERS);
+  return [...shown, ...found.filter((label) => !shown.includes(label))];
 }
 
 /** Copie triée de A à Z (accents, casse et ponctuation ignorés). */

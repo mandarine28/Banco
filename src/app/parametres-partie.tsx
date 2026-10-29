@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Switch, Text, useWindowDimensions, View } from 'react-native';
@@ -12,6 +12,7 @@ const LOCK_PATH =
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
 import { ConfirmModal } from '@/components/InfoModal';
+import { TimerInfoIllustration } from '@/components/TimerInfoIllustration';
 import { Toast, useToast } from '@/components/Toast';
 import { GIFT_PACKS, PACK_THEME_IDS, type ProductId, WELCOME_GAMES } from '@/config/shop';
 import { gamesUntil } from '@/lib/giftChain';
@@ -141,17 +142,43 @@ function StepperRow({ icon, label, value, min, max, onChange }: StepperRowProps)
 
 type TimerRowProps = {
   label: string;
+  info: { fixed: string; turbo: string };
+  gotItLabel: string;
   value: SurvieTimer | null;
   onChange: (value: SurvieTimer | null) => void;
 };
 
 /** Chrono de survie : interrupteur, puis choix de la durée quand il est activé. */
-function TimerRow({ label, value, onChange }: TimerRowProps) {
+function TimerRow({ label, info, gotItLabel, value, onChange }: TimerRowProps) {
   const enabled = value !== null;
+  const [showInfo, setShowInfo] = useState(false);
   return (
     <View style={[styles.settingRow, styles.timerCard]}>
+      <ConfirmModal
+        visible={showInfo}
+        title={label}
+        confirmLabel={gotItLabel}
+        confirmIcon="timer-outline"
+        onConfirm={() => setShowInfo(false)}
+        onDismiss={() => setShowInfo(false)}
+      >
+        <TimerInfoIllustration fixedCaption={info.fixed} turboCaption={info.turbo} />
+      </ConfirmModal>
       <View style={styles.timerHeader}>
-        <RowLabel icon="timer-outline" label={label} />
+        <View style={styles.timerTitle}>
+          <RowLabel icon="timer-outline" label={label} />
+          <Pressable
+            onPress={() => setShowInfo(true)}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel={`${label} : info`}
+          >
+            {/* Pastille pleine : se distingue de l'icône chrono en contour juste avant */}
+            <View style={styles.infoBadge}>
+              <MaterialCommunityIcons name="information-variant" size={16} color={colors.purpleDeep} />
+            </View>
+          </Pressable>
+        </View>
         <Switch
           value={enabled}
           onValueChange={(on) => {
@@ -167,18 +194,20 @@ function TimerRow({ label, value, onChange }: TimerRowProps) {
       </View>
       {enabled ? (
         <View style={styles.timerOptions} accessibilityRole="radiogroup">
-          {SURVIE_TIMER_OPTIONS.map((seconds) => {
-            const selected = seconds === value;
+          {SURVIE_TIMER_OPTIONS.map((option) => {
+            const selected = option === value;
+            // « Turbo » : même mot dans toutes les langues
+            const optionLabel = option === 'turbo' ? 'Turbo' : `${option} s`;
             return (
               <Pressable
-                key={seconds}
-                onPress={() => onChange(seconds)}
+                key={option}
+                onPress={() => onChange(option)}
                 accessibilityRole="radio"
                 accessibilityState={{ selected }}
-                accessibilityLabel={`${label} ${seconds} s`}
+                accessibilityLabel={`${label} ${optionLabel}`}
                 style={[styles.timerOption, selected && styles.timerOptionSelected]}
               >
-                <Text style={[styles.timerOptionText, selected && styles.timerOptionTextSelected]}>{seconds} s</Text>
+                <Text style={[styles.timerOptionText, selected && styles.timerOptionTextSelected]}>{optionLabel}</Text>
               </Pressable>
             );
           })}
@@ -293,7 +322,8 @@ export default function MatchSettingsScreen() {
                   onChange={setRoundCount}
                 />
                 {mode === 'survie' ? (
-                  <TimerRow label={t.matchSettings.timer} value={survieTimer} onChange={setSurvieTimer} />
+                  <TimerRow label={t.matchSettings.timer} info={{ fixed: t.matchSettings.timerInfoFixed, turbo: t.matchSettings.timerInfoTurbo }}
+                    gotItLabel={t.gift.gotIt} value={survieTimer} onChange={setSurvieTimer} />
                 ) : null}
               </View>
             </View>
@@ -549,6 +579,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  timerTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flexShrink: 1,
+  },
+  infoBadge: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.cream,
   },
   timerOptions: {
     flexDirection: 'row',

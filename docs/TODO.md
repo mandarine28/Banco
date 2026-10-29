@@ -48,7 +48,13 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
 - [ ] 👤 App Store Connect : **retirer l'achat intégré `com.banco.pack_harry_potter` de la vérification** (le pack est désormais offert) — la v1 ne vend rien, Rétro-gaming et Anime & mangas restent « Bientôt »
 - [ ] 👤 + 🤖 Mise à jour suivante : écrire les packs Rétro-gaming et Anime & mangas, puis créer leurs produits (App Store Connect + RevenueCat + `src/config/shop.ts`)
 - [ ] 👤 Site, page Confidentialité : retirer « Aucune publicité », ajouter AdMob, les données collectées, le consentement ; **retirer les comptes** (Supabase, connexion Apple/Google, suppression de compte), y compris dans la FAQ de la page Assistance
-- [ ] 👤 Site : publier `app-ads.txt` (contenu fourni par AdMob) à la racine du site déclaré sur l'App Store
+- [ ] 👤 Site : publier `app-ads.txt` à la **racine du domaine** — AdMob refuse la validation (« vos informations ne correspondent pas ») car `https://mandarine28.github.io/app-ads.txt` renvoie 404 (constaté le 2026-10-29). Le site `banco-site` est un site de projet (`/banco-site/…`) et ne peut pas servir la racine. Solution :
+  1. Sur GitHub, créer un dépôt **public** nommé exactement `mandarine28.github.io`
+  2. Y ajouter à la racine un fichier `app-ads.txt` contenant la seule ligne : `google.com, pub-7673839117797871, DIRECT, f08c47fec0942fa0`
+  3. Settings → Pages : publier depuis la branche `main`, puis vérifier que `https://mandarine28.github.io/app-ads.txt` affiche la ligne
+  4. App Store Connect : l'URL marketing (à défaut l'URL d'assistance) de la fiche doit être sur `mandarine28.github.io` (`/banco-site/…` convient)
+  5. AdMob → Applications → app iOS → app-ads.txt → « Rechercher les mises à jour » (peut prendre jusqu'à 24 h)
+- [ ] 👤 AdMob Android : remplacer l'ID d'app de test (`ca-app-pub-3940256099942544~…`, `androidAppId` dans `app.json`) par le vrai avant la publication sur Google Play
 - [ ] 👤 App Store Connect : « Confidentialité de l'app » → déclarer les données utilisées pour la publicité
 - [ ] 👤 Vérifier la classification d'âge de l'app
 

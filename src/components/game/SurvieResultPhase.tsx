@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { getAnswers, getSubject } from '@/game/answers';
+import { getAnswers, getSubject, visibleAnswers } from '@/game/answers';
 import { survieCurrentQuestion, type SurvieState } from '@/game/survie-engine';
 import { getT } from '@/lib/i18n';
 import { playHaptic } from '@/lib/haptics';
@@ -50,10 +50,7 @@ export function SurvieResultPhase({ state, onNext, isLastRound }: Props) {
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
 
   const localAnswers = getAnswers(question, lang);
-  const allAnswers = [
-    ...localAnswers,
-    ...state.found.filter((a) => !localAnswers.includes(a)),
-  ];
+  const allAnswers = visibleAnswers(localAnswers, state.found);
 
   return (
     <View style={styles.wrapper}>

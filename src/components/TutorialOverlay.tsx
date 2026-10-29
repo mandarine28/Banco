@@ -16,10 +16,9 @@ type Rect = { x: number; y: number; width: number; height: number };
 // Marge autour de l'élément éclairé et arrondi du « trou »
 const HOLE_PAD = 8;
 const HOLE_RADIUS = 18;
-// Attente avant de mesurer : le temps que le fondu de navigation se termine
-const NAV_SETTLE_MS = 450;
-const RETRY_MS = 150;
-const MAX_RETRIES = 8;
+// Navigation en fondu : l'élément est à sa place dès qu'il est monté, on réessaie vite sans attente fixe
+const RETRY_MS = 50;
+const MAX_RETRIES = 25;
 // Assez grande pour se détacher du logo Banco en arrière-plan
 const MASCOT_W = 104;
 const MASCOT_H = (MASCOT_W * 249) / 300;
@@ -79,8 +78,7 @@ export function TutorialOverlay() {
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     let tries = 0;
-    const { target, route } = TUTORIAL_STEPS[step];
-    const navigated = step > 0 && TUTORIAL_STEPS[step - 1].route !== route;
+    const { target } = TUTORIAL_STEPS[step];
 
     const reveal = (measured: Rect | null) => {
       if (cancelled) return;
@@ -103,11 +101,19 @@ export function TutorialOverlay() {
         reveal(null);
         return;
       }
-      node.measureInWindow((x, y, w, h) => reveal(w > 0 && h > 0 ? { x, y, width: w, height: h } : null));
+      node.measureInWindow((x, y, w, h) => {
+        if (cancelled) return;
+        // Monté mais pas encore mis en page : taille nulle, on réessaie
+        if ((w <= 0 || h <= 0) && tries++ < MAX_RETRIES) {
+          timer = setTimeout(measure, RETRY_MS);
+          return;
+        }
+        reveal(w > 0 && h > 0 ? { x, y, width: w, height: h } : null);
+      });
     };
 
     Animated.timing(fade, { toValue: 0, duration: 160, useNativeDriver: true }).start(() => {
-      if (!cancelled) timer = setTimeout(measure, navigated ? NAV_SETTLE_MS : 0);
+      if (!cancelled) measure();
     });
     return () => {
       cancelled = true;

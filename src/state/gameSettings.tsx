@@ -9,8 +9,8 @@ export type Team = {
 
 export const TEAM_LIMITS = { min: 2, max: 4 } as const;
 export const ROUND_LIMITS = { min: 3, max: 10 } as const;
-/** Durées proposées pour le chrono de survie, en secondes. */
-export const SURVIE_TIMER_OPTIONS = [10, 20, 30] as const;
+/** Chrono de survie : 'turbo' (temps qui baisse à chaque tour de table) ou durée fixe en secondes. */
+export const SURVIE_TIMER_OPTIONS = ['turbo', 10, 20, 30] as const;
 export type SurvieTimer = (typeof SURVIE_TIMER_OPTIONS)[number];
 
 export type GameSettings = {
@@ -19,7 +19,7 @@ export type GameSettings = {
   roundCount: number;
   teams: Team[];
   selectedThemes: string[];
-  /** Secondes par tour en survie ; null = sans chrono. */
+  /** Chrono de survie : 'turbo', secondes par tour, ou null = sans chrono. */
   survieTimer: SurvieTimer | null;
 };
 

@@ -1,4 +1,5 @@
 import type { Glossary } from './types';
+import { glossaryArt } from './glossaries/art-litterature';
 import { glossaryCinema } from './glossaries/cinema';
 import { glossaryHarryPotter } from './glossaries/harry-potter';
 import { glossaryMarques } from './glossaries/marques';
@@ -11,6 +12,7 @@ import { glossarySport } from './glossaries/sport';
 /** Glossaire de traduction des réponses, par identifiant de thème. */
 export const glossaries: Record<string, Glossary> = {
   cinema: glossaryCinema,
+  'art-litterature': glossaryArt,
   'harry-potter': glossaryHarryPotter,
   sport: glossarySport,
   geographie: glossaryGeographie,

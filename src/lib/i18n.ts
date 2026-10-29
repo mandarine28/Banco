@@ -36,6 +36,10 @@ type Translations = {
   };
   common: {
     cancel: string;
+    /** Fenêtre « nouvelle version sur l'App Store » au lancement. */
+    updateTitle: string;
+    updateMsg: string;
+    updateBtn: string;
     quitTitle: string;
     quitMsg: string;
     quit: string;
@@ -115,6 +119,9 @@ type Translations = {
     teamCount: string;
     roundCount: string;
     timer: string;
+    /** Légendes de l'illustration du chrono de survie (bouton info). */
+    timerInfoFixed: string;
+    timerInfoTurbo: string;
     categoriesTitle: string;
     continueBtn: string;
     pickCategoryFirst: string;
@@ -253,7 +260,7 @@ const translations: Record<Lang, Translations> = {
       next: 'Suivant',
       skip: 'Passer',
       done: 'C\'est parti !',
-      welcome: 'Bienvenue dans Banco ! Je vous fais faire le tour en 30 secondes.',
+      welcome: 'Bienvenue dans Bango ! Je vous fais faire le tour en 30 secondes.',
       shop: 'Ici, la Boutique : des packs de questions à gagner en jouant.',
       giftFirst: (pack, n) => `Terminez ${n} parties et le pack « ${pack} » est à vous, offert !`,
       giftNext: (pack, n) => `Ensuite, le compteur repart à 0 : ${n} parties de plus pour « ${pack} ». Offerts aux premiers joueurs, profitez-en !`,
@@ -264,6 +271,9 @@ const translations: Record<Lang, Translations> = {
     },
     common: {
       cancel: 'ANNULER',
+      updateTitle: 'Nouvelles questions et packs !',
+      updateMsg: 'Une mise à jour vous attend pour en profiter.',
+      updateBtn: 'METTRE À JOUR',
       quitTitle: 'Quitter la partie ?',
       quitMsg: 'La partie en cours sera perdue.',
       quit: 'QUITTER',
@@ -343,6 +353,8 @@ const translations: Record<Lang, Translations> = {
       teamCount: 'Équipes',
       roundCount: 'Manches',
       timer: 'Chrono',
+      timerInfoFixed: 'Même temps à chaque tour',
+      timerInfoTurbo: '2 s de moins à chaque tour',
       categoriesTitle: 'Catégories',
       continueBtn: 'Continuer',
       pickCategoryFirst: 'Choisissez au moins une catégorie',
@@ -369,13 +381,13 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Pack de questions',
-      earlyAccess: 'Merci d\'être parmi les premiers ! Ces packs sont offerts aujourd\'hui et deviendront payants : profitez-en.',
+      earlyAccess: "Merci d'être parmi les premiers ! Ces packs sont offerts aujourd'hui : débloquez-les avant qu'ils deviennent payants.",
       unlock: 'Débloquer',
       unlockA11y: (pack) => `Débloquer ${pack}`,
       questionCount: (n) => `${n} questions`,
       unlocked: 'Pack débloqué ✓',
       comingSoon: 'Bientôt disponible',
-      packTitles: { 'harry-potter': 'Poudlard Express', 'rap-francais': 'Rap français', nintendo: 'Rétro-gaming', anime: 'Anime & mangas' },
+      packTitles: { 'harry-potter': 'Poudlard Express', 'rap-francais': 'Rap français', dresseur: 'Meilleur dresseur', 'art-litterature': 'Art & littérature', nintendo: 'Rétro-gaming', anime: 'Anime & mangas' },
       restore: 'Restaurer les achats',
       restoredTitle: 'Achats restaurés',
       restoredMsg: 'Vos packs sont de nouveau débloqués.',
@@ -459,7 +471,7 @@ const translations: Record<Lang, Translations> = {
       survieTitle: 'Mode Survie',
       survieSteps: [
         'Un sujet s\'affiche, par exemple « Capitales du monde ».',
-        'Chaque équipe, à son tour, a 10 secondes (réglable) pour citer une nouvelle réponse.',
+        'Chaque équipe, à son tour, cite une nouvelle réponse. Chrono Turbo (réglable) : 15 secondes, puis 2 de moins à chaque tour de table.',
         'Réponse validée : c\'est au tour de l\'équipe suivante.',
         'Pas de réponse à temps, ou « Passer » : l\'équipe est éliminée de la manche.',
         'La manche continue jusqu\'à ce qu\'il ne reste qu\'une seule équipe.',
@@ -474,7 +486,7 @@ const translations: Record<Lang, Translations> = {
       title: 'Assistance',
       intro: 'Un bug, une réponse manquante, une idée de sujet ? Écrivez-nous, on vous répond sous 48 h.',
       contactBtn: 'Nous écrire',
-      mailSubject: 'Banco – Assistance',
+      mailSubject: 'Bango – Assistance',
       noMailApp: 'Aucune app e-mail trouvée. Écrivez-nous à :',
       faqTitle: 'Questions fréquentes',
       faq: [
@@ -518,7 +530,7 @@ const translations: Record<Lang, Translations> = {
       next: 'Next',
       skip: 'Skip',
       done: 'Let\'s go!',
-      welcome: 'Welcome to Banco! Let me show you around in 30 seconds.',
+      welcome: 'Welcome to Bango! Let me show you around in 30 seconds.',
       shop: 'This is the Shop: question packs you earn by playing.',
       giftFirst: (pack, n) => `Finish ${n} games and the “${pack}” pack is yours, free!`,
       giftNext: (pack, n) => `Then the counter resets: ${n} more games for “${pack}”. Free for early players, enjoy!`,
@@ -529,6 +541,9 @@ const translations: Record<Lang, Translations> = {
     },
     common: {
       cancel: 'CANCEL',
+      updateTitle: 'New questions & packs!',
+      updateMsg: 'An update is waiting for you so you can enjoy them.',
+      updateBtn: 'UPDATE',
       quitTitle: 'Quit the game?',
       quitMsg: 'The current game will be lost.',
       quit: 'QUIT',
@@ -608,6 +623,8 @@ const translations: Record<Lang, Translations> = {
       teamCount: 'Teams',
       roundCount: 'Rounds',
       timer: 'Timer',
+      timerInfoFixed: 'Same time every turn',
+      timerInfoTurbo: '2 s less every round',
       categoriesTitle: 'Categories',
       continueBtn: 'Continue',
       pickCategoryFirst: 'Choose at least one category',
@@ -634,13 +651,13 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Question packs',
-      earlyAccess: 'Thanks for being one of the first! These packs are free today and will become paid later: grab them now.',
+      earlyAccess: "Thanks for being one of the first! These packs are free today: unlock them before they become paid.",
       unlock: 'Unlock',
       unlockA11y: (pack) => `Unlock ${pack}`,
       questionCount: (n) => `${n} questions`,
       unlocked: 'Pack unlocked ✓',
       comingSoon: 'Coming soon',
-      packTitles: { 'harry-potter': 'Hogwarts Express', 'rap-francais': 'French Rap', nintendo: 'Retro gaming', anime: 'Anime & manga' },
+      packTitles: { 'harry-potter': 'Hogwarts Express', 'rap-francais': 'French Rap', dresseur: 'The Very Best Trainer', 'art-litterature': 'Art & Literature', nintendo: 'Retro gaming', anime: 'Anime & manga' },
       restore: 'Restore purchases',
       restoredTitle: 'Purchases restored',
       restoredMsg: 'Your packs are unlocked again.',
@@ -724,7 +741,7 @@ const translations: Record<Lang, Translations> = {
       survieTitle: 'Survival mode',
       survieSteps: [
         'A topic appears, for example “World capitals”.',
-        'Each team, in turn, has 10 seconds (adjustable) to name a new answer.',
+        'Each team, in turn, names a new answer. Turbo timer (adjustable): 15 seconds, then 2 less each time round the table.',
         'Answer validated: it’s the next team’s turn.',
         'No answer in time, or “Pass”: the team is out of the round.',
         'The round goes on until only one team is left.',
@@ -739,7 +756,7 @@ const translations: Record<Lang, Translations> = {
       title: 'Support',
       intro: 'A bug, a missing answer, an idea for a topic? Write to us, we reply within 48 hours.',
       contactBtn: 'Contact us',
-      mailSubject: 'Banco – Support',
+      mailSubject: 'Bango – Support',
       noMailApp: 'No email app found. Write to us at:',
       faqTitle: 'FAQ',
       faq: [
@@ -783,7 +800,7 @@ const translations: Record<Lang, Translations> = {
       next: 'Weiter',
       skip: 'Überspringen',
       done: 'Los geht\'s!',
-      welcome: 'Willkommen bei Banco! Ich zeige euch in 30 Sekunden alles.',
+      welcome: 'Willkommen bei Bango! Ich zeige euch in 30 Sekunden alles.',
       shop: 'Das ist der Shop: Fragenpakete, die ihr beim Spielen gewinnt.',
       giftFirst: (pack, n) => `Spielt ${n} Partien zu Ende und das Paket „${pack}“ gehört euch, gratis!`,
       giftNext: (pack, n) => `Danach startet der Zähler neu: ${n} weitere Partien für „${pack}“. Gratis für die ersten Spieler, nutzt es!`,
@@ -794,6 +811,9 @@ const translations: Record<Lang, Translations> = {
     },
     common: {
       cancel: 'ABBRECHEN',
+      updateTitle: 'Neue Fragen & Packs!',
+      updateMsg: 'Ein Update wartet auf dich, damit du sie spielen kannst.',
+      updateBtn: 'AKTUALISIEREN',
       quitTitle: 'Spiel verlassen?',
       quitMsg: 'Das laufende Spiel geht verloren.',
       quit: 'VERLASSEN',
@@ -873,6 +893,8 @@ const translations: Record<Lang, Translations> = {
       teamCount: 'Teams',
       roundCount: 'Runden',
       timer: 'Timer',
+      timerInfoFixed: 'Jede Runde gleich viel Zeit',
+      timerInfoTurbo: 'Jede Runde 2 s weniger',
       categoriesTitle: 'Kategorien',
       continueBtn: 'Weiter',
       pickCategoryFirst: 'Wählen Sie mindestens eine Kategorie',
@@ -899,13 +921,13 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Fragenpakete',
-      earlyAccess: 'Danke, dass ihr zu den Ersten gehört! Diese Pakete sind jetzt gratis und werden später kostenpflichtig: holt sie euch.',
+      earlyAccess: "Danke, dass ihr zu den Ersten gehört! Diese Pakete sind heute gratis: Schaltet sie frei, bevor sie kostenpflichtig werden.",
       unlock: 'Freischalten',
       unlockA11y: (pack) => `Freischalten: ${pack}`,
       questionCount: (n) => `${n} Fragen`,
       unlocked: 'Paket freigeschaltet ✓',
       comingSoon: 'Demnächst verfügbar',
-      packTitles: { 'harry-potter': 'Hogwarts-Express', 'rap-francais': 'Französischer Rap', nintendo: 'Retro-Gaming', anime: 'Anime & Manga' },
+      packTitles: { 'harry-potter': 'Hogwarts-Express', 'rap-francais': 'Französischer Rap', dresseur: 'Der allerbeste Trainer', 'art-litterature': 'Kunst & Literatur', nintendo: 'Retro-Gaming', anime: 'Anime & Manga' },
       restore: 'Käufe wiederherstellen',
       restoredTitle: 'Käufe wiederhergestellt',
       restoredMsg: 'Deine Pakete sind wieder freigeschaltet.',
@@ -989,7 +1011,7 @@ const translations: Record<Lang, Translations> = {
       survieTitle: 'Modus Überleben',
       survieSteps: [
         'Ein Thema erscheint, zum Beispiel „Hauptstädte der Welt“.',
-        'Jedes Team hat abwechselnd 10 Sekunden (einstellbar), um eine neue Antwort zu nennen.',
+        'Jedes Team nennt abwechselnd eine neue Antwort. Turbo-Timer (einstellbar): 15 Sekunden, dann pro Runde 2 Sekunden weniger.',
         'Antwort bestätigt: Das nächste Team ist dran.',
         'Keine Antwort in der Zeit oder „Passen“: Das Team scheidet in dieser Runde aus.',
         'Die Runde läuft, bis nur noch ein Team übrig ist.',
@@ -1004,7 +1026,7 @@ const translations: Record<Lang, Translations> = {
       title: 'Hilfe',
       intro: 'Ein Fehler, eine fehlende Antwort, eine Themenidee? Schreib uns, wir antworten innerhalb von 48 Stunden.',
       contactBtn: 'Schreib uns',
-      mailSubject: 'Banco – Hilfe',
+      mailSubject: 'Bango – Hilfe',
       noMailApp: 'Keine E-Mail-App gefunden. Schreib uns an:',
       faqTitle: 'Häufige Fragen',
       faq: [
@@ -1048,7 +1070,7 @@ const translations: Record<Lang, Translations> = {
       next: 'Siguiente',
       skip: 'Saltar',
       done: '¡Vamos!',
-      welcome: '¡Bienvenidos a Banco! Os lo enseño todo en 30 segundos.',
+      welcome: '¡Bienvenidos a Bango! Os lo enseño todo en 30 segundos.',
       shop: 'Esta es la Tienda: packs de preguntas que se ganan jugando.',
       giftFirst: (pack, n) => `¡Terminad ${n} partidas y el pack «${pack}» es vuestro, gratis!`,
       giftNext: (pack, n) => `Después, el contador vuelve a 0: ${n} partidas más para «${pack}». ¡Gratis para los primeros jugadores, aprovechad!`,
@@ -1059,6 +1081,9 @@ const translations: Record<Lang, Translations> = {
     },
     common: {
       cancel: 'CANCELAR',
+      updateTitle: '¡Nuevas preguntas y packs!',
+      updateMsg: 'Te espera una actualización para disfrutarlos.',
+      updateBtn: 'ACTUALIZAR',
       quitTitle: '¿Salir de la partida?',
       quitMsg: 'Se perderá la partida en curso.',
       quit: 'SALIR',
@@ -1138,6 +1163,8 @@ const translations: Record<Lang, Translations> = {
       teamCount: 'Equipos',
       roundCount: 'Rondas',
       timer: 'Cronómetro',
+      timerInfoFixed: 'El mismo tiempo en cada turno',
+      timerInfoTurbo: '2 s menos en cada vuelta',
       categoriesTitle: 'Categorías',
       continueBtn: 'Continuar',
       pickCategoryFirst: 'Elija al menos una categoría',
@@ -1164,13 +1191,13 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Packs de preguntas',
-      earlyAccess: '¡Gracias por estar entre los primeros! Estos packs son gratis hoy y serán de pago más adelante: aprovechad.',
+      earlyAccess: "¡Gracias por estar entre los primeros! Estos packs son gratis hoy: desbloqueadlos antes de que sean de pago.",
       unlock: 'Desbloquear',
       unlockA11y: (pack) => `Desbloquear ${pack}`,
       questionCount: (n) => `${n} preguntas`,
       unlocked: 'Pack desbloqueado ✓',
       comingSoon: 'Próximamente',
-      packTitles: { 'harry-potter': 'Expreso de Hogwarts', 'rap-francais': 'Rap francés', nintendo: 'Retro gaming', anime: 'Anime y manga' },
+      packTitles: { 'harry-potter': 'Expreso de Hogwarts', 'rap-francais': 'Rap francés', dresseur: 'El mejor entrenador', 'art-litterature': 'Arte y literatura', nintendo: 'Retro gaming', anime: 'Anime y manga' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Tus packs vuelven a estar desbloqueados.',
@@ -1254,7 +1281,7 @@ const translations: Record<Lang, Translations> = {
       survieTitle: 'Modo Supervivencia',
       survieSteps: [
         'Aparece un tema, por ejemplo «Capitales del mundo».',
-        'Cada equipo, por turnos, tiene 10 segundos (ajustable) para decir una respuesta nueva.',
+        'Cada equipo, por turnos, dice una respuesta nueva. Cronómetro Turbo (ajustable): 15 segundos y luego 2 menos en cada vuelta.',
         'Respuesta validada: le toca al equipo siguiente.',
         'Sin respuesta a tiempo, o «Pasar»: el equipo queda eliminado de la ronda.',
         'La ronda sigue hasta que solo quede un equipo.',
@@ -1269,7 +1296,7 @@ const translations: Record<Lang, Translations> = {
       title: 'Ayuda',
       intro: '¿Un error, una respuesta que falta, una idea de tema? Escríbenos, te respondemos en 48 h.',
       contactBtn: 'Escríbenos',
-      mailSubject: 'Banco – Ayuda',
+      mailSubject: 'Bango – Ayuda',
       noMailApp: 'No se encontró ninguna app de correo. Escríbenos a:',
       faqTitle: 'Preguntas frecuentes',
       faq: [
@@ -1313,7 +1340,7 @@ const translations: Record<Lang, Translations> = {
       next: 'Avanti',
       skip: 'Salta',
       done: 'Si parte!',
-      welcome: 'Benvenuti in Banco! Vi faccio fare il giro in 30 secondi.',
+      welcome: 'Benvenuti in Bango! Vi faccio fare il giro in 30 secondi.',
       shop: 'Questo è il Negozio: pacchetti di domande da vincere giocando.',
       giftFirst: (pack, n) => `Finite ${n} partite e il pacchetto «${pack}» è vostro, in regalo!`,
       giftNext: (pack, n) => `Poi il contatore riparte da 0: altre ${n} partite per «${pack}». Gratis per i primi giocatori, approfittatene!`,
@@ -1324,6 +1351,9 @@ const translations: Record<Lang, Translations> = {
     },
     common: {
       cancel: 'ANNULLA',
+      updateTitle: 'Nuove domande e pack!',
+      updateMsg: 'Ti aspetta un aggiornamento per giocarci.',
+      updateBtn: 'AGGIORNA',
       quitTitle: 'Uscire dalla partita?',
       quitMsg: 'La partita in corso andrà persa.',
       quit: 'ESCI',
@@ -1403,6 +1433,8 @@ const translations: Record<Lang, Translations> = {
       teamCount: 'Squadre',
       roundCount: 'Manche',
       timer: 'Timer',
+      timerInfoFixed: 'Stesso tempo a ogni turno',
+      timerInfoTurbo: '2 s in meno a ogni giro',
       categoriesTitle: 'Categorie',
       continueBtn: 'Continua',
       pickCategoryFirst: 'Scegli almeno una categoria',
@@ -1429,13 +1461,13 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Pack di domande',
-      earlyAccess: 'Grazie di essere tra i primi! Questi pacchetti oggi sono gratis e in futuro saranno a pagamento: approfittatene.',
+      earlyAccess: "Grazie di essere tra i primi! Questi pacchetti oggi sono gratis: sbloccateli prima che diventino a pagamento.",
       unlock: 'Sblocca',
       unlockA11y: (pack) => `Sblocca ${pack}`,
       questionCount: (n) => `${n} domande`,
       unlocked: 'Pack sbloccato ✓',
       comingSoon: 'Prossimamente',
-      packTitles: { 'harry-potter': 'Espresso per Hogwarts', 'rap-francais': 'Rap francese', nintendo: 'Retro gaming', anime: 'Anime e manga' },
+      packTitles: { 'harry-potter': 'Espresso per Hogwarts', 'rap-francais': 'Rap francese', dresseur: 'Il miglior allenatore', 'art-litterature': 'Arte e letteratura', nintendo: 'Retro gaming', anime: 'Anime e manga' },
       restore: 'Ripristina acquisti',
       restoredTitle: 'Acquisti ripristinati',
       restoredMsg: 'I tuoi pack sono di nuovo sbloccati.',
@@ -1519,7 +1551,7 @@ const translations: Record<Lang, Translations> = {
       survieTitle: 'Modalità Sopravvivenza',
       survieSteps: [
         'Appare un tema, ad esempio «Capitali del mondo».',
-        'A turno, ogni squadra ha 10 secondi (regolabili) per dire una risposta nuova.',
+        'A turno, ogni squadra dice una risposta nuova. Timer Turbo (regolabile): 15 secondi, poi 2 in meno a ogni giro.',
         'Risposta convalidata: tocca alla squadra successiva.',
         'Nessuna risposta in tempo, o «Passo»: la squadra è eliminata dalla manche.',
         'La manche continua finché resta una sola squadra.',
@@ -1534,7 +1566,7 @@ const translations: Record<Lang, Translations> = {
       title: 'Assistenza',
       intro: "Un bug, una risposta mancante, un'idea per un tema? Scrivici, ti rispondiamo entro 48 ore.",
       contactBtn: 'Scrivici',
-      mailSubject: 'Banco – Assistenza',
+      mailSubject: 'Bango – Assistenza',
       noMailApp: 'Nessuna app di posta trovata. Scrivici a:',
       faqTitle: 'Domande frequenti',
       faq: [
@@ -1579,7 +1611,7 @@ const translations: Record<Lang, Translations> = {
       next: 'Próximo',
       skip: 'Pular',
       done: 'Vamos lá!',
-      welcome: 'Bem-vindos ao Banco! Mostro tudo em 30 segundos.',
+      welcome: 'Bem-vindos ao Bango! Mostro tudo em 30 segundos.',
       shop: 'Esta é a Loja: pacotes de perguntas que vocês ganham jogando.',
       giftFirst: (pack, n) => `Terminem ${n} partidas e o pacote “${pack}” é de vocês, grátis!`,
       giftNext: (pack, n) => `Depois, o contador volta a 0: mais ${n} partidas para “${pack}”. Grátis para os primeiros jogadores, aproveitem!`,
@@ -1590,6 +1622,9 @@ const translations: Record<Lang, Translations> = {
     },
     common: {
       cancel: 'CANCELAR',
+      updateTitle: 'Novas perguntas e pacotes!',
+      updateMsg: 'Uma atualização está esperando por você para aproveitar.',
+      updateBtn: 'ATUALIZAR',
       quitTitle: 'Sair da partida?',
       quitMsg: 'A partida em andamento será perdida.',
       quit: 'SAIR',
@@ -1669,6 +1704,8 @@ const translations: Record<Lang, Translations> = {
       teamCount: 'Times',
       roundCount: 'Rodadas',
       timer: 'Cronômetro',
+      timerInfoFixed: 'O mesmo tempo em cada vez',
+      timerInfoTurbo: '2 s a menos a cada volta',
       categoriesTitle: 'Categorias',
       continueBtn: 'Continuar',
       pickCategoryFirst: 'Escolha pelo menos uma categoria',
@@ -1695,13 +1732,13 @@ const translations: Record<Lang, Translations> = {
     },
     shop: {
       packsTitle: 'Pacotes de perguntas',
-      earlyAccess: 'Obrigado por estar entre os primeiros! Estes pacotes são grátis hoje e depois serão pagos: aproveitem.',
+      earlyAccess: "Obrigado por estar entre os primeiros! Estes pacotes são grátis hoje: desbloqueiem antes que fiquem pagos.",
       unlock: 'Desbloquear',
       unlockA11y: (pack) => `Desbloquear ${pack}`,
       questionCount: (n) => `${n} perguntas`,
       unlocked: 'Pacote desbloqueado ✓',
       comingSoon: 'Em breve',
-      packTitles: { 'harry-potter': 'Expresso de Hogwarts', 'rap-francais': 'Rap francês', nintendo: 'Retro gaming', anime: 'Anime e mangá' },
+      packTitles: { 'harry-potter': 'Expresso de Hogwarts', 'rap-francais': 'Rap francês', dresseur: 'O melhor treinador', 'art-litterature': 'Arte e literatura', nintendo: 'Retro gaming', anime: 'Anime e mangá' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Seus pacotes estão desbloqueados de novo.',
@@ -1785,7 +1822,7 @@ const translations: Record<Lang, Translations> = {
       survieTitle: 'Modo Sobrevivência',
       survieSteps: [
         'Aparece um tema, por exemplo «Capitais do mundo».',
-        'Cada time, na sua vez, tem 10 segundos (ajustável) para dizer uma resposta nova.',
+        'Cada time, na sua vez, diz uma resposta nova. Cronômetro Turbo (ajustável): 15 segundos e depois 2 a menos a cada rodada.',
         'Resposta validada: é a vez do próximo time.',
         'Sem resposta a tempo, ou «Passo»: o time é eliminado da rodada.',
         'A rodada continua até sobrar um único time.',
@@ -1800,7 +1837,7 @@ const translations: Record<Lang, Translations> = {
       title: 'Ajuda',
       intro: 'Um bug, uma resposta faltando, uma ideia de tema? Escreva para a gente, respondemos em até 48 h.',
       contactBtn: 'Fale com a gente',
-      mailSubject: 'Banco – Ajuda',
+      mailSubject: 'Bango – Ajuda',
       noMailApp: 'Nenhum app de e-mail encontrado. Escreva para:',
       faqTitle: 'Perguntas frequentes',
       faq: [

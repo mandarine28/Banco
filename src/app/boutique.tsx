@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -8,7 +8,8 @@ import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { offers, PACK_THEME_IDS, type ProductId, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
-import { giftBefore } from '@/lib/giftChain';
+import { GiftPass, type PassPack } from '@/components/GiftPass';
+import { gamesUntil, giftBefore } from '@/lib/giftChain';
 import { GIFT_PACKS } from '@/config/shop';
 import { questions } from '@/data/questions';
 import { useLang } from '@/lib/LangContext';
@@ -37,6 +38,8 @@ type Pack = {
 const PACKS: Pack[] = [
   { id: 'harry-potter', productId: WELCOME_PACK, gift: true, image: require('../../assets/packs/harry-potter.png') },
   { id: 'rap-francais', productId: 'packRap', gift: true, image: require('../../assets/packs/rap-francais.png') },
+  { id: 'dresseur', productId: 'packDresseur', gift: true, image: require('../../assets/packs/dresseur.png') },
+  { id: 'art-litterature', productId: 'packArt', gift: true, image: require('../../assets/packs/art-litterature.png') },
   { id: 'nintendo', comingSoon: true, image: require('../../assets/packs/retro-gaming.png') },
   { id: 'anime', comingSoon: true, image: require('../../assets/packs/anime.png') },
 ];
@@ -153,8 +156,15 @@ export default function BoutiqueScreen() {
   const { chain } = useGiftChain();
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
+  const passToast = useToast();
+  const [passToastMsg, setPassToastMsg] = useState('');
   const { lang } = useLang();
   const t = getT(lang);
+  // Passe : packs offerts dans l'ordre de la chaîne, avec l'image de leur carte
+  const passPacks: PassPack[] = GIFT_PACKS.flatMap((productId) => {
+    const pack = PACKS.find((p) => p.productId === productId);
+    return pack ? [{ productId, image: pack.image, title: t.shop.packTitles[pack.id] ?? pack.id }] : [];
+  });
   // Pack offert : progression s'il est le prochain à gagner ; sinon 0 sur 3, en attente du pack d'avant
   const giftProgressOf = (productId: ProductId): string | undefined =>
     chain ? t.gift.progress(chain.next === productId ? chain.played : 0, WELCOME_GAMES) : undefined;
@@ -229,6 +239,28 @@ export default function BoutiqueScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 32 }]}
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.passWrap}>
+        <GiftPass
+          onLockedPress={(pack) => {
+            // Même explication que le bouton gris de la carte du pack
+            setPassToastMsg(t.gift.unlockFirst(giftAfterOf(pack.productId) ?? ''));
+            passToast.show();
+          }}
+          packs={passPacks}
+          owned={hasPurchased}
+          next={chain?.next}
+          progress={`${chain?.played ?? 0}/${WELCOME_GAMES}`}
+          describe={(pack, state) =>
+            state === 'won'
+              ? `${pack.title}, ${t.shop.unlocked}`
+              : state === 'current'
+                ? `${pack.title}, ${t.gift.progress(chain?.played ?? 0, WELCOME_GAMES)}`
+                : `${pack.title}, ${t.gift.lockedMsg(chain ? gamesUntil(chain, pack.productId) : WELCOME_GAMES)}`
+          }
+        />
+        <Toast toast={passToast} message={passToastMsg} light style={styles.passToast} />
+        </View>
+
         <View>
           <Text style={styles.sectionTitle}>{t.shop.packsTitle}</Text>
           <Text style={styles.earlyText}>{t.shop.earlyAccess}</Text>
@@ -305,6 +337,15 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   // Collé au-dessus du bouton « 0 partie sur 3 », assez large pour 2 lignes
+  passWrap: {
+    zIndex: 10,
+  },
+  // Sous le passe : au-dessus, il serait coupé par le haut de l'écran
+  passToast: {
+    top: '100%',
+    marginTop: 4,
+    width: 260,
+  },
   giftToast: {
     top: 'auto',
     bottom: '100%',

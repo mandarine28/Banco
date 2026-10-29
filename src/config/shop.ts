@@ -1,4 +1,4 @@
-export type ProductId = 'streak' | 'jokers' | 'packFootball' | 'packJeuxVideo' | 'laTotale' | 'packHarryPotter' | 'packRap';
+export type ProductId = 'streak' | 'jokers' | 'packFootball' | 'packJeuxVideo' | 'laTotale' | 'packHarryPotter' | 'packRap' | 'packDresseur' | 'packArt';
 
 export const offers: Record<ProductId, { label: string; price: string }> = {
   streak: { label: 'Mode Streak', price: '0,99 €' },
@@ -8,6 +8,8 @@ export const offers: Record<ProductId, { label: string; price: string }> = {
   laTotale: { label: 'La Totale', price: '1,99 €' },
   packHarryPotter: { label: 'Pack Poudlard Express', price: '0,99 €' },
   packRap: { label: 'Pack Rap', price: '0,99 €' },
+  packDresseur: { label: 'Pack Meilleur dresseur', price: '0,99 €' },
+  packArt: { label: 'Pack Art & littérature', price: '0,99 €' },
 };
 
 // Identifiants produits tels que définis dans App Store Connect / Google Play
@@ -20,6 +22,8 @@ export const PRODUCT_IDS: Record<ProductId, string> = {
   laTotale: 'com.banco.la_totale',
   packHarryPotter: 'com.banco.pack_harry_potter',
   packRap: 'com.banco.pack_rap',
+  packDresseur: 'com.banco.pack_dresseur',
+  packArt: 'com.banco.pack_art',
 };
 
 
@@ -27,7 +31,7 @@ export const PRODUCT_IDS: Record<ProductId, string> = {
  * Packs offerts (jamais vendus), gagnés l'un après l'autre : chacun demande WELCOME_GAMES parties
  * terminées de plus que le précédent. Ajouter un pack à la fin ; ne jamais réordonner (progression des joueurs).
  */
-export const GIFT_PACKS: ProductId[] = ['packHarryPotter', 'packRap'];
+export const GIFT_PACKS: ProductId[] = ['packHarryPotter', 'packRap', 'packDresseur', 'packArt'];
 export const WELCOME_PACK: ProductId = GIFT_PACKS[0];
 export const WELCOME_GAMES = 3;
 
@@ -36,4 +40,6 @@ export const PACK_THEME_IDS: Partial<Record<ProductId, string>> = {
   packHarryPotter: 'harry-potter',
   // Rap : rap français pour l'instant, d'autres pays viendront s'ajouter sous le même pack
   packRap: 'rap-francais',
+  packDresseur: 'dresseur',
+  packArt: 'art-litterature',
 };

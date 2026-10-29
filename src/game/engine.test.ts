@@ -6,7 +6,18 @@ import { test } from 'node:test';
 import { glossaries } from '../data/glossaries.ts';
 import { questions } from '../data/questions.ts';
 import { LANGUAGES } from '../lib/i18n.ts';
-import { getAnswers, hiddenAnswers, indexLetter, normalize, searchAnswers, sortAlphabetically, suggestions, translateAnswer } from './answers.ts';
+import {
+  getAnswers,
+  hiddenAnswers,
+  indexLetter,
+  MAX_VISIBLE_ANSWERS,
+  normalize,
+  searchAnswers,
+  sortAlphabetically,
+  suggestions,
+  translateAnswer,
+  visibleAnswers,
+} from './answers.ts';
 import {
   canPass,
   contract,
@@ -25,8 +36,6 @@ import {
 import type { GameAction, GameState } from './engine.ts';
 
 const LANGS = LANGUAGES.map((l) => l.code);
-// Au-delà, la liste de puces du tour (toutes rendues d'un coup) devient lente sur Android d'entrée de gamme
-const MAX_SUGGESTIONS = 150;
 
 // Générateur pseudo-aléatoire déterministe pour des tests reproductibles.
 function seeded(seed: number) {
@@ -46,14 +55,23 @@ const play = (state: GameState, ...actions: GameAction[]) => actions.reduce(game
 const find = (count: number): GameAction[] =>
   Array.from({ length: count }, (_, i) => ({ type: 'TOGGLE_ANSWER', label: `RÉPONSE ${i}` }));
 
-test('chaque question a, dans chaque langue, assez de réponses (mise max), sans doublon ni excès', () => {
+test('listes longues : au plus MAX_VISIBLE_ANSWERS puces, plus les réponses déjà trouvées', () => {
+  const answers = Array.from({ length: 400 }, (_, i) => `R${i}`);
+  const shown = visibleAnswers(answers, ['R10', 'R300', 'SAISIE LIBRE']);
+  assert.equal(shown.length, MAX_VISIBLE_ANSWERS + 2);
+  assert.ok(shown.includes('R300') && shown.includes('SAISIE LIBRE'));
+  assert.equal(shown.filter((a) => a === 'R10').length, 1);
+  // La recherche couvre toute la liste, pas seulement les puces affichées
+  assert.deepEqual(searchAnswers({ id: 'x', theme: 't', subject: 'S', answers }, 'R399'), ['R399']);
+});
+
+test('chaque question a, dans chaque langue, assez de réponses (mise max), sans doublon', () => {
   const problems: string[] = [];
   for (const q of questions) {
     assert.ok(q.theme && q.subject && !/^CITEZ/i.test(q.subject), q.id);
     for (const lang of LANGS) {
       const list = getAnswers(q, lang);
       if (list.length < MAX_BID) problems.push(`${q.id} [${lang}] : ${list.length} réponses (< ${MAX_BID})`);
-      if (list.length > MAX_SUGGESTIONS) problems.push(`${q.id} [${lang}] : ${list.length} réponses (> ${MAX_SUGGESTIONS})`);
       const keys = list.map(normalize);
       const dupes = keys.filter((k, i) => keys.indexOf(k) !== i);
       if (dupes.length) problems.push(`${q.id} [${lang}] : doublons ${dupes.join(', ')}`);
@@ -152,6 +170,16 @@ test('une question par round, sans répétition tant que la base suffit', () => 
   assert.equal(plan.length, 5);
   assert.equal(new Set(plan.map((q) => q.id)).size, 5);
   assert.equal(planQuestions(questions.slice(0, 2), 5, seeded(2)).length, 5);
+});
+
+test('plusieurs catégories : chacune tombe aussi souvent, quelle que soit sa taille', () => {
+  const big = Array.from({ length: 150 }, (_, i) => ({ ...questions[0], id: `big-${i}`, theme: 'dresseur' }));
+  const small = Array.from({ length: 3 }, (_, i) => ({ ...questions[0], id: `small-${i}`, theme: 'rap-francais' }));
+  const plan = planQuestions([...big, ...small], 10, seeded(4));
+  assert.equal(plan.filter((q) => q.theme === 'rap-francais').length, 5);
+  assert.equal(new Set(plan.filter((q) => q.theme === 'dresseur').map((q) => q.id)).size, 5);
+  const smallIds = plan.filter((q) => q.theme === 'rap-francais').map((q) => q.id).slice(0, 3);
+  assert.equal(new Set(smallIds).size, 3, 'pas de répétition avant d’avoir vu toute la catégorie');
 });
 
 test('l’ouvreur doit miser, puis chacun surenchérit ou passe', () => {

@@ -67,14 +67,24 @@ function shuffle<T>(items: readonly T[], random: Random): T[] {
   return copy;
 }
 
-/** Une question par round, sans répétition tant que la base le permet. */
+/**
+ * Une question par round, sans répétition tant que la base le permet.
+ * Les catégories tombent à tour de rôle (ordre mélangé à chaque tour) : un gros pack ne prend pas le pas sur un petit.
+ */
 export function planQuestions(questions: readonly Question[], roundCount: number, random: Random = Math.random) {
   if (questions.length === 0) throw new Error('Aucune question disponible');
+  const byTheme = new Map<string, Question[]>();
+  for (const q of questions) byTheme.set(q.theme, [...(byTheme.get(q.theme) ?? []), q]);
+  const pools = new Map<string, Question[]>();
   const plan: Question[] = [];
-  let pool: Question[] = [];
+  let themeTurn: string[] = [];
   for (let round = 0; round < roundCount; round++) {
-    if (pool.length === 0) pool = shuffle(questions, random);
+    if (themeTurn.length === 0) themeTurn = shuffle([...byTheme.keys()], random);
+    const theme = themeTurn.pop() as string;
+    let pool = pools.get(theme) ?? [];
+    if (pool.length === 0) pool = shuffle(byTheme.get(theme) as Question[], random);
     plan.push(pool.pop() as Question);
+    pools.set(theme, pool);
   }
   return plan;
 }

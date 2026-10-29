@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { ComponentProps, ReactNode } from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
@@ -40,7 +40,10 @@ type ConfirmProps = {
   /** Affiché au-dessus du titre (ex. badge d'équipe). */
   header?: ReactNode;
   title: string;
-  message: string;
+  /** Lignes du titre avant réduction de la police (1 par défaut). */
+  titleLines?: number;
+  /** Facultatif quand `children` explique déjà tout (ex. illustration). */
+  message?: string;
   /** Contenu affiché sous le message (ex. choix d'un pack). */
   children?: ReactNode;
   confirmLabel: string;
@@ -63,6 +66,7 @@ export function ConfirmModal({
   visible,
   header,
   title,
+  titleLines = 1,
   message,
   children,
   confirmLabel,
@@ -93,10 +97,10 @@ export function ConfirmModal({
             </Pressable>
           ) : null}
           {header}
-          <Text style={pauseStyles.title} numberOfLines={1} adjustsFontSizeToFit>
+          <Text style={pauseStyles.title} numberOfLines={titleLines} adjustsFontSizeToFit>
             {title}
           </Text>
-          <Text style={pauseStyles.message}>{message}</Text>
+          {message ? <Text style={pauseStyles.message}>{message}</Text> : null}
           {children}
           <View style={confirmStyles.actions}>
             {onCancel ? (

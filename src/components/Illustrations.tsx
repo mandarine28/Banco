@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Defs, Ellipse, LinearGradient, Path, Rect, Stop, Text } from 'react-native-svg';
 

@@ -1,11 +1,21 @@
-import { FontAwesome6 } from '@expo/vector-icons';
+import createIconSet from '@expo/vector-icons/createIconSet';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StyleSheet, Text } from 'react-native';
+import { Platform, StyleSheet, Text } from 'react-native';
 
+import faGlyphs from '../../assets/fonts/fontAwesome6Glyphs.json';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
+
+// FontAwesome6 « solid » à l'identique (même famille, même graisse iOS), mais police réduite aux icônes
+// utilisées : le composant d'origine embarque 3 polices (~0,7 Mo). Voir scripts/subset-fonts.mjs.
+const FontAwesome6 = createIconSet(
+  faGlyphs,
+  'FontAwesome6Free-Solid',
+  require('../../assets/fonts/FontAwesome6_Solid.ttf'),
+  Platform.select({ ios: { fontWeight: '900' as const }, default: {} }),
+);
 
 type PriceProps = {
   price: string;
@@ -76,7 +86,7 @@ export function NextButton({ onPress, accessibilityLabel }: NextProps) {
       style={({ pressed }) => ({ transform: [{ scale: pressed ? 0.95 : 1 }] })}
     >
       <LinearGradient colors={[colors.teal, colors.tealDark]} style={[styles.pill, styles.next]}>
-        <FontAwesome6 name="forward" solid size={30} color={colors.white} />
+        <FontAwesome6 name="forward" size={30} color={colors.white} />
       </LinearGradient>
     </Pressable>
   );

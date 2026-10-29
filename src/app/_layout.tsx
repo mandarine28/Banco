@@ -1,11 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import {
-  MPLUSRounded1c_400Regular,
-  MPLUSRounded1c_500Medium,
-  MPLUSRounded1c_700Bold,
-  MPLUSRounded1c_800ExtraBold,
-} from '@expo-google-fonts/m-plus-rounded-1c';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -27,11 +21,12 @@ export default function RootLayout() {
     preloadSounds();
   }, []);
 
+  // Polices allégées aux caractères latins (scripts/subset-fonts.mjs) : ~0,9 Mo au lieu de ~13,6 Mo
   const [fontsLoaded] = useFonts({
-    MPLUSRounded1c_400Regular,
-    MPLUSRounded1c_500Medium,
-    MPLUSRounded1c_700Bold,
-    MPLUSRounded1c_800ExtraBold,
+    MPLUSRounded1c_400Regular: require('../../assets/fonts/MPLUSRounded1c_400Regular.ttf'),
+    MPLUSRounded1c_500Medium: require('../../assets/fonts/MPLUSRounded1c_500Medium.ttf'),
+    MPLUSRounded1c_700Bold: require('../../assets/fonts/MPLUSRounded1c_700Bold.ttf'),
+    MPLUSRounded1c_800ExtraBold: require('../../assets/fonts/MPLUSRounded1c_800ExtraBold.ttf'),
   });
   const [splashDone, setSplashDone] = useState(false);
   // Consentement pub (RGPD) après l'animation de lancement, pour que la fenêtre ne la recouvre pas
