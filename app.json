@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Banco",
+    "name": "Bango",
     "slug": "banco",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -49,7 +49,7 @@
         {
           "androidAppId": "ca-app-pub-3940256099942544~3347511713",
           "iosAppId": "ca-app-pub-7673839117797871~4845563686",
-          "userTrackingUsageDescription": "This identifier is used to show you more relevant ads. Banco stays free thanks to them.",
+          "userTrackingUsageDescription": "This identifier is used to show you more relevant ads. Bango stays free thanks to them.",
           "skAdNetworkItems": [
             "cstr6suwn9.skadnetwork",
             "4fzdc2evr5.skadnetwork",
