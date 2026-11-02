@@ -44,6 +44,9 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
 
 ## Étape 4 — Légal, avant la mise en ligne (👤)
 
+- [ ] 👤 App Store Connect : URL d'assistance → `https://mandarine28.github.io/banco-site/assistance.html` (l'accueil du site est maintenant la vitrine ; l'URL marketing reste `/banco-site/`)
+- [ ] 👤 + 🤖 **Au prochain push de l'app** : renommer le site en `bango-site`, mettre à jour `privacyUrl` (`src/config/links.ts`) et garder une redirection à l'ancienne adresse
+- [ ] 👤 Mentions légales du site : faire valider (adresse/statut à ajouter si besoin)
 - [ ] 👤 App Store Connect : Tauk ! (soumise le 10/10) et Bango (16/10) toujours « En attente de vérification » le 20/10 → message envoyé à App Review ; vérifier la page Adhésion (developer.apple.com/account) et « Accords, taxes et services bancaires » (accord **apps payantes** actif, requis pour les achats intégrés)
 - [ ] 👤 App Store Connect : **retirer l'achat intégré `com.banco.pack_harry_potter` de la vérification** (le pack est désormais offert) — la v1 ne vend rien
 - [x] 🤖 Packs Rétro-gaming et Anime & mangas écrits et branchés, offerts dans la chaîne de cadeaux (2026-11-02)
