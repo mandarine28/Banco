@@ -15,9 +15,11 @@ import { AnimatedLogo } from '@/components/Logo';
 import { PACK_THEME_IDS, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
 import { afterAdsConsent } from '@/lib/ads';
 import { UpdateModal } from '@/components/UpdateModal';
+import { WhatsNewModal } from '@/components/WhatsNewModal';
 import { fetchStoreVersion, isNewerVersion } from '@/lib/appUpdate';
 import { loadWelcomeIntroSeen, markWelcomeIntroSeen } from '@/lib/gifts';
 import { loadTutorialSeen } from '@/lib/tutorial';
+import { loadWhatsNewSeen, markWhatsNewSeen } from '@/lib/whatsNew';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { colors, fonts } from '@/theme';
@@ -76,12 +78,15 @@ export default function HomeScreen() {
   const shopTarget = useTutorialTarget('home-shop');
   // Nouvelle version sur l'App Store : proposée à chaque lancement, tant que l'app n'est pas à jour
   const [showUpdate, setShowUpdate] = useState(false);
+  // Joueur existant : annonce des nouveautés, une seule fois
+  const [showWhatsNew, setShowWhatsNew] = useState(false);
   useEffect(() => {
-    Promise.all([loadWelcomeIntroSeen(), loadTutorialSeen(), afterAdsConsent()]).then(([seen, tutorialSeen]) => {
+    Promise.all([loadWelcomeIntroSeen(), loadTutorialSeen(), loadWhatsNewSeen(), afterAdsConsent()]).then(([seen, tutorialSeen, whatsNewSeen]) => {
       if (tutorialSeen) {
         setShowWelcome(!seen);
-        // Jamais par-dessus la fenêtre cadeau : deux modales qui s'enchaînent figent l'écran sur iOS
-        if (seen) {
+        setShowWhatsNew(!whatsNewSeen);
+        // Jamais par-dessus une autre fenêtre : deux modales qui s'enchaînent figent l'écran sur iOS
+        if (seen && whatsNewSeen) {
           fetchStoreVersion().then((latest) => {
             const current = Constants.expoConfig?.version;
             if (latest && current && isNewerVersion(latest, current)) setShowUpdate(true);
@@ -89,6 +94,8 @@ export default function HomeScreen() {
         }
         return;
       }
+      // Nouveau joueur : le didacticiel présente déjà les packs, rien à lui annoncer
+      markWhatsNewSeen();
       startTutorial((completed) => {
         if (completed) markWelcomeIntroSeen();
         else setShowWelcome(!seen);
@@ -99,7 +106,13 @@ export default function HomeScreen() {
   const welcomeReady = giftedPacks !== undefined && !purchasesLoading;
   const closeWelcome = () => {
     setShowWelcome(false);
+    // Pas d'annonce juste après la fenêtre cadeau (écran figé sur iOS) : ce sera au prochain lancement
+    setShowWhatsNew(false);
     markWelcomeIntroSeen();
+  };
+  const closeWhatsNew = () => {
+    setShowWhatsNew(false);
+    markWhatsNewSeen();
   };
   const welcomePackTitle = t.shop.packTitles[PACK_THEME_IDS[WELCOME_PACK] ?? ''] ?? '';
 
@@ -202,6 +215,8 @@ export default function HomeScreen() {
         />
 
         <UpdateModal visible={showUpdate} onClose={() => setShowUpdate(false)} />
+
+        <WhatsNewModal visible={showWhatsNew && welcomeReady && (!showWelcome || welcomeUnlocked)} onClose={closeWhatsNew} />
 
       </View>
     </View>

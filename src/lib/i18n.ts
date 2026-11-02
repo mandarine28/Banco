@@ -41,6 +41,10 @@ type Translations = {
     updateTitle: string;
     updateMsg: string;
     updateBtn: string;
+    /** Fenêtre « nouveautés » au lancement, pour les joueurs existants. */
+    whatsNewTitle: string;
+    whatsNewMsg: string;
+    whatsNewBtn: string;
     quitTitle: string;
     quitMsg: string;
     quit: string;
@@ -276,6 +280,9 @@ const translations: Record<Lang, Translations> = {
       updateTitle: 'Nouvelles questions et packs !',
       updateMsg: 'Une mise à jour vous attend pour en profiter.',
       updateBtn: 'METTRE À JOUR',
+      whatsNewTitle: 'Nouveautés !',
+      whatsNewMsg: 'Deux nouveaux packs à gagner en jouant, et encore plus de réponses en Culture générale !',
+      whatsNewBtn: 'DÉCOUVRIR',
       quitTitle: 'Quitter la partie ?',
       quitMsg: 'La partie en cours sera perdue.',
       quit: 'QUITTER',
@@ -547,6 +554,9 @@ const translations: Record<Lang, Translations> = {
       updateTitle: 'New questions & packs!',
       updateMsg: 'An update is waiting for you so you can enjoy them.',
       updateBtn: 'UPDATE',
+      whatsNewTitle: 'What\'s new?',
+      whatsNewMsg: 'Two new packs to earn by playing, and even more answers in General Knowledge!',
+      whatsNewBtn: 'DISCOVER',
       quitTitle: 'Quit the game?',
       quitMsg: 'The current game will be lost.',
       quit: 'QUIT',
@@ -818,6 +828,9 @@ const translations: Record<Lang, Translations> = {
       updateTitle: 'Neue Fragen & Packs!',
       updateMsg: 'Ein Update wartet auf dich, damit du sie spielen kannst.',
       updateBtn: 'AKTUALISIEREN',
+      whatsNewTitle: 'Was ist neu?',
+      whatsNewMsg: 'Zwei neue Pakete, die ihr beim Spielen gewinnt, und noch mehr Antworten bei Allgemeinwissen!',
+      whatsNewBtn: 'ENTDECKEN',
       quitTitle: 'Spiel verlassen?',
       quitMsg: 'Das laufende Spiel geht verloren.',
       quit: 'VERLASSEN',
@@ -1089,6 +1102,9 @@ const translations: Record<Lang, Translations> = {
       updateTitle: '¡Nuevas preguntas y packs!',
       updateMsg: 'Te espera una actualización para disfrutarlos.',
       updateBtn: 'ACTUALIZAR',
+      whatsNewTitle: '¡Novedades!',
+      whatsNewMsg: 'Dos packs nuevos para ganar jugando, ¡y aún más respuestas en Cultura general!',
+      whatsNewBtn: 'DESCUBRIR',
       quitTitle: '¿Salir de la partida?',
       quitMsg: 'Se perderá la partida en curso.',
       quit: 'SALIR',
@@ -1360,6 +1376,9 @@ const translations: Record<Lang, Translations> = {
       updateTitle: 'Nuove domande e pack!',
       updateMsg: 'Ti aspetta un aggiornamento per giocarci.',
       updateBtn: 'AGGIORNA',
+      whatsNewTitle: 'Le novità!',
+      whatsNewMsg: 'Due nuovi pack da vincere giocando e ancora più risposte in Cultura generale!',
+      whatsNewBtn: 'SCOPRI',
       quitTitle: 'Uscire dalla partita?',
       quitMsg: 'La partita in corso andrà persa.',
       quit: 'ESCI',
@@ -1632,6 +1651,9 @@ const translations: Record<Lang, Translations> = {
       updateTitle: 'Novas perguntas e pacotes!',
       updateMsg: 'Uma atualização está esperando por você para aproveitar.',
       updateBtn: 'ATUALIZAR',
+      whatsNewTitle: 'Novidades!',
+      whatsNewMsg: 'Dois pacotes novos para ganhar jogando e ainda mais respostas em Conhecimentos gerais!',
+      whatsNewBtn: 'DESCOBRIR',
       quitTitle: 'Sair da partida?',
       quitMsg: 'A partida em andamento será perdida.',
       quit: 'SAIR',
