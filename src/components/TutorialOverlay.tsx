@@ -19,7 +19,7 @@ const HOLE_RADIUS = 18;
 // Navigation en fondu : l'élément est à sa place dès qu'il est monté, on réessaie vite sans attente fixe
 const RETRY_MS = 50;
 const MAX_RETRIES = 25;
-// Assez grande pour se détacher du logo Banco en arrière-plan
+// Assez grande pour se détacher du logo Bango en arrière-plan
 const MASCOT_W = 104;
 const MASCOT_H = (MASCOT_W * 249) / 300;
 // Mascotte blanche, posée au-dessus de la bulle : elle ressort sur le fond assombri
@@ -32,7 +32,7 @@ function stepText(step: number, lang: Lang): string {
     t.tutorial.welcome,
     t.tutorial.shop,
     t.tutorial.giftFirst(pack(0), WELCOME_GAMES),
-    t.tutorial.giftNext(pack(1), WELCOME_GAMES),
+    t.tutorial.morePacks(GIFT_PACKS.length),
     t.tutorial.play,
     t.tutorial.auction,
     t.tutorial.survie,

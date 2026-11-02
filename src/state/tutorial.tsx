@@ -5,16 +5,21 @@ import type { ViewInstance } from 'react-native';
 import { markTutorialSeen } from '@/lib/tutorial';
 
 /** Éléments mis en lumière par le didacticiel ; chaque écran enregistre les siens avec useTutorialTarget. */
-export type TutorialTarget = 'home-shop' | 'home-play' | 'shop-gift-0' | 'shop-gift-1' | 'mode-auction' | 'mode-survie' | 'match-teams';
+export type TutorialTarget = 'home-shop' | 'home-play' | 'shop-gift-0' | 'mode-auction' | 'mode-survie' | 'match-teams';
 
-export type TutorialStep = { route: Href; target?: TutorialTarget };
+export type TutorialStep = {
+  route: Href;
+  target?: TutorialTarget;
+  /** La boutique défile sous l'élément éclairé : chaque pack y passe à tour de rôle. */
+  showcase?: boolean;
+};
 
 /** Parcours du premier lancement : accueil → boutique (packs offerts) → accueil → modes de jeu → réglages de partie. */
 export const TUTORIAL_STEPS: TutorialStep[] = [
   { route: '/' },
   { route: '/', target: 'home-shop' },
   { route: '/boutique', target: 'shop-gift-0' },
-  { route: '/boutique', target: 'shop-gift-1' },
+  { route: '/boutique', target: 'shop-gift-0', showcase: true },
   { route: '/', target: 'home-play' },
   { route: '/parametres', target: 'mode-auction' },
   { route: '/parametres', target: 'mode-survie' },

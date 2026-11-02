@@ -11,25 +11,28 @@ const VISIBLE_MS = 2000;
 export function useToast() {
   const opacity = useState(() => new Animated.Value(0))[0];
   const translateY = useState(() => new Animated.Value(8))[0];
+  const [visible, setVisible] = useState(false);
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => {
     if (timeout.current) clearTimeout(timeout.current);
   }, []);
   const show = () => {
     if (timeout.current) clearTimeout(timeout.current);
+    setVisible(true);
     translateY.setValue(8);
     Animated.parallel([
       Animated.timing(opacity, { toValue: 1, duration: SHOW_MS, useNativeDriver: true }),
       Animated.timing(translateY, { toValue: 0, duration: SHOW_MS, useNativeDriver: true }),
     ]).start();
     timeout.current = setTimeout(() => {
+      setVisible(false);
       Animated.parallel([
         Animated.timing(opacity, { toValue: 0, duration: HIDE_MS, useNativeDriver: true }),
         Animated.timing(translateY, { toValue: 8, duration: HIDE_MS, useNativeDriver: true }),
       ]).start();
     }, VISIBLE_MS);
   };
-  return { opacity, translateY, show };
+  return { opacity, translateY, show, visible };
 }
 
 /**

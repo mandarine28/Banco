@@ -1,14 +1,14 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ImageSourcePropType } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo, ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ImageSourcePropType, type LayoutChangeEvent, type ScrollViewInstance } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { offers, PACK_THEME_IDS, type ProductId, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
-import { GiftPass, type PassPack } from '@/components/GiftPass';
+import { GiftPass, type PassPack, type PassState } from '@/components/GiftPass';
 import { gamesUntil, giftBefore } from '@/lib/giftChain';
 import { GIFT_PACKS } from '@/config/shop';
 import { questions } from '@/data/questions';
@@ -16,12 +16,14 @@ import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { usePurchases } from '@/state/purchases';
 import { useGiftChain } from '@/state/useGifts';
-import { useTutorialTarget } from '@/state/tutorial';
+import { TUTORIAL_STEPS, useTutorial, useTutorialTarget } from '@/state/tutorial';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 import { Toast, useToast } from '@/components/Toast';
 
 const BACK_PATH = 'M20 12H4M10 6L4 12L10 18';
+// Didacticiel : temps passé sur chaque pack quand la boutique défile
+const SHOWCASE_MS = 1000;
 
 const SETTING_PATH =
   'M12.1523 0C12.9816 0 13.7558 0.414588 14.2158 1.10449L15.1445 2.49707C15.7968 3.47551 16.9758 3.96402 18.1289 3.7334L18.4355 3.67188C19.195 3.51999 19.9807 3.75708 20.5283 4.30469L20.624 4.40137C21.2715 5.04885 21.432 6.03842 21.0225 6.85742L20.9902 6.92188C20.6001 7.70222 20.7532 8.64481 21.3701 9.26172C21.5925 9.48412 21.8638 9.65145 22.1621 9.75098L22.2158 9.76953C23.1412 10.078 23.7655 10.9436 23.7656 11.9189V12.7949C23.7655 13.721 23.0961 14.5116 22.1826 14.6641C20.925 14.8737 20.2286 16.2405 20.7988 17.3809L20.9941 17.7705C21.4209 18.6241 21.2529 19.6553 20.5781 20.3301L20.0547 20.8545C19.4148 21.4943 18.4215 21.6159 17.6455 21.1504C16.5637 20.5013 15.1589 21.0211 14.7598 22.2178L14.668 22.4932C14.3678 23.393 13.5257 23.9999 12.5771 24H11.4482C10.5921 23.9999 9.80964 23.5158 9.42676 22.75C8.98292 21.8626 8.01192 21.3682 7.0332 21.5312L6 21.7041C5.09973 21.854 4.18247 21.5594 3.53711 20.9141C2.89174 20.2686 2.59806 19.3515 2.74805 18.4512L2.88672 17.6143C3.066 16.5384 2.4726 15.4824 1.45996 15.0771C0.465873 14.6795 -0.127978 13.6537 0.0234375 12.5938L0.167969 11.582C0.33926 10.3836 1.21916 9.40802 2.39355 9.11426L2.90332 8.9873C3.09371 8.93967 3.26746 8.8409 3.40625 8.70215C3.69636 8.41204 3.79757 7.983 3.66797 7.59375L3.00391 5.59961C2.7116 4.72269 3.04242 3.75883 3.81152 3.24609C4.29202 2.92581 4.88509 2.82283 5.44531 2.96289L7.30859 3.42871C8.38861 3.78864 9.53436 3.09846 9.72168 1.97559L9.76367 1.72754C9.92987 0.730694 10.7921 3.81912e-05 11.8027 0H12.1523ZM11.7656 8C9.5565 8.00001 7.76562 9.79087 7.76562 12C7.76562 14.2091 9.5565 16 11.7656 16C13.9748 16 15.7656 14.2091 15.7656 12C15.7656 9.79086 13.9748 8 11.7656 8Z';
@@ -40,8 +42,8 @@ const PACKS: Pack[] = [
   { id: 'rap-francais', productId: 'packRap', gift: true, image: require('../../assets/packs/rap-francais.png') },
   { id: 'dresseur', productId: 'packDresseur', gift: true, image: require('../../assets/packs/dresseur.png') },
   { id: 'art-litterature', productId: 'packArt', gift: true, image: require('../../assets/packs/art-litterature.png') },
-  { id: 'nintendo', comingSoon: true, image: require('../../assets/packs/retro-gaming.png') },
-  { id: 'anime', comingSoon: true, image: require('../../assets/packs/anime.png') },
+  { id: 'retro-gaming', productId: 'packRetro', gift: true, image: require('../../assets/packs/retro-gaming.png') },
+  { id: 'anime', productId: 'packAnime', gift: true, image: require('../../assets/packs/anime.png') },
 ];
 
 /** Nombre de questions par pack, compté dans les données (0 pour un pack à venir). */
@@ -58,22 +60,23 @@ type PackCardProps = {
   giftProgress?: string;
   /** Pack offert à gagner avant celui-ci : légende « Après X », bouton cadenassé, toast explicatif au toucher. */
   giftAfter?: string;
+  onLayout?: (event: LayoutChangeEvent) => void;
 };
 
-function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress, giftAfter }: PackCardProps) {
+function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress, giftAfter, onLayout }: PackCardProps) {
   const toast = useToast();
-  // Didacticiel : les cartes des packs offerts sont éclairées dans l'ordre où on les gagne
+  // Didacticiel : la carte du premier pack offert est éclairée
   const giftIndex = pack.gift && pack.productId ? GIFT_PACKS.indexOf(pack.productId) : -1;
-  const tutorialTarget = useTutorialTarget(giftIndex === 1 ? 'shop-gift-1' : 'shop-gift-0');
+  const tutorialTarget = useTutorialTarget('shop-gift-0');
   const { lang } = useLang();
   const t = getT(lang);
   const title = t.shop.packTitles[pack.id] ?? pack.id;
   const count = questionCount(pack.id);
 
   return (
-    <View>
+    <View onLayout={onLayout}>
       <View
-        ref={giftIndex === 0 || giftIndex === 1 ? tutorialTarget : undefined}
+        ref={giftIndex === 0 ? tutorialTarget : undefined}
         collapsable={false}
         style={[styles.card, pack.comingSoon && styles.cardDimmed]}
       >
@@ -157,9 +160,31 @@ export default function BoutiqueScreen() {
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
   const passToast = useToast();
-  const [passToastMsg, setPassToastMsg] = useState('');
+  const [passSelection, setPassSelection] = useState<{ productId: ProductId; message: string } | null>(null);
   const { lang } = useLang();
   const t = getT(lang);
+  const { step: tutorialStep } = useTutorial();
+  const isShowcase = tutorialStep !== null && !!TUTORIAL_STEPS[tutorialStep].showcase;
+  const scrollRef = useRef<ScrollViewInstance>(null);
+  const cardTops = useRef<Record<string, number>>({});
+
+  // Didacticiel : chaque carte vient à tour de rôle à la place de la première, restée éclairée
+  useEffect(() => {
+    if (!isShowcase) return;
+    const tops = Object.values(cardTops.current).sort((a, b) => a - b);
+    if (tops.length < 2) return;
+    let animated = false;
+    AccessibilityInfo.isReduceMotionEnabled()
+      .then((reduced) => { animated = !reduced; })
+      .catch(() => { animated = true; });
+    let index = 0;
+    const timer = setInterval(() => {
+      index = (index + 1) % tops.length;
+      scrollRef.current?.scrollTo({ y: tops[index] - tops[0], animated });
+    }, SHOWCASE_MS);
+    return () => clearInterval(timer);
+  }, [isShowcase]);
+
   // Passe : packs offerts dans l'ordre de la chaîne, avec l'image de leur carte
   const passPacks: PassPack[] = GIFT_PACKS.flatMap((productId) => {
     const pack = PACKS.find((p) => p.productId === productId);
@@ -173,6 +198,15 @@ export default function BoutiqueScreen() {
     const before = giftBefore(productId);
     if (!chain || chain.next === productId || !before) return undefined;
     return t.shop.packTitles[PACK_THEME_IDS[before] ?? ''] ?? '';
+  };
+
+  // État d'un pack du passe, affiché sous son titre quand on touche sa pastille
+  const passStatusOf = (pack: PassPack, state: PassState): string => {
+    if (state === 'won') return t.shop.unlocked;
+    if (state === 'current') return t.gift.progress(chain?.played ?? 0, WELCOME_GAMES);
+    // Même explication que le bouton gris de la carte du pack
+    const after = giftAfterOf(pack.productId);
+    return after ? t.gift.unlockFirst(after) : t.gift.lockedMsg(WELCOME_GAMES);
   };
 
   async function handlePurchase(pack: Pack) {
@@ -235,17 +269,19 @@ export default function BoutiqueScreen() {
       </View>
 
       <ScrollView
+        ref={scrollRef}
         style={styles.scroll}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 32 }]}
+        // Pendant le défilement du didacticiel, la marge laisse la dernière carte remonter jusqu'à la fenêtre éclairée
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: isShowcase ? height : insets.bottom + 32 }]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.passWrap}>
         <GiftPass
-          onLockedPress={(pack) => {
-            // Même explication que le bouton gris de la carte du pack
-            setPassToastMsg(t.gift.unlockFirst(giftAfterOf(pack.productId) ?? ''));
+          onPackPress={(pack, state) => {
+            setPassSelection({ productId: pack.productId, message: `${pack.title}\n${passStatusOf(pack, state)}` });
             passToast.show();
           }}
+          selected={passToast.visible ? passSelection?.productId : null}
           packs={passPacks}
           owned={hasPurchased}
           next={chain?.next}
@@ -258,7 +294,7 @@ export default function BoutiqueScreen() {
                 : `${pack.title}, ${t.gift.lockedMsg(chain ? gamesUntil(chain, pack.productId) : WELCOME_GAMES)}`
           }
         />
-        <Toast toast={passToast} message={passToastMsg} light style={styles.passToast} />
+        <Toast toast={passToast} message={passSelection?.message ?? ''} light style={styles.passToast} />
         </View>
 
         <View>
@@ -275,6 +311,7 @@ export default function BoutiqueScreen() {
           <PackCard
             key={pack.id}
             pack={pack}
+            onLayout={(event) => { cardTops.current[pack.id] = event.nativeEvent.layout.y; }}
             // Prix localisé de l'App Store dès qu'il est chargé, sinon le prix de référence de la boutique
             price={pack.productId && !pack.gift ? (prices[pack.productId] ?? offers[pack.productId].price) : undefined}
             purchased={!!pack.productId && hasPurchased(pack.productId)}

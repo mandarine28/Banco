@@ -2,7 +2,7 @@ export const colors = {
   white: '#FFFFFF',
   black: '#111111',
 
-  // Famille bleue (anciennement violette — Figma Banco)
+  // Famille bleue (anciennement violette — Figma Bango)
   purple: '#266de4',
   purpleDeep: '#0c2d64',
   purpleBright: '#4d8ff0',

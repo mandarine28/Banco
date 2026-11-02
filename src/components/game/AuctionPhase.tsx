@@ -399,7 +399,8 @@ const styles = StyleSheet.create({
     color: colors.cream,
     textAlign: 'center',
     padding: 0,
-    minWidth: 40,
+    // Largeur fixe pour 2 chiffres (50 px) : le champ ne s'élargit pas tout seul en passant de 9 à 10, le 2e chiffre était coupé
+    width: 56,
   },
   btnStack: {
     width: '100%',

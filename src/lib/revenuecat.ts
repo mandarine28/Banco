@@ -16,6 +16,8 @@ export const ENTITLEMENT_IDS: Record<ProductId, string> = {
   packRap: 'pack_rap',
   packDresseur: 'pack_dresseur',
   packArt: 'pack_art',
+  packRetro: 'pack_retro',
+  packAnime: 'pack_anime',
 };
 
 // Lazy accessor — never crashes in Expo Go where the native module is absent

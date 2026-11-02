@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Banco — Documentation Technique</title>
+<title>Bango — Documentation Technique</title>
 <style>
   :root {
     --purple: #266de4;
@@ -184,7 +184,7 @@
 <!-- SIDEBAR -->
 <aside id="sidebar">
   <div id="sidebar-logo">
-    <h1>🎲 Banco</h1>
+    <h1>🎲 Bango</h1>
     <span>Documentation Technique v1.0</span>
   </div>
   <nav>
@@ -217,7 +217,7 @@
 
   <!-- HERO -->
   <div id="hero">
-    <h1>Banco</h1>
+    <h1>Bango</h1>
     <div class="subtitle">Documentation technique de l'application mobile</div>
     <div class="meta">
       <span class="badge badge-blue">Expo SDK 57</span>
@@ -233,7 +233,7 @@
     <h2>🏠 Vue d'ensemble</h2>
     <div class="section-divider"></div>
     <p>
-      <strong>Banco</strong> est un jeu de société mobile multijoueur en local (sur un seul appareil).
+      <strong>Bango</strong> est un jeu de société mobile multijoueur en local (sur un seul appareil).
       Les équipes s'affrontent en se lançant des <strong>enchères</strong> : combien de réponses à une question
       de culture générale peuvent-elles citer en 60 secondes ? L'équipe qui enchérit le plus haut doit tenir sa promesse,
       sinon l'adversaire empoche les points.
@@ -267,14 +267,14 @@
   <section id="architecture">
     <h2>🗺️ Architecture globale</h2>
     <div class="section-divider"></div>
-    <p>Banco s'appuie sur <strong>3 acteurs externes</strong> qui jouent chacun un rôle précis :</p>
+    <p>Bango s'appuie sur <strong>3 acteurs externes</strong> qui jouent chacun un rôle précis :</p>
 
     <div class="arch-diagram">
 
       <!-- Niveau 1 : App -->
       <div class="arch-top">
         <div class="arch-node arch-node-main">
-          <div class="arch-node-title">📱 Application Banco</div>
+          <div class="arch-node-title">📱 Application Bango</div>
           <div class="arch-node-sub">React Native · Expo Router · TypeScript</div>
           <div class="arch-tags">
             <span class="arch-tag">iOS</span>
@@ -405,7 +405,7 @@
       <table>
         <tr><th>Champ</th><th>Valeur</th></tr>
         <tr><td>Bundle Identifier</td><td><code>com.mandarine.banco</code></td></tr>
-        <tr><td>App Name</td><td>Banco</td></tr>
+        <tr><td>App Name</td><td>Bango</td></tr>
         <tr><td>ASC App ID</td><td><code>6821200817</code></td></tr>
         <tr><td>Apple Team ID</td><td><code>C2GF493ACB</code></td></tr>
         <tr><td>Version</td><td>1.0.0</td></tr>
@@ -539,12 +539,12 @@ eas submit --platform ios --profile production</code></pre>
     <h2>📢 Publicité <span class="badge badge-orange">À venir</span></h2>
     <div class="section-divider"></div>
     <p>
-      La publicité vient <strong>compléter</strong> la boutique, elle ne la remplace pas. Banco est un jeu de soirée :
+      La publicité vient <strong>compléter</strong> la boutique, elle ne la remplace pas. Bango est un jeu de soirée :
       le téléphone passe de main en main, donc une pub qui coupe une partie gêne tout le groupe. Règle d'or :
       <strong>jamais de pub pendant une partie</strong>.
     </p>
 
-    <h3>Décisions pour Banco</h3>
+    <h3>Décisions pour Bango</h3>
     <table>
       <tr><th>Emplacement</th><th>Format</th><th>Statut</th></tr>
       <tr><td>Essayer un pack payant (1 partie)</td><td>Vidéo récompensée</td><td><span class="badge badge-green">Retenu</span></td></tr>
@@ -566,7 +566,7 @@ eas submit --platform ios --profile production</code></pre>
       </div>
       <div class="card">
         <h3>⬛ Unity LevelPlay</h3>
-        <p>Ex-ironSource. Médiation pensée d'abord pour les jeux faits avec Unity. Peu adapté à Banco.</p>
+        <p>Ex-ironSource. Médiation pensée d'abord pour les jeux faits avec Unity. Peu adapté à Bango.</p>
       </div>
       <div class="card card-green">
         <h3>⚖️ Consentement</h3>
@@ -597,7 +597,7 @@ eas submit --platform ios --profile production</code></pre>
 
     <h3>Revenus estimés (eCPM, pour 1 000 pubs vues)</h3>
     <table>
-      <tr><th>Format</th><th>Fourchette pour l'audience de Banco</th></tr>
+      <tr><th>Format</th><th>Fourchette pour l'audience de Bango</th></tr>
       <tr><td>Vidéo récompensée</td><td>5 à 10 $</td></tr>
       <tr><td>Interstitiel vidéo</td><td>4 à 7 $</td></tr>
       <tr><td>Interstitiel image seulement</td><td>2 à 4 $</td></tr>
@@ -925,7 +925,7 @@ const hasHarryPotter = hasPurchased('packHarryPotter'); // → true/false</code>
     <h2>👤 Sans compte</h2>
     <div class="section-divider"></div>
     <p>
-      Depuis le 19/10/2026, Banco n'a <strong>plus de compte joueur</strong> : l'écran de connexion, Supabase,
+      Depuis le 19/10/2026, Bango n'a <strong>plus de compte joueur</strong> : l'écran de connexion, Supabase,
       Apple Sign-In et Google Sign-In ont été retirés. L'app fonctionne entièrement sur l'appareil.
     </p>
     <div class="card-grid">
@@ -990,7 +990,7 @@ const hasHarryPotter = hasPurchased('packHarryPotter'); // → true/false</code>
       </div>
       <div class="glossary-item" data-term="bundle id bundle identifier">
         <div class="glossary-term">Bundle ID <span class="badge badge-muted">Bundle Identifier</span></div>
-        <div class="glossary-def">Identifiant unique de l'app dans l'écosystème Apple. Banco utilise <code>com.mandarine.banco</code>. Impossible à changer une fois l'app publiée. Format: domaine inversé + nom de l'app.</div>
+        <div class="glossary-def">Identifiant unique de l'app dans l'écosystème Apple. Bango utilise <code>com.mandarine.banco</code>. Impossible à changer une fois l'app publiée. Format: domaine inversé + nom de l'app.</div>
       </div>
       <div class="glossary-item" data-term="entitlement droit">
         <div class="glossary-term">Entitlement</div>
@@ -1006,7 +1006,7 @@ const hasHarryPotter = hasPurchased('packHarryPotter'); // → true/false</code>
       </div>
       <div class="glossary-item" data-term="storekit apple">
         <div class="glossary-term">StoreKit</div>
-        <div class="glossary-def">Le framework Apple qui gère les achats in-app. StoreKit 2 (la version moderne) est ce qu'utilise Banco via RevenueCat. C'est lui qui affiche la fenêtre Apple Pay.</div>
+        <div class="glossary-def">Le framework Apple qui gère les achats in-app. StoreKit 2 (la version moderne) est ce qu'utilise Bango via RevenueCat. C'est lui qui affiche la fenêtre Apple Pay.</div>
       </div>
       <div class="glossary-item" data-term="sandbox test testflight">
         <div class="glossary-term">Sandbox (Apple)</div>
@@ -1022,11 +1022,11 @@ const hasHarryPotter = hasPurchased('packHarryPotter'); // → true/false</code>
       </div>
       <div class="glossary-item" data-term="expo router navigation">
         <div class="glossary-term">Expo Router</div>
-        <div class="glossary-def">Système de navigation de Banco. Chaque fichier dans <code>src/app/</code> devient automatiquement une route. <code>index.tsx</code> = page d'accueil, <code>boutique.tsx</code> = page /boutique, etc.</div>
+        <div class="glossary-def">Système de navigation de Bango. Chaque fichier dans <code>src/app/</code> devient automatiquement une route. <code>index.tsx</code> = page d'accueil, <code>boutique.tsx</code> = page /boutique, etc.</div>
       </div>
       <div class="glossary-item" data-term="context provider hook react">
         <div class="glossary-term">Context / Provider (React)</div>
-        <div class="glossary-def">Mécanisme React pour partager des données entre tous les écrans sans les passer manuellement. Banco utilise PurchasesProvider (achats), LangProvider (langue), GameSettingsProvider (paramètres de partie). On accède aux données avec usePurchases(), useLang(), useGameSettings().</div>
+        <div class="glossary-def">Mécanisme React pour partager des données entre tous les écrans sans les passer manuellement. Bango utilise PurchasesProvider (achats), LangProvider (langue), GameSettingsProvider (paramètres de partie). On accède aux données avec usePurchases(), useLang(), useGameSettings().</div>
       </div>
       <div class="glossary-item" data-term="non consommable achat">
         <div class="glossary-term">Achat non-consommable</div>
@@ -1054,7 +1054,7 @@ const hasHarryPotter = hasPurchased('packHarryPotter'); // → true/false</code>
       </div>
       <div class="glossary-item" data-term="admob google publicite">
         <div class="glossary-term">AdMob</div>
-        <div class="glossary-def">La régie publicitaire de Google. Gratuite à intégrer : elle se rémunère sur une part des revenus. C'est le choix de départ pour Banco.</div>
+        <div class="glossary-def">La régie publicitaire de Google. Gratuite à intégrer : elle se rémunère sur une part des revenus. C'est le choix de départ pour Bango.</div>
       </div>
       <div class="glossary-item" data-term="mediation publicite applovin max">
         <div class="glossary-term">Médiation</div>
@@ -1134,11 +1134,11 @@ const hasHarryPotter = hasPurchased('packHarryPotter'); // → true/false</code>
       </div>
       <div class="glossary-item" data-term="interstitiel interstitial publicite plein ecran">
         <div class="glossary-term">Interstitiel <span class="badge badge-muted">Interstitial</span></div>
-        <div class="glossary-def">Pub plein écran imposée entre deux écrans. Variantes : image (croix rapide), vidéo passable, vidéo non passable, jouable, rich media. Pour Banco : image seulement, en fin de partie.</div>
+        <div class="glossary-def">Pub plein écran imposée entre deux écrans. Variantes : image (croix rapide), vidéo passable, vidéo non passable, jouable, rich media. Pour Bango : image seulement, en fin de partie.</div>
       </div>
       <div class="glossary-item" data-term="video recompensee rewarded">
         <div class="glossary-term">Vidéo récompensée <span class="badge badge-muted">Rewarded</span></div>
-        <div class="glossary-def">Le joueur choisit de regarder une pub (15 à 30 s) en échange d'une récompense. Le format le mieux accepté et le plus rentable. Pour Banco : essayer un pack payant.</div>
+        <div class="glossary-def">Le joueur choisit de regarder une pub (15 à 30 s) en échange d'une récompense. Le format le mieux accepté et le plus rentable. Pour Bango : essayer un pack payant.</div>
       </div>
       <div class="glossary-item" data-term="interstitiel recompense rewarded interstitial">
         <div class="glossary-term">Interstitiel récompensé <span class="badge badge-muted">Rewarded interstitial</span></div>
@@ -1154,7 +1154,7 @@ const hasHarryPotter = hasPurchased('packHarryPotter'); // → true/false</code>
       </div>
       <div class="glossary-item" data-term="app open ouverture">
         <div class="glossary-term">Pub à l'ouverture <span class="badge badge-muted">App open</span></div>
-        <div class="glossary-def">Pub plein écran au lancement de l'app ou au retour dedans. Exclue pour Banco.</div>
+        <div class="glossary-def">Pub plein écran au lancement de l'app ou au retour dedans. Exclue pour Bango.</div>
       </div>
       <div class="glossary-item" data-term="offerwall mur offres">
         <div class="glossary-term">Offerwall</div>

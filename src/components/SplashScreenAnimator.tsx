@@ -133,7 +133,7 @@ export function SplashScreenAnimator({ onFinish }: Props) {
   const ancY        = useRef(new Animated.Value(16)).current;
 
   // Phase 5 — final exponential zoom
-  const bancoScale  = useRef(new Animated.Value(1)).current;
+  const bangoScale  = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     const out = Easing.out(Easing.cubic);
@@ -183,7 +183,7 @@ export function SplashScreenAnimator({ onFinish }: Props) {
       ]),
 
       // 5 — Exponential zoom: letters fill screen
-      Animated.timing(bancoScale, {
+      Animated.timing(bangoScale, {
         toValue: 80,
         duration: 380,
         easing: Easing.in(Easing.cubic),
@@ -269,7 +269,7 @@ export function SplashScreenAnimator({ onFinish }: Props) {
 
       {/* BANGO group — all letters share this container for the final zoom */}
       <Animated.View
-        style={[fullCenter, { transform: [{ scale: bancoScale }] }]}
+        style={[fullCenter, { transform: [{ scale: bangoScale }] }]}
         pointerEvents="none"
       >
         {/* B — appears near center, spreads left */}

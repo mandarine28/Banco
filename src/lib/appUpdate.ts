@@ -1,4 +1,4 @@
-/** Identifiant App Store de Banco (eas.json → submit.production.ios.ascAppId). */
+/** Identifiant App Store de Bango (eas.json → submit.production.ios.ascAppId). */
 export const APP_STORE_ID = '6821200817';
 export const APP_STORE_URL = `itms-apps://apps.apple.com/app/id${APP_STORE_ID}`;
 

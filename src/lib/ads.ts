@@ -7,7 +7,7 @@ import { AD_UNIT_IDS, type AdPlacement } from '@/config/ads';
 /** Issue d'une demande de vidéo récompensée. */
 export type RewardedResult = 'rewarded' | 'dismissed' | 'unavailable';
 
-/** Règle Banco : pas de pub disponible → on ne frustre pas le joueur, la récompense est offerte. */
+/** Règle Bango : pas de pub disponible → on ne frustre pas le joueur, la récompense est offerte. */
 export const isRewardGranted = (result: RewardedResult) => result !== 'dismissed';
 
 /** Au-delà, on renonce à la vidéo plutôt que de bloquer le joueur. */

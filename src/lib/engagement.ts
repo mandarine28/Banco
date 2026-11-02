@@ -34,7 +34,7 @@ export async function recordGameCompleted(floor = 0): Promise<number> {
   return count;
 }
 
-/** Fenêtre d'avis native (Apple / Google), si la règle Banco et la plateforme le permettent. */
+/** Fenêtre d'avis native (Apple / Google), si la règle Bango et la plateforme le permettent. */
 export async function maybeRequestReview(gamesCompleted: number): Promise<void> {
   try {
     const last = Number(await AsyncStorage.getItem(REVIEW_KEY)) || null;

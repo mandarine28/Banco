@@ -28,7 +28,8 @@ type Translations = {
     welcome: string;
     shop: string;
     giftFirst: (pack: string, games: number) => string;
-    giftNext: (pack: string, games: number) => string;
+
+    morePacks: (count: number) => string;
     play: string;
     auction: string;
     survie: string;
@@ -263,7 +264,8 @@ const translations: Record<Lang, Translations> = {
       welcome: 'Bienvenue dans Bango ! Je vous fais faire le tour en 30 secondes.',
       shop: 'Ici, la Boutique : des packs de questions à gagner en jouant.',
       giftFirst: (pack, n) => `Terminez ${n} parties et le pack « ${pack} » est à vous, offert !`,
-      giftNext: (pack, n) => `Ensuite, le compteur repart à 0 : ${n} parties de plus pour « ${pack} ». Offerts aux premiers joueurs, profitez-en !`,
+
+      morePacks: (n) => `Et ce n’est pas tout : ${n} packs sont à débloquer en jouant, l’un après l’autre. Regardez !`,
       play: 'Prêts ? Tout commence par ce bouton.',
       auction: 'Enchères : misez sur le nombre de réponses que vous pouvez citer. Une seule équipe répond, en 60 secondes.',
       survie: 'Survie : une réponse chacun son tour. L\'équipe qui n\'a plus d\'idée est éliminée !',
@@ -387,7 +389,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} questions`,
       unlocked: 'Pack débloqué ✓',
       comingSoon: 'Bientôt disponible',
-      packTitles: { 'harry-potter': 'Poudlard Express', 'rap-francais': 'Rap français', dresseur: 'Meilleur dresseur', 'art-litterature': 'Art & littérature', nintendo: 'Rétro-gaming', anime: 'Anime & mangas' },
+      packTitles: { 'harry-potter': 'Poudlard Express', 'rap-francais': 'Rap français', dresseur: 'Meilleur dresseur', 'art-litterature': 'Art & littérature', 'retro-gaming': 'Rétro-gaming', anime: 'Anime & mangas' },
       restore: 'Restaurer les achats',
       restoredTitle: 'Achats restaurés',
       restoredMsg: 'Vos packs sont de nouveau débloqués.',
@@ -533,7 +535,8 @@ const translations: Record<Lang, Translations> = {
       welcome: 'Welcome to Bango! Let me show you around in 30 seconds.',
       shop: 'This is the Shop: question packs you earn by playing.',
       giftFirst: (pack, n) => `Finish ${n} games and the “${pack}” pack is yours, free!`,
-      giftNext: (pack, n) => `Then the counter resets: ${n} more games for “${pack}”. Free for early players, enjoy!`,
+
+      morePacks: (n) => `And that’s not all: ${n} packs to unlock by playing, one after another. Take a look!`,
       play: 'Ready? It all starts with this button.',
       auction: 'Auctions: bet on how many answers you can name. Only one team answers, in 60 seconds.',
       survie: 'Survival: one answer each, in turn. The team that runs out of ideas is out!',
@@ -657,7 +660,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} questions`,
       unlocked: 'Pack unlocked ✓',
       comingSoon: 'Coming soon',
-      packTitles: { 'harry-potter': 'Hogwarts Express', 'rap-francais': 'French Rap', dresseur: 'The Very Best Trainer', 'art-litterature': 'Art & Literature', nintendo: 'Retro gaming', anime: 'Anime & manga' },
+      packTitles: { 'harry-potter': 'Hogwarts Express', 'rap-francais': 'French Rap', dresseur: 'The Very Best Trainer', 'art-litterature': 'Art & Literature', 'retro-gaming': 'Retro gaming', anime: 'Anime & manga' },
       restore: 'Restore purchases',
       restoredTitle: 'Purchases restored',
       restoredMsg: 'Your packs are unlocked again.',
@@ -803,7 +806,8 @@ const translations: Record<Lang, Translations> = {
       welcome: 'Willkommen bei Bango! Ich zeige euch in 30 Sekunden alles.',
       shop: 'Das ist der Shop: Fragenpakete, die ihr beim Spielen gewinnt.',
       giftFirst: (pack, n) => `Spielt ${n} Partien zu Ende und das Paket „${pack}“ gehört euch, gratis!`,
-      giftNext: (pack, n) => `Danach startet der Zähler neu: ${n} weitere Partien für „${pack}“. Gratis für die ersten Spieler, nutzt es!`,
+
+      morePacks: (n) => `Und das ist nicht alles: ${n} Pakete warten darauf, beim Spielen freigeschaltet zu werden, eines nach dem anderen. Schaut mal!`,
       play: 'Bereit? Alles beginnt mit diesem Button.',
       auction: 'Auktionen: Wettet, wie viele Antworten ihr nennen könnt. Nur ein Team antwortet, in 60 Sekunden.',
       survie: 'Überleben: Abwechselnd eine Antwort. Wem nichts mehr einfällt, der fliegt raus!',
@@ -927,7 +931,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} Fragen`,
       unlocked: 'Paket freigeschaltet ✓',
       comingSoon: 'Demnächst verfügbar',
-      packTitles: { 'harry-potter': 'Hogwarts-Express', 'rap-francais': 'Französischer Rap', dresseur: 'Der allerbeste Trainer', 'art-litterature': 'Kunst & Literatur', nintendo: 'Retro-Gaming', anime: 'Anime & Manga' },
+      packTitles: { 'harry-potter': 'Hogwarts-Express', 'rap-francais': 'Französischer Rap', dresseur: 'Der allerbeste Trainer', 'art-litterature': 'Kunst & Literatur', 'retro-gaming': 'Retro-Gaming', anime: 'Anime & Manga' },
       restore: 'Käufe wiederherstellen',
       restoredTitle: 'Käufe wiederhergestellt',
       restoredMsg: 'Deine Pakete sind wieder freigeschaltet.',
@@ -1073,7 +1077,8 @@ const translations: Record<Lang, Translations> = {
       welcome: '¡Bienvenidos a Bango! Os lo enseño todo en 30 segundos.',
       shop: 'Esta es la Tienda: packs de preguntas que se ganan jugando.',
       giftFirst: (pack, n) => `¡Terminad ${n} partidas y el pack «${pack}» es vuestro, gratis!`,
-      giftNext: (pack, n) => `Después, el contador vuelve a 0: ${n} partidas más para «${pack}». ¡Gratis para los primeros jugadores, aprovechad!`,
+
+      morePacks: (n) => `Y eso no es todo: ${n} packs por desbloquear jugando, uno tras otro. ¡Mirad!`,
       play: '¿Listos? Todo empieza con este botón.',
       auction: 'Subastas: apostad cuántas respuestas podéis decir. Solo un equipo responde, en 60 segundos.',
       survie: 'Supervivencia: una respuesta por turno. ¡El equipo que se queda sin ideas queda eliminado!',
@@ -1197,7 +1202,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} preguntas`,
       unlocked: 'Pack desbloqueado ✓',
       comingSoon: 'Próximamente',
-      packTitles: { 'harry-potter': 'Expreso de Hogwarts', 'rap-francais': 'Rap francés', dresseur: 'El mejor entrenador', 'art-litterature': 'Arte y literatura', nintendo: 'Retro gaming', anime: 'Anime y manga' },
+      packTitles: { 'harry-potter': 'Expreso de Hogwarts', 'rap-francais': 'Rap francés', dresseur: 'El mejor entrenador', 'art-litterature': 'Arte y literatura', 'retro-gaming': 'Retro gaming', anime: 'Anime y manga' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Tus packs vuelven a estar desbloqueados.',
@@ -1343,7 +1348,8 @@ const translations: Record<Lang, Translations> = {
       welcome: 'Benvenuti in Bango! Vi faccio fare il giro in 30 secondi.',
       shop: 'Questo è il Negozio: pacchetti di domande da vincere giocando.',
       giftFirst: (pack, n) => `Finite ${n} partite e il pacchetto «${pack}» è vostro, in regalo!`,
-      giftNext: (pack, n) => `Poi il contatore riparte da 0: altre ${n} partite per «${pack}». Gratis per i primi giocatori, approfittatene!`,
+
+      morePacks: (n) => `E non è tutto: ${n} pack da sbloccare giocando, uno dopo l’altro. Guardate!`,
       play: 'Pronti? Tutto inizia da questo pulsante.',
       auction: 'Aste: scommettete quante risposte sapete dire. Risponde una sola squadra, in 60 secondi.',
       survie: 'Sopravvivenza: una risposta a turno. La squadra che resta senza idee è eliminata!',
@@ -1467,7 +1473,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} domande`,
       unlocked: 'Pack sbloccato ✓',
       comingSoon: 'Prossimamente',
-      packTitles: { 'harry-potter': 'Espresso per Hogwarts', 'rap-francais': 'Rap francese', dresseur: 'Il miglior allenatore', 'art-litterature': 'Arte e letteratura', nintendo: 'Retro gaming', anime: 'Anime e manga' },
+      packTitles: { 'harry-potter': 'Espresso per Hogwarts', 'rap-francais': 'Rap francese', dresseur: 'Il miglior allenatore', 'art-litterature': 'Arte e letteratura', 'retro-gaming': 'Retro gaming', anime: 'Anime e manga' },
       restore: 'Ripristina acquisti',
       restoredTitle: 'Acquisti ripristinati',
       restoredMsg: 'I tuoi pack sono di nuovo sbloccati.',
@@ -1614,7 +1620,8 @@ const translations: Record<Lang, Translations> = {
       welcome: 'Bem-vindos ao Bango! Mostro tudo em 30 segundos.',
       shop: 'Esta é a Loja: pacotes de perguntas que vocês ganham jogando.',
       giftFirst: (pack, n) => `Terminem ${n} partidas e o pacote “${pack}” é de vocês, grátis!`,
-      giftNext: (pack, n) => `Depois, o contador volta a 0: mais ${n} partidas para “${pack}”. Grátis para os primeiros jogadores, aproveitem!`,
+
+      morePacks: (n) => `E não é só isso: ${n} pacotes para desbloquear jogando, um depois do outro. Olhem só!`,
       play: 'Prontos? Tudo começa por este botão.',
       auction: 'Leilão: apostem quantas respostas conseguem dizer. Só uma equipe responde, em 60 segundos.',
       survie: 'Sobrevivência: uma resposta por vez. A equipe que ficar sem ideias está eliminada!',
@@ -1738,7 +1745,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} perguntas`,
       unlocked: 'Pacote desbloqueado ✓',
       comingSoon: 'Em breve',
-      packTitles: { 'harry-potter': 'Expresso de Hogwarts', 'rap-francais': 'Rap francês', dresseur: 'O melhor treinador', 'art-litterature': 'Arte e literatura', nintendo: 'Retro gaming', anime: 'Anime e mangá' },
+      packTitles: { 'harry-potter': 'Expresso de Hogwarts', 'rap-francais': 'Rap francês', dresseur: 'O melhor treinador', 'art-litterature': 'Arte e literatura', 'retro-gaming': 'Retro gaming', anime: 'Anime e mangá' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Seus pacotes estão desbloqueados de novo.',

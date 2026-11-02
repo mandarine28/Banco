@@ -19,15 +19,17 @@ type Props = {
   progress: string;
   /** Phrase lue par le lecteur d'écran pour une pastille. */
   describe: (pack: PassPack, state: PassState) => string;
-  /** Toucher une pastille verrouillée : explique quel pack gagner d'abord. */
-  onLockedPress?: (pack: PassPack) => void;
+  /** Toucher une pastille : indique le pack et son état. */
+  onPackPress: (pack: PassPack, state: PassState) => void;
+  /** Pastille mise en avant pendant que son message est affiché. */
+  selected?: ProductId | null;
 };
 
 const SIZE = 38;
 const ORANGE = '#fb940e';
 
 /** Passe des packs offerts : pastilles reliées comme une piste, du pack gagné au prochain à gagner. */
-export function GiftPass({ packs, owned, next, progress, describe, onLockedPress }: Props) {
+export function GiftPass({ packs, owned, next, progress, describe, onPackPress, selected }: Props) {
   const stateOf = (p: PassPack): PassState => (owned(p.productId) ? 'won' : p.productId === next ? 'current' : 'locked');
   const states = packs.map(stateOf);
 
@@ -40,13 +42,15 @@ export function GiftPass({ packs, owned, next, progress, describe, onLockedPress
             {/* Trait parcouru (orange) jusqu'au pack en cours, blanc au-delà */}
             {i > 0 ? <View style={[styles.link, state !== 'locked' && styles.linkDone]} /> : null}
             <Pressable
-              style={styles.node}
-              disabled={state !== 'locked' || !onLockedPress}
-              onPress={() => onLockedPress?.(pack)}
-              accessibilityRole={state === 'locked' ? 'button' : undefined}
+              style={({ pressed }) => [styles.node, pressed && styles.nodePressed]}
+              // La piste défile : pas de son si le doigt ne fait que la faire glisser
+              soundOnRelease
+              hitSlop={6}
+              onPress={() => onPackPress(pack, state)}
+              accessibilityRole="button"
               accessibilityLabel={describe(pack, state)}
             >
-              <View style={[styles.circle, state === 'current' && styles.circleCurrent]}>
+              <View style={[styles.circle, state === 'current' && styles.circleCurrent, selected === pack.productId && styles.circleSelected]}>
                 <Image source={pack.image} style={[styles.image, state === 'locked' && styles.imageLocked]} />
                 {state === 'locked' ? (
                   <View style={styles.lock}>
@@ -79,6 +83,9 @@ const styles = StyleSheet.create({
   node: {
     alignItems: 'center',
   },
+  nodePressed: {
+    transform: [{ scale: 0.9 }],
+  },
   circle: {
     width: SIZE,
     height: SIZE,
@@ -89,6 +96,10 @@ const styles = StyleSheet.create({
   circleCurrent: {
     borderWidth: 3,
     borderColor: ORANGE,
+  },
+  circleSelected: {
+    borderWidth: 3,
+    borderColor: colors.cream,
   },
   image: {
     width: '100%',

@@ -13,7 +13,9 @@ test('chaîne de cadeaux : 3 parties pour Poudlard, puis le compteur repart de 0
   assert.deepEqual(giftChain(owns('packHarryPotter'), 5), { next: 'packRap', played: 2, floor: 3 });
   assert.deepEqual(giftChain(owns('packHarryPotter', 'packRap'), 7), { next: 'packDresseur', played: 1, floor: 6 });
   assert.deepEqual(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur'), 10), { next: 'packArt', played: 1, floor: 9 });
-  assert.equal(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt'), 15).next, null);
+  assert.deepEqual(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt'), 13), { next: 'packRetro', played: 1, floor: 12 });
+  assert.deepEqual(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro'), 16), { next: 'packAnime', played: 1, floor: 15 });
+  assert.equal(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime'), 21).next, null);
 });
 
 test('chaîne de cadeaux : après réinstallation, le compteur à 0 ne fait pas reculer la progression', () => {
@@ -29,6 +31,10 @@ test('parties restantes : le pack suivant attend la fin du précédent', () => {
   assert.equal(giftAfter('packRap'), 'packDresseur');
   assert.equal(giftAfter('packDresseur'), 'packArt');
   assert.equal(gamesUntil(chain, 'packArt'), 11);
+  assert.equal(giftAfter('packArt'), 'packRetro');
+  assert.equal(gamesUntil(chain, 'packRetro'), 14);
+  assert.equal(giftAfter('packRetro'), 'packAnime');
+  assert.equal(gamesUntil(chain, 'packAnime'), 17);
 });
 
 test('packs offerts : l’ancien format (un seul pack) reste lu, les valeurs inconnues sont ignorées', () => {
