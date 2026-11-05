@@ -7,8 +7,7 @@ import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 
 const NEW_PACKS: { id: string; image: ImageSourcePropType }[] = [
-  { id: 'retro-gaming', image: require('../../assets/packs/retro-gaming.png') },
-  { id: 'anime', image: require('../../assets/packs/anime.png') },
+  { id: 'football', image: require('../../assets/packs/football.png') },
 ];
 
 /** « Nouveautés ! » au lancement : les nouveaux packs, avec un accès direct à la boutique. */

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const WHATS_NEW_KEY = 'banco.whatsNewSeen';
 /** Annonce en cours : à changer (avec les textes et NEW_PACKS de WhatsNewModal) pour en afficher une nouvelle. */
-export const WHATS_NEW_ID = '1.4.0';
+export const WHATS_NEW_ID = '1.5.0';
 
 /** L'annonce en cours a-t-elle déjà été vue ? En cas d'erreur de lecture : oui, pour ne pas déranger. */
 export async function loadWhatsNewSeen(): Promise<boolean> {
