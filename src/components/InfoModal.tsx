@@ -1,8 +1,9 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { ComponentProps, ReactNode } from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import { Modal, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
+import { sharedLabelSize } from '@/lib/buttonLabel';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
@@ -81,6 +82,10 @@ export function ConfirmModal({
 }: ConfirmProps) {
   const t = getT(useLang().lang);
   const cancelText = cancelLabel ?? t.common.cancel;
+  // Largeur du texte dans un bouton : carte (marges écran 24×2, max 400) − marges carte 24×2 − bordures − marges bouton 24×2 − picto
+  const { width: screenWidth } = useWindowDimensions();
+  const textWidth = Math.min(400, screenWidth - 48) - 48 - 4 - 48 - (confirmIcon || cancelIcon ? 34 : 0);
+  const labelSize = { fontSize: sharedLabelSize(onCancel ? [confirmLabel, cancelText] : [confirmLabel], textWidth) };
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onDismiss}>
       <Pressable style={pauseStyles.backdrop} onPress={onDismiss} accessibilityLabel={cancelText}>
@@ -107,7 +112,7 @@ export function ConfirmModal({
               <Pressable onPress={onCancel} accessibilityRole="button" style={confirmStyles.cancelBtn}>
                 <View style={confirmStyles.labelRow}>
                   {cancelIcon ? <MaterialCommunityIcons name={cancelIcon} size={26} color={colors.purpleDeep} /> : null}
-                  <Text style={[confirmStyles.cancelText, confirmStyles.labelText]} numberOfLines={1} adjustsFontSizeToFit>
+                  <Text style={[confirmStyles.cancelText, confirmStyles.labelText, labelSize]} numberOfLines={1} adjustsFontSizeToFit>
                     {cancelText}
                   </Text>
                 </View>
@@ -122,7 +127,7 @@ export function ConfirmModal({
               >
                 <View style={confirmStyles.labelRow}>
                   {confirmIcon ? <MaterialCommunityIcons name={confirmIcon} size={26} color={colors.cream} /> : null}
-                  <Text style={[pauseStyles.btnText, confirmStyles.labelText]} numberOfLines={1} adjustsFontSizeToFit>
+                  <Text style={[pauseStyles.btnText, confirmStyles.labelText, labelSize]} numberOfLines={1} adjustsFontSizeToFit>
                     {confirmLabel}
                   </Text>
                 </View>
