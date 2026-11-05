@@ -11,6 +11,7 @@ import { questionsDresseur } from './questions/dresseur';
 import { questionsArt } from './questions/art-litterature';
 import { questionsRetro } from './questions/retro-gaming';
 import { questionsAnime } from './questions/anime';
+import { questionsFootball } from './questions/football';
 
 export const questions = [
   ...questionsMarques,
@@ -26,4 +27,5 @@ export const questions = [
   ...questionsArt,
   ...questionsRetro,
   ...questionsAnime,
+  ...questionsFootball,
 ];

@@ -24,7 +24,7 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
 - [x] 🤖 `react-native-google-mobile-ads` 17.3.1 installé et configuré (identifiants d'app de **test** Google dans `app.json`)
 - [x] 🤖 Consentement RGPD (Google UMP) au démarrage + lien « Choix publicitaires » dans les Réglages quand il est exigé
 - [x] 🤖 Vraie vidéo récompensée pour « Essayer un pack » (`src/lib/ads.ts`)
-- [x] 🤖 Interstitiel de fin de partie : à partir de la 4e partie, 1 sur 2, en quittant l'écran final ; jamais si partie quittée ni après un essai
+- [x] 🤖 Interstitiel de fin de partie : à chaque partie terminée à partir de la 2e (depuis le 2026-11-05), en quittant l'écran final ; jamais si partie quittée, après un essai ni sur une partie qui débloque un cadeau
 - [x] 🤖 Texte ATT et liste SKAdNetwork (50 identifiants Google) dans `app.json`
 - [x] 👤 AdMob → « Confidentialité et messages » : créer le message RGPD **et** le message « explication IDFA » (c'est lui qui déclenche la fenêtre de suivi Apple) — fait le 2026-10-20
 - [x] 🤖 Identifiants réels iOS en place (`app.json` + `src/config/ads.ts`) ; Android reste l'ID de test Google
@@ -51,6 +51,8 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
 - [ ] 👤 App Store Connect : **retirer l'achat intégré `com.banco.pack_harry_potter` de la vérification** (le pack est désormais offert) — la v1 ne vend rien
 - [x] 🤖 Packs Rétro-gaming et Anime & mangas écrits et branchés, offerts dans la chaîne de cadeaux (2026-11-02)
 - [ ] 👤 Faire relire les packs Rétro-gaming et Anime & mangas par des connaisseurs avant publication
+- [x] 🤖 Pack Football (140 questions) branché, 7e de la chaîne de cadeaux (2026-11-05) : joueurs et effectifs tirés de Wikidata et recoupés avec les catégories de Wikipédia, palmarès vérifiés sur Wikipédia (résultats jusqu'à l'automne 2026)
+- [ ] 👤 Jouer quelques parties du pack Football pour juger le niveau des listes (certaines vont jusqu'à des joueurs peu connus)
 - [ ] 👤 + 🤖 Au passage au payant : créer les produits (App Store Connect + RevenueCat)
 - [ ] 👤 Site, page Confidentialité : retirer « Aucune publicité », ajouter AdMob, les données collectées, le consentement ; **retirer les comptes** (Supabase, connexion Apple/Google, suppression de compte), y compris dans la FAQ de la page Assistance
 - [ ] 👤 Site : publier `app-ads.txt` à la **racine du domaine** — AdMob refuse la validation (« vos informations ne correspondent pas ») car `https://mandarine28.github.io/app-ads.txt` renvoie 404 (constaté le 2026-10-29). Le site `banco-site` est un site de projet (`/banco-site/…`) et ne peut pas servir la racine. Solution :

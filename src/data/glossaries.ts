@@ -2,6 +2,7 @@ import type { Glossary } from './types';
 import { glossaryArt } from './glossaries/art-litterature';
 import { glossaryRetro } from './glossaries/retro-gaming';
 import { glossaryAnime } from './glossaries/anime';
+import { glossaryFootball } from './glossaries/football';
 import { glossaryCinema } from './glossaries/cinema';
 import { glossaryHarryPotter } from './glossaries/harry-potter';
 import { glossaryMarques } from './glossaries/marques';
@@ -17,6 +18,7 @@ export const glossaries: Record<string, Glossary> = {
   'art-litterature': glossaryArt,
   'retro-gaming': glossaryRetro,
   anime: glossaryAnime,
+  football: glossaryFootball,
   'harry-potter': glossaryHarryPotter,
   sport: glossarySport,
   geographie: glossaryGeographie,
