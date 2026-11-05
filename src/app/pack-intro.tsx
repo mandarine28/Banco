@@ -46,9 +46,7 @@ function IntroTimeline({ camera, title }: { camera: Animated.Value; title: strin
 
 function PackIntroScene({ intro, title }: { intro: PackIntro; title: string }) {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-  const source = Image.resolveAssetSource(intro.image);
-  const aspect = source?.width && source.height ? source.width / source.height : 1;
-  const { width, height } = coverFrame(aspect, screenWidth, screenHeight);
+  const { width, height } = coverFrame(intro.aspect, screenWidth, screenHeight);
   const fromX = focusOffset(width, screenWidth, intro.from);
   const toX = focusOffset(width, screenWidth, intro.to);
 
@@ -68,7 +66,8 @@ function PackIntroScene({ intro, title }: { intro: PackIntro; title: string }) {
       >
         <Image
           source={intro.image}
-          style={StyleSheet.absoluteFill}
+          // Taille explicite : sinon React Native garde celle du fichier (3120 points de large)
+          style={{ width, height }}
           fadeDuration={0}
           onLoad={() => setLoaded(true)}
           accessibilityIgnoresInvertColors
