@@ -14,6 +14,7 @@ import { HomeBackground } from '@/components/HomeBackground';
 import { ConfirmModal } from '@/components/InfoModal';
 import { TimerInfoIllustration } from '@/components/TimerInfoIllustration';
 import { Toast, useToast } from '@/components/Toast';
+import { PACK_INTROS } from '@/config/packIntros';
 import { GIFT_PACKS, PACK_THEME_IDS, type ProductId, WELCOME_GAMES } from '@/config/shop';
 import { gamesUntil } from '@/lib/giftChain';
 import { questions } from '@/data/questions';
@@ -453,7 +454,13 @@ export default function MatchSettingsScreen() {
               style={noCategory && styles.btnContinuerDisabled}
               accessibilityState={{ disabled: noCategory }}
               accessibilityHint={noCategory ? t.matchSettings.pickCategoryFirst : undefined}
-              onPress={noCategory ? toast.show : () => { setSelectedThemes([...selected]); router.push('/equipes'); }}
+              onPress={noCategory ? toast.show : () => {
+                setSelectedThemes([...selected]);
+                // Un seul pack choisi, avec son illustration : on plonge dans son ambiance avant les équipes
+                const [theme] = selected;
+                if (selected.size === 1 && PACK_INTROS[theme]) router.push({ pathname: '/pack-intro', params: { theme } });
+                else router.push('/equipes');
+              }}
               accessibilityRole="button"
               accessibilityLabel={t.matchSettings.continueBtn}
             >

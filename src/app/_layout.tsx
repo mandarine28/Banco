@@ -45,6 +45,7 @@ export default function RootLayout() {
                 <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
                   {/* Pas de swipe retour en partie : on quitte uniquement via la croix */}
                   <Stack.Screen name="partie" options={{ gestureEnabled: false }} />
+                  <Stack.Screen name="pack-intro" options={{ gestureEnabled: false }} />
                 </Stack>
                 {/* Au-dessus de tous les écrans : le didacticiel navigue de l'un à l'autre */}
                 <TutorialOverlay />
