@@ -250,12 +250,12 @@ export default function MatchSettingsScreen() {
   const lockedGift: ProductId | undefined = lockedPack ? GIFT_PACKS.find((product) => PACK_THEME_IDS[product] === lockedPack.id) : undefined;
   // Packs offerts en tête de liste, dans l'ordre où on les gagne, avant les catégories de base
   const CATEGORIES: Category[] = [
-    ...GIFT_PACKS.map((product) => ({
-      id: PACK_THEME_IDS[product] ?? product,
-      label: PACK_THEME_IDS[product] ?? product,
-      available: hasPurchased(product),
-      locked: !hasPurchased(product),
-    })),
+    ...GIFT_PACKS.map((product) => {
+      const id = PACK_THEME_IDS[product] ?? product;
+      // Pack en essai (pub regardée) : jouable comme un pack gagné, avec la mention « essai »
+      const playable = hasPurchased(product) || trialIds.has(id);
+      return { id, label: id, available: playable, locked: !playable };
+    }),
     ...BASE_CATEGORIES,
   ];
   const { lang } = useLang();
