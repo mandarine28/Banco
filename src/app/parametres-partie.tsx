@@ -223,18 +223,13 @@ export default function MatchSettingsScreen() {
   const width = Math.min(windowWidth, MAX_WIDTH);
   const { mode, teamCount, setTeamCount, roundCount, setRoundCount, setSelectedThemes, survieTimer, setSurvieTimer } = useGameSettings();
   const { hasPurchased } = usePurchases();
-  // Essai accordé depuis la boutique : le pack arrive déjà coché, en essai
-  const { pendingTrial, setPendingTrial } = useGameSettings();
-  const [selected, setSelected] = useState<Set<string>>(() => new Set(pendingTrial ? [pendingTrial] : []));
+  // Packs en essai (vidéo regardée, partie pas encore lancée) : cochés d'office à chaque ouverture de l'écran
+  const { trialPacks, addTrialPack } = useGameSettings();
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(trialPacks));
   const toast = useToast();
   const noCategory = selected.size === 0;
 
-  // Packs débloqués pour une partie après une vidéo récompensée
-  const [trialIds, setTrialIds] = useState<Set<string>>(() => new Set(pendingTrial ? [pendingTrial] : []));
-  // Consommé : un retour plus tard sur cet écran ne recoche pas le pack
-  useEffect(() => {
-    if (pendingTrial) setPendingTrial(null);
-  }, [pendingTrial, setPendingTrial]);
+  const trialIds = new Set(trialPacks);
   const [lockedPack, setLockedPack] = useState<Category | null>(null);
   // Un seul essai par pack : ensuite, achat obligatoire pour y rejouer
   const [usedTrials, setUsedTrials] = useState<Set<string>>(new Set());
@@ -267,7 +262,7 @@ export default function MatchSettingsScreen() {
 
   // Par défaut, la partie d'essai ne pioche que dans ce pack ; le joueur peut en recocher d'autres
   const startTrial = (themeId: string) => {
-    setTrialIds((prev) => new Set(prev).add(themeId));
+    addTrialPack(themeId);
     setSelected(new Set([themeId]));
   };
   const watchAdForTrial = async (pack: Category) => {

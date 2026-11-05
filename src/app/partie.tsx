@@ -89,9 +89,12 @@ export default function GameScreen() {
   const playableThemes =
     settings.selectedThemes.length > 0 ? settings.selectedThemes : [...themes.map((theme) => theme.id), ...ownedPackThemes];
   // La partie d'essai a commencé : le pack ne pourra plus être essayé avec une pub
+  const { removeTrialPack } = settings;
   useEffect(() => {
-    if (trialTheme) markTrialUsed(trialTheme);
-  }, [trialTheme]);
+    if (!trialTheme) return;
+    markTrialUsed(trialTheme);
+    removeTrialPack(trialTheme);
+  }, [trialTheme, removeTrialPack]);
   const [upsellNext, setUpsellNext] = useState<(() => void) | null>(null);
   const [upsellShown, setUpsellShown] = useState(false);
   const [purchasing, setPurchasing] = useState(false);

@@ -162,9 +162,9 @@ export default function BoutiqueScreen() {
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
   // Pack offert touché : fenêtre parties restantes / essai contre une pub
   const [lockedTheme, setLockedTheme] = useState<string | null>(null);
-  const { setPendingTrial } = useGameSettings();
+  const { addTrialPack } = useGameSettings();
   const startTrial = (themeId: string) => {
-    setPendingTrial(themeId);
+    addTrialPack(themeId);
     router.push('/parametres');
   };
   const [restoring, setRestoring] = useState(false);
