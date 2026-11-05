@@ -35,3 +35,17 @@ test('turbo : le chrono repart à 15 s à chaque manche', () => {
   assert.equal(state.round, 1);
   assert.equal(survieTurboSeconds(state), 15);
 });
+
+test('terminer la manche à la main : aucun vainqueur, aucun point, et la manche suivante repart', () => {
+  const started = survieReducer(createSurvieGame(teams, 2, questions, () => 0), { type: 'START' });
+  const ended = survieReducer(survieReducer(started, { type: 'VALIDATE' }), { type: 'END_ROUND' });
+  assert.equal(ended.phase, 'result');
+  assert.equal(ended.roundWinner, null);
+  assert.deepEqual(ended.scores, [0, 0, 0]);
+  assert.equal(survieReducer(ended, { type: 'NEXT' }).round, 1);
+});
+
+test('terminer la manche : sans effet hors de la phase de jeu', () => {
+  const ready = createSurvieGame(teams, 2, questions, () => 0);
+  assert.equal(survieReducer(ready, { type: 'END_ROUND' }), ready);
+});

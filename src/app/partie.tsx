@@ -417,6 +417,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
   const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);
   // Popup « Éliminer <équipe> ? » — NON : PASSER reprend le chrono, temps écoulé vaut VALIDER
   const [confirmElim, setConfirmElim] = useState<'pass' | 'timeout' | null>(null);
+  const [confirmEndRound, setConfirmEndRound] = useState(false);
   const { lang } = useLang();
   const t = getT(lang);
   // Transition « à vous de jouer ! » entre l'écran prêt et le jeu — SurviePlayPhase (et son chrono) monte à la fin
@@ -431,7 +432,8 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
   const [phase, setPhase] = useState(state.phase);
   if (phase !== state.phase) {
     if (phase === 'ready' && state.phase === 'play') setPlayIntro('covering');
-    if (phase === 'play') setElimination({ stage: 'covering', team: prevTeam });
+    // Manche terminée à la main (aucun vainqueur) : personne n'a séché, pas de transition d'élimination
+    if (phase === 'play' && !(state.phase === 'result' && state.roundWinner === null)) setElimination({ stage: 'covering', team: prevTeam });
     // Une élimination en plein fondu démonte la transition rapide sans onDone : on la purge
     setTeamSwitch(null);
     setPhase(state.phase);
@@ -443,7 +445,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
     setJackpot(state.jackpot);
   }
   if (prevTeam !== state.currentTeam) setPrevTeam(state.currentTeam);
-  const isPaused = pauseSource !== null || confirmElim !== null;
+  const isPaused = pauseSource !== null || confirmElim !== null || confirmEndRound;
   usePauseOnBackground(state.phase === 'play', () => setPauseSource('search'));
   const goHome = () => router.dismissTo('/');
   useBackToQuitConfirm(() => (state.phase === 'final' ? goHome() : setConfirmQuit(true)));
@@ -509,6 +511,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
           onTogglePause={() =>
             setPauseSource((s) => (s === null ? 'manual' : s === 'manual' ? null : s))
           }
+          onEndRound={() => setConfirmEndRound(true)}
         />
       ) : null}
       {state.phase === 'result' && elimination?.stage !== 'covering' ? (
@@ -551,6 +554,17 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
         }}
         // Choix obligatoire : un tap à côté ne doit ni éliminer ni valider
         onDismiss={() => {}}
+      />
+      <ConfirmModal
+        visible={confirmEndRound && state.phase === 'play'}
+        title={t.survie.endRoundTitle}
+        message={t.survie.endRoundMsg}
+        confirmLabel={t.survie.endRoundBtn}
+        onCancel={() => setConfirmEndRound(false)}
+        onConfirm={() => {
+          setConfirmEndRound(false);
+          dispatch({ type: 'END_ROUND' });
+        }}
       />
       <ConfirmModal
         visible={confirmQuit}

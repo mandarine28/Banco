@@ -34,6 +34,7 @@ export type SurvieAction =
   | { type: 'VALIDATE'; answer?: string }
   | { type: 'PASS' }
   | { type: 'TIMEOUT' }
+  | { type: 'END_ROUND' }
   | { type: 'NEXT' };
 
 type Random = () => number;
@@ -135,6 +136,12 @@ export function survieReducer(state: SurvieState, action: SurvieAction): SurvieS
     case 'TIMEOUT': {
       if (state.phase !== 'play') return state;
       return eliminateAndAdvance(state);
+    }
+
+    // Manche arrêtée à la main : plusieurs équipes restent en lice, donc ni vainqueur ni points
+    case 'END_ROUND': {
+      if (state.phase !== 'play') return state;
+      return { ...state, phase: 'result', roundWinner: null };
     }
 
     case 'NEXT': {

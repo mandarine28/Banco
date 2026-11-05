@@ -13,6 +13,7 @@ import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
+import { SkipIcon } from '@/components/game/PlayPhase';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
@@ -59,6 +60,7 @@ type Props = {
   turnSeconds: number | null;
   isPaused?: boolean;
   onTogglePause: () => void;
+  onEndRound: () => void;
 };
 
 export function SurviePlayPhase({
@@ -69,6 +71,7 @@ export function SurviePlayPhase({
   turnSeconds,
   isPaused = false,
   onTogglePause,
+  onEndRound,
 }: Props) {
   const insets = useSafeAreaInsets();
   const { lang } = useLang();
@@ -92,38 +95,48 @@ export function SurviePlayPhase({
 
   return (
     <View style={styles.wrapper}>
-      {/* Timer row — absente quand le chrono est désactivé dans les paramètres */}
-      {turnSeconds !== null ? (
+      {/* Sans chrono (paramètres) : barre et pause masquées, mais on peut toujours terminer la manche */}
       <View style={styles.timerRow}>
-        <View
-          style={[styles.track, isPaused && styles.trackPaused]}
-          onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
-        >
-          <Animated.View
-            style={[styles.fill, { width: trackWidth, backgroundColor: fillColor, transform: [{ translateX: fillTranslateX }] }]}
-          />
-        </View>
-        <Text style={[styles.seconds, isWarning && styles.secondsWarning]}>{seconds}</Text>
+        {turnSeconds !== null ? (
+          <>
+            <View
+              style={[styles.track, isPaused && styles.trackPaused]}
+              onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+            >
+              <Animated.View
+                style={[styles.fill, { width: trackWidth, backgroundColor: fillColor, transform: [{ translateX: fillTranslateX }] }]}
+              />
+            </View>
+            <Text style={[styles.seconds, isWarning && styles.secondsWarning]}>{seconds}</Text>
+            <Pressable
+              onPress={onTogglePause}
+              accessibilityRole="button"
+              accessibilityLabel={isPaused ? t.play.resume : t.play.pause}
+              style={styles.pauseBtn}
+            >
+              <View pointerEvents="none">
+                {isPaused ? (
+                  <Svg width={24} height={20} viewBox="0 0 24 20">
+                    <Path d={PLAY_PATH} fill={colors.cream} />
+                  </Svg>
+                ) : (
+                  <Svg width={21} height={24} viewBox="0 0 21 24">
+                    <Path d={PAUSE_PATH} fill={colors.cream} />
+                  </Svg>
+                )}
+              </View>
+            </Pressable>
+          </>
+        ) : null}
         <Pressable
-          onPress={onTogglePause}
+          onPress={onEndRound}
           accessibilityRole="button"
-          accessibilityLabel={isPaused ? t.play.resume : t.play.pause}
+          accessibilityLabel={t.survie.endRoundTitle}
           style={styles.pauseBtn}
         >
-          <View pointerEvents="none">
-            {isPaused ? (
-              <Svg width={24} height={20} viewBox="0 0 24 20">
-                <Path d={PLAY_PATH} fill={colors.cream} />
-              </Svg>
-            ) : (
-              <Svg width={21} height={24} viewBox="0 0 21 24">
-                <Path d={PAUSE_PATH} fill={colors.cream} />
-              </Svg>
-            )}
-          </View>
+          <SkipIcon />
         </Pressable>
       </View>
-      ) : null}
 
       {/* Badge équipe + question */}
       <View style={{ gap: 20 }}>
@@ -212,6 +225,7 @@ const styles = StyleSheet.create({
   timerRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-end',
     gap: 12,
   },
   track: {

@@ -204,6 +204,9 @@ type Translations = {
     clear: string;
     someAnswers: string;
     elimPassTitle: string;
+    endRoundTitle: string;
+    endRoundMsg: string;
+    endRoundBtn: string;
     elimPassMsg: string;
     elimTimeoutTitle: string;
     elimTimeoutMsg: string;
@@ -444,6 +447,9 @@ const translations: Record<Lang, Translations> = {
       clear: 'Effacer',
       someAnswers: 'Quelques réponses qui étaient possibles',
       elimPassTitle: 'Pas de réponse ?',
+      endRoundTitle: 'Terminer la manche ?',
+      endRoundMsg: 'Aucune équipe ne remporte les points en jeu.',
+      endRoundBtn: 'TERMINER',
       elimPassMsg: "L'équipe sera éliminée de cette manche.",
       elimTimeoutTitle: 'Temps écoulé !',
       elimTimeoutMsg: "L'équipe a-t-elle répondu à temps ?",
@@ -718,6 +724,9 @@ const translations: Record<Lang, Translations> = {
       clear: 'Clear',
       someAnswers: 'Some possible answers',
       elimPassTitle: 'No answer?',
+      endRoundTitle: 'End the round?',
+      endRoundMsg: 'No team wins the points at stake.',
+      endRoundBtn: 'END ROUND',
       elimPassMsg: 'The team will be out for this round.',
       elimTimeoutTitle: "Time's up!",
       elimTimeoutMsg: 'Did the team answer in time?',
@@ -992,6 +1001,9 @@ const translations: Record<Lang, Translations> = {
       clear: 'Löschen',
       someAnswers: 'Einige mögliche Antworten',
       elimPassTitle: 'Keine Antwort?',
+      endRoundTitle: 'Runde beenden?',
+      endRoundMsg: 'Kein Team gewinnt die Punkte im Spiel.',
+      endRoundBtn: 'BEENDEN',
       elimPassMsg: 'Das Team scheidet in dieser Runde aus.',
       elimTimeoutTitle: 'Zeit abgelaufen!',
       elimTimeoutMsg: 'Hat das Team rechtzeitig geantwortet?',
@@ -1266,6 +1278,9 @@ const translations: Record<Lang, Translations> = {
       clear: 'Borrar',
       someAnswers: 'Algunas respuestas posibles',
       elimPassTitle: '¿Sin respuesta?',
+      endRoundTitle: '¿Terminar la ronda?',
+      endRoundMsg: 'Ningún equipo gana los puntos en juego.',
+      endRoundBtn: 'TERMINAR',
       elimPassMsg: 'El equipo quedará eliminado de esta ronda.',
       elimTimeoutTitle: '¡Se acabó el tiempo!',
       elimTimeoutMsg: '¿Respondió el equipo a tiempo?',
@@ -1540,6 +1555,9 @@ const translations: Record<Lang, Translations> = {
       clear: 'Cancella',
       someAnswers: 'Alcune risposte possibili',
       elimPassTitle: 'Nessuna risposta?',
+      endRoundTitle: 'Terminare la manche?',
+      endRoundMsg: 'Nessuna squadra vince i punti in palio.',
+      endRoundBtn: 'TERMINA',
       elimPassMsg: 'La squadra sarà eliminata da questa manche.',
       elimTimeoutTitle: 'Tempo scaduto!',
       elimTimeoutMsg: 'La squadra ha risposto in tempo?',
@@ -1815,6 +1833,9 @@ const translations: Record<Lang, Translations> = {
       clear: 'Apagar',
       someAnswers: 'Algumas respostas possíveis',
       elimPassTitle: 'Sem resposta?',
+      endRoundTitle: 'Terminar a rodada?',
+      endRoundMsg: 'Nenhum time ganha os pontos em jogo.',
+      endRoundBtn: 'TERMINAR',
       elimPassMsg: 'O time será eliminado desta rodada.',
       elimTimeoutTitle: 'Acabou o tempo!',
       elimTimeoutMsg: 'O time respondeu a tempo?',
