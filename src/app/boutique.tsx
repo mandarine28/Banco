@@ -82,7 +82,7 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress
       <View
         ref={giftIndex === 0 ? tutorialTarget : undefined}
         collapsable={false}
-        style={[styles.card, !purchased && styles.cardLocked, pack.comingSoon && styles.cardDimmed]}
+        style={[styles.card, pack.comingSoon && styles.cardDimmed]}
       >
         <View style={styles.cardLeft}>
           <View style={styles.cardTexts}>
@@ -416,9 +416,6 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     elevation: 4,
   },
-  cardLocked: {
-    opacity: 0.75,
-  },
   cardDimmed: {
     opacity: 0.2,
   },
@@ -472,9 +469,8 @@ const styles = StyleSheet.create({
   giftProgressText: {
     flexShrink: 1,
   },
-  // S'ajoute à l'opacité de la carte verrouillée : le bouton reste à 0,6 au total
   giftWaiting: {
-    opacity: 0.8,
+    opacity: 0.6,
   },
   giftAfterText: {
     fontFamily: fonts.displayMedium,
