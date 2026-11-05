@@ -42,7 +42,8 @@ export function LockedGiftModal({ themeId, onClose, onTrialGranted }: Props) {
     <ConfirmModal
       visible={product !== undefined}
       title={themeId ? (t.shop.packTitles[themeId] ?? themeId) : ''}
-      message={(trialUsed ? t.gift.lockedMsg : t.gift.lockedTrialMsg)(left)}
+      // Essai déjà utilisé : on le dit, sinon le joueur ne comprend pas pourquoi le bouton pub a disparu
+      message={(trialUsed ? t.gift.lockedTrialUsedMsg : t.gift.lockedTrialMsg)(left)}
       cancelLabel={trialUsed ? undefined : t.gift.gotIt}
       cancelIcon="check-bold"
       onCancel={trialUsed ? undefined : onClose}
