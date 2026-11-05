@@ -16,7 +16,6 @@ import { TimerInfoIllustration } from '@/components/TimerInfoIllustration';
 import { Toast, useToast } from '@/components/Toast';
 import { PACK_INTROS } from '@/config/packIntros';
 import { GIFT_PACKS, PACK_THEME_IDS, type ProductId, WELCOME_GAMES } from '@/config/shop';
-import { gamesUntil } from '@/lib/giftChain';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { isRewardGranted, showRewardedAd } from '@/lib/ads';
@@ -26,7 +25,7 @@ import { loadUsedTrials } from '@/lib/trials';
 import { type Lang, getT } from '@/lib/i18n';
 import { ROUND_LIMITS, SURVIE_TIMER_OPTIONS, type SurvieTimer, TEAM_LIMITS, useGameSettings } from '@/state/gameSettings';
 import { usePurchases } from '@/state/purchases';
-import { useGiftChain } from '@/state/useGifts';
+import { LockedGiftModal } from '@/components/LockedGiftModal';
 import { useTutorialTarget } from '@/state/tutorial';
 import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
@@ -224,12 +223,18 @@ export default function MatchSettingsScreen() {
   const width = Math.min(windowWidth, MAX_WIDTH);
   const { mode, teamCount, setTeamCount, roundCount, setRoundCount, setSelectedThemes, survieTimer, setSurvieTimer } = useGameSettings();
   const { hasPurchased } = usePurchases();
-  const [selected, setSelected] = useState<Set<string>>(() => new Set());
+  // Essai accordé depuis la boutique : le pack arrive déjà coché, en essai
+  const { pendingTrial, setPendingTrial } = useGameSettings();
+  const [selected, setSelected] = useState<Set<string>>(() => new Set(pendingTrial ? [pendingTrial] : []));
   const toast = useToast();
   const noCategory = selected.size === 0;
 
   // Packs débloqués pour une partie après une vidéo récompensée
-  const [trialIds, setTrialIds] = useState<Set<string>>(new Set());
+  const [trialIds, setTrialIds] = useState<Set<string>>(() => new Set(pendingTrial ? [pendingTrial] : []));
+  // Consommé : un retour plus tard sur cet écran ne recoche pas le pack
+  useEffect(() => {
+    if (pendingTrial) setPendingTrial(null);
+  }, [pendingTrial, setPendingTrial]);
   const [lockedPack, setLockedPack] = useState<Category | null>(null);
   // Un seul essai par pack : ensuite, achat obligatoire pour y rejouer
   const [usedTrials, setUsedTrials] = useState<Set<string>>(new Set());
@@ -242,7 +247,6 @@ export default function MatchSettingsScreen() {
     router.push('/boutique');
   };
   // Packs offerts : gagnés en jouant, ou essayés une fois contre une pub avant d'être gagnés
-  const { chain } = useGiftChain();
   const lockedGift: ProductId | undefined = lockedPack ? GIFT_PACKS.find((product) => PACK_THEME_IDS[product] === lockedPack.id) : undefined;
   // Packs offerts en tête de liste, dans l'ordre où on les gagne, avant les catégories de base
   const CATEGORIES: Category[] = [
@@ -261,13 +265,15 @@ export default function MatchSettingsScreen() {
 
   const panelTop = insets.top + 68;
 
+  // Par défaut, la partie d'essai ne pioche que dans ce pack ; le joueur peut en recocher d'autres
+  const startTrial = (themeId: string) => {
+    setTrialIds((prev) => new Set(prev).add(themeId));
+    setSelected(new Set([themeId]));
+  };
   const watchAdForTrial = async (pack: Category) => {
     const result = await showRewardedAd();
     setLockedPack(null);
-    if (!isRewardGranted(result)) return;
-    setTrialIds((prev) => new Set(prev).add(pack.id));
-    // Par défaut, la partie d'essai ne pioche que dans ce pack ; le joueur peut en recocher d'autres
-    setSelected(new Set([pack.id]));
+    if (isRewardGranted(result)) startTrial(pack.id);
   };
 
   const toggleCategory = (id: string) => {
@@ -416,20 +422,10 @@ export default function MatchSettingsScreen() {
             </View>
           </ScrollView>
 
-          {/* Pack offert verrouillé : parties restantes, et une partie d'essai contre une pub tant qu'elle n'a pas servi */}
-          <ConfirmModal
-            visible={lockedGift !== undefined}
-            title={lockedPack ? (t.shop.packTitles[lockedPack.id] ?? lockedPack.label) : ''}
-            message={(trialUsed ? t.gift.lockedMsg : t.gift.lockedTrialMsg)(chain && lockedGift ? gamesUntil(chain, lockedGift) : WELCOME_GAMES)}
-            cancelLabel={trialUsed ? undefined : t.gift.gotIt}
-            onCancel={trialUsed ? undefined : () => setLockedPack(null)}
-            confirmLabel={trialUsed ? t.gift.gotIt : t.shop.watchAd}
-            confirmIcon={trialUsed ? 'gift' : 'play-circle'}
-            onConfirm={() => {
-              if (!trialUsed && lockedPack) watchAdForTrial(lockedPack);
-              else setLockedPack(null);
-            }}
-            onDismiss={() => setLockedPack(null)}
+          <LockedGiftModal
+            themeId={lockedGift ? (lockedPack?.id ?? null) : null}
+            onClose={() => setLockedPack(null)}
+            onTrialGranted={startTrial}
           />
 
           {/* Pack verrouillé : essai d'une partie contre une pub, ou boutique */}

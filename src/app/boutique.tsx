@@ -19,7 +19,9 @@ import { useGiftChain } from '@/state/useGifts';
 import { TUTORIAL_STEPS, useTutorial, useTutorialTarget } from '@/state/tutorial';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
+import { LockedGiftModal } from '@/components/LockedGiftModal';
 import { Toast, useToast } from '@/components/Toast';
+import { useGameSettings } from '@/state/gameSettings';
 
 const BACK_PATH = 'M20 12H4M10 6L4 12L10 18';
 // Didacticiel : temps passé sur chaque pack quand la boutique défile
@@ -59,13 +61,14 @@ type PackCardProps = {
   onPurchase: () => void;
   /** Pack offert : progression « 1 partie sur 3 » (vide tant que le compteur n'est pas lu). */
   giftProgress?: string;
-  /** Pack offert à gagner avant celui-ci : légende « Après X », bouton cadenassé, toast explicatif au toucher. */
+  /** Pack offert à gagner avant celui-ci : légende « Après X », bouton cadenassé. */
   giftAfter?: string;
+  /** Pack offert pas encore gagné : toucher la carte ouvre la fenêtre parties restantes / essai. */
+  onLockedPress?: () => void;
   onLayout?: (event: LayoutChangeEvent) => void;
 };
 
-function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress, giftAfter, onLayout }: PackCardProps) {
-  const toast = useToast();
+function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress, giftAfter, onLockedPress, onLayout }: PackCardProps) {
   // Didacticiel : la carte du premier pack offert est éclairée
   const giftIndex = pack.gift && pack.productId ? GIFT_PACKS.indexOf(pack.productId) : -1;
   const tutorialTarget = useTutorialTarget('shop-gift-0');
@@ -75,7 +78,7 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress
   const count = questionCount(pack.id);
 
   return (
-    <View onLayout={onLayout}>
+    <Pressable onLayout={onLayout} onPress={onLockedPress} disabled={!onLockedPress} soundOnRelease accessible={false}>
       <View
         ref={giftIndex === 0 ? tutorialTarget : undefined}
         collapsable={false}
@@ -99,11 +102,9 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress
           ) : pack.gift ? (
             // Le pack se gagne en jouant : le bouton mène directement au choix du mode
             <View>
-            {giftAfter ? <Toast toast={toast} message={t.gift.unlockFirst(giftAfter)} light style={styles.giftToast} /> : null}
             <Pressable
               style={[styles.ctaButton, styles.giftProgress, giftAfter ? styles.giftWaiting : null]}
-              // En attente du pack d'avant : on explique plutôt que d'ouvrir le jeu
-              onPress={giftAfter ? toast.show : () => router.push('/parametres')}
+              onPress={onLockedPress}
               accessibilityRole="button"
               accessibilityLabel={`${t.gift.welcomeTitle} ${giftProgress ?? ''} ${giftAfter ?? ''}`}
             >
@@ -149,7 +150,7 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress
           </LinearGradient>
         </View>
       )}
-    </View>
+    </Pressable>
   );
 }
 
@@ -159,6 +160,13 @@ export default function BoutiqueScreen() {
   const { hasPurchased, prices, purchase, restorePurchases, isLoading, error } = usePurchases();
   const { chain } = useGiftChain();
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
+  // Pack offert touché : fenêtre parties restantes / essai contre une pub
+  const [lockedTheme, setLockedTheme] = useState<string | null>(null);
+  const { setPendingTrial } = useGameSettings();
+  const startTrial = (themeId: string) => {
+    setPendingTrial(themeId);
+    router.push('/parametres');
+  };
   const [restoring, setRestoring] = useState(false);
   const passToast = useToast();
   const [passSelection, setPassSelection] = useState<{ productId: ProductId; message: string } | null>(null);
@@ -320,8 +328,10 @@ export default function BoutiqueScreen() {
             onPurchase={() => handlePurchase(pack)}
             giftProgress={pack.gift && pack.productId ? giftProgressOf(pack.productId) : undefined}
             giftAfter={pack.gift && pack.productId ? giftAfterOf(pack.productId) : undefined}
+            onLockedPress={pack.gift ? () => setLockedTheme(pack.id) : undefined}
           />
         ))}
+        <LockedGiftModal themeId={lockedTheme} onClose={() => setLockedTheme(null)} onTrialGranted={startTrial} />
 
         <Pressable
           style={styles.restoreButton}
@@ -384,13 +394,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     width: 260,
   },
-  giftToast: {
-    top: 'auto',
-    bottom: '100%',
-    marginBottom: 8,
-    alignSelf: 'flex-start',
-    width: 240,
-  },
   errorText: {
     fontFamily: fonts.displayMedium,
     fontSize: 14,
@@ -422,8 +425,6 @@ const styles = StyleSheet.create({
   cardLeft: {
     flex: 1,
     gap: 12,
-    // Au-dessus de l'image : le toast du bouton peut déborder sur elle
-    zIndex: 1,
   },
   cardTexts: {
     gap: 6,

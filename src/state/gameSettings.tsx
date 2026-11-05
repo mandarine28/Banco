@@ -21,6 +21,8 @@ export type GameSettings = {
   selectedThemes: string[];
   /** Chrono de survie : 'turbo', secondes par tour, ou null = sans chrono. */
   survieTimer: SurvieTimer | null;
+  /** Pack offert essayé depuis la boutique : coché à l'arrivée sur les paramètres de partie. */
+  pendingTrial: string | null;
 };
 
 type GameSettingsContextValue = GameSettings & {
@@ -30,6 +32,7 @@ type GameSettingsContextValue = GameSettings & {
   setTeams: (teams: Team[]) => void;
   setSelectedThemes: (themes: string[]) => void;
   setSurvieTimer: (seconds: SurvieTimer | null) => void;
+  setPendingTrial: (themeId: string | null) => void;
 };
 
 const defaults: GameSettings = {
@@ -39,6 +42,7 @@ const defaults: GameSettings = {
   teams: [],
   selectedThemes: [],
   survieTimer: SURVIE_TIMER_OPTIONS[0],
+  pendingTrial: null,
 };
 
 const clamp = (value: number, { min, max }: { min: number; max: number }) => Math.min(max, Math.max(min, value));
@@ -57,6 +61,7 @@ export function GameSettingsProvider({ children }: { children: ReactNode }) {
       setTeams: (teams) => setSettings((s) => ({ ...s, teams })),
       setSelectedThemes: (selectedThemes) => setSettings((s) => ({ ...s, selectedThemes })),
       setSurvieTimer: (survieTimer) => setSettings((s) => ({ ...s, survieTimer })),
+      setPendingTrial: (pendingTrial) => setSettings((s) => ({ ...s, pendingTrial })),
     }),
     [settings],
   );
