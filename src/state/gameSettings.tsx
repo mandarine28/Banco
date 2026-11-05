@@ -1,5 +1,6 @@
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
+import { withoutTrialPack, withTrialPack } from '@/lib/trialPacks';
 import { loadPendingTrials, savePendingTrials } from '@/lib/trials';
 
 export type GameMode = 'classique' | 'streak' | 'survie';
@@ -78,8 +79,13 @@ export function GameSettingsProvider({ children }: { children: ReactNode }) {
       setTeams: (teams) => setSettings((s) => ({ ...s, teams })),
       setSelectedThemes: (selectedThemes) => setSettings((s) => ({ ...s, selectedThemes })),
       setSurvieTimer: (survieTimer) => setSettings((s) => ({ ...s, survieTimer })),
-      addTrialPack: (themeId) => setSettings((s) => (s.trialPacks.includes(themeId) ? s : { ...s, trialPacks: [...s.trialPacks, themeId] })),
-      removeTrialPack: (themeId) => setSettings((s) => ({ ...s, trialPacks: s.trialPacks.filter((id) => id !== themeId) })),
+      addTrialPack: (themeId) => setSettings((s) => ({ ...s, trialPacks: withTrialPack(s.trialPacks, themeId) })),
+      // Sans changement, on rend le même état : sinon l'écran de partie qui retire l'essai tourne en boucle (écran figé)
+      removeTrialPack: (themeId) =>
+        setSettings((s) => {
+          const trialPacks = withoutTrialPack(s.trialPacks, themeId);
+          return trialPacks === s.trialPacks ? s : { ...s, trialPacks };
+        }),
     }),
     [settings],
   );
