@@ -11,7 +11,7 @@ import { useLang } from '@/lib/LangContext';
 import { coverFrame, focusOffset } from '@/lib/packIntro';
 
 const SLIDE_MS = 1100;
-const HOLD_MS = 700;
+const HOLD_MS = 400;
 const REDUCED_MOTION_MS = 900;
 // L'écran suivant arrive en fondu : le fondu de la pile de navigation fait la sortie
 const EXIT_MS = 1;
