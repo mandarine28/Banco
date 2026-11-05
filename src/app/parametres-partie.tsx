@@ -241,7 +241,7 @@ export default function MatchSettingsScreen() {
     setLockedPack(null);
     router.push('/boutique');
   };
-  // Packs offerts : gagnés en jouant, jamais essayés contre une pub
+  // Packs offerts : gagnés en jouant, ou essayés une fois contre une pub avant d'être gagnés
   const { chain } = useGiftChain();
   const lockedGift: ProductId | undefined = lockedPack ? GIFT_PACKS.find((product) => PACK_THEME_IDS[product] === lockedPack.id) : undefined;
   // Packs offerts en tête de liste, dans l'ordre où on les gagne, avant les catégories de base
@@ -416,14 +416,19 @@ export default function MatchSettingsScreen() {
             </View>
           </ScrollView>
 
-          {/* Pack offert verrouillé : nombre de parties restantes */}
+          {/* Pack offert verrouillé : parties restantes, et une partie d'essai contre une pub tant qu'elle n'a pas servi */}
           <ConfirmModal
             visible={lockedGift !== undefined}
             title={lockedPack ? (t.shop.packTitles[lockedPack.id] ?? lockedPack.label) : ''}
-            message={t.gift.lockedMsg(chain && lockedGift ? gamesUntil(chain, lockedGift) : WELCOME_GAMES)}
-            confirmLabel={t.gift.gotIt}
-            confirmIcon="gift"
-            onConfirm={() => setLockedPack(null)}
+            message={(trialUsed ? t.gift.lockedMsg : t.gift.lockedTrialMsg)(chain && lockedGift ? gamesUntil(chain, lockedGift) : WELCOME_GAMES)}
+            cancelLabel={trialUsed ? undefined : t.gift.gotIt}
+            onCancel={trialUsed ? undefined : () => setLockedPack(null)}
+            confirmLabel={trialUsed ? t.gift.gotIt : t.shop.watchAd}
+            confirmIcon={trialUsed ? 'gift' : 'play-circle'}
+            onConfirm={() => {
+              if (!trialUsed && lockedPack) watchAdForTrial(lockedPack);
+              else setLockedPack(null);
+            }}
             onDismiss={() => setLockedPack(null)}
           />
 

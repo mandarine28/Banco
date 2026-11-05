@@ -19,7 +19,7 @@ import { SurvieResultPhase } from '@/components/game/SurvieResultPhase';
 import { ConfettiOverlay } from '@/components/ConfettiOverlay';
 import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal, PauseModal } from '@/components/InfoModal';
-import { PACK_THEME_IDS, type ProductId, WELCOME_GAMES } from '@/config/shop';
+import { GIFT_PACKS, PACK_THEME_IDS, type ProductId, WELCOME_GAMES } from '@/config/shop';
 import { giftAfter, giftChain } from '@/lib/giftChain';
 import { questions } from '@/data/questions';
 import { themes } from '@/data/themes';
@@ -104,7 +104,8 @@ export default function GameScreen() {
     showInterstitial().finally(next);
   };
   const beforeLeave = (next: () => void) => {
-    if (!trialProduct || upsellShown) return leave(next);
+    // Pack offert : il se gagne en jouant, rien à acheter
+    if (!trialProduct || upsellShown || GIFT_PACKS.includes(trialProduct)) return leave(next);
     setUpsellShown(true);
     setUpsellNext(() => () => leave(next));
   };

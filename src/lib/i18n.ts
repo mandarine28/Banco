@@ -186,6 +186,7 @@ type Translations = {
     ok: string;
     progress: (played: number, total: number) => string;
     lockedMsg: (left: number) => string;
+    lockedTrialMsg: (left: number) => string;
     gotIt: string;
     /** Annonce du pack offert suivant, après en avoir gagné un. */
     nextGoal: (pack: string, games: number) => string;
@@ -429,6 +430,7 @@ const translations: Record<Lang, Translations> = {
       ok: 'SUPER',
       progress: (played, total) => `${played} partie${played > 1 ? 's' : ''} sur ${total}`,
       lockedMsg: (left) => `Jouez encore ${left} partie${left > 1 ? 's' : ''} pour débloquer ce pack offert !`,
+      lockedTrialMsg: (left) => `Encore ${left} partie${left > 1 ? 's' : ''} pour le débloquer, ou jouez une partie avec dès maintenant en regardant une courte pub !`,
       gotIt: 'COMPRIS',
       nextGoal: (pack, games) => `Prochain objectif : encore ${games} parties pour débloquer « ${pack} » !`,
       after: (pack) => `Après ${pack}`,
@@ -706,6 +708,7 @@ const translations: Record<Lang, Translations> = {
       ok: 'GREAT',
       progress: (played, total) => `${played} of ${total} games`,
       lockedMsg: (left) => `Play ${left} more game${left > 1 ? 's' : ''} to unlock this free pack!`,
+      lockedTrialMsg: (left) => `${left} more game${left > 1 ? 's' : ''} to unlock it, or play one game with it right now by watching a short ad!`,
       gotIt: 'GOT IT',
       nextGoal: (pack, games) => `Next goal: ${games} more games to unlock “${pack}”!`,
       after: (pack) => `After ${pack}`,
@@ -983,6 +986,7 @@ const translations: Record<Lang, Translations> = {
       ok: 'SUPER',
       progress: (played, total) => `${played} von ${total} Partien`,
       lockedMsg: (left) => `Spiel noch ${left} ${left > 1 ? 'Partien' : 'Partie'}, um dieses Gratis-Paket freizuschalten!`,
+      lockedTrialMsg: (left) => `Noch ${left} ${left > 1 ? 'Partien' : 'Partie'} bis zum Freischalten – oder spiel jetzt eine Partie damit, wenn du kurz Werbung anschaust!`,
       gotIt: 'VERSTANDEN',
       nextGoal: (pack, games) => `Nächstes Ziel: noch ${games} Partien, um „${pack}“ freizuschalten!`,
       after: (pack) => `Nach ${pack}`,
@@ -1260,6 +1264,7 @@ const translations: Record<Lang, Translations> = {
       ok: 'GENIAL',
       progress: (played, total) => `${played} de ${total} partidas`,
       lockedMsg: (left) => `¡Juega ${left} partida${left > 1 ? 's' : ''} más para desbloquear este pack gratis!`,
+      lockedTrialMsg: (left) => `Faltan ${left} partida${left > 1 ? 's' : ''} para desbloquearlo, o juega una partida con él ya viendo un anuncio corto.`,
       gotIt: 'ENTENDIDO',
       nextGoal: (pack, games) => `¡Próximo objetivo: ${games} partidas más para desbloquear «${pack}»!`,
       after: (pack) => `Después de ${pack}`,
@@ -1537,6 +1542,7 @@ const translations: Record<Lang, Translations> = {
       ok: 'FANTASTICO',
       progress: (played, total) => `${played} partite su ${total}`,
       lockedMsg: (left) => `Gioca ancora ${left} partit${left > 1 ? 'e' : 'a'} per sbloccare gratis questo pack!`,
+      lockedTrialMsg: (left) => `Ancora ${left} partit${left > 1 ? 'e' : 'a'} per sbloccarlo, oppure gioca subito una partita guardando una breve pubblicità!`,
       gotIt: 'HO CAPITO',
       nextGoal: (pack, games) => `Prossimo obiettivo: altre ${games} partite per sbloccare «${pack}»!`,
       after: (pack) => `Dopo ${pack}`,
@@ -1815,6 +1821,7 @@ const translations: Record<Lang, Translations> = {
       ok: 'DEMAIS',
       progress: (played, total) => `${played} de ${total} partidas`,
       lockedMsg: (left) => `Jogue mais ${left} partida${left > 1 ? 's' : ''} para desbloquear este pacote de graça!`,
+      lockedTrialMsg: (left) => `Faltam ${left} partida${left > 1 ? 's' : ''} para desbloqueá-lo, ou jogue uma partida com ele agora assistindo a um anúncio curto!`,
       gotIt: 'ENTENDI',
       nextGoal: (pack, games) => `Próximo objetivo: mais ${games} partidas para desbloquear “${pack}”!`,
       after: (pack) => `Depois de ${pack}`,

@@ -37,7 +37,7 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
   2. `npx eas-cli@latest build --profile development --platform ios`
   3. installer l'app, puis `npx expo start --dev-client`
 - [ ] 👤 Tester : essai de pack par pub, proposition d'achat en fin d'essai, achat réel (sandbox)
-- [x] 🤖 Pack de bienvenue (décidé le 2026-10-20) : **Poudlard Express offert après 3 parties terminées** (toutes parties depuis l'installation), jamais vendu ni essayé contre une pub ; fenêtre au premier lancement, progression « 1 partie sur 3 » dans la boutique, fenêtre « pack débloqué » sur l'écran final
+- [x] 🤖 Pack de bienvenue (décidé le 2026-10-20) : **Poudlard Express offert après 3 parties terminées** (toutes parties depuis l'installation), jamais vendu ; depuis le 2026-11-05, chaque pack offert encore verrouillé peut être essayé une fois (une partie) contre une vidéo récompensée ; fenêtre au premier lancement, progression « 1 partie sur 3 » dans la boutique, fenêtre « pack débloqué » sur l'écran final
 - [ ] 👤 Tester : fenêtre de bienvenue au 1er lancement, progression boutique, déblocage à la 3e partie
 - [ ] 👤 Tester : demande d'avis (après 3 parties ; absente sur TestFlight)
 - [ ] 👤 Tester : interstitiel en fin de partie avec les pubs de test
