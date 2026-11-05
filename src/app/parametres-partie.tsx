@@ -229,7 +229,8 @@ export default function MatchSettingsScreen() {
   const toast = useToast();
   const noCategory = selected.size === 0;
 
-  const trialIds = new Set(trialPacks);
+  // Un pack gagné entre-temps n'est plus « en essai »
+  const trialIds = new Set(trialPacks.filter((id) => !GIFT_PACKS.some((product) => PACK_THEME_IDS[product] === id && hasPurchased(product))));
   const [lockedPack, setLockedPack] = useState<Category | null>(null);
   // Un seul essai par pack : ensuite, achat obligatoire pour y rejouer
   const [usedTrials, setUsedTrials] = useState<Set<string>>(new Set());

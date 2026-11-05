@@ -1,4 +1,6 @@
-import { createContext, type ReactNode, useContext, useMemo, useState } from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+
+import { loadPendingTrials, savePendingTrials } from '@/lib/trials';
 
 export type GameMode = 'classique' | 'streak' | 'survie';
 
@@ -53,6 +55,19 @@ const GameSettingsContext = createContext<GameSettingsContextValue | null>(null)
 
 export function GameSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState(defaults);
+
+  // Essais en attente relus au lancement : une vidéo regardée n'est pas perdue si l'app est fermée avant de jouer
+  const [trialsLoaded, setTrialsLoaded] = useState(false);
+  useEffect(() => {
+    loadPendingTrials().then((stored) => {
+      setSettings((s) => ({ ...s, trialPacks: [...new Set([...stored, ...s.trialPacks])] }));
+      setTrialsLoaded(true);
+    });
+  }, []);
+  // Après la lecture seulement : sinon la liste vide du départ écraserait celle enregistrée
+  useEffect(() => {
+    if (trialsLoaded) savePendingTrials(settings.trialPacks);
+  }, [trialsLoaded, settings.trialPacks]);
 
   const value = useMemo<GameSettingsContextValue>(
     () => ({
