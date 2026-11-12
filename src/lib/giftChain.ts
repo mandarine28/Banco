@@ -23,7 +23,8 @@ export function giftChain(owned: (productId: ProductId) => boolean, gamesComplet
 export function gamesUntil(chain: GiftChain, productId: ProductId): number {
   if (chain.next === null) return 0;
   const steps = GIFT_PACKS.indexOf(productId) - GIFT_PACKS.indexOf(chain.next);
-  return steps < 0 ? 0 : WELCOME_GAMES - chain.played + WELCOME_GAMES * steps;
+  // Le pack n'est remis qu'en fin de partie : un pack dû (compteur d'avant, cadeaux remis à zéro) attend encore une partie
+  return steps < 0 ? 0 : Math.max(WELCOME_GAMES - chain.played, 1) + WELCOME_GAMES * steps;
 }
 
 /** Pack offert qui suit celui-ci dans la chaîne, s'il y en a un. */

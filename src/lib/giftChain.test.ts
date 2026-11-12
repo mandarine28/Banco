@@ -35,6 +35,14 @@ test('parties restantes : le pack suivant attend la fin du précédent', () => {
   });
 });
 
+test('pack dû mais pas encore remis : offert à la prochaine partie, jamais « dans 0 partie »', () => {
+  // 15 parties jouées du temps des 3 parties par pack, 4 packs gagnés
+  const chain = giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt'), 15);
+  assert.equal(gamesUntil(chain, 'packRetro'), 1);
+  assert.equal(gamesUntil(chain, 'packAnime'), 2);
+  assert.equal(gamesUntil(chain, 'packArt'), 0);
+});
+
 test('packs offerts : l’ancien format (un seul pack) reste lu, les valeurs inconnues sont ignorées', () => {
   assert.deepEqual(parseGiftedPacks('packHarryPotter'), ['packHarryPotter']);
   assert.deepEqual(parseGiftedPacks('packHarryPotter,packRap'), ['packHarryPotter', 'packRap']);
