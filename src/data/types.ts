@@ -21,6 +21,8 @@ export type Question = {
    * (ex. comédiens français ≠ comédiens espagnols). Prioritaire sur `answers` + glossaire.
    */
   answersByLang?: Partial<Record<import('../lib/i18n').Lang, string[]>>;
+  /** Question posée seulement dans ces langues (ex. émissions de télé françaises). Absent : toutes les langues. */
+  onlyLangs?: import('../lib/i18n').Lang[];
 };
 
 /**

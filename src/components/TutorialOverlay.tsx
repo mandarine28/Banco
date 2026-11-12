@@ -34,8 +34,8 @@ function stepText(step: number, lang: Lang): string {
     t.tutorial.giftFirst(pack(0), WELCOME_GAMES),
     t.tutorial.morePacks(GIFT_PACKS.length),
     t.tutorial.play,
-    t.tutorial.auction,
     t.tutorial.survie,
+    t.tutorial.auction,
     t.tutorial.teams,
   ][step];
 }

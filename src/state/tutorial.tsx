@@ -5,7 +5,7 @@ import type { ViewInstance } from 'react-native';
 import { markTutorialSeen } from '@/lib/tutorial';
 
 /** Éléments mis en lumière par le didacticiel ; chaque écran enregistre les siens avec useTutorialTarget. */
-export type TutorialTarget = 'home-shop' | 'home-play' | 'shop-gift-0' | 'mode-auction' | 'mode-survie' | 'match-teams';
+export type TutorialTarget = 'home-shop' | 'home-play' | 'shop-gift-0' | 'mode-auction' | 'mode-survie' | 'teams-add';
 
 export type TutorialStep = {
   route: Href;
@@ -21,9 +21,11 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
   { route: '/boutique', target: 'shop-gift-0' },
   { route: '/boutique', target: 'shop-gift-0', showcase: true },
   { route: '/', target: 'home-play' },
-  { route: '/parametres', target: 'mode-auction' },
+  // Même ordre que l'écran : Survie en haut, Enchères dessous
   { route: '/parametres', target: 'mode-survie' },
-  { route: '/parametres-partie', target: 'match-teams' },
+  { route: '/parametres', target: 'mode-auction' },
+  // Les équipes s'ajoutent une à une : l'étape montre le bouton « Ajouter une équipe »
+  { route: '/equipes', target: 'teams-add' },
 ];
 
 type TutorialContextValue = {

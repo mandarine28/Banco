@@ -286,3 +286,9 @@ test('classement avec ex aequo', () => {
     ],
   );
 });
+
+test('normalize : les ligatures se trouvent en tapant les lettres séparées', () => {
+  assert.equal(normalize('LA REINE DE CŒUR'), normalize('la reine de coeur'));
+  assert.equal(normalize('ÆON FLUX'), 'aeonflux');
+  assert.equal(normalize('STRAßE'), 'strasse');
+});

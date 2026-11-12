@@ -29,16 +29,24 @@ const PAUSE_PATH =
 const PLAY_PATH =
   'M23.9911 1.28571C23.9911 0.944722 23.8557 0.617695 23.6145 0.376577C23.3734 0.135459 23.0464 0 22.7054 0C22.3644 0 22.0374 0.135459 21.7963 0.376577C21.5551 0.617695 21.4197 0.944722 21.4197 1.28571V18.4286C21.4197 18.7696 21.5551 19.0966 21.7963 19.3377C22.0374 19.5788 22.3644 19.7143 22.7054 19.7143C23.0464 19.7143 23.3734 19.5788 23.6145 19.3377C23.8557 19.0966 23.9911 18.7696 23.9911 18.4286V1.28571ZM16.6265 8.04857C17.8094 8.964 17.8094 10.7503 16.6265 11.6657C12.9614 14.5019 8.86859 16.7372 4.5014 18.288L3.70254 18.5726C2.21112 19.1006 0.633973 18.0926 0.433402 16.5531C-0.144467 12.1078 -0.144467 7.60644 0.433402 3.16114C0.635688 1.62171 2.21112 0.613714 3.70254 1.14343L4.5014 1.42629C8.86859 2.97704 12.9614 5.21238 16.6265 8.04857Z';
 
-export function SkipIcon() {
+/** Icône « passer » ; avec `stroke`, contour autour du remplissage (viewBox élargie pour ne pas le rogner). */
+export function SkipIcon({ color = colors.cream, stroke, size = 30 }: { color?: string; stroke?: string; size?: number } = {}) {
+  const pad = stroke ? 2 : 0;
   return (
-    <Svg width={30} height={16} viewBox="0 0 38 20">
+    <Svg width={size} height={(size * (20 + pad * 2)) / (38 + pad * 2)} viewBox={`${-pad} ${-pad} ${38 + pad * 2} ${20 + pad * 2}`}>
       <Path
         d="M11.8725 7.03509L11.6304 9V12.276C11.6304 12.8502 12.1128 13.3064 12.686 13.2745L23.8792 12.6513C24.4524 12.6194 24.9348 13.0756 24.9348 13.6497V18.2299C24.9348 19.008 25.7844 19.488 26.4509 19.0864L36.5023 13.0296C37.027 12.7134 37.1467 12.004 36.7547 11.5332L28.3812 1.47615C27.8635 0.854393 26.8602 1.07275 26.6478 1.85342L25.1721 7.27627C25.0373 7.77146 24.5496 8.08426 24.0433 8.00018L13.0288 6.17087C12.4677 6.07768 11.942 6.4706 11.8725 7.03509Z"
-        fill={colors.cream}
+        fill={color}
+        stroke={stroke}
+        strokeWidth={stroke ? 2 : 0}
+        strokeLinejoin="round"
       />
       <Path
         d="M0 9.59591V10.592C0 10.8529 0.101952 11.1035 0.2841 11.2903L0.84948 11.87C1.03412 12.0593 1.28622 12.1678 1.55064 12.1717L10.0799 12.2974C10.6264 12.3054 11.0652 12.7507 11.0652 13.2973V17.2447C11.0652 18.001 11.8723 18.4836 12.5385 18.1256L22.4868 12.78C23.0647 12.4695 23.1921 11.6962 22.7444 11.2167L14.4644 2.34881C13.9391 1.78619 13.0017 2.00316 12.7771 2.73938L11.2758 7.65876C11.15 8.07081 10.7745 8.35601 10.3438 8.36657L0.975494 8.59621C0.43292 8.60951 0 9.05317 0 9.59591Z"
-        fill={colors.cream}
+        fill={color}
+        stroke={stroke}
+        strokeWidth={stroke ? 2 : 0}
+        strokeLinejoin="round"
       />
     </Svg>
   );
@@ -48,13 +56,12 @@ type Props = {
   state: GameState;
   remainingMs: number;
   onToggle: (label: string) => void;
-  onWebSearch: (query: string) => void;
   onSkip: () => void;
   onTogglePause: () => void;
   isPaused?: boolean;
 };
 
-export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, onTogglePause, isPaused = false }: Props) {
+export function PlayPhase({ state, remainingMs, onToggle, onSkip, onTogglePause, isPaused = false }: Props) {
   const { lang } = useLang();
   const t = getT(lang);
   const question = currentQuestion(state);
@@ -85,8 +92,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
 
   useEffect(() => () => { if (toastTimeout.current) clearTimeout(toastTimeout.current); }, []);
 
-  // Dès que la partie se met en pause (recherche web), on blur le TextInput.
-  // Cela empêche iOS de le re-focus après la fermeture du SFSafariViewController.
+  // Dès que la partie se met en pause (app quittée, bouton pause), on ferme le clavier et la recherche.
   useEffect(() => {
     if (!isPaused) return;
     inputRef.current?.blur();
@@ -150,9 +156,6 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
     onToggle(label);
     if (searching) setQuery('');
   };
-  const handleWebSearch = () =>
-    onWebSearch(query.trim() ? `${query.trim()} ${question.subject}` : question.subject);
-
   // Calcul de la scrollbar dynamique
   const isScrollable = chipsContentH > chipsContainerH + 4;
   const thumbH = isScrollable
@@ -184,15 +187,16 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
             onPress={onTogglePause}
             accessibilityRole="button"
             accessibilityLabel={isPaused ? t.play.resume : t.play.pause}
-            style={styles.pauseBtn}
+            // À la couleur de la barre du chrono, icône crème : ne se confond plus avec « Passer » juste à côté
+            style={[styles.pauseBtn, { backgroundColor: fillColor }]}
           >
             <View pointerEvents="none">
               {isPaused ? (
-                <Svg width={24} height={20} viewBox="0 0 24 20">
+                <Svg width={18} height={15} viewBox="0 0 24 20">
                   <Path d={PLAY_PATH} fill={colors.cream} />
                 </Svg>
               ) : (
-                <Svg width={21} height={24} viewBox="0 0 21 24">
+                <Svg width={15} height={17} viewBox="0 0 21 24">
                   <Path d={PAUSE_PATH} fill={colors.cream} />
                 </Svg>
               )}
@@ -204,7 +208,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
             accessibilityLabel={t.play.endTurn}
             style={styles.skipBtn}
           >
-            <SkipIcon />
+            <SkipIcon size={24} />
           </Pressable>
         </View>
 
@@ -235,7 +239,6 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
             returnKeyType="search"
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
-            onSubmitEditing={searching ? handleWebSearch : undefined}
             accessibilityLabel={t.play.searchPlaceholder}
             style={styles.searchInput}
           />
@@ -250,12 +253,10 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
         {searching && list.length === 0 ? (
           <View style={styles.noResult}>
             <Text style={styles.noResultText}>{t.play.notInDatabase(query.trim().toUpperCase())}</Text>
+            <Text style={styles.noResultHint}>{t.play.notInDatabaseHint}</Text>
             <View style={styles.noResultActions}>
               <Pressable onPress={() => { handleToggle(query.trim().toUpperCase()); inputRef.current?.blur(); Keyboard.dismiss(); showToast(); }} sound="correct" haptic="light" style={styles.actionBtn} accessibilityRole="button">
                 <Text style={styles.actionBtnText}>{t.play.validateAnyway}</Text>
-              </Pressable>
-              <Pressable onPress={handleWebSearch} style={[styles.actionBtn, styles.actionBtnAlt]} accessibilityRole="button">
-                <Text style={[styles.actionBtnText, styles.actionBtnTextAlt]}>{t.play.searchOnline}</Text>
               </Pressable>
             </View>
           </View>
@@ -272,30 +273,32 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
       {/* ─── ZONE SCROLLABLE : chips + scrollbar dynamique ─── */}
       {list.length > 0 && !searching ? (
         <View style={styles.someAnswersRow}>
-          <Text style={styles.someAnswersLabel}>{t.play.someAnswers}</Text>
+          {/* Le titre est le tri : deux onglets texte, l'actif souligné */}
+          <View style={styles.sortTabs} accessibilityRole="tablist">
+            {([false, true] as const).map((alpha) => {
+              const selected = isAlpha === alpha;
+              return (
+                <Pressable
+                  key={alpha ? 'alpha' : 'popular'}
+                  onPress={() => {
+                    if (selected) return;
+                    setIsAlpha(alpha);
+                    setActiveLetter(null);
+                    scrollRef.current?.scrollTo({ y: 0, animated: false });
+                  }}
+                  hitSlop={8}
+                  accessibilityRole="tab"
+                  accessibilityState={{ selected }}
+                  style={[styles.sortTab, selected && styles.sortTabSelected]}
+                >
+                  <Text style={[styles.sortTabText, selected && styles.sortTabTextSelected]} numberOfLines={1}>
+                    {alpha ? t.play.sortAlpha : t.play.sortPopular}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
           <View style={styles.listActions}>
-          <Pressable
-            onPress={() => {
-              setIsAlpha(v => !v);
-              setActiveLetter(null);
-              scrollRef.current?.scrollTo({ y: 0, animated: false });
-            }}
-            hitSlop={8}
-            accessibilityRole="button"
-            accessibilityLabel={isAlpha ? t.play.sortPopular : t.play.sortAlpha}
-            style={styles.sortBtn}
-          >
-            <Svg width={16} height={16} viewBox="0 0 24 24" pointerEvents="none">
-              <Path
-                d="M3 6 H21 M3 12 H15 M3 18 H9"
-                stroke={colors.cream}
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-            </Svg>
-            <Text style={styles.sortBtnText}>{isAlpha ? 'A–Z' : '★'}</Text>
-          </Pressable>
           {!compact ? (
             <Pressable
               onPress={() => setIsCollapsed(v => !v)}
@@ -333,8 +336,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
       ) : null}
       {list.length > 0 ? (
         <View style={[styles.chipsArea, !compact && !isCollapsed && { maxHeight: MAX_CHIPS_H }]}>
-          {/* Scrollbar track + thumb dynamique, glissable au doigt (remplacée par l'index A-Z en tri alphabétique) */}
-          {!showIndex ? (
+          {/* Scrollbar track + thumb dynamique, glissable au doigt ; gardée en tri A-Z, à côté de l'index des lettres */}
           <View style={styles.scrubZone} {...scrubResponder.panHandlers}>
             <View style={[styles.scrollTrack, isScrubbing && styles.scrollTrackActive]} pointerEvents="none">
               {isScrollable ? (
@@ -349,7 +351,6 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
               )}
             </View>
           </View>
-          ) : null}
 
           <ScrollView
             ref={scrollRef}
@@ -415,6 +416,9 @@ export function PlayPhase({ state, remainingMs, onToggle, onWebSearch, onSkip, o
   );
 }
 
+// Pause et Passer : plus discrets que le chrono, assez grands pour le pouce (44 pt)
+const BTN_SIZE = 44;
+
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
@@ -454,17 +458,16 @@ const styles = StyleSheet.create({
     color: colors.pink,
   },
   pauseBtn: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: colors.purpleDeep,
+    width: BTN_SIZE,
+    height: BTN_SIZE,
+    borderRadius: BTN_SIZE / 2,
     alignItems: 'center',
     justifyContent: 'center',
   },
   skipBtn: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: BTN_SIZE,
+    height: BTN_SIZE,
+    borderRadius: BTN_SIZE / 2,
     backgroundColor: colors.purpleDeep,
     alignItems: 'center',
     justifyContent: 'center',
@@ -530,10 +533,19 @@ const styles = StyleSheet.create({
   noResult: {
     gap: 12,
   },
+  // Même typo que les réponses : le mot tapé reste lisible d'un coup d'œil
   noResultText: {
     fontFamily: fonts.displayMedium,
-    fontSize: 15,
+    fontSize: 18,
     color: colors.cream,
+    textAlign: 'center',
+  },
+  noResultHint: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 16,
+    lineHeight: 21,
+    color: colors.cream,
+    opacity: 0.8,
     textAlign: 'center',
   },
   noResultActions: {
@@ -543,21 +555,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionBtn: {
+    minHeight: 44,
+    justifyContent: 'center',
     backgroundColor: colors.cream,
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    borderRadius: 22,
+    paddingHorizontal: 20,
   },
-  actionBtnAlt: {
-    backgroundColor: colors.purpleDeep,
-  },
+  // Même typo que les boutons de l'app (Valider, Passer…)
   actionBtnText: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 13,
+    fontFamily: fonts.display,
+    fontSize: 18,
     color: colors.purpleDeep,
-  },
-  actionBtnTextAlt: {
-    color: colors.cream,
   },
   toast: {
     position: 'absolute',
@@ -578,32 +586,33 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-  someAnswersLabel: {
-    flexShrink: 1,
-    fontFamily: fonts.displayMedium,
-    fontSize: 16,
-    color: colors.cream,
+    marginBottom: 18,
   },
   listActions: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
   },
-  sortBtn: {
+  sortTabs: {
+    flexShrink: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    minHeight: 32,
-    paddingHorizontal: 10,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(254,246,215,0.6)',
+    gap: 18,
   },
-  sortBtnText: {
+  sortTab: {
+    paddingBottom: 3,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  sortTabSelected: {
+    borderBottomColor: colors.cream,
+  },
+  sortTabText: {
     fontFamily: fonts.displayMedium,
-    fontSize: 14,
+    fontSize: 16,
+    color: 'rgba(254,246,215,0.5)',
+  },
+  sortTabTextSelected: {
+    fontFamily: fonts.display,
     color: colors.cream,
   },
   scrubZone: {

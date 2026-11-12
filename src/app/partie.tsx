@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useReducer, useRef, useState } from 'react';
-import { Keyboard, Linking, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { FinalPhase } from '@/components/game/FinalPhase';
 import { AuctionPhase } from '@/components/game/AuctionPhase';
@@ -21,7 +21,8 @@ import { GameLayout } from '@/components/GameLayout';
 import { ConfirmModal, PauseModal } from '@/components/InfoModal';
 import { GIFT_PACKS, PACK_THEME_IDS, type ProductId, WELCOME_GAMES } from '@/config/shop';
 import { giftAfter, giftChain } from '@/lib/giftChain';
-import { questions } from '@/data/questions';
+import { markPacksPlayed } from '@/lib/packHistory';
+import { questionsFor } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSuccess, opponent, TURN_SECONDS } from '@/game/engine';
 import { createSurvieGame, isLastSurvieRound, survieReducer, survieTurboSeconds } from '@/game/survie-engine';
@@ -88,6 +89,12 @@ export default function GameScreen() {
   // Aucun thème coché = tous les thèmes gratuits + les packs achetés (jamais les packs non achetés)
   const playableThemes =
     settings.selectedThemes.length > 0 ? settings.selectedThemes : [...themes.map((theme) => theme.id), ...ownedPackThemes];
+  // Chaque partie lancée (revanche comprise) date ses packs : ils passent en tête dans les paramètres
+  const packThemes = Object.values(PACK_THEME_IDS);
+  const playedPacksKey = playableThemes.filter((id) => packThemes.includes(id)).join(',');
+  useEffect(() => {
+    if (playedPacksKey) markPacksPlayed(playedPacksKey.split(','));
+  }, [gameId, playedPacksKey]);
   // La partie d'essai a commencé : le pack ne pourra plus être essayé avec une pub
   const { removeTrialPack } = settings;
   useEffect(() => {
@@ -244,9 +251,9 @@ type Confirm = 'quit' | 'skip' | null;
 
 function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFinished }: GameProps) {
   const showCategory = selectedThemes.length > 1;
-  const t = getT(useLang().lang);
-  const filteredQuestions =
-    selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
+  const { lang } = useLang();
+  const t = getT(lang);
+  const filteredQuestions = questionsFor(lang, selectedThemes);
   const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, filteredQuestions));
   useOnFinal(state.phase === 'final', onFinished);
   const [confirm, setConfirm] = useState<Confirm>(null);
@@ -256,7 +263,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
   const [playIntro, setPlayIntro] = useState<'covering' | 'revealing' | null>(null);
   // Transition de fin de tour (mise réussie / loupée) avant l'écran de résultat
   const [turnEnd, setTurnEnd] = useState<'covering' | 'revealing' | null>(null);
-  // 'search' → pause auto avec fenêtre « Reprendre » (recherche web, app quittée), 'manual' → pause bouton, null → en cours
+  // 'search' → pause auto avec fenêtre « Reprendre » (app quittée, pour vérifier une réponse), 'manual' → pause bouton, null → en cours
   const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);
   const paused = pauseSource !== null;
   // Dernière action d'enchère : seule une mise (pas un passe) déclenche le pulse chez l'équipe suivante
@@ -265,7 +272,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
     dispatch({ type: 'END_TURN', reason: 'time' }),
   );
   useHapticWarning(remainingMs, 10);
-  // App quittée en plein tour : même pause que la recherche web, avec la fenêtre « Reprendre » au retour
+  // App quittée en plein tour (vérifier une réponse ailleurs) : pause, avec la fenêtre « Reprendre » au retour
   usePauseOnBackground(state.phase === 'play', () => setPauseSource('search'));
 
   // Le chrono peut finir pendant que la confirmation « Terminer le tour » est ouverte.
@@ -282,15 +289,6 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
   const goHome = () => router.dismissTo('/');
   useBackToQuitConfirm(() => (state.phase === 'final' ? goHome() : setConfirm('quit')));
 
-  const searchWeb = (query: string) => {
-    setPauseSource('search');
-    // isPaused=true → PlayPhase blur son TextInput immédiatement, avant que le
-    // navigateur s'ouvre. Quand le navigateur se ferme, le champ est déjà blurred.
-    const url = query.trim()
-      ? `https://www.google.com/search?q=${encodeURIComponent(query)}`
-      : 'https://www.google.com';
-    Linking.openURL(url).catch(() => {});
-  };
   // Bandeau : l'équipe qui enchérit, puis celle qui a remporté l'enchère.
   const bannerTeam =
     state.phase === 'auction' || state.phase === 'final' ? state.teams[state.auction.current] : state.teams[contract(state).team];
@@ -366,7 +364,6 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
           state={state}
           remainingMs={remainingMs}
           onToggle={(label) => dispatch({ type: 'TOGGLE_ANSWER', label })}
-          onWebSearch={searchWeb}
           onSkip={() => setConfirm('skip')}
           isPaused={paused}
           onTogglePause={() =>
@@ -411,8 +408,7 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
 
 function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, beforeLeave, onFinished }: GameProps & { timer: SurvieTimer | null }) {
   const showCategory = selectedThemes.length > 1;
-  const filteredQuestions =
-    selectedThemes.length > 0 ? questions.filter((q) => selectedThemes.includes(q.theme)) : questions;
+  const filteredQuestions = questionsFor(useLang().lang, selectedThemes);
   const [state, dispatch] = useReducer(survieReducer, null, () =>
     createSurvieGame(teams, roundCount, filteredQuestions),
   );
@@ -451,6 +447,11 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
   if (prevTeam !== state.currentTeam) setPrevTeam(state.currentTeam);
   const isPaused = pauseSource !== null || confirmElim !== null || confirmEndRound;
   usePauseOnBackground(state.phase === 'play', () => setPauseSource('search'));
+  // La main passe à l'équipe suivante : une pause manuelle ne la suit pas, son chrono démarre
+  const nextTurn = (action: { type: 'VALIDATE' | 'PASS' | 'TIMEOUT' }) => {
+    dispatch(action);
+    setPauseSource((s) => (s === 'manual' ? null : s));
+  };
   const goHome = () => router.dismissTo('/');
   useBackToQuitConfirm(() => (state.phase === 'final' ? goHome() : setConfirmQuit(true)));
   const currentTeam = state.teams[state.currentTeam];
@@ -507,7 +508,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
         <SurviePlayPhase
           key={`${state.round}-${state.currentTeam}`}
           state={state}
-          onValidate={() => dispatch({ type: 'VALIDATE' })}
+          onValidate={() => nextTurn({ type: 'VALIDATE' })}
           onPass={() => setConfirmElim('pass')}
           onTimeout={() => setConfirmElim('timeout')}
           turnSeconds={timer === 'turbo' ? survieTurboSeconds(state) : timer}
@@ -549,11 +550,11 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
         confirmLabel={confirmElim === 'timeout' ? t.survie.timeoutYes : t.survie.resume}
         confirmIcon={confirmElim === 'timeout' ? 'check-bold' : 'play'}
         onCancel={() => {
-          dispatch({ type: confirmElim === 'timeout' ? 'TIMEOUT' : 'PASS' });
+          nextTurn({ type: confirmElim === 'timeout' ? 'TIMEOUT' : 'PASS' });
           setConfirmElim(null);
         }}
         onConfirm={() => {
-          if (confirmElim === 'timeout') dispatch({ type: 'VALIDATE' });
+          if (confirmElim === 'timeout') nextTurn({ type: 'VALIDATE' });
           setConfirmElim(null);
         }}
         // Choix obligatoire : un tap à côté ne doit ni éliminer ni valider

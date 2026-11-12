@@ -143,18 +143,7 @@ export default function GameConfigScreen() {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>{t.gameMode.modesTitle}</Text>
               <View style={styles.modeList} accessibilityRole="radiogroup">
-                <View ref={auctionTarget} collapsable={false}>
-                <ModeCard
-                  title={t.gameMode.classic}
-                  description={t.gameMode.classicDesc}
-                  activeXml={ENCHERE_ACTIF_XML}
-                  inactiveXml={ENCHERE_INACTIF_XML}
-                  selected={hasPickedMode && mode === 'classique'}
-                  onPress={() => pickMode('classique')}
-                  onInfo={() => setRulesMode('auction')}
-                  infoLabel={`${t.pages.rules} : ${t.gameMode.classic}`}
-                />
-                </View>
+                {/* Survie en premier, Enchères ensuite */}
                 <View ref={survieTarget} collapsable={false}>
                 <ModeCard
                   title={t.gameMode.charades}
@@ -167,6 +156,18 @@ export default function GameConfigScreen() {
                   onPress={() => pickMode('survie')}
                   onInfo={() => setRulesMode('survie')}
                   infoLabel={`${t.pages.rules} : ${t.gameMode.charades}`}
+                />
+                </View>
+                <View ref={auctionTarget} collapsable={false}>
+                <ModeCard
+                  title={t.gameMode.classic}
+                  description={t.gameMode.classicDesc}
+                  activeXml={ENCHERE_ACTIF_XML}
+                  inactiveXml={ENCHERE_INACTIF_XML}
+                  selected={hasPickedMode && mode === 'classique'}
+                  onPress={() => pickMode('classique')}
+                  onInfo={() => setRulesMode('auction')}
+                  infoLabel={`${t.pages.rules} : ${t.gameMode.classic}`}
                 />
                 </View>
               </View>

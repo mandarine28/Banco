@@ -7,8 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
-import { offers, PACK_THEME_IDS, type ProductId, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
-import { GiftPass, type PassPack, type PassState } from '@/components/GiftPass';
+import { offers, PACK_THEME_IDS, type ProductId, WELCOME_PACK } from '@/config/shop';
 import { gamesUntil, giftBefore } from '@/lib/giftChain';
 import { GIFT_PACKS } from '@/config/shop';
 import { questions } from '@/data/questions';
@@ -20,10 +19,10 @@ import { TUTORIAL_STEPS, useTutorial, useTutorialTarget } from '@/state/tutorial
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 import { LockedGiftModal } from '@/components/LockedGiftModal';
-import { Toast, useToast } from '@/components/Toast';
 import { useGameSettings } from '@/state/gameSettings';
 
-const BACK_PATH = 'M20 12H4M10 6L4 12L10 18';
+const ARROW_PATH =
+  'M25.3411 5.19038L31.4496 10.4604C32.1513 11.0658 31.7232 12.2175 30.7964 12.2175H25.3559L13.1071 11.5356C12.5339 11.5036 12.0515 11.9599 12.0515 12.534V17.1142C12.0515 17.8923 11.2019 18.3723 10.5354 17.9707L0.484021 11.9139C-0.0406948 11.5977 -0.16034 10.8883 0.231643 10.4175L8.60512 0.36043C9.12279 -0.26133 10.1261 -0.0429697 10.3385 0.737696L11.8143 6.16055C11.949 6.65574 12.4367 6.96854 12.943 6.88446L24.5241 4.96105C24.817 4.91241 25.1163 4.99643 25.3411 5.19038Z';
 // Didacticiel : temps passé sur chaque pack quand la boutique défile
 const SHOWCASE_MS = 1000;
 
@@ -47,6 +46,8 @@ const PACKS: Pack[] = [
   { id: 'retro-gaming', productId: 'packRetro', gift: true, image: require('../../assets/packs/retro-gaming.png') },
   { id: 'anime', productId: 'packAnime', gift: true, image: require('../../assets/packs/anime.png') },
   { id: 'football', productId: 'packFootball', gift: true, image: require('../../assets/packs/football.png') },
+  { id: 'dessins-animes', productId: 'packDessinsAnimes', gift: true, image: require('../../assets/packs/dessins-animes.png') },
+  { id: 'jeux-video', productId: 'packJeuxVideo', gift: true, image: require('../../assets/packs/jeux-video.png') },
 ];
 
 /** Nombre de questions par pack, compté dans les données (0 pour un pack à venir). */
@@ -168,8 +169,6 @@ export default function BoutiqueScreen() {
     router.push('/parametres');
   };
   const [restoring, setRestoring] = useState(false);
-  const passToast = useToast();
-  const [passSelection, setPassSelection] = useState<{ productId: ProductId; message: string } | null>(null);
   const { lang } = useLang();
   const t = getT(lang);
   const { step: tutorialStep } = useTutorial();
@@ -194,28 +193,14 @@ export default function BoutiqueScreen() {
     return () => clearInterval(timer);
   }, [isShowcase]);
 
-  // Passe : packs offerts dans l'ordre de la chaîne, avec l'image de leur carte
-  const passPacks: PassPack[] = GIFT_PACKS.flatMap((productId) => {
-    const pack = PACKS.find((p) => p.productId === productId);
-    return pack ? [{ productId, image: pack.image, title: t.shop.packTitles[pack.id] ?? pack.id }] : [];
-  });
-  // Pack offert : progression s'il est le prochain à gagner ; sinon 0 sur 3, en attente du pack d'avant
+  // Pack offert pas encore gagné : parties qu'il reste à jouer (chaîne comprise), plutôt qu'un « 0 sur 1 »
   const giftProgressOf = (productId: ProductId): string | undefined =>
-    chain ? t.gift.progress(chain.next === productId ? chain.played : 0, WELCOME_GAMES) : undefined;
+    chain ? t.matchSettings.gamesCount(gamesUntil(chain, productId)) : undefined;
   // Titre du pack offert à gagner avant celui-ci, tant qu'il ne l'est pas
   const giftAfterOf = (productId: ProductId): string | undefined => {
     const before = giftBefore(productId);
     if (!chain || chain.next === productId || !before) return undefined;
     return t.shop.packTitles[PACK_THEME_IDS[before] ?? ''] ?? '';
-  };
-
-  // État d'un pack du passe, affiché sous son titre quand on touche sa pastille
-  const passStatusOf = (pack: PassPack, state: PassState): string => {
-    if (state === 'won') return t.shop.unlocked;
-    if (state === 'current') return t.gift.progress(chain?.played ?? 0, WELCOME_GAMES);
-    // Même explication que le bouton gris de la carte du pack
-    const after = giftAfterOf(pack.productId);
-    return after ? t.gift.unlockFirst(after) : t.gift.lockedMsg(WELCOME_GAMES);
   };
 
   async function handlePurchase(pack: Pack) {
@@ -242,39 +227,35 @@ export default function BoutiqueScreen() {
     }
   }
 
+  // Mêmes tailles d'icônes que les autres écrans
+  const backSize = Math.min(width * 0.09, 36);
+  const settingSize = Math.min(width * 0.08, 32);
+
   return (
     <View style={[styles.screen, { paddingTop: insets.top }]}>
       <View style={StyleSheet.absoluteFill} pointerEvents="none">
         <CreamPatternSvg width={width} height={height} opacity={0.04} fill="#ffffff" />
       </View>
       <View style={styles.header}>
-        <Pressable
-          onPress={() => router.back()}
-          hitSlop={12}
-          accessibilityRole="button"
-          accessibilityLabel={t.shop.back}
-        >
-          <Svg width={34} height={20} viewBox="0 0 24 24" fill="none">
-            <Path
-              d={BACK_PATH}
-              stroke={colors.cream}
-              strokeWidth={2.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </Svg>
+        <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button" accessibilityLabel={t.shop.back}>
+          <View pointerEvents="none">
+            <Svg width={backSize} height={(backSize * 19) / 32} viewBox="0 0 32 19">
+              <Path d={ARROW_PATH} fill={colors.cream} />
+            </Svg>
+          </View>
         </Pressable>
+        <Pressable onPress={() => router.push('/reglages')} hitSlop={10} accessibilityRole="button" accessibilityLabel={t.shop.settings}>
+          <View pointerEvents="none">
+            <Svg width={settingSize} height={settingSize} viewBox="0 0 24 24">
+              <Path d={SETTING_PATH} fill={colors.cream} />
+            </Svg>
+          </View>
+        </Pressable>
+      </View>
 
-        <Pressable
-          onPress={() => router.push('/reglages')}
-          hitSlop={12}
-          accessibilityRole="button"
-          accessibilityLabel={t.shop.settings}
-        >
-          <Svg width={24} height={24} viewBox="0 0 24 24">
-            <Path d={SETTING_PATH} fill={colors.cream} />
-          </Svg>
-        </Pressable>
+      <View style={styles.intro}>
+        <Text style={styles.sectionTitle}>{t.shop.packsTitle}</Text>
+        <Text style={styles.earlyText}>{t.shop.earlyAccess}</Text>
       </View>
 
       <ScrollView
@@ -284,33 +265,6 @@ export default function BoutiqueScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: isShowcase ? height : insets.bottom + 32 }]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.passWrap}>
-        <GiftPass
-          onPackPress={(pack, state) => {
-            setPassSelection({ productId: pack.productId, message: `${pack.title}\n${passStatusOf(pack, state)}` });
-            passToast.show();
-          }}
-          selected={passToast.visible ? passSelection?.productId : null}
-          packs={passPacks}
-          owned={hasPurchased}
-          next={chain?.next}
-          progress={`${chain?.played ?? 0}/${WELCOME_GAMES}`}
-          describe={(pack, state) =>
-            state === 'won'
-              ? `${pack.title}, ${t.shop.unlocked}`
-              : state === 'current'
-                ? `${pack.title}, ${t.gift.progress(chain?.played ?? 0, WELCOME_GAMES)}`
-                : `${pack.title}, ${t.gift.lockedMsg(chain ? gamesUntil(chain, pack.productId) : WELCOME_GAMES)}`
-          }
-        />
-        <Toast toast={passToast} message={passSelection?.message ?? ''} light style={styles.passToast} />
-        </View>
-
-        <View>
-          <Text style={styles.sectionTitle}>{t.shop.packsTitle}</Text>
-          <Text style={styles.earlyText}>{t.shop.earlyAccess}</Text>
-        </View>
-
         {error && (
           <Text style={styles.errorText}>{t.shop.errors[error]}</Text>
         )}
@@ -331,7 +285,14 @@ export default function BoutiqueScreen() {
             onLockedPress={pack.gift ? () => setLockedTheme(pack.id) : undefined}
           />
         ))}
-        <LockedGiftModal themeId={lockedTheme} onClose={() => setLockedTheme(null)} onTrialGranted={startTrial} />
+        <LockedGiftModal
+          themeId={lockedTheme}
+          onClose={() => setLockedTheme(null)}
+          onTrialGranted={startTrial}
+          // Flèches : packs offerts pas encore gagnés, dans l'ordre des cartes
+          lockedThemes={PACKS.filter((pack) => pack.gift && pack.productId && !hasPurchased(pack.productId)).map((pack) => pack.id)}
+          onChangeTheme={setLockedTheme}
+        />
 
         <Pressable
           style={styles.restoreButton}
@@ -359,9 +320,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: '6%',
+    paddingTop: 14,
+    height: 46,
+  },
+  intro: {
     paddingHorizontal: 24,
     paddingTop: 14,
-    paddingBottom: 8,
+    paddingBottom: 12,
+    gap: 4,
   },
   scroll: {
     flex: 1,
@@ -371,11 +338,11 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     gap: 16,
   },
+  // Même titre que les paramètres de la partie
   sectionTitle: {
     fontFamily: fonts.display,
-    fontSize: 24,
-    color: colors.cream,
-    marginBottom: 4,
+    fontSize: 26,
+    color: '#fef1cc',
   },
   earlyText: {
     fontFamily: fonts.displayMedium,
@@ -383,16 +350,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: colors.cream,
     opacity: 0.8,
-  },
-  // Collé au-dessus du bouton « 0 partie sur 3 », assez large pour 2 lignes
-  passWrap: {
-    zIndex: 10,
-  },
-  // Sous le passe : au-dessus, il serait coupé par le haut de l'écran
-  passToast: {
-    top: '100%',
-    marginTop: 4,
-    width: 260,
   },
   errorText: {
     fontFamily: fonts.displayMedium,

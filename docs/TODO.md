@@ -44,8 +44,9 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
 
 ## Étape 4 — Légal, avant la mise en ligne (👤)
 
-- [ ] 👤 App Store Connect : URL d'assistance → `https://mandarine28.github.io/banco-site/assistance.html` (l'accueil du site est maintenant la vitrine ; l'URL marketing reste `/banco-site/`)
-- [ ] 👤 + 🤖 **Au prochain push de l'app** : renommer le site en `bango-site`, mettre à jour `privacyUrl` (`src/config/links.ts`) et garder une redirection à l'ancienne adresse
+- [ ] 👤 App Store Connect : URL d'assistance → `https://mandarine28.github.io/bango-site/assistance.html` (l'accueil du site est maintenant la vitrine ; l'URL marketing reste `/banco-site/`)
+- [x] 🤖 Site renommé côté code (2026-11-12) : `privacyUrl` → `bango-site`, adresses du site mises à jour, pages de redirection prêtes dans `Downloads/Banco/banco-site-redirect`
+- [ ] 👤 GitHub : renommer le dépôt `banco-site` en `bango-site`, recréer un dépôt public `banco-site` (vide) et y pousser les redirections, activer Pages sur les deux ; App Store Connect : URL d'assistance, marketing et confidentialité en `bango-site`
 - [ ] 👤 Mentions légales du site : faire valider (adresse/statut à ajouter si besoin)
 - [ ] 👤 App Store Connect : Tauk ! (soumise le 10/10) et Bango (16/10) toujours « En attente de vérification » le 20/10 → message envoyé à App Review ; vérifier la page Adhésion (developer.apple.com/account) et « Accords, taxes et services bancaires » (accord **apps payantes** actif, requis pour les achats intégrés)
 - [ ] 👤 App Store Connect : **retirer l'achat intégré `com.banco.pack_harry_potter` de la vérification** (le pack est désormais offert) — la v1 ne vend rien
@@ -53,6 +54,8 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
 - [ ] 👤 Faire relire les packs Rétro-gaming et Anime & mangas par des connaisseurs avant publication
 - [x] 🤖 Pack Football (140 questions) branché, 7e de la chaîne de cadeaux (2026-11-05) : joueurs et effectifs tirés de Wikidata et recoupés avec les catégories de Wikipédia, palmarès vérifiés sur Wikipédia (résultats jusqu'à l'automne 2026)
 - [ ] 👤 Jouer quelques parties du pack Football pour juger le niveau des listes (certaines vont jusqu'à des joueurs peu connus)
+- [x] 🤖 Pack Dessins animés (67 questions) branché, 8e de la chaîne de cadeaux (2026-11-09) : listes recoupées sur Wikipédia et les wikis ; Club Dorothée, TFOU, Gulli et Chansons Disney posés seulement en français
+- [ ] 👤 Faire relire les traductions espagnoles et portugaises du pack Dessins animés (une partie est de mémoire) et les sujets les plus justes (Bande à Mickey, Rick et Morty, Maîtres de l'univers, Schtroumpfs, Bisounours, École)
 - [ ] 👤 + 🤖 Au passage au payant : créer les produits (App Store Connect + RevenueCat)
 - [ ] 👤 Site, page Confidentialité : retirer « Aucune publicité », ajouter AdMob, les données collectées, le consentement ; **retirer les comptes** (Supabase, connexion Apple/Google, suppression de compte), y compris dans la FAQ de la page Assistance
 - [ ] 👤 Site : publier `app-ads.txt` à la **racine du domaine** — AdMob refuse la validation (« vos informations ne correspondent pas ») car `https://mandarine28.github.io/app-ads.txt` renvoie 404 (constaté le 2026-10-29). Le site `banco-site` est un site de projet (`/banco-site/…`) et ne peut pas servir la racine. Solution :
@@ -80,6 +83,8 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
 
 ## Plus tard
 
+- [ ] 🤖 **Questions à moins de 30 réponses** (test `engine.test.ts` en échec) : 25 questions Jeux vidéo (rôles et raretés Brawl Stars, régions Genshin, Mario Switch, Resident Evil, sorts CoC/CR, armes Fortnite…) et 2 albums Rap (Bitume Caviar, Gims). La mise max reste 30 : plafonner la mise par question, compléter les listes ou retirer ces questions
+- [ ] 🤖 Écran « Modes de jeu » en deux moitiés : brouillon `docs/drafts/modes-split-screen.tsx`, à reprendre pour la mise à jour suivante
 - [ ] Android : identifiant d'app, lien Play Store, déclaration « Contient des annonces », « Sécurité des données »
 - [ ] Achat « Retirer les pubs »
 - [ ] Médiation pub (quand les revenus pub dépassent ~100 $/mois)

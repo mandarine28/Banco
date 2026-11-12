@@ -1,6 +1,4 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,36 +12,9 @@ import { useLang } from '@/lib/LangContext';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 import { SkipIcon } from '@/components/game/PlayPhase';
+import { SurvieTimerDisc } from '@/components/game/SurvieTimerDisc';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
-
-/**
- * Barre de temps animée en continu (fil natif) : avec un tour court, les mises à jour du chrono
- * toutes les 100 ms faisaient avancer la barre par à-coups visibles.
- */
-function useSmoothElapsed(remainingMs: number, totalMs: number, running: boolean) {
-  const elapsed = useState(() => new Animated.Value(totalMs ? 1 - remainingMs / totalMs : 0))[0];
-  // Valeur lue au moment du démarrage ou de la reprise, sans relancer l'animation à chaque tick
-  const remainingRef = useRef(remainingMs);
-  useEffect(() => {
-    remainingRef.current = remainingMs;
-  });
-  useEffect(() => {
-    if (!running || !totalMs) return;
-    const remaining = remainingRef.current;
-    elapsed.setValue(1 - remaining / totalMs);
-    const anim = Animated.timing(elapsed, {
-      toValue: 1,
-      duration: remaining,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    });
-    anim.start();
-    return () => anim.stop();
-  }, [running, totalMs, elapsed]);
-  return elapsed;
-}
-const WARNING_SECONDS = 3;
 
 const PAUSE_PATH =
   'M5.14286 0C5.59751 0 6.03355 0.180612 6.35504 0.502103C6.67653 0.823594 6.85714 1.25963 6.85714 1.71429V22.2857C6.85714 22.7404 6.67653 23.1764 6.35504 23.4979C6.03355 23.8194 5.59751 24 5.14286 24H1.71429C1.25963 24 0.823594 23.8194 0.502103 23.4979C0.180612 23.1764 0 22.7404 0 22.2857V1.71429C0 1.25963 0.180612 0.823594 0.502103 0.502103C0.823594 0.180612 1.25963 0 1.71429 0H5.14286ZM18.8571 0C19.3118 0 19.7478 0.180612 20.0693 0.502103C20.3908 0.823594 20.5714 1.25963 20.5714 1.71429V22.2857C20.5714 22.7404 20.3908 23.1764 20.0693 23.4979C19.7478 23.8194 19.3118 24 18.8571 24H15.4286C14.9739 24 14.5379 23.8194 14.2164 23.4979C13.8949 23.1764 13.7143 22.7404 13.7143 22.2857V1.71429C13.7143 1.25963 13.8949 0.823594 14.2164 0.502103C14.5379 0.180612 14.9739 0 15.4286 0H18.8571Z';
@@ -81,13 +52,10 @@ export function SurviePlayPhase({
   const question = survieCurrentQuestion(state);
   const currentTeam = state.teams[state.currentTeam];
 
-  const seconds = Math.ceil(remainingMs / 1000);
-  const elapsed = useSmoothElapsed(remainingMs, (turnSeconds ?? 0) * 1000, turnSeconds !== null && !isPaused);
-  const [trackWidth, setTrackWidth] = useState(0);
-  // La barre pleine glisse depuis la gauche : translateX reste animable sur le fil natif, pas width
-  const fillTranslateX = elapsed.interpolate({ inputRange: [0, 1], outputRange: [-trackWidth, 0], extrapolate: 'clamp' });
-  const isWarning = seconds <= WARNING_SECONDS;
-  const fillColor = isWarning ? colors.pink : '#fb940e';
+  const { height } = useWindowDimensions();
+  // Le chrono prend la place libérée par l'ancienne barre ; plus petit sur les petits écrans
+  const discSize = Math.round(Math.min(192, height * 0.22));
+  const hasTimer = turnSeconds !== null;
 
   const rawSubject = getSubject(question, lang);
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
@@ -95,51 +63,8 @@ export function SurviePlayPhase({
 
   return (
     <View style={styles.wrapper}>
-      {/* Sans chrono (paramètres) : barre et pause masquées, mais on peut toujours terminer la manche */}
-      <View style={styles.timerRow}>
-        {turnSeconds !== null ? (
-          <>
-            <View
-              style={[styles.track, isPaused && styles.trackPaused]}
-              onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
-            >
-              <Animated.View
-                style={[styles.fill, { width: trackWidth, backgroundColor: fillColor, transform: [{ translateX: fillTranslateX }] }]}
-              />
-            </View>
-            <Text style={[styles.seconds, isWarning && styles.secondsWarning]}>{seconds}</Text>
-            <Pressable
-              onPress={onTogglePause}
-              accessibilityRole="button"
-              accessibilityLabel={isPaused ? t.play.resume : t.play.pause}
-              style={styles.pauseBtn}
-            >
-              <View pointerEvents="none">
-                {isPaused ? (
-                  <Svg width={24} height={20} viewBox="0 0 24 20">
-                    <Path d={PLAY_PATH} fill={colors.cream} />
-                  </Svg>
-                ) : (
-                  <Svg width={21} height={24} viewBox="0 0 21 24">
-                    <Path d={PAUSE_PATH} fill={colors.cream} />
-                  </Svg>
-                )}
-              </View>
-            </Pressable>
-          </>
-        ) : null}
-        <Pressable
-          onPress={onEndRound}
-          accessibilityRole="button"
-          accessibilityLabel={t.survie.endRoundTitle}
-          style={styles.pauseBtn}
-        >
-          <SkipIcon />
-        </Pressable>
-      </View>
-
       {/* Badge équipe + question */}
-      <View style={{ gap: 20 }}>
+      <View style={styles.questionBlock}>
         <View style={styles.badgeRow}>
           <View style={[styles.teamBadge, { backgroundColor: currentTeam.color }]}>
             <Text style={[styles.teamBadgeText, { color: badgeTextColor }]} numberOfLines={1}>
@@ -150,7 +75,50 @@ export function SurviePlayPhase({
         <Text style={styles.questionText}>{subject}</Text>
       </View>
 
-      {/* Boutons — centrés dans l'espace restant */}
+      {/* Chrono mis en avant, à la couleur de l'équipe ; pause et fin de manche juste dessous */}
+      <View style={styles.timerBlock}>
+        {hasTimer ? (
+          <SurvieTimerDisc
+            size={discSize}
+            color={currentTeam.color}
+            remainingMs={remainingMs}
+            totalMs={(turnSeconds ?? 0) * 1000}
+            paused={isPaused}
+          />
+        ) : null}
+        <View style={styles.controls}>
+          {/* Sans chrono (paramètres) : pas de pause, mais on peut toujours terminer la manche */}
+          {hasTimer ? (
+            <Pressable
+              onPress={onTogglePause}
+              accessibilityRole="button"
+              accessibilityLabel={isPaused ? t.play.resume : t.play.pause}
+              style={styles.roundBtn}
+            >
+              <View pointerEvents="none">
+                {isPaused ? (
+                  <Svg width={31} height={26} viewBox="0 0 24 20">
+                    <Path d={PLAY_PATH} fill={colors.cream} />
+                  </Svg>
+                ) : (
+                  <Svg width={26} height={30} viewBox="0 0 21 24">
+                    <Path d={PAUSE_PATH} fill={colors.cream} />
+                  </Svg>
+                )}
+              </View>
+            </Pressable>
+          ) : null}
+          <Pressable
+            onPress={onEndRound}
+            accessibilityRole="button"
+            accessibilityLabel={t.survie.endRoundTitle}
+            style={styles.roundBtn}
+          >
+            <SkipIcon color={colors.cream} size={42} />
+          </Pressable>
+        </View>
+      </View>
+
       <View style={styles.buttons}>
         <Pressable
           onPress={onValidate}
@@ -166,10 +134,7 @@ export function SurviePlayPhase({
               end={{ x: 1, y: 0 }}
               style={[styles.validerInner, pressed && { opacity: 0.85 }]}
             >
-              <View style={styles.btnContent}>
-                <MaterialCommunityIcons name="check-bold" size={24} color={colors.cream} />
-                <Text style={styles.validerText}>{t.survie.validate}</Text>
-              </View>
+              <Text style={styles.validerText}>{t.survie.validate}</Text>
             </LinearGradient>
           )}
         </Pressable>
@@ -181,16 +146,13 @@ export function SurviePlayPhase({
           style={({ pressed }) => [styles.passerWrap, pressed && { opacity: 0.8 }]}
         >
           <View style={styles.passerInner}>
-            <View style={styles.btnContent}>
-              <MaterialCommunityIcons name="skull" size={24} color={colors.purpleDeep} />
-              <Text style={styles.passerText}>{t.survie.noAnswer}</Text>
-            </View>
+            <Text style={styles.passerText}>{t.survie.noAnswer}</Text>
           </View>
         </Pressable>
       </View>
 
       {/* Pactole en bas, comme le compteur du mode enchères */}
-      <View style={[styles.jackpotFooter, { paddingBottom: Math.max(insets.bottom + 16, 32) }]}>
+      <View style={[styles.jackpotFooter, { paddingBottom: Math.max(insets.bottom - 4, 12) }]}>
         <View style={styles.jackpotCard}>
           <Text style={styles.jackpotValue}>{state.jackpot}</Text>
         </View>
@@ -217,46 +179,24 @@ const styles = StyleSheet.create({
     gap: 20,
   },
 
-  btnContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+  questionBlock: {
+    gap: 20,
   },
-  timerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: 12,
-  },
-  track: {
+  timerBlock: {
     flex: 1,
-    height: 16,
-    borderRadius: 60,
-    backgroundColor: '#fef1cc',
-    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+    // Les zones de toucher (54 px) espacent déjà les boutons du chrono
+    gap: 0,
   },
-  trackPaused: {
-    opacity: 0.45,
+  controls: {
+    flexDirection: 'row',
+    gap: 16,
   },
-  fill: {
-    height: '100%',
-    borderRadius: 60,
-  },
-  seconds: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 24,
-    color: colors.cream,
-    minWidth: 36,
-    textAlign: 'right',
-  },
-  secondsWarning: {
-    color: colors.pink,
-  },
-  pauseBtn: {
+  // Icônes seules, crème sur le fond bleu : la zone de toucher garde 54 × 54
+  roundBtn: {
     width: 54,
     height: 54,
-    borderRadius: 27,
-    backgroundColor: colors.purpleDeep,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -278,34 +218,33 @@ const styles = StyleSheet.create({
   },
   questionText: {
     fontFamily: fonts.display,
-    fontSize: 24,
-    lineHeight: 31,
+    fontSize: 26,
+    lineHeight: 33,
     color: colors.cream,
   },
 
   buttons: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: 12,
+    gap: 16,
   },
   // Mêmes proportions que CounterFooter (mode enchères)
   jackpotFooter: {
     alignItems: 'center',
-    gap: 16,
+    gap: 6,
   },
+  // Maquette : pastille bleu nuit, chiffre crème
   jackpotCard: {
     minWidth: 64,
     height: 64,
     paddingHorizontal: 12,
     borderRadius: 12,
-    backgroundColor: colors.cream,
+    backgroundColor: colors.purpleDeep,
     alignItems: 'center',
     justifyContent: 'center',
   },
   jackpotValue: {
     fontFamily: fonts.displayMedium,
     fontSize: 40,
-    color: colors.purpleDeep,
+    color: colors.cream,
   },
   jackpotLabel: {
     fontFamily: fonts.displayMedium,

@@ -94,8 +94,9 @@ type Translations = {
   play: {
     searchPlaceholder: string;
     notInDatabase: (word: string) => string;
+    /** Sous le mot introuvable : la liste n'est qu'un échantillon, on peut vérifier soi-même. */
+    notInDatabaseHint: string;
     validateAnyway: string;
-    searchOnline: string;
     answerAdded: string;
     pause: string;
     resume: string;
@@ -118,6 +119,12 @@ type Translations = {
     survieDesc: string;
     continueBtn: string;
     pickModeFirst: string;
+    /** Deux pastilles courtes sous le ticket de chaque mode. */
+    survieChips: [string, string];
+    auctionChips: [string, string];
+    /** Bouton du bas une fois le mode choisi. */
+    playSurvie: string;
+    playAuction: string;
   };
   matchSettings: {
     settingsTitle: string;
@@ -128,16 +135,35 @@ type Translations = {
     timerInfoFixed: string;
     timerInfoTurbo: string;
     categoriesTitle: string;
+    /** Bandeau des packs offerts, façon passe de combat. */
+    specialPacks: string;
+    seeAllPacks: string;
+    classicCategories: string;
+    /** Fenêtre « Tout voir » : comment on gagne les packs offerts. */
+    packsHowTo: (games: number) => string;
+    /** Pack offert pas encore gagné : parties restantes. */
+    freeIn: (games: number) => string;
+    /** Version courte pour les vignettes : « 3 parties ». */
+    gamesCount: (games: number) => string;
+    questionsCount: (count: number) => string;
+    tryPack: string;
     continueBtn: string;
     pickCategoryFirst: string;
   };
   teams: {
     setupTitle: string;
-    chooseColor: string;
-    chooseName: string;
+    chooseColor: (team: number) => string;
+    chooseName: (team: number) => string;
+    /** Lecteur d'écran : croix qui supprime une équipe. */
+    removeTeam: (team: string) => string;
+    /** Fenêtre de confirmation avant de supprimer une équipe. */
+    removeTeamTitle: string;
+    removeTeamConfirm: string;
     namePlaceholder: (n: number) => string;
-    inProgress: string;
     nextBtn: string;
+    addTeam: string;
+    /** « Suivant » touché avec une seule équipe. */
+    minTeams: string;
     defaultName: (i: number) => string;
   };
   comingSoon: {
@@ -272,13 +298,13 @@ const translations: Record<Lang, Translations> = {
       done: 'C\'est parti !',
       welcome: 'Bienvenue dans Bango ! Je vous fais faire le tour en 30 secondes.',
       shop: 'Ici, la Boutique : des packs de questions à gagner en jouant.',
-      giftFirst: (pack, n) => `Terminez ${n} parties et le pack « ${pack} » est à vous, offert !`,
+      giftFirst: (pack, n) => (n > 1 ? `Terminez ${n} parties et le pack « ${pack} » est à vous, offert !` : `Terminez une partie et le pack « ${pack} » est à vous, offert !`),
 
       morePacks: (n) => `Et ce n’est pas tout : ${n} packs sont à débloquer en jouant, l’un après l’autre. Regardez !`,
       play: 'Prêts ? Tout commence par ce bouton.',
       auction: 'Enchères : misez sur le nombre de réponses que vous pouvez citer. Une seule équipe répond, en 60 secondes.',
       survie: 'Survie : une réponse chacun son tour. L\'équipe qui n\'a plus d\'idée est éliminée !',
-      teams: 'Ici, c\'est le nombre d\'équipes, pas de joueurs ! Réunissez autant de cerveaux que vous voulez dans chaque équipe : il n\'y a pas de limite. Bonne partie !',
+      teams: 'Ici, on ajoute des équipes, pas des joueurs ! Réunissez autant de cerveaux que vous voulez dans chaque équipe : il n\'y a pas de limite. Bonne partie !',
     },
     common: {
       cancel: 'ANNULER',
@@ -336,16 +362,16 @@ const translations: Record<Lang, Translations> = {
     },
     play: {
       searchPlaceholder: 'Vérifier une réponse',
-      notInDatabase: (w) => `« ${w} » n'est pas dans la base.`,
-      validateAnyway: 'VALIDER QUAND MÊME',
-      searchOnline: 'CHERCHER EN LIGNE',
+      notInDatabase: (w) => `« ${w} » ? Pas dans notre liste !`,
+      notInDatabaseHint: "Notre liste n'est pas une encyclopédie. Vérifiez : la partie vous attend.",
+      validateAnyway: 'Valider quand même',
       answerAdded: '✓ Réponse ajoutée',
       pause: 'Pause',
       resume: 'Reprendre',
       endTurn: 'Terminer le tour',
       someAnswers: 'Quelques réponses possibles...',
-      sortPopular: 'Tri par popularité',
-      sortAlpha: 'Tri alphabétique',
+      sortPopular: 'Les plus connues',
+      sortAlpha: 'De A à Z',
     },
     home: {
       play: 'Jouer',
@@ -361,6 +387,10 @@ const translations: Record<Lang, Translations> = {
       survieDesc: 'Répondez en chaîne, le premier qui sèche perd',
       continueBtn: 'Continuer',
       pickModeFirst: "Choisissez d'abord un mode de jeu",
+      survieChips: ['Chacun son tour', 'Qui sèche perd'],
+      auctionChips: ['Misez juste', '60 secondes'],
+      playSurvie: 'Jouer en Survie',
+      playAuction: 'Jouer aux Enchères',
     },
     matchSettings: {
       settingsTitle: 'Paramètre de jeux',
@@ -370,16 +400,28 @@ const translations: Record<Lang, Translations> = {
       timerInfoFixed: 'Même temps à chaque tour',
       timerInfoTurbo: '2 s de moins à chaque tour',
       categoriesTitle: 'Catégories',
+      specialPacks: 'Packs spéciaux',
+      seeAllPacks: 'Tout voir',
+      classicCategories: 'Classique',
+      packsHowTo: (games) => (games > 1 ? `Jouez pour les débloquer : un pack offert toutes les ${games} parties.` : 'Jouez pour les débloquer : un pack offert à chaque partie terminée.'),
+      freeIn: (n) => `Offert dans ${n} partie${n > 1 ? 's' : ''}`,
+      gamesCount: (n) => `${n} partie${n > 1 ? 's' : ''}`,
+      questionsCount: (n) => `${n} questions`,
+      tryPack: 'Essayer',
       continueBtn: 'Continuer',
       pickCategoryFirst: 'Choisissez au moins une catégorie',
     },
     teams: {
       setupTitle: 'Création des squads',
-      chooseColor: "Choisissez la couleur de l'équipe",
-      chooseName: "Choisissez le nom de l'équipe",
+      chooseColor: (n) => `Choisissez la couleur de l'équipe ${n}`,
+      chooseName: (n) => `Choisissez le nom de l'équipe ${n}`,
+      removeTeam: (team) => `Supprimer ${team}`,
+      removeTeamTitle: 'Supprimer cette équipe ?',
+      removeTeamConfirm: 'SUPPRIMER',
       namePlaceholder: (n) => `Nom de l'équipe ${n}`,
-      inProgress: 'En cours...',
       nextBtn: 'Suivant',
+      addTeam: 'Ajouter une équipe',
+      minTeams: 'Il faut au moins 2 équipes pour jouer',
       defaultName: (i) => `Équipe ${i + 1}`,
     },
     comingSoon: {
@@ -401,7 +443,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} questions`,
       unlocked: 'Pack débloqué ✓',
       comingSoon: 'Bientôt disponible',
-      packTitles: { 'harry-potter': 'Poudlard Express', 'rap-francais': 'Rap français', dresseur: 'Meilleur dresseur', 'art-litterature': 'Art & littérature', 'retro-gaming': 'Rétro-gaming', anime: 'Anime & mangas', football: 'Football' },
+      packTitles: { 'harry-potter': 'Poudlard Express', 'rap-francais': 'Rap français', dresseur: 'Meilleur dresseur', 'art-litterature': 'Art & littérature', 'retro-gaming': 'Rétro-gaming', anime: 'Anime & mangas', football: 'Football', 'dessins-animes': 'Dessins animés', 'jeux-video': 'Jeux vidéo' },
       restore: 'Restaurer les achats',
       restoredTitle: 'Achats restaurés',
       restoredMsg: 'Vos packs sont de nouveau débloqués.',
@@ -425,7 +467,7 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Cadeau de bienvenue !',
-      welcomeMsg: (pack, games) => `Jouez ${games} parties et le pack « ${pack} » est à vous !`,
+      welcomeMsg: (pack, games) => (games > 1 ? `Jouez ${games} parties et le pack « ${pack} » est à vous !` : `Jouez une partie et le pack « ${pack} » est à vous !`),
       doneTitle: "C'est à vous !",
       doneMsg: (pack) => `Le pack « ${pack} » est débloqué. Bonne partie !`,
       ok: 'SUPER',
@@ -434,7 +476,7 @@ const translations: Record<Lang, Translations> = {
       lockedTrialMsg: (left) => `Plus que ${left} partie${left > 1 ? 's' : ''} avant de le débloquer. Envie de le découvrir tout de suite ? Une courte vidéo vous offre une partie d'essai, une seule fois.`,
       lockedTrialUsedMsg: (left) => `Votre partie d'essai a déjà été jouée. Plus que ${left} partie${left > 1 ? 's' : ''} avant de le débloquer !`,
       gotIt: 'COMPRIS',
-      nextGoal: (pack, games) => `Prochain objectif : encore ${games} parties pour débloquer « ${pack} » !`,
+      nextGoal: (pack, games) => (games > 1 ? `Prochain objectif : encore ${games} parties pour débloquer « ${pack} » !` : `Prochain objectif : une partie de plus pour débloquer « ${pack} » !`),
       after: (pack) => `Après ${pack}`,
       unlockFirst: (pack) => `Débloquez d’abord le cadeau gratuit « ${pack} » pour gagner celui-ci !`,
     },
@@ -551,13 +593,13 @@ const translations: Record<Lang, Translations> = {
       done: 'Let\'s go!',
       welcome: 'Welcome to Bango! Let me show you around in 30 seconds.',
       shop: 'This is the Shop: question packs you earn by playing.',
-      giftFirst: (pack, n) => `Finish ${n} games and the “${pack}” pack is yours, free!`,
+      giftFirst: (pack, n) => (n > 1 ? `Finish ${n} games and the “${pack}” pack is yours, free!` : `Finish one game and the “${pack}” pack is yours, free!`),
 
       morePacks: (n) => `And that’s not all: ${n} packs to unlock by playing, one after another. Take a look!`,
       play: 'Ready? It all starts with this button.',
       auction: 'Auctions: bet on how many answers you can name. Only one team answers, in 60 seconds.',
       survie: 'Survival: one answer each, in turn. The team that runs out of ideas is out!',
-      teams: 'This is the number of teams, not players! Gather as many brains as you like in each team: there\'s no limit. Have a great game!',
+      teams: 'Here you add teams, not players! Gather as many brains as you like in each team: there\'s no limit. Have a great game!',
     },
     common: {
       cancel: 'CANCEL',
@@ -615,16 +657,16 @@ const translations: Record<Lang, Translations> = {
     },
     play: {
       searchPlaceholder: 'Check an answer',
-      notInDatabase: (w) => `"${w}" is not in the database.`,
-      validateAnyway: 'VALIDATE ANYWAY',
-      searchOnline: 'SEARCH ONLINE',
+      notInDatabase: (w) => `"${w}"? Not on our list!`,
+      notInDatabaseHint: "Our list isn't an encyclopedia. Go check, the game will wait.",
+      validateAnyway: 'Validate anyway',
       answerAdded: '✓ Answer added',
       pause: 'Pause',
       resume: 'Resume',
       endTurn: 'End turn',
       someAnswers: 'A few possible answers...',
-      sortPopular: 'Sort by popularity',
-      sortAlpha: 'Sort alphabetically',
+      sortPopular: 'Most popular',
+      sortAlpha: 'A to Z',
     },
     home: {
       play: 'Play',
@@ -640,6 +682,10 @@ const translations: Record<Lang, Translations> = {
       survieDesc: 'Answer in turn, the first to dry up loses',
       continueBtn: 'Continue',
       pickModeFirst: 'Choose a game mode first',
+      survieChips: ['Take turns', 'Go blank, you lose'],
+      auctionChips: ['Bet right', '60 seconds'],
+      playSurvie: 'Play Survival',
+      playAuction: 'Play Auctions',
     },
     matchSettings: {
       settingsTitle: 'Game settings',
@@ -649,16 +695,28 @@ const translations: Record<Lang, Translations> = {
       timerInfoFixed: 'Same time every turn',
       timerInfoTurbo: '2 s less every round',
       categoriesTitle: 'Categories',
+      specialPacks: 'Special packs',
+      seeAllPacks: 'See all',
+      classicCategories: 'Classic',
+      packsHowTo: (games) => (games > 1 ? `Play to unlock them: a free pack every ${games} games.` : 'Play to unlock them: a free pack for every game you finish.'),
+      freeIn: (n) => `Free in ${n} game${n > 1 ? 's' : ''}`,
+      gamesCount: (n) => `${n} game${n > 1 ? 's' : ''}`,
+      questionsCount: (n) => `${n} questions`,
+      tryPack: 'Try it',
       continueBtn: 'Continue',
       pickCategoryFirst: 'Choose at least one category',
     },
     teams: {
       setupTitle: 'Team setup',
-      chooseColor: 'Choose your team colour',
-      chooseName: 'Choose your team name',
+      chooseColor: (n) => `Choose team ${n}'s colour`,
+      chooseName: (n) => `Choose team ${n}'s name`,
+      removeTeam: (team) => `Remove ${team}`,
+      removeTeamTitle: 'Remove this team?',
+      removeTeamConfirm: 'REMOVE',
       namePlaceholder: (n) => `Team ${n} name`,
-      inProgress: 'In progress...',
       nextBtn: 'Next',
+      addTeam: 'Add a team',
+      minTeams: 'You need at least 2 teams to play',
       defaultName: (i) => `Team ${i + 1}`,
     },
     comingSoon: {
@@ -680,7 +738,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} questions`,
       unlocked: 'Pack unlocked ✓',
       comingSoon: 'Coming soon',
-      packTitles: { 'harry-potter': 'Hogwarts Express', 'rap-francais': 'French Rap', dresseur: 'The Very Best Trainer', 'art-litterature': 'Art & Literature', 'retro-gaming': 'Retro gaming', anime: 'Anime & manga', football: 'Football' },
+      packTitles: { 'harry-potter': 'Hogwarts Express', 'rap-francais': 'French Rap', dresseur: 'The Very Best Trainer', 'art-litterature': 'Art & Literature', 'retro-gaming': 'Retro gaming', anime: 'Anime & manga', football: 'Football', 'dessins-animes': 'Cartoons', 'jeux-video': 'Video games' },
       restore: 'Restore purchases',
       restoredTitle: 'Purchases restored',
       restoredMsg: 'Your packs are unlocked again.',
@@ -704,7 +762,7 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Welcome gift!',
-      welcomeMsg: (pack, games) => `Play ${games} games and the "${pack}" pack is yours!`,
+      welcomeMsg: (pack, games) => (games > 1 ? `Play ${games} games and the "${pack}" pack is yours!` : `Play one game and the "${pack}" pack is yours!`),
       doneTitle: "It's yours!",
       doneMsg: (pack) => `The "${pack}" pack is unlocked. Have fun!`,
       ok: 'GREAT',
@@ -713,7 +771,7 @@ const translations: Record<Lang, Translations> = {
       lockedTrialMsg: (left) => `Just ${left} more game${left > 1 ? 's' : ''} to unlock it. Can't wait? A short video gets you one trial game, once only.`,
       lockedTrialUsedMsg: (left) => `You've already played your trial game. Just ${left} more game${left > 1 ? 's' : ''} to unlock it!`,
       gotIt: 'GOT IT',
-      nextGoal: (pack, games) => `Next goal: ${games} more games to unlock “${pack}”!`,
+      nextGoal: (pack, games) => (games > 1 ? `Next goal: ${games} more games to unlock “${pack}”!` : `Next goal: one more game to unlock “${pack}”!`),
       after: (pack) => `After ${pack}`,
       unlockFirst: (pack) => `Unlock the free “${pack}” gift first to earn this one!`,
     },
@@ -830,13 +888,13 @@ const translations: Record<Lang, Translations> = {
       done: 'Los geht\'s!',
       welcome: 'Willkommen bei Bango! Ich zeige euch in 30 Sekunden alles.',
       shop: 'Das ist der Shop: Fragenpakete, die ihr beim Spielen gewinnt.',
-      giftFirst: (pack, n) => `Spielt ${n} Partien zu Ende und das Paket „${pack}“ gehört euch, gratis!`,
+      giftFirst: (pack, n) => (n > 1 ? `Spielt ${n} Partien zu Ende und das Paket „${pack}“ gehört euch, gratis!` : `Spielt eine Partie zu Ende und das Paket „${pack}“ gehört euch, gratis!`),
 
       morePacks: (n) => `Und das ist nicht alles: ${n} Pakete warten darauf, beim Spielen freigeschaltet zu werden, eines nach dem anderen. Schaut mal!`,
       play: 'Bereit? Alles beginnt mit diesem Button.',
       auction: 'Auktionen: Wettet, wie viele Antworten ihr nennen könnt. Nur ein Team antwortet, in 60 Sekunden.',
       survie: 'Überleben: Abwechselnd eine Antwort. Wem nichts mehr einfällt, der fliegt raus!',
-      teams: 'Hier zählen Teams, nicht Spieler! Holt so viele kluge Köpfe ins Team, wie ihr wollt: Es gibt kein Limit. Viel Spaß beim Spielen!',
+      teams: 'Hier fügt ihr Teams hinzu, keine Spieler! Holt so viele kluge Köpfe ins Team, wie ihr wollt: Es gibt kein Limit. Viel Spaß beim Spielen!',
     },
     common: {
       cancel: 'ABBRECHEN',
@@ -894,16 +952,16 @@ const translations: Record<Lang, Translations> = {
     },
     play: {
       searchPlaceholder: 'Antwort prüfen',
-      notInDatabase: (w) => `„${w}" ist nicht in der Datenbank.`,
-      validateAnyway: 'TROTZDEM BESTÄTIGEN',
-      searchOnline: 'ONLINE SUCHEN',
+      notInDatabase: (w) => `„${w}"? Nicht auf unserer Liste!`,
+      notInDatabaseHint: 'Unsere Liste ist kein Lexikon. Schaut nach, das Spiel wartet.',
+      validateAnyway: 'Trotzdem bestätigen',
       answerAdded: '✓ Antwort hinzugefügt',
       pause: 'Pause',
       resume: 'Weiter',
       endTurn: 'Runde beenden',
       someAnswers: 'Einige mögliche Antworten...',
-      sortPopular: 'Nach Beliebtheit sortieren',
-      sortAlpha: 'Alphabetisch sortieren',
+      sortPopular: 'Bekannteste',
+      sortAlpha: 'Von A bis Z',
     },
     home: {
       play: 'Spielen',
@@ -919,6 +977,10 @@ const translations: Record<Lang, Translations> = {
       survieDesc: 'Antwortet nacheinander, wer zuerst passt, verliert',
       continueBtn: 'Weiter',
       pickModeFirst: 'Wählen Sie zuerst einen Spielmodus',
+      survieChips: ['Abwechselnd', 'Wer passt, verliert'],
+      auctionChips: ['Richtig bieten', '60 Sekunden'],
+      playSurvie: 'Überleben spielen',
+      playAuction: 'Auktionen spielen',
     },
     matchSettings: {
       settingsTitle: 'Spieleinstellungen',
@@ -928,16 +990,28 @@ const translations: Record<Lang, Translations> = {
       timerInfoFixed: 'Jede Runde gleich viel Zeit',
       timerInfoTurbo: 'Jede Runde 2 s weniger',
       categoriesTitle: 'Kategorien',
+      specialPacks: 'Spezialpakete',
+      seeAllPacks: 'Alle ansehen',
+      classicCategories: 'Klassisch',
+      packsHowTo: (games) => (games > 1 ? `Spielen Sie, um sie freizuschalten: alle ${games} Spiele ein Gratis-Paket.` : 'Spielen Sie, um sie freizuschalten: für jedes beendete Spiel ein Gratis-Paket.'),
+      freeIn: (n) => `Gratis in ${n} ${n > 1 ? 'Spielen' : 'Spiel'}`,
+      gamesCount: (n) => `${n} ${n > 1 ? 'Spiele' : 'Spiel'}`,
+      questionsCount: (n) => `${n} Fragen`,
+      tryPack: 'Testen',
       continueBtn: 'Weiter',
       pickCategoryFirst: 'Wählen Sie mindestens eine Kategorie',
     },
     teams: {
       setupTitle: 'Teams erstellen',
-      chooseColor: 'Teamfarbe wählen',
-      chooseName: 'Teamname wählen',
+      chooseColor: (n) => `Farbe von Team ${n} wählen`,
+      chooseName: (n) => `Name von Team ${n} wählen`,
+      removeTeam: (team) => `${team} entfernen`,
+      removeTeamTitle: 'Dieses Team entfernen?',
+      removeTeamConfirm: 'ENTFERNEN',
       namePlaceholder: (n) => `Team ${n} Name`,
-      inProgress: 'Läuft...',
       nextBtn: 'Weiter',
+      addTeam: 'Team hinzufügen',
+      minTeams: 'Ihr braucht mindestens 2 Teams zum Spielen',
       defaultName: (i) => `Team ${i + 1}`,
     },
     comingSoon: {
@@ -959,7 +1033,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} Fragen`,
       unlocked: 'Paket freigeschaltet ✓',
       comingSoon: 'Demnächst verfügbar',
-      packTitles: { 'harry-potter': 'Hogwarts-Express', 'rap-francais': 'Französischer Rap', dresseur: 'Der allerbeste Trainer', 'art-litterature': 'Kunst & Literatur', 'retro-gaming': 'Retro-Gaming', anime: 'Anime & Manga', football: 'Fußball' },
+      packTitles: { 'harry-potter': 'Hogwarts-Express', 'rap-francais': 'Französischer Rap', dresseur: 'Der allerbeste Trainer', 'art-litterature': 'Kunst & Literatur', 'retro-gaming': 'Retro-Gaming', anime: 'Anime & Manga', football: 'Fußball', 'dessins-animes': 'Zeichentrick', 'jeux-video': 'Videospiele' },
       restore: 'Käufe wiederherstellen',
       restoredTitle: 'Käufe wiederhergestellt',
       restoredMsg: 'Deine Pakete sind wieder freigeschaltet.',
@@ -983,7 +1057,7 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Willkommensgeschenk!',
-      welcomeMsg: (pack, games) => `Spiel ${games} Partien und das Paket „${pack}" gehört dir!`,
+      welcomeMsg: (pack, games) => (games > 1 ? `Spiel ${games} Partien und das Paket „${pack}" gehört dir!` : `Spiel eine Partie und das Paket „${pack}" gehört dir!`),
       doneTitle: 'Es gehört dir!',
       doneMsg: (pack) => `Das Paket „${pack}" ist freigeschaltet. Viel Spaß!`,
       ok: 'SUPER',
@@ -992,7 +1066,7 @@ const translations: Record<Lang, Translations> = {
       lockedTrialMsg: (left) => `Nur noch ${left} ${left > 1 ? 'Partien' : 'Partie'} bis zum Freischalten. Ungeduldig? Ein kurzes Video schenkt dir eine Probepartie – nur einmal.`,
       lockedTrialUsedMsg: (left) => `Deine Probepartie hast du schon gespielt. Nur noch ${left} ${left > 1 ? 'Partien' : 'Partie'} bis zum Freischalten!`,
       gotIt: 'VERSTANDEN',
-      nextGoal: (pack, games) => `Nächstes Ziel: noch ${games} Partien, um „${pack}“ freizuschalten!`,
+      nextGoal: (pack, games) => (games > 1 ? `Nächstes Ziel: noch ${games} Partien, um „${pack}“ freizuschalten!` : `Nächstes Ziel: noch eine Partie, um „${pack}“ freizuschalten!`),
       after: (pack) => `Nach ${pack}`,
       unlockFirst: (pack) => `Schaltet zuerst das Gratis-Geschenk „${pack}“ frei, um dieses zu bekommen!`,
     },
@@ -1109,13 +1183,13 @@ const translations: Record<Lang, Translations> = {
       done: '¡Vamos!',
       welcome: '¡Bienvenidos a Bango! Os lo enseño todo en 30 segundos.',
       shop: 'Esta es la Tienda: packs de preguntas que se ganan jugando.',
-      giftFirst: (pack, n) => `¡Terminad ${n} partidas y el pack «${pack}» es vuestro, gratis!`,
+      giftFirst: (pack, n) => (n > 1 ? `¡Terminad ${n} partidas y el pack «${pack}» es vuestro, gratis!` : `¡Terminad una partida y el pack «${pack}» es vuestro, gratis!`),
 
       morePacks: (n) => `Y eso no es todo: ${n} packs por desbloquear jugando, uno tras otro. ¡Mirad!`,
       play: '¿Listos? Todo empieza con este botón.',
       auction: 'Subastas: apostad cuántas respuestas podéis decir. Solo un equipo responde, en 60 segundos.',
       survie: 'Supervivencia: una respuesta por turno. ¡El equipo que se queda sin ideas queda eliminado!',
-      teams: '¡Aquí se cuentan equipos, no jugadores! Reunid en cada equipo todos los cerebros que queráis: no hay límite. ¡Buena partida!',
+      teams: '¡Aquí se añaden equipos, no jugadores! Reunid en cada equipo todos los cerebros que queráis: no hay límite. ¡Buena partida!',
     },
     common: {
       cancel: 'CANCELAR',
@@ -1173,16 +1247,16 @@ const translations: Record<Lang, Translations> = {
     },
     play: {
       searchPlaceholder: 'Verificar respuesta',
-      notInDatabase: (w) => `"${w}" no está en la base.`,
-      validateAnyway: 'VALIDAR DE TODOS MODOS',
-      searchOnline: 'BUSCAR EN LÍNEA',
+      notInDatabase: (w) => `¿"${w}"? ¡No está en nuestra lista!`,
+      notInDatabaseHint: 'Nuestra lista no es una enciclopedia. Comprobadlo, la partida os espera.',
+      validateAnyway: 'Validar de todos modos',
       answerAdded: '✓ Respuesta añadida',
       pause: 'Pausa',
       resume: 'Reanudar',
       endTurn: 'Terminar turno',
       someAnswers: 'Algunas respuestas posibles...',
-      sortPopular: 'Ordenar por popularidad',
-      sortAlpha: 'Ordenar alfabéticamente',
+      sortPopular: 'Las más conocidas',
+      sortAlpha: 'De la A a la Z',
     },
     home: {
       play: 'Jugar',
@@ -1198,6 +1272,10 @@ const translations: Record<Lang, Translations> = {
       survieDesc: 'Responded por turnos, el primero que se quede en blanco pierde',
       continueBtn: 'Continuar',
       pickModeFirst: 'Elija primero un modo de juego',
+      survieChips: ['Por turnos', 'Quien se atasca pierde'],
+      auctionChips: ['Apuesta bien', '60 segundos'],
+      playSurvie: 'Jugar a Supervivencia',
+      playAuction: 'Jugar a Subastas',
     },
     matchSettings: {
       settingsTitle: 'Ajustes de juego',
@@ -1207,16 +1285,28 @@ const translations: Record<Lang, Translations> = {
       timerInfoFixed: 'El mismo tiempo en cada turno',
       timerInfoTurbo: '2 s menos en cada vuelta',
       categoriesTitle: 'Categorías',
+      specialPacks: 'Packs especiales',
+      seeAllPacks: 'Ver todo',
+      classicCategories: 'Clásico',
+      packsHowTo: (games) => (games > 1 ? `Juegue para desbloquearlos: un pack gratis cada ${games} partidas.` : 'Juegue para desbloquearlos: un pack gratis por cada partida terminada.'),
+      freeIn: (n) => `Gratis en ${n} partida${n > 1 ? 's' : ''}`,
+      gamesCount: (n) => `${n} partida${n > 1 ? 's' : ''}`,
+      questionsCount: (n) => `${n} preguntas`,
+      tryPack: 'Probar',
       continueBtn: 'Continuar',
       pickCategoryFirst: 'Elija al menos una categoría',
     },
     teams: {
       setupTitle: 'Crear equipos',
-      chooseColor: 'Elige el color del equipo',
-      chooseName: 'Elige el nombre del equipo',
+      chooseColor: (n) => `Elige el color del equipo ${n}`,
+      chooseName: (n) => `Elige el nombre del equipo ${n}`,
+      removeTeam: (team) => `Quitar ${team}`,
+      removeTeamTitle: '¿Quitar este equipo?',
+      removeTeamConfirm: 'QUITAR',
       namePlaceholder: (n) => `Nombre equipo ${n}`,
-      inProgress: 'En curso...',
       nextBtn: 'Siguiente',
+      addTeam: 'Añadir un equipo',
+      minTeams: 'Hacen falta al menos 2 equipos para jugar',
       defaultName: (i) => `Equipo ${i + 1}`,
     },
     comingSoon: {
@@ -1238,7 +1328,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} preguntas`,
       unlocked: 'Pack desbloqueado ✓',
       comingSoon: 'Próximamente',
-      packTitles: { 'harry-potter': 'Expreso de Hogwarts', 'rap-francais': 'Rap francés', dresseur: 'El mejor entrenador', 'art-litterature': 'Arte y literatura', 'retro-gaming': 'Retro gaming', anime: 'Anime y manga', football: 'Fútbol' },
+      packTitles: { 'harry-potter': 'Expreso de Hogwarts', 'rap-francais': 'Rap francés', dresseur: 'El mejor entrenador', 'art-litterature': 'Arte y literatura', 'retro-gaming': 'Retro gaming', anime: 'Anime y manga', football: 'Fútbol', 'dessins-animes': 'Dibujos animados', 'jeux-video': 'Videojuegos' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Tus packs vuelven a estar desbloqueados.',
@@ -1262,7 +1352,7 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: '¡Regalo de bienvenida!',
-      welcomeMsg: (pack, games) => `¡Juega ${games} partidas y el pack «${pack}» es tuyo!`,
+      welcomeMsg: (pack, games) => (games > 1 ? `¡Juega ${games} partidas y el pack «${pack}» es tuyo!` : `¡Juega una partida y el pack «${pack}» es tuyo!`),
       doneTitle: '¡Es tuyo!',
       doneMsg: (pack) => `El pack «${pack}» está desbloqueado. ¡A jugar!`,
       ok: 'GENIAL',
@@ -1271,7 +1361,7 @@ const translations: Record<Lang, Translations> = {
       lockedTrialMsg: (left) => `Solo ${left} partida${left > 1 ? 's' : ''} más para desbloquearlo. ¿Impaciente? Un vídeo corto te regala una partida de prueba, solo una vez.`,
       lockedTrialUsedMsg: (left) => `Ya jugaste tu partida de prueba. ¡Solo ${left} partida${left > 1 ? 's' : ''} más para desbloquearlo!`,
       gotIt: 'ENTENDIDO',
-      nextGoal: (pack, games) => `¡Próximo objetivo: ${games} partidas más para desbloquear «${pack}»!`,
+      nextGoal: (pack, games) => (games > 1 ? `¡Próximo objetivo: ${games} partidas más para desbloquear «${pack}»!` : `¡Próximo objetivo: una partida más para desbloquear «${pack}»!`),
       after: (pack) => `Después de ${pack}`,
       unlockFirst: (pack) => `¡Desbloquead primero el regalo gratis «${pack}» para ganar este!`,
     },
@@ -1388,13 +1478,13 @@ const translations: Record<Lang, Translations> = {
       done: 'Si parte!',
       welcome: 'Benvenuti in Bango! Vi faccio fare il giro in 30 secondi.',
       shop: 'Questo è il Negozio: pacchetti di domande da vincere giocando.',
-      giftFirst: (pack, n) => `Finite ${n} partite e il pacchetto «${pack}» è vostro, in regalo!`,
+      giftFirst: (pack, n) => (n > 1 ? `Finite ${n} partite e il pacchetto «${pack}» è vostro, in regalo!` : `Finite una partita e il pacchetto «${pack}» è vostro, in regalo!`),
 
       morePacks: (n) => `E non è tutto: ${n} pack da sbloccare giocando, uno dopo l’altro. Guardate!`,
       play: 'Pronti? Tutto inizia da questo pulsante.',
       auction: 'Aste: scommettete quante risposte sapete dire. Risponde una sola squadra, in 60 secondi.',
       survie: 'Sopravvivenza: una risposta a turno. La squadra che resta senza idee è eliminata!',
-      teams: 'Qui si contano le squadre, non i giocatori! Riunite in ogni squadra tutti i cervelli che volete: non c\'è limite. Buona partita!',
+      teams: 'Qui si aggiungono squadre, non giocatori! Riunite in ogni squadra tutti i cervelli che volete: non c\'è limite. Buona partita!',
     },
     common: {
       cancel: 'ANNULLA',
@@ -1452,16 +1542,16 @@ const translations: Record<Lang, Translations> = {
     },
     play: {
       searchPlaceholder: 'Verifica una risposta',
-      notInDatabase: (w) => `"${w}" non è nel database.`,
-      validateAnyway: 'CONVALIDA COMUNQUE',
-      searchOnline: 'CERCA ONLINE',
+      notInDatabase: (w) => `"${w}"? Non è nella nostra lista!`,
+      notInDatabaseHint: "La nostra lista non è un'enciclopedia. Controllate, la partita vi aspetta.",
+      validateAnyway: 'Convalida comunque',
       answerAdded: '✓ Risposta aggiunta',
       pause: 'Pausa',
       resume: 'Riprendi',
       endTurn: 'Fine turno',
       someAnswers: 'Alcune risposte possibili...',
-      sortPopular: 'Ordina per popolarità',
-      sortAlpha: 'Ordina alfabeticamente',
+      sortPopular: 'Le più note',
+      sortAlpha: 'Dalla A alla Z',
     },
     home: {
       play: 'Gioca',
@@ -1477,6 +1567,10 @@ const translations: Record<Lang, Translations> = {
       survieDesc: 'Rispondete a turno, chi resta senza risposta perde',
       continueBtn: 'Continua',
       pickModeFirst: 'Scegli prima una modalità di gioco',
+      survieChips: ['A turno', 'Chi si blocca perde'],
+      auctionChips: ['Punta giusto', '60 secondi'],
+      playSurvie: 'Gioca a Sopravvivenza',
+      playAuction: 'Gioca alle Aste',
     },
     matchSettings: {
       settingsTitle: 'Impostazioni partita',
@@ -1486,16 +1580,28 @@ const translations: Record<Lang, Translations> = {
       timerInfoFixed: 'Stesso tempo a ogni turno',
       timerInfoTurbo: '2 s in meno a ogni giro',
       categoriesTitle: 'Categorie',
+      specialPacks: 'Pack speciali',
+      seeAllPacks: 'Vedi tutto',
+      classicCategories: 'Classico',
+      packsHowTo: (games) => (games > 1 ? `Gioca per sbloccarli: un pack in regalo ogni ${games} partite.` : 'Gioca per sbloccarli: un pack in regalo per ogni partita finita.'),
+      freeIn: (n) => `Gratis tra ${n} partit${n > 1 ? 'e' : 'a'}`,
+      gamesCount: (n) => `${n} partit${n > 1 ? 'e' : 'a'}`,
+      questionsCount: (n) => `${n} domande`,
+      tryPack: 'Prova',
       continueBtn: 'Continua',
       pickCategoryFirst: 'Scegli almeno una categoria',
     },
     teams: {
       setupTitle: 'Crea le squadre',
-      chooseColor: 'Scegli il colore della squadra',
-      chooseName: 'Scegli il nome della squadra',
+      chooseColor: (n) => `Scegli il colore della squadra ${n}`,
+      chooseName: (n) => `Scegli il nome della squadra ${n}`,
+      removeTeam: (team) => `Rimuovi ${team}`,
+      removeTeamTitle: 'Rimuovere questa squadra?',
+      removeTeamConfirm: 'RIMUOVI',
       namePlaceholder: (n) => `Nome squadra ${n}`,
-      inProgress: 'In corso...',
       nextBtn: 'Avanti',
+      addTeam: 'Aggiungi una squadra',
+      minTeams: 'Servono almeno 2 squadre per giocare',
       defaultName: (i) => `Squadra ${i + 1}`,
     },
     comingSoon: {
@@ -1517,7 +1623,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} domande`,
       unlocked: 'Pack sbloccato ✓',
       comingSoon: 'Prossimamente',
-      packTitles: { 'harry-potter': 'Espresso per Hogwarts', 'rap-francais': 'Rap francese', dresseur: 'Il miglior allenatore', 'art-litterature': 'Arte e letteratura', 'retro-gaming': 'Retro gaming', anime: 'Anime e manga', football: 'Calcio' },
+      packTitles: { 'harry-potter': 'Espresso per Hogwarts', 'rap-francais': 'Rap francese', dresseur: 'Il miglior allenatore', 'art-litterature': 'Arte e letteratura', 'retro-gaming': 'Retro gaming', anime: 'Anime e manga', football: 'Calcio', 'dessins-animes': 'Cartoni animati', 'jeux-video': 'Videogiochi' },
       restore: 'Ripristina acquisti',
       restoredTitle: 'Acquisti ripristinati',
       restoredMsg: 'I tuoi pack sono di nuovo sbloccati.',
@@ -1541,7 +1647,7 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Regalo di benvenuto!',
-      welcomeMsg: (pack, games) => `Gioca ${games} partite e il pack «${pack}» è tuo!`,
+      welcomeMsg: (pack, games) => (games > 1 ? `Gioca ${games} partite e il pack «${pack}» è tuo!` : `Gioca una partita e il pack «${pack}» è tuo!`),
       doneTitle: 'È tuo!',
       doneMsg: (pack) => `Il pack «${pack}» è sbloccato. Buon divertimento!`,
       ok: 'FANTASTICO',
@@ -1550,7 +1656,7 @@ const translations: Record<Lang, Translations> = {
       lockedTrialMsg: (left) => `Ancora ${left} partit${left > 1 ? 'e' : 'a'} per sbloccarlo. Non resisti? Un breve video ti regala una partita di prova, una sola volta.`,
       lockedTrialUsedMsg: (left) => `Hai già giocato la tua partita di prova. Ancora ${left} partit${left > 1 ? 'e' : 'a'} per sbloccarlo!`,
       gotIt: 'HO CAPITO',
-      nextGoal: (pack, games) => `Prossimo obiettivo: altre ${games} partite per sbloccare «${pack}»!`,
+      nextGoal: (pack, games) => (games > 1 ? `Prossimo obiettivo: altre ${games} partite per sbloccare «${pack}»!` : `Prossimo obiettivo: un'altra partita per sbloccare «${pack}»!`),
       after: (pack) => `Dopo ${pack}`,
       unlockFirst: (pack) => `Sbloccate prima il regalo gratuito «${pack}» per ottenere questo!`,
     },
@@ -1668,13 +1774,13 @@ const translations: Record<Lang, Translations> = {
       done: 'Vamos lá!',
       welcome: 'Bem-vindos ao Bango! Mostro tudo em 30 segundos.',
       shop: 'Esta é a Loja: pacotes de perguntas que vocês ganham jogando.',
-      giftFirst: (pack, n) => `Terminem ${n} partidas e o pacote “${pack}” é de vocês, grátis!`,
+      giftFirst: (pack, n) => (n > 1 ? `Terminem ${n} partidas e o pacote “${pack}” é de vocês, grátis!` : `Terminem uma partida e o pacote “${pack}” é de vocês, grátis!`),
 
       morePacks: (n) => `E não é só isso: ${n} pacotes para desbloquear jogando, um depois do outro. Olhem só!`,
       play: 'Prontos? Tudo começa por este botão.',
       auction: 'Leilão: apostem quantas respostas conseguem dizer. Só uma equipe responde, em 60 segundos.',
       survie: 'Sobrevivência: uma resposta por vez. A equipe que ficar sem ideias está eliminada!',
-      teams: 'Aqui é o número de equipes, não de jogadores! Juntem quantos cérebros quiserem em cada equipe: não tem limite. Boa partida!',
+      teams: 'Aqui você adiciona equipes, não jogadores! Juntem quantos cérebros quiserem em cada equipe: não tem limite. Boa partida!',
     },
     common: {
       cancel: 'CANCELAR',
@@ -1732,16 +1838,16 @@ const translations: Record<Lang, Translations> = {
     },
     play: {
       searchPlaceholder: 'Verificar uma resposta',
-      notInDatabase: (w) => `"${w}" não está na base.`,
-      validateAnyway: 'VALIDAR MESMO ASSIM',
-      searchOnline: 'PESQUISAR NA INTERNET',
+      notInDatabase: (w) => `"${w}"? Não está na nossa lista!`,
+      notInDatabaseHint: 'Nossa lista não é uma enciclopédia. Confiram, a partida espera vocês.',
+      validateAnyway: 'Validar mesmo assim',
       answerAdded: '✓ Resposta adicionada',
       pause: 'Pausa',
       resume: 'Continuar',
       endTurn: 'Encerrar a vez',
       someAnswers: 'Algumas respostas possíveis...',
-      sortPopular: 'Ordenar por popularidade',
-      sortAlpha: 'Ordenar em ordem alfabética',
+      sortPopular: 'As mais conhecidas',
+      sortAlpha: 'De A a Z',
     },
     home: {
       play: 'Jogar',
@@ -1757,6 +1863,10 @@ const translations: Record<Lang, Translations> = {
       survieDesc: 'Respondam por turnos, quem ficar sem resposta perde',
       continueBtn: 'Continuar',
       pickModeFirst: 'Escolha primeiro um modo de jogo',
+      survieChips: ['Cada um na sua vez', 'Quem travar perde'],
+      auctionChips: ['Aposte certo', '60 segundos'],
+      playSurvie: 'Jogar Sobrevivência',
+      playAuction: 'Jogar Leilão',
     },
     matchSettings: {
       settingsTitle: 'Configurações da partida',
@@ -1766,16 +1876,28 @@ const translations: Record<Lang, Translations> = {
       timerInfoFixed: 'O mesmo tempo em cada vez',
       timerInfoTurbo: '2 s a menos a cada volta',
       categoriesTitle: 'Categorias',
+      specialPacks: 'Pacotes especiais',
+      seeAllPacks: 'Ver tudo',
+      classicCategories: 'Clássico',
+      packsHowTo: (games) => (games > 1 ? `Jogue para desbloqueá-los: um pacote grátis a cada ${games} partidas.` : 'Jogue para desbloqueá-los: um pacote grátis a cada partida terminada.'),
+      freeIn: (n) => `Grátis em ${n} partida${n > 1 ? 's' : ''}`,
+      gamesCount: (n) => `${n} partida${n > 1 ? 's' : ''}`,
+      questionsCount: (n) => `${n} perguntas`,
+      tryPack: 'Experimentar',
       continueBtn: 'Continuar',
       pickCategoryFirst: 'Escolha pelo menos uma categoria',
     },
     teams: {
       setupTitle: 'Criar os times',
-      chooseColor: 'Escolha a cor do time',
-      chooseName: 'Escolha o nome do time',
+      chooseColor: (n) => `Escolha a cor do time ${n}`,
+      chooseName: (n) => `Escolha o nome do time ${n}`,
+      removeTeam: (team) => `Remover ${team}`,
+      removeTeamTitle: 'Remover esta equipe?',
+      removeTeamConfirm: 'REMOVER',
       namePlaceholder: (n) => `Nome do time ${n}`,
-      inProgress: 'Em andamento...',
       nextBtn: 'Próximo',
+      addTeam: 'Adicionar uma equipe',
+      minTeams: 'É preciso pelo menos 2 equipes para jogar',
       defaultName: (i) => `Time ${i + 1}`,
     },
     comingSoon: {
@@ -1797,7 +1919,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} perguntas`,
       unlocked: 'Pacote desbloqueado ✓',
       comingSoon: 'Em breve',
-      packTitles: { 'harry-potter': 'Expresso de Hogwarts', 'rap-francais': 'Rap francês', dresseur: 'O melhor treinador', 'art-litterature': 'Arte e literatura', 'retro-gaming': 'Retro gaming', anime: 'Anime e mangá', football: 'Futebol' },
+      packTitles: { 'harry-potter': 'Expresso de Hogwarts', 'rap-francais': 'Rap francês', dresseur: 'O melhor treinador', 'art-litterature': 'Arte e literatura', 'retro-gaming': 'Retro gaming', anime: 'Anime e mangá', football: 'Futebol', 'dessins-animes': 'Desenhos animados', 'jeux-video': 'Videogames' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Seus pacotes estão desbloqueados de novo.',
@@ -1821,7 +1943,7 @@ const translations: Record<Lang, Translations> = {
     },
     gift: {
       welcomeTitle: 'Presente de boas-vindas!',
-      welcomeMsg: (pack, games) => `Jogue ${games} partidas e o pacote «${pack}» é seu!`,
+      welcomeMsg: (pack, games) => (games > 1 ? `Jogue ${games} partidas e o pacote «${pack}» é seu!` : `Jogue uma partida e o pacote «${pack}» é seu!`),
       doneTitle: 'É seu!',
       doneMsg: (pack) => `O pacote «${pack}» está desbloqueado. Divirta-se!`,
       ok: 'DEMAIS',
@@ -1830,7 +1952,7 @@ const translations: Record<Lang, Translations> = {
       lockedTrialMsg: (left) => `Só mais ${left} partida${left > 1 ? 's' : ''} para desbloqueá-lo. Sem paciência? Um vídeo curto te dá uma partida de teste, uma única vez.`,
       lockedTrialUsedMsg: (left) => `Você já jogou sua partida de teste. Só mais ${left} partida${left > 1 ? 's' : ''} para desbloqueá-lo!`,
       gotIt: 'ENTENDI',
-      nextGoal: (pack, games) => `Próximo objetivo: mais ${games} partidas para desbloquear “${pack}”!`,
+      nextGoal: (pack, games) => (games > 1 ? `Próximo objetivo: mais ${games} partidas para desbloquear “${pack}”!` : `Próximo objetivo: mais uma partida para desbloquear “${pack}”!`),
       after: (pack) => `Depois de ${pack}`,
       unlockFirst: (pack) => `Desbloqueiem primeiro o presente grátis “${pack}” para ganhar este!`,
     },

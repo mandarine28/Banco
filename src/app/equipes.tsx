@@ -1,6 +1,9 @@
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  Keyboard,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -12,14 +15,20 @@ import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
 import { HomeBackground } from '@/components/HomeBackground';
+import { ConfirmModal } from '@/components/InfoModal';
+import { Toast, useToast } from '@/components/Toast';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
-import { type Team, useGameSettings } from '@/state/gameSettings';
+import { TEAM_LIMITS, type Team, useGameSettings } from '@/state/gameSettings';
+import { useTutorialTarget } from '@/state/tutorial';
 import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
 const MAX_WIDTH = 500;
 const NAME_MAX_LENGTH = 16;
+const ADD_BUTTON_HEIGHT = 51;
+// Écart entre « Ajouter une équipe » et le haut du clavier
+const KEYBOARD_GAP = 8;
 
 /** Couleur déjà prise par une équipe précédente : estompée, non cliquable. */
 const TAKEN_OPACITY = 0.25;
@@ -35,7 +44,7 @@ function BackArrow({ size }: { size: number }) {
   return (
     <View pointerEvents="none">
       <Svg width={size} height={h} viewBox="0 0 32 19">
-        <Path d={ARROW_PATH} fill={colors.purple} />
+        <Path d={ARROW_PATH} fill={colors.cream} />
       </Svg>
     </View>
   );
@@ -45,14 +54,14 @@ function SettingIcon({ size }: { size: number }) {
   return (
     <View pointerEvents="none">
       <Svg width={size} height={size} viewBox="0 0 24 24">
-        <Path d={SETTING_PATH} fill={colors.purple} />
+        <Path d={SETTING_PATH} fill={colors.cream} />
       </Svg>
     </View>
   );
 }
 
 function availableAvatars(drafts: Team[], currentIndex: number): readonly string[] {
-  const taken = new Set(drafts.slice(0, currentIndex).map((t) => t.color).filter(Boolean));
+  const taken = new Set(drafts.filter((_, i) => i !== currentIndex).map((t) => t.color).filter(Boolean));
   return teamColors.filter((c) => !taken.has(c));
 }
 
@@ -66,49 +75,85 @@ export default function TeamSetupScreen() {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
-  const { teamCount, teams: savedTeams, setTeams } = useGameSettings();
+  const { setTeamCount, teams: savedTeams, setTeams } = useGameSettings();
   const { lang } = useLang();
   const t = getT(lang);
   const defaultName = t.teams.defaultName;
+  const toast = useToast();
+  const addTarget = useTutorialTarget('teams-add');
 
+  // On part d'une équipe ; les suivantes s'ajoutent au fil de l'eau (plus de nombre d'équipes à choisir avant)
   const [index, setIndex] = useState(0);
-  const [drafts, setDrafts] = useState<Team[]>(() =>
-    Array.from({ length: teamCount }, (_, i) => ({ name: '', color: savedTeams[i]?.color ?? teamColors[i % teamColors.length] })),
-  );
-  const [name, setName] = useState(() => drafts[0]?.name ?? '');
+  const [drafts, setDrafts] = useState<Team[]>(() => [{ name: '', color: savedTeams[0]?.color ?? teamColors[0] }]);
+  const [name, setName] = useState('');
   const [selectedColor, setSelectedColor] = useState<string>(() => initialAvatar(drafts, 0));
+  // Fiche ouverte par « Ajouter une équipe » : elle ne devient une équipe que si on lui donne un nom
+  const [pending, setPending] = useState(true);
+  const dropsCurrent = pending && !name.trim();
 
-  const panelTop = insets.top + 68;
-  const takenColors = new Set(drafts.slice(0, index).map((t) => t.color).filter(Boolean));
+  const takenColors = new Set(drafts.filter((_, i) => i !== index).map((team) => team.color).filter(Boolean));
+  const maxTeams = Math.min(TEAM_LIMITS.max, teamColors.length);
+  const canAdd = drafts.length < maxTeams;
+  const canStart = drafts.length - (dropsCurrent ? 1 : 0) >= TEAM_LIMITS.min;
 
-  const saveAndContinue = () => {
-    const updated = [...drafts];
-    updated[index] = { name: name.trim(), color: selectedColor };
-    setDrafts(updated);
-
-    if (index + 1 < teamCount) {
-      const nextAvail = availableAvatars(updated, index + 1);
-      const nextSaved = updated[index + 1]?.color;
-      setSelectedColor(nextSaved && nextAvail.includes(nextSaved) ? nextSaved : (nextAvail[0] ?? teamColors[0]));
-      setName(updated[index + 1]?.name ?? '');
-      setIndex(index + 1);
-    } else {
-      setTeams(updated.slice(0, teamCount).map((team, i) => ({ ...team, name: team.name || defaultName(i) })));
-      router.push('/partie');
-    }
+  /** Équipes avec la saisie en cours enregistrée. */
+  const withCurrent = () => drafts.map((team, i) => (i === index ? { name: name.trim(), color: selectedColor } : team));
+  /** Équipes réellement créées : sans la fiche en attente restée sans nom. */
+  const createdTeams = () => withCurrent().filter((_, i) => !(dropsCurrent && i === index));
+  const editTeam = (list: Team[], i: number, isPending = false) => {
+    setPending(isPending);
+    setDrafts(list);
+    setIndex(i);
+    setName(list[i]?.name ?? '');
+    setSelectedColor(initialAvatar(list, i));
   };
 
+  const addTeam = () => {
+    const list = [...withCurrent(), { name: '', color: '' }];
+    editTeam(list, list.length - 1, true);
+  };
+
+  const start = () => {
+    const list = createdTeams();
+    setTeams(list.map((team, i) => ({ ...team, name: team.name || defaultName(i) })));
+    setTeamCount(list.length);
+    router.push('/partie');
+  };
+
+  // Supprimer une équipe : on reste sur celle en cours, ou on passe à sa voisine si c'est elle qu'on retire
+  const [pendingRemoval, setPendingRemoval] = useState<number | null>(null);
+  const removeTeam = (i: number) => {
+    const list = withCurrent().filter((_, j) => j !== i);
+    editTeam(list, i < index ? index - 1 : Math.min(index, list.length - 1), pending && i !== index);
+  };
+
+  const [keyboardTop, setKeyboardTop] = useState<number | null>(null);
+  useEffect(() => {
+    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', (e) => setKeyboardTop(e.endCoordinates.screenY));
+    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKeyboardTop(null));
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, []);
+
+  const addButton = (
+    <Pressable
+      onPress={addTeam}
+      disabled={!canAdd}
+      accessibilityRole="button"
+      accessibilityLabel={t.teams.addTeam}
+      accessibilityState={{ disabled: !canAdd }}
+      style={[styles.btnAdd, !canAdd && styles.btnDisabled]}
+    >
+      <MaterialCommunityIcons name="plus" size={22} color={colors.cream} />
+      <Text style={styles.btnAddText}>{t.teams.addTeam}</Text>
+    </Pressable>
+  );
+
   const goBack = () => {
-    if (index > 0) {
-      const updated = [...drafts];
-      updated[index] = { name: name.trim(), color: selectedColor };
-      setDrafts(updated);
-      setSelectedColor(initialAvatar(updated, index - 1));
-      setName(updated[index - 1]?.name ?? '');
-      setIndex(index - 1);
-    } else {
-      router.back();
-    }
+    if (index > 0) editTeam(createdTeams(), index - 1);
+    else router.back();
   };
 
   return (
@@ -119,22 +164,24 @@ export default function TeamSetupScreen() {
           <HomeBackground width={width} height={height} />
         </View>
 
-        {/* Panneau bleu */}
-        <View style={[styles.bluePanel, { top: panelTop }]}>
-          <CreamPatternSvg width={width} height={height - panelTop} opacity={0.04} fill="#ffffff" />
-          <View style={[styles.panelInner, { paddingBottom: Math.max(64, insets.bottom + 30) }]}>
+        {/* Panneau bleu plein écran, comme les paramètres de la partie : plus de bandeau crème en haut */}
+        <View style={styles.bluePanel}>
+          <CreamPatternSvg width={width} height={height} opacity={0.04} fill="#ffffff" />
+          {/* Toucher une zone vide ferme le clavier (les boutons et couleurs gardent la priorité) */}
+          <View
+            style={[styles.panelInner, { paddingTop: insets.top + 60, paddingBottom: Math.max(32, insets.bottom + 16) }]}
+            onStartShouldSetResponder={() => true}
+            onResponderRelease={Keyboard.dismiss}
+          >
             <View style={styles.content}>
               <View style={styles.topSection}>
                 {/* Titre + compteur */}
-                <View style={styles.titleRow}>
-                  <Text style={styles.sectionTitle}>{t.teams.setupTitle}</Text>
-                  <Text style={styles.counter}>{index + 1}/{teamCount}</Text>
-                </View>
+                <Text style={styles.sectionTitle}>{t.teams.setupTitle}</Text>
 
                 <View style={styles.sections}>
                   {/* Sélecteur de couleur */}
                   <View style={styles.subsection}>
-                    <Text style={styles.label}>{t.teams.chooseColor}</Text>
+                    <Text style={styles.label}>{t.teams.chooseColor(index + 1)}</Text>
                     <View style={styles.colorRow}>
                       {teamColors.map((color) => {
                         const isSelected = color === selectedColor;
@@ -168,7 +215,7 @@ export default function TeamSetupScreen() {
 
                   {/* Nom de l'équipe */}
                   <View style={styles.subsection}>
-                    <Text style={styles.label}>{t.teams.chooseName}</Text>
+                    <Text style={styles.label}>{t.teams.chooseName(index + 1)}</Text>
                     <TextInput
                       value={name}
                       onChangeText={setName}
@@ -178,7 +225,6 @@ export default function TeamSetupScreen() {
                       autoCapitalize="words"
                       autoCorrect={false}
                       returnKeyType="done"
-                      onSubmitEditing={saveAndContinue}
                       accessibilityLabel={t.teams.namePlaceholder(index + 1)}
                       style={styles.teamInput}
                     />
@@ -186,35 +232,104 @@ export default function TeamSetupScreen() {
                 </View>
               </View>
 
-              {/* Indicateurs de progression */}
-              <View style={styles.progressRow}>
-                {Array.from({ length: teamCount }, (_, i) => {
-                  const isPast = i < index;
-                  const isFuture = i > index;
-                  const dotColor = isPast ? (drafts[i]?.color ?? teamColors[i]) : selectedColor;
-                  const label = isPast ? (drafts[i]?.name || defaultName(i)) : t.teams.inProgress;
+              {/* Équipes déjà ajoutées : on en touche une pour la modifier, la croix la supprime */}
+              <View style={[styles.progressRow, drafts.length < 2 && styles.hidden]} pointerEvents={drafts.length < 2 ? 'none' : 'auto'}>
+                {drafts.map((team, i) => {
+                  const isCurrent = i === index;
+                  // L'équipe en cours de saisie n'est pas encore « ajoutée » : elle n'apparaît pas dans la liste
+                  if (isCurrent) return null;
+                  const dotColor = isCurrent ? selectedColor : (team.color || teamColors[i]);
+                  const label = (isCurrent ? name.trim() : team.name) || defaultName(i);
                   return (
-                    <View key={i} style={[styles.progressItem, isFuture && styles.hidden]}>
-                      <View style={[styles.progressDot, { backgroundColor: dotColor }]} />
-                      <Text style={styles.progressText}>{label}</Text>
+                    <View key={i} style={[styles.progressItem, isCurrent && styles.progressItemCurrent]}>
+                      <Pressable
+                        onPress={() => !isCurrent && editTeam(createdTeams(), i)}
+                        disabled={isCurrent}
+                        hitSlop={6}
+                        accessibilityRole="button"
+                        accessibilityLabel={label}
+                        accessibilityState={{ selected: isCurrent }}
+                        style={styles.progressMain}
+                      >
+                        <View style={[styles.progressDot, { backgroundColor: dotColor }]} />
+                        <Text style={styles.progressText} numberOfLines={1}>{label}</Text>
+                      </Pressable>
+                      {drafts.length > 1 ? (
+                        <Pressable
+                          onPress={() => setPendingRemoval(i)}
+                          hitSlop={10}
+                          accessibilityRole="button"
+                          accessibilityLabel={t.teams.removeTeam(label)}
+                        >
+                          <MaterialCommunityIcons name="close" size={18} color={colors.cream} />
+                        </Pressable>
+                      ) : null}
                     </View>
                   );
                 })}
               </View>
             </View>
 
-            {/* Bouton Suivant */}
-            <Pressable
-              onPress={saveAndContinue}
-              accessibilityRole="button"
-              accessibilityLabel={t.teams.nextBtn}
-            >
-              <View style={styles.btnSuivant}>
-                <Text style={styles.btnSuivantText}>{t.teams.nextBtn}</Text>
+            <View style={styles.actions}>
+              {/* Ajouter une équipe : jusqu'à une couleur par équipe */}
+              {/* Clavier ouvert : ce bouton laisse sa place (rien ne bouge) à sa copie posée sur le clavier */}
+              <View
+                ref={addTarget}
+                collapsable={false}
+                style={keyboardTop !== null && styles.hidden}
+                pointerEvents={keyboardTop !== null ? 'none' : 'auto'}
+              >
+                {addButton}
               </View>
-            </Pressable>
+
+              <Toast toast={toast} message={t.teams.minTeams} />
+              {/* Grisé à une seule équipe ; reste pressable pour expliquer pourquoi */}
+              <Pressable
+                onPress={canStart ? start : toast.show}
+                accessibilityRole="button"
+                accessibilityLabel={t.teams.nextBtn}
+                accessibilityState={{ disabled: !canStart }}
+                accessibilityHint={canStart ? undefined : t.teams.minTeams}
+                style={!canStart && styles.btnDisabled}
+              >
+                <View style={styles.btnSuivant}>
+                  <Text style={styles.btnSuivantText}>{t.teams.nextBtn}</Text>
+                </View>
+              </Pressable>
+            </View>
           </View>
         </View>
+
+        {/* « Ajouter une équipe » juste au-dessus du clavier : on enchaîne les équipes sans le fermer */}
+        {keyboardTop !== null ? (
+          <View style={[styles.floatingAdd, { top: keyboardTop - ADD_BUTTON_HEIGHT - KEYBOARD_GAP }]}>{addButton}</View>
+        ) : null}
+
+        {pendingRemoval !== null ? (() => {
+          const team = pendingRemoval === index ? { name: name.trim(), color: selectedColor } : drafts[pendingRemoval];
+          const teamName = team?.name || defaultName(pendingRemoval);
+          return (
+            <ConfirmModal
+              visible
+              header={
+                <View style={[styles.removeBadge, { backgroundColor: team?.color || teamColors[pendingRemoval] }]}>
+                  {/* Texte crème sur l'équipe rose, comme les badges en jeu */}
+                  <Text style={[styles.removeBadgeText, team?.color === '#EF1ACC' && { color: colors.cream }]} numberOfLines={1}>{teamName}</Text>
+                </View>
+              }
+              title={t.teams.removeTeamTitle}
+              titleLines={2}
+              confirmLabel={t.teams.removeTeamConfirm}
+              confirmIcon="delete"
+              cancelLabel={t.common.cancel}
+              onConfirm={() => {
+                removeTeam(pendingRemoval);
+                setPendingRemoval(null);
+              }}
+              onCancel={() => setPendingRemoval(null)}
+            />
+          );
+        })() : null}
 
         {/* En-tête */}
         <View
@@ -253,6 +368,7 @@ const styles = StyleSheet.create({
   },
   bluePanel: {
     position: 'absolute',
+    top: 0,
     bottom: 0,
     left: 0,
     right: 0,
@@ -263,9 +379,8 @@ const styles = StyleSheet.create({
   },
   panelInner: {
     flex: 1,
-    paddingTop: 48,
     paddingHorizontal: 24,
-    gap: 48,
+    gap: 24,
   },
   content: {
     flex: 1,
@@ -274,20 +389,10 @@ const styles = StyleSheet.create({
   topSection: {
     gap: 24,
   },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   sectionTitle: {
     fontFamily: fonts.display,
     fontSize: 26,
     color: '#fef1cc',
-  },
-  counter: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 16,
-    color: colors.cream,
   },
   sections: {
     gap: 17,
@@ -343,18 +448,46 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: colors.cream,
   },
+  // Place gardée même masquée : les boutons du bas ne sautent pas à l'ajout de la 2e équipe
+  hidden: {
+    opacity: 0,
+  },
+  removeBadge: {
+    alignSelf: 'center',
+    maxWidth: '100%',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  removeBadgeText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 18,
+    color: colors.purpleDeep,
+  },
   progressRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 16,
+    gap: 8,
   },
+  // Même gabarit pour toutes les équipes : seul le contour distingue celle en cours, sans décaler les autres
   progressItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
   },
-  hidden: {
-    opacity: 0,
+  progressItemCurrent: {
+    borderColor: colors.cream,
+  },
+  progressMain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexShrink: 1,
   },
   progressDot: {
     width: 20,
@@ -365,6 +498,35 @@ const styles = StyleSheet.create({
     fontFamily: fonts.displayMedium,
     fontSize: 20,
     color: colors.cream,
+  },
+  actions: {
+    gap: 16,
+  },
+  // Fond bleu plein : le bouton passe au-dessus du contenu de l'écran
+  floatingAdd: {
+    position: 'absolute',
+    left: 24,
+    right: 24,
+    borderRadius: 16,
+    backgroundColor: colors.purple,
+  },
+  btnAdd: {
+    height: ADD_BUTTON_HEIGHT,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: colors.cream,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  btnAddText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 20,
+    color: colors.cream,
+  },
+  btnDisabled: {
+    opacity: 0.4,
   },
   btnSuivant: {
     height: 51,
