@@ -10,6 +10,7 @@ import { useLang } from '@/lib/LangContext';
 import { playSound } from '@/lib/sounds';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
+import { ShareResultLink } from '@/components/game/ShareResultLink';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
@@ -74,6 +75,7 @@ export function FinalPhase({ state, onReplay, onHome }: Props) {
             );
           })}
         </View>
+        <ShareResultLink rows={rows} />
       </View>
 
       {/* Bottom: action buttons */}

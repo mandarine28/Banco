@@ -249,6 +249,10 @@ type Translations = {
     victoryOf: string;
     rematch: string;
     home: string;
+    share: string;
+    shareWin: (team: string) => string;
+    shareTie: string;
+    shareInvite: string;
   };
   prefs: {
     title: string;
@@ -507,6 +511,10 @@ const translations: Record<Lang, Translations> = {
       victoryOf: 'Victoire de',
       rematch: 'Revanche',
       home: 'Menu principal',
+      share: 'Partager le résultat',
+      shareWin: (team) => `🏆 Victoire de ${team} sur Bango !`,
+      shareTie: '🤝 Égalité parfaite sur Bango !',
+      shareInvite: 'Viens jouer avec nous :',
     },
     prefs: {
       title: 'Préférences',
@@ -802,6 +810,10 @@ const translations: Record<Lang, Translations> = {
       victoryOf: 'Victory for',
       rematch: 'Rematch',
       home: 'Main menu',
+      share: 'Share the result',
+      shareWin: (team) => `🏆 ${team} wins at Bango!`,
+      shareTie: '🤝 A perfect tie at Bango!',
+      shareInvite: 'Come play with us:',
     },
     prefs: {
       title: 'Preferences',
@@ -1097,6 +1109,10 @@ const translations: Record<Lang, Translations> = {
       victoryOf: 'Sieg für',
       rematch: 'Revanche',
       home: 'Hauptmenü',
+      share: 'Ergebnis teilen',
+      shareWin: (team) => `🏆 Sieg für ${team} bei Bango!`,
+      shareTie: '🤝 Perfektes Unentschieden bei Bango!',
+      shareInvite: 'Spiel mit uns:',
     },
     prefs: {
       title: 'Einstellungen',
@@ -1392,6 +1408,10 @@ const translations: Record<Lang, Translations> = {
       victoryOf: 'Victoria de',
       rematch: 'Revancha',
       home: 'Menú principal',
+      share: 'Compartir el resultado',
+      shareWin: (team) => `🏆 ¡Victoria de ${team} en Bango!`,
+      shareTie: '🤝 ¡Empate perfecto en Bango!',
+      shareInvite: 'Ven a jugar con nosotros:',
     },
     prefs: {
       title: 'Preferencias',
@@ -1687,6 +1707,10 @@ const translations: Record<Lang, Translations> = {
       victoryOf: 'Vittoria di',
       rematch: 'Rivincita',
       home: 'Menu principale',
+      share: 'Condividi il risultato',
+      shareWin: (team) => `🏆 Vittoria di ${team} a Bango!`,
+      shareTie: '🤝 Pareggio perfetto a Bango!',
+      shareInvite: 'Vieni a giocare con noi:',
     },
     prefs: {
       title: 'Preferenze',
@@ -1983,6 +2007,10 @@ const translations: Record<Lang, Translations> = {
       victoryOf: 'Vitória de',
       rematch: 'Revanche',
       home: 'Menu principal',
+      share: 'Compartilhar o resultado',
+      shareWin: (team) => `🏆 Vitória de ${team} no Bango!`,
+      shareTie: '🤝 Empate perfeito no Bango!',
+      shareInvite: 'Vem jogar com a gente:',
     },
     prefs: {
       title: 'Preferências',
