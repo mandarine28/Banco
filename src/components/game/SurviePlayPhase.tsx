@@ -61,6 +61,40 @@ export function SurviePlayPhase({
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
   const badgeTextColor = BADGE_TEXT_COLOR[currentTeam.color] ?? colors.purpleDeep;
 
+  const answerButtons = (
+    <View style={styles.buttons}>
+      <Pressable
+        onPress={onValidate}
+        sound="bid"
+        accessibilityRole="button"
+        accessibilityLabel={t.survie.validateA11y}
+        style={styles.validerWrap}
+      >
+        {({ pressed }) => (
+          <LinearGradient
+            colors={['#fb940e', '#f2c512']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={[styles.validerInner, pressed && { opacity: 0.85 }]}
+          >
+            <Text style={styles.validerText}>{t.survie.validate}</Text>
+          </LinearGradient>
+        )}
+      </Pressable>
+
+      <Pressable
+        onPress={onPass}
+        accessibilityRole="button"
+        accessibilityLabel={t.survie.passA11y}
+        style={({ pressed }) => [styles.passerWrap, pressed && { opacity: 0.8 }]}
+      >
+        <View style={styles.passerInner}>
+          <Text style={styles.passerText}>{t.survie.noAnswer}</Text>
+        </View>
+      </Pressable>
+    </View>
+  );
+
   return (
     <View style={styles.wrapper}>
       {/* Badge équipe + question */}
@@ -75,81 +109,68 @@ export function SurviePlayPhase({
         <Text style={styles.questionText}>{subject}</Text>
       </View>
 
-      {/* Chrono mis en avant, à la couleur de l'équipe ; pause et fin de manche juste dessous */}
-      <View style={styles.timerBlock}>
-        {hasTimer ? (
-          <SurvieTimerDisc
-            size={discSize}
-            color={currentTeam.color}
-            remainingMs={remainingMs}
-            totalMs={(turnSeconds ?? 0) * 1000}
-            paused={isPaused}
-          />
-        ) : null}
-        <View style={styles.controls}>
-          {/* Sans chrono (paramètres) : pas de pause, mais on peut toujours terminer la manche */}
-          {hasTimer ? (
-            <Pressable
-              onPress={onTogglePause}
-              accessibilityRole="button"
-              accessibilityLabel={isPaused ? t.play.resume : t.play.pause}
-              style={styles.roundBtn}
-            >
-              <View pointerEvents="none">
-                {isPaused ? (
-                  <Svg width={31} height={26} viewBox="0 0 24 20">
-                    <Path d={PLAY_PATH} fill={colors.cream} />
-                  </Svg>
-                ) : (
-                  <Svg width={26} height={30} viewBox="0 0 21 24">
-                    <Path d={PAUSE_PATH} fill={colors.cream} />
-                  </Svg>
-                )}
-              </View>
-            </Pressable>
-          ) : null}
-          <Pressable
-            onPress={onEndRound}
-            accessibilityRole="button"
-            accessibilityLabel={t.survie.endRoundTitle}
-            style={styles.roundBtn}
-          >
-            <SkipIcon color={colors.cream} size={42} />
-          </Pressable>
-        </View>
-      </View>
-
-      <View style={styles.buttons}>
-        <Pressable
-          onPress={onValidate}
-          sound="bid"
-          accessibilityRole="button"
-          accessibilityLabel={t.survie.validateA11y}
-          style={styles.validerWrap}
-        >
-          {({ pressed }) => (
-            <LinearGradient
-              colors={['#fb940e', '#f2c512']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={[styles.validerInner, pressed && { opacity: 0.85 }]}
-            >
-              <Text style={styles.validerText}>{t.survie.validate}</Text>
-            </LinearGradient>
-          )}
-        </Pressable>
-
-        <Pressable
-          onPress={onPass}
-          accessibilityRole="button"
-          accessibilityLabel={t.survie.passA11y}
-          style={({ pressed }) => [styles.passerWrap, pressed && { opacity: 0.8 }]}
-        >
-          <View style={styles.passerInner}>
-            <Text style={styles.passerText}>{t.survie.noAnswer}</Text>
+      {hasTimer ? (
+        <>
+          {/* Chrono mis en avant, à la couleur de l'équipe ; pause et fin de manche juste dessous */}
+          <View style={styles.timerBlock}>
+            <SurvieTimerDisc
+              size={discSize}
+              color={currentTeam.color}
+              remainingMs={remainingMs}
+              totalMs={(turnSeconds ?? 0) * 1000}
+              paused={isPaused}
+            />
+            <View style={styles.controls}>
+              <Pressable
+                onPress={onTogglePause}
+                accessibilityRole="button"
+                accessibilityLabel={isPaused ? t.play.resume : t.play.pause}
+                style={styles.roundBtn}
+              >
+                <View pointerEvents="none">
+                  {isPaused ? (
+                    <Svg width={31} height={26} viewBox="0 0 24 20">
+                      <Path d={PLAY_PATH} fill={colors.cream} />
+                    </Svg>
+                  ) : (
+                    <Svg width={26} height={30} viewBox="0 0 21 24">
+                      <Path d={PAUSE_PATH} fill={colors.cream} />
+                    </Svg>
+                  )}
+                </View>
+              </Pressable>
+              <Pressable
+                onPress={onEndRound}
+                accessibilityRole="button"
+                accessibilityLabel={t.survie.endRoundTitle}
+                style={styles.roundBtn}
+              >
+                <SkipIcon color={colors.cream} size={42} />
+              </Pressable>
+            </View>
           </View>
+          {answerButtons}
+        </>
+      ) : (
+        // Sans chrono : les réponses au centre
+        <View style={styles.timerBlock}>
+          <View style={styles.centeredButtons}>{answerButtons}</View>
+        </View>
+      )}
+
+      {/* Sans chrono : fin de manche en lien discret, juste au-dessus des points en jeu */}
+      {hasTimer ? null : (
+        <Pressable
+          onPress={onEndRound}
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel={t.survie.endRoundTitle}
+          style={styles.endRoundLink}
+        >
+          <SkipIcon color={colors.cream} size={24} />
+          <Text style={styles.endRoundText}>{t.survie.endRoundTitle.replace(/\s*[?¿]\s*/g, '')}</Text>
         </Pressable>
-      </View>
+      )}
 
       {/* Pactole en bas, comme le compteur du mode enchères */}
       <View style={[styles.jackpotFooter, { paddingBottom: Math.max(insets.bottom - 4, 12) }]}>
@@ -225,6 +246,23 @@ const styles = StyleSheet.create({
 
   buttons: {
     gap: 16,
+  },
+  centeredButtons: {
+    alignSelf: 'stretch',
+    gap: 16,
+  },
+  endRoundLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    minHeight: 44,
+  },
+  endRoundText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 18,
+    color: colors.cream,
+    textDecorationLine: 'underline',
   },
   // Mêmes proportions que CounterFooter (mode enchères)
   jackpotFooter: {
