@@ -9,7 +9,7 @@ import { MASCOT_NORMAL_XML } from '@/components/mascotIdleXml';
 const SIZE = 96;
 const HEIGHT = (SIZE * 249) / 300;
 // Hauteur visible au-dessus du panneau : jusqu'aux yeux
-const PEEK = HEIGHT * 0.6;
+export const PEEK = HEIGHT * 0.6;
 // Marge latérale : on évite les coins arrondis (48) du panneau bleu
 const EDGE = 60;
 

@@ -321,17 +321,20 @@ export default function MatchSettingsScreen() {
     return next;
   });
   const classicIds = BASE_CATEGORIES.filter((c) => c.available).map((c) => c.id);
-  const allClassicSelected = classicIds.every((id) => selected.has(id));
-  // Ne touche qu'aux catégories classiques : les packs cochés restent cochés
-  const toggleAllClassic = () => setSelected((prev) => {
+  // « Tout sélectionner » des catégories : classiques et packs gagnés d'un coup.
+  // Jamais un pack en essai : l'essai serait grillé sans le vouloir (le décocher reste possible à la main)
+  const allCategoryIds = [...classicIds, ...playablePackIds.filter((id) => !trialIds.has(id))];
+  const allCategoriesSelected = allCategoryIds.every((id) => selected.has(id));
+  const toggleAllCategories = () => setSelected((prev) => {
     const next = new Set(prev);
-    for (const id of classicIds) {
-      if (allClassicSelected) next.delete(id);
+    for (const id of allCategoryIds) {
+      if (allCategoriesSelected) next.delete(id);
       else next.add(id);
     }
     return next;
   });
-  const settingsTitle = mode === 'survie' ? t.common.survieSettings : t.common.auctionSettings;
+  // Solo (prototype, Outils de test) : titre en français seulement tant que le mode n'est pas validé
+  const settingsTitle = mode === 'survie' ? t.common.survieSettings : mode === 'solo' ? 'Paramètres du solo' : t.common.auctionSettings;
 
 
   // Par défaut, la partie d'essai ne pioche que dans ce pack ; le joueur peut en recocher d'autres
@@ -419,11 +422,11 @@ export default function MatchSettingsScreen() {
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>{t.matchSettings.categoriesTitle}</Text>
                 <SelectAllToggle
-                  checked={allClassicSelected}
+                  checked={allCategoriesSelected}
                   selectLabel={t.common.selectAll}
                   deselectLabel={t.common.deselectAll}
                   onToggle={() => {
-                    toggleAllClassic();
+                    toggleAllCategories();
                     anchorCategories();
                   }}
                 />
@@ -513,6 +516,11 @@ export default function MatchSettingsScreen() {
               accessibilityHint={noCategory ? t.matchSettings.pickCategoryFirst : undefined}
               onPress={noCategory ? toast.show : () => {
                 setSelectedThemes([...selected]);
+                // Solo : pas d'équipes à créer, la partie commence tout de suite
+                if (mode === 'solo') {
+                  router.push('/solo');
+                  return;
+                }
                 // Un seul pack choisi, avec son illustration : on plonge dans son ambiance avant les équipes
                 const [theme] = selected;
                 if (selected.size === 1 && PACK_INTROS[theme]) router.push({ pathname: '/pack-intro', params: { theme } });

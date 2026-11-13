@@ -35,9 +35,11 @@ type Props = {
   overlay?: ReactNode;
   /** Affiche une croix (×) au lieu de la flèche retour — pour les écrans de jeu où "retour" = quitter. */
   closeIcon?: boolean;
+  /** Masque la roue des réglages (ex. solo : trop proche du bouton « Terminer » du chrono). */
+  showSettings?: boolean;
 };
 
-export function GameLayout({ onHome, children, footer, scrollDisabled = false, overlay, closeIcon = false }: Props) {
+export function GameLayout({ onHome, children, footer, scrollDisabled = false, overlay, closeIcon = false, showSettings = true }: Props) {
   const t = getT(useLang().lang);
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -77,6 +79,7 @@ export function GameLayout({ onHome, children, footer, scrollDisabled = false, o
               )}
             </View>
           </Pressable>
+          {showSettings ? (
           <Pressable
             onPress={() => router.push('/reglages')}
             hitSlop={10}
@@ -89,6 +92,7 @@ export function GameLayout({ onHome, children, footer, scrollDisabled = false, o
               </Svg>
             </View>
           </Pressable>
+          ) : null}
         </View>
 
         {/* Zone principale : KAV pour le contenu + footer fixe EN DEHORS du KAV */}

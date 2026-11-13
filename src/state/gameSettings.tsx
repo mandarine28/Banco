@@ -3,7 +3,8 @@ import { createContext, type ReactNode, useContext, useEffect, useMemo, useState
 import { withoutTrialPack, withTrialPack } from '@/lib/trialPacks';
 import { loadPendingTrials, savePendingTrials } from '@/lib/trials';
 
-export type GameMode = 'classique' | 'streak' | 'survie';
+/** solo : prototype des Outils de test, un joueur seul sans équipes (src/app/solo.tsx). */
+export type GameMode = 'classique' | 'streak' | 'survie' | 'solo';
 
 export type Team = {
   name: string;

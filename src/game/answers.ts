@@ -1,6 +1,10 @@
 import type { Lang } from '../lib/i18n';
 import type { Question } from '../data/types';
 import { glossaries } from '../data/glossaries';
+import { normalize } from './normalize';
+
+// Utilisée partout avec les réponses ; vit à part pour être testable sans charger les glossaires
+export { normalize };
 
 /** Libellé d'une réponse FR dans la langue cible : glossaire de la langue, puis anglais, puis FR. */
 export function translateAnswer(theme: string, lang: Lang, answer: string): string {
@@ -40,19 +44,6 @@ export function getSubject(question: Question, lang: Lang): string {
 /** Retourne une copie de la question avec les réponses de la langue cible comme banque principale. */
 export function localizedQuestion(question: Question, lang: Lang): Question {
   return { ...question, answers: getAnswers(question, lang) };
-}
-
-/** Forme comparable d'un texte : minuscules, sans accents, sans espaces ni ponctuation. */
-export function normalize(text: string): string {
-  return text
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    // Ligatures non décomposées par NFD : « CŒUR » doit se trouver en tapant « coeur »
-    .replace(/œ/g, 'oe')
-    .replace(/æ/g, 'ae')
-    .replace(/ß/g, 'ss')
-    .replace(/[^a-z0-9]/g, '');
 }
 
 /** Boutons affichés sans recherche : toutes les réponses, plus celles déjà validées ailleurs. */

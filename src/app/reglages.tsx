@@ -12,14 +12,15 @@ import { HomeBackground } from '@/components/HomeBackground';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { UpdateModal } from '@/components/UpdateModal';
 import { privacyUrl, supportEmail } from '@/config/links';
-import { GIFT_PACKS } from '@/config/shop';
+import { GIFT_PACKS, PACK_THEME_IDS, WELCOME_GAMES } from '@/config/shop';
 import { TEST_TOOLS } from '@/config/testTools';
 import { canEditAdChoices, editAdChoices } from '@/lib/ads';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { playHaptic, setHapticsEnabled, useHapticsEnabled } from '@/lib/haptics';
 import { playSound, setSoundEnabled, useSoundEnabled } from '@/lib/sounds';
-import { resetPlayerProgress } from '@/lib/testTools';
+import { resetPlayerProgress, setGamesCompleted } from '@/lib/testTools';
+import { useGameSettings } from '@/state/gameSettings';
 import { usePurchases } from '@/state/purchases';
 import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
@@ -82,8 +83,20 @@ export default function SettingsScreen() {
   const panelTop = insets.top + 68;
 
   // Build de test uniquement : voir l'app comme un joueur neuf, ou avec tout débloqué
-  const { claimGiftedPack, resetGiftedPacks } = usePurchases();
+  const { claimGiftedPack, resetGiftedPacks, giftedPacks } = usePurchases();
+  const { setMode } = useGameSettings();
   const [showUpdate, setShowUpdate] = useState(false);
+  const packsWon = GIFT_PACKS.filter((product) => giftedPacks?.includes(product)).length;
+  // Les N premiers packs de la chaîne gagnés, les suivants à gagner
+  const setPacksWon = async (count: number) => {
+    try {
+      await resetGiftedPacks();
+      for (const product of GIFT_PACKS.slice(0, count)) await claimGiftedPack(product);
+      await setGamesCompleted(count * WELCOME_GAMES);
+    } catch {
+      Alert.alert('Outils de test', 'Changement de progression impossible.');
+    }
+  };
   const unlockAll = async () => {
     try {
       for (const product of GIFT_PACKS) await claimGiftedPack(product);
@@ -186,6 +199,22 @@ export default function SettingsScreen() {
                 <Text style={styles.sectionTitle} accessibilityRole="header">Outils de test</Text>
                 <View style={styles.card}>
                   <Text style={styles.cardText}>Visible uniquement en développement et dans le build de test.</Text>
+                  <Text style={styles.cardText}>
+                    Packs gagnés : {packsWon} / {GIFT_PACKS.length}
+                    {GIFT_PACKS[packsWon] ? ` — prochain : ${t.shop.packTitles[PACK_THEME_IDS[GIFT_PACKS[packsWon]] ?? ''] ?? GIFT_PACKS[packsWon]}` : ''}
+                  </Text>
+                  <View style={styles.stepRow}>
+                    <Pressable style={styles.stepBtn} onPress={() => setPacksWon(packsWon - 1)} disabled={packsWon === 0} accessibilityRole="button" accessibilityLabel="Un pack gagné de moins">
+                      <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.btn, packsWon === 0 && styles.btnDisabled]}>
+                        <Text style={styles.btnText}>−</Text>
+                      </LinearGradient>
+                    </Pressable>
+                    <Pressable style={styles.stepBtn} onPress={() => setPacksWon(packsWon + 1)} disabled={packsWon === GIFT_PACKS.length} accessibilityRole="button" accessibilityLabel="Un pack gagné de plus">
+                      <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.btn, packsWon === GIFT_PACKS.length && styles.btnDisabled]}>
+                        <Text style={styles.btnText}>+</Text>
+                      </LinearGradient>
+                    </Pressable>
+                  </View>
                   <Pressable onPress={unlockAll} accessibilityRole="button" accessibilityLabel="Tout débloquer">
                     <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btn}>
                       <Text style={styles.btnText}>Tout débloquer</Text>
@@ -202,6 +231,20 @@ export default function SettingsScreen() {
                     </LinearGradient>
                   </Pressable>
                   <UpdateModal visible={showUpdate} onClose={() => setShowUpdate(false)} />
+                  {/* Prototypes à valider avant de les montrer aux joueurs */}
+                  <Pressable onPress={() => {
+                    setMode('solo');
+                    router.push('/parametres-partie');
+                  }} accessibilityRole="button" accessibilityLabel="Mode solo (prototype)">
+                    <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btn}>
+                      <Text style={styles.btnText}>Mode solo (prototype)</Text>
+                    </LinearGradient>
+                  </Pressable>
+                  <Pressable onPress={() => router.push('/solo?daily=1')} accessibilityRole="button" accessibilityLabel="Défi du jour (prototype)">
+                    <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btn}>
+                      <Text style={styles.btnText}>Défi du jour (prototype)</Text>
+                    </LinearGradient>
+                  </Pressable>
                 </View>
               </View>
             ) : null}
@@ -333,6 +376,16 @@ const styles = StyleSheet.create({
     shadowOffset: { width: -1, height: 2 },
     shadowOpacity: 1,
     shadowRadius: 0,
+  },
+  btnDisabled: {
+    opacity: 0.4,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  stepBtn: {
+    flex: 1,
   },
   btnText: {
     fontFamily: fonts.displayMedium,

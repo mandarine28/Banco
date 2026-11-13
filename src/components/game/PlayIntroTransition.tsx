@@ -17,13 +17,15 @@ const TIMINGS = {
   classic: { enter: 300, hold: 2200, fade: 300 },
   survieStart: { enter: 300, hold: 1200, fade: 300 },
   survieNext: { enter: 200, hold: 600, fade: 200 },
+  // Solo : pas d'équipe à annoncer, directement le 3-2-1
+  countdown: { enter: 300, hold: 0, fade: 300 },
 } as const;
 // Fond bleu des écrans de jeu, pattern à 4 %
 const PATTERN_OPACITY = 0.04;
 // Compte à rebours 3-2-1 après l'annonce de l'équipe, pour ne pas lancer le chrono par surprise
 const COUNTDOWN_FROM = 3;
 const COUNTDOWN_STEP_MS = 1000;
-const WITH_COUNTDOWN: Record<keyof typeof TIMINGS, boolean> = { classic: true, survieStart: true, survieNext: false };
+const WITH_COUNTDOWN: Record<keyof typeof TIMINGS, boolean> = { classic: true, survieStart: true, survieNext: false, countdown: true };
 // Figma (classic) : titre centré à 98 pt au-dessus du milieu, pour laisser la place au bloc du bas.
 // Survie (pas de bloc du bas) : titre centré verticalement.
 const TITLE_OFFSET = 98;
@@ -35,7 +37,7 @@ type Props = {
   team: GameTeam;
   /** Équipe qui tient l'appareil — absente en mode survie. */
   holder?: GameTeam;
-  /** classic : « à vous de jouer ! » ; survieStart : « à vous de commencer » ; survieNext : « à vous de répondre ! » (rapide). */
+  /** classic : « à vous de jouer ! » ; survieStart : « à vous de commencer » ; survieNext : « à vous de répondre ! » (rapide) ; countdown : 3-2-1 seul. */
   variant?: keyof typeof TIMINGS;
   onReveal: () => void;
   onDone: () => void;
@@ -49,7 +51,7 @@ export function PlayIntroTransition({ team, holder, variant = 'classic', onRevea
   const timing = TIMINGS[variant];
   const countdown = useState(() => new Animated.Value(COUNTDOWN_FROM))[0];
   // null tant que l'annonce de l'équipe est affichée
-  const [count, setCount] = useState<number | null>(null);
+  const [count, setCount] = useState<number | null>(variant === 'countdown' ? COUNTDOWN_FROM : null);
   useEffect(() => {
     const id = countdown.addListener(({ value }) => setCount(Math.max(1, Math.ceil(value))));
     return () => countdown.removeListener(id);
@@ -87,7 +89,7 @@ export function PlayIntroTransition({ team, holder, variant = 'classic', onRevea
       : undefined,
   });
 
-  const subtitle = { classic: t.ready.yourTurn, survieStart: t.ready.yourStart, survieNext: t.ready.yourGo }[variant];
+  const subtitle = { classic: t.ready.yourTurn, survieStart: t.ready.yourStart, survieNext: t.ready.yourGo, countdown: t.ready.yourStart }[variant];
   const holderTextColor = holder ? (BADGE_TEXT_COLOR[holder.color] ?? colors.purpleDeep) : undefined;
   const holderLabel = holder ? ` ${holder.name} ${t.ready.holdsPhone}` : '';
 

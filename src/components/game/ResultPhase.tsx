@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { AnswerChips } from '@/components/game/AnswerChips';
 import { getAnswers, getSubject, visibleAnswers } from '@/game/answers';
 import { contract, currentQuestion, type GameState, isSuccess, opponent } from '@/game/engine';
 import { getT } from '@/lib/i18n';
@@ -32,19 +32,6 @@ export function ResultPhase({ state, onNext, isLastRound }: Props) {
     return i === adversaireIdx ? amount : 0;
   };
 
-  const [chipsScrollY, setChipsScrollY] = useState(0);
-  const [chipsContentH, setChipsContentH] = useState(0);
-  const [chipsContainerH, setChipsContainerH] = useState(0);
-
-  const THUMB_MIN_H = 28;
-  const isScrollable = chipsContentH > chipsContainerH + 4;
-  const thumbH = isScrollable
-    ? Math.max(THUMB_MIN_H, chipsContainerH * (chipsContainerH / chipsContentH))
-    : chipsContainerH;
-  const thumbMaxTop = chipsContainerH - thumbH;
-  const scrollProgress = isScrollable ? chipsScrollY / (chipsContentH - chipsContainerH) : 0;
-  const thumbTop = scrollProgress * thumbMaxTop;
-
   const rawSubject = getSubject(question, lang);
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
 
@@ -58,38 +45,7 @@ export function ResultPhase({ state, onNext, isLastRound }: Props) {
       <Text style={styles.questionText}>{subject}</Text>
 
       <Text style={styles.someAnswersLabel}>{t.play.someAnswers}</Text>
-      <View style={styles.chipsArea}>
-        <View
-          style={styles.scrollTrack}
-          onLayout={(e) => setChipsContainerH(e.nativeEvent.layout.height)}
-        >
-          {isScrollable ? (
-            <View style={[styles.scrollThumb, { height: thumbH, top: thumbTop }]} />
-          ) : (
-            <View style={[styles.scrollThumb, { height: chipsContainerH, top: 0 }]} />
-          )}
-        </View>
-        <ScrollView
-          style={styles.chipsScroll}
-          contentContainerStyle={styles.chipsGrid}
-          showsVerticalScrollIndicator={false}
-          scrollEventThrottle={16}
-          onScroll={(e) => setChipsScrollY(e.nativeEvent.contentOffset.y)}
-          onContentSizeChange={(_, h) => setChipsContentH(h)}
-        >
-          {allAnswers.map((answer) => {
-            const found = state.found.includes(answer);
-            const label = answer.charAt(0).toUpperCase() + answer.slice(1).toLowerCase();
-            return (
-              <View key={answer} style={[styles.chip, found ? styles.chipFound : styles.chipMissed]}>
-                <Text style={[styles.chipLabel, found ? styles.chipLabelFound : styles.chipLabelMissed]}>
-                  {label}
-                </Text>
-              </View>
-            );
-          })}
-        </ScrollView>
-      </View>
+      <AnswerChips answers={allAnswers} found={state.found} />
 
       {/* ─── Panel crème (même DA que AuctionPhase) ─── */}
       <View style={[styles.creamPanel, { paddingBottom: Math.max(insets.bottom + 30, 48) }]}>
@@ -154,61 +110,6 @@ const styles = StyleSheet.create({
     color: colors.cream,
     paddingHorizontal: 24,
     marginBottom: 10,
-  },
-  chipsArea: {
-    flex: 1,
-    flexDirection: 'row',
-    gap: 12,
-    paddingHorizontal: 24,
-  },
-  scrollTrack: {
-    width: 3,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    flexShrink: 0,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  scrollThumb: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.7)',
-  },
-  chipsScroll: {
-    flex: 1,
-  },
-  chipsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    paddingBottom: 16,
-  },
-
-  // Chips — mêmes valeurs que PlayPhase
-  chip: {
-    borderWidth: 1,
-    borderColor: colors.cream,
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  chipFound: {
-    backgroundColor: '#fef1cc',
-  },
-  chipMissed: {
-    backgroundColor: '#4883e5',
-  },
-  chipLabel: {
-    fontFamily: fonts.displayMedium,
-    fontSize: 18,
-  },
-  chipLabelFound: {
-    color: colors.purpleDeep,
-  },
-  chipLabelMissed: {
-    color: colors.cream,
   },
 
   // ── Panel crème — même DA que AuctionPhase creamPanel ──

@@ -5,8 +5,15 @@ import { colors, fonts } from '@/theme';
 
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
-/** Badge d'équipe géant + sous-titre blanc, commun aux écrans de transition Figma. */
-export function TransitionTitle({ team, subtitle }: { team: GameTeam; subtitle: string }) {
+/** Badge d'équipe géant + sous-titre blanc, commun aux écrans de transition Figma. Sans équipe (solo) : le texte seul. */
+export function TransitionTitle({ team, subtitle }: { team?: GameTeam; subtitle: string }) {
+  if (!team) {
+    return (
+      <View style={styles.block}>
+        <Text style={styles.subtitle}>{subtitle}</Text>
+      </View>
+    );
+  }
   const textColor = BADGE_TEXT_COLOR[team.color] ?? colors.purpleDeep;
   return (
     <View style={styles.block}>

@@ -7,12 +7,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 import { CreamPatternSvg } from '@/components/CreamPatternSvg';
+import { DAILY_CARD_HEIGHT, DailyChallengeCard } from '@/components/DailyChallengeCard';
 import { HomeBackground } from '@/components/HomeBackground';
-import { HomeMascot } from '@/components/HomeMascot';
+import { HomeMascot, PEEK } from '@/components/HomeMascot';
 import { ConfirmModal } from '@/components/InfoModal';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { AnimatedLogo } from '@/components/Logo';
 import { PACK_THEME_IDS, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
+import { TEST_TOOLS } from '@/config/testTools';
 import { afterAdsConsent } from '@/lib/ads';
 import { UpdateModal } from '@/components/UpdateModal';
 import { WhatsNewModal } from '@/components/WhatsNewModal';
@@ -56,6 +58,9 @@ export default function HomeScreen() {
 
   // Centre le logo+subtitle dans la zone crème visible au-dessus du panneau bleu
   const estimatedPanelHeight = 264 + Math.max(64, insets.bottom + 30);
+  // Défi du jour (prototype, build de test) : carte sur le fond crème, au-dessus de l'espace où la mascotte sort la tête
+  const dailyCardGap = PEEK + 8;
+  // Le logo et le sous-titre gardent leur place : la carte se loge dans l'espace libre au-dessus du panneau
   const creamHeight = height - estimatedPanelHeight;
   const logoGroupHeight = logoHeight + 12 + 36;
   const logoTop = Math.max(insets.top + 20, (creamHeight - logoGroupHeight) / 2);
@@ -181,6 +186,13 @@ export default function HomeScreen() {
           </View>
         </View>
 
+        {/* Défi du jour sur le fond crème, entre le sous-titre et le panneau ; attend la mesure du panneau */}
+        {TEST_TOOLS && panelTop > 0 ? (
+          <View style={[styles.dailyCard, { top: panelTop - dailyCardGap - DAILY_CARD_HEIGHT }]}>
+            <DailyChallengeCard />
+          </View>
+        ) : null}
+
         {/* En-tête : drapeau gauche + paramètres droite */}
         <View style={[styles.header, { top: insets.top + 14, left: width * 0.06, right: width * 0.06 }]}>
           <LanguagePicker />
@@ -294,6 +306,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  dailyCard: {
+    position: 'absolute',
+    left: 24,
+    right: 24,
   },
   // Logo
   logoWrap: {

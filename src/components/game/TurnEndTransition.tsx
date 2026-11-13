@@ -34,15 +34,20 @@ const GENTLE_SPRING = { stiffness: 100, damping: 15, mass: 1 };
 export type TurnEndKind = 'madeBid' | 'missedBid' | 'eliminated';
 
 type Props = {
-  team: GameTeam;
+  /** Absente en solo : pas d'équipe à annoncer. */
+  team?: GameTeam;
   kind: TurnEndKind;
   /** madeBid : réponses trouvées ; missedBid : objectif de la mise ; eliminated : points en jeu. */
   count: number;
+  /** Remplace le texte du type de fin (ex. solo : pas de mise). */
+  subtitle?: string;
+  /** Remplace le libellé du nombre. */
+  label?: string;
   onReveal: () => void;
   onDone: () => void;
 };
 
-export function TurnEndTransition({ team, kind, count, onReveal, onDone }: Props) {
+export function TurnEndTransition({ team, kind, count, subtitle: subtitleOverride, label: labelOverride, onReveal, onDone }: Props) {
   const { width, height } = useWindowDimensions();
   const { lang } = useLang();
   const t = getT(lang);
@@ -94,8 +99,8 @@ export function TurnEndTransition({ team, kind, count, onReveal, onDone }: Props
     },
   });
 
-  const subtitle = { madeBid: t.result.madeBid, missedBid: t.result.missedBid, eliminated: t.result.eliminated }[kind];
-  const label = { madeBid: t.result.foundCount, missedBid: t.result.toFind, eliminated: t.result.pointsAtStake }[kind];
+  const subtitle = subtitleOverride ?? { madeBid: t.result.madeBid, missedBid: t.result.missedBid, eliminated: t.result.eliminated }[kind];
+  const label = labelOverride ?? { madeBid: t.result.foundCount, missedBid: t.result.toFind, eliminated: t.result.pointsAtStake }[kind];
 
   return (
     <Animated.View style={[StyleSheet.absoluteFill, { opacity }]}>
@@ -103,7 +108,7 @@ export function TurnEndTransition({ team, kind, count, onReveal, onDone }: Props
         style={styles.root}
         onPress={skip}
         accessibilityRole="button"
-        accessibilityLabel={`${team.name} ${subtitle}. ${label} ${count}`}
+        accessibilityLabel={`${team ? `${team.name} ` : ''}${subtitle}. ${label} ${count}`}
       >
         {success ? null : <Animated.View style={[StyleSheet.absoluteFill, styles.grey, { opacity: step2 }]} />}
         {/* Même largeur max que GameLayout */}
