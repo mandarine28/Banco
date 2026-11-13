@@ -24,9 +24,9 @@ export function withPlayed(history: PackLastPlayed, themeIds: readonly string[],
  * Packs débloqués d'abord, du plus récemment joué au plus ancien (jamais joués : ordre de déblocage) ;
  * packs encore bloqués ensuite, dans l'ordre de déblocage, même si une partie d'essai y a été jouée.
  */
-export function sortByLastPlayed<T extends { id: string; playable: boolean }>(items: readonly T[], history: PackLastPlayed): T[] {
+export function sortByLastPlayed<T extends { id: string; playable: boolean; trial?: boolean }>(items: readonly T[], history: PackLastPlayed): T[] {
   return items
-    .map((item, index) => ({ item, index, at: item.playable ? (history[item.id] ?? -1) : -2 }))
+    .map((item, index) => ({ item, index, at: item.playable && !item.trial ? (history[item.id] ?? -1) : -2 }))
     .sort((a, b) => b.at - a.at || a.index - b.index)
     .map(({ item }) => item);
 }

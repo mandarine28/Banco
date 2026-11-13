@@ -18,6 +18,12 @@ test('un pack bloqué reste après les débloqués, à sa place dans la chaîne,
   assert.deepEqual(order, ['dresseur', 'harry-potter', 'rap-francais', 'football', 'retro-gaming', 'jeux-video']);
 });
 
+test('un pack en essai, jouable mais pas gagné, reste parmi les bloqués à sa place dans la chaîne', () => {
+  const mixed = [...packs, { id: 'retro-gaming', playable: false }, { id: 'jeux-video', playable: true, trial: true }];
+  const order = sortByLastPlayed(mixed, { 'jeux-video': 900 }).map((p) => p.id);
+  assert.deepEqual(order.slice(-2), ['retro-gaming', 'jeux-video']);
+});
+
 test('sans historique, l’ordre de la chaîne est conservé', () => {
   assert.deepEqual(sortByLastPlayed(packs, {}).map((p) => p.id), packs.map((p) => p.id));
 });

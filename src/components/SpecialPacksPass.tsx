@@ -58,9 +58,12 @@ export function SpecialPacksPass({ title, seeAllLabel, labels, packs, onPackPres
             ) : null}
             {showProgress ? (
             <View style={styles.nodeWrap}>
+              {/* Gagné : coche au lieu du numéro, ces packs sont triés par dernière partie et non plus dans l'ordre de la chaîne */}
               {pack.playable ? (
                 <LinearGradient colors={[GREEN.light, GREEN.end]} style={styles.node}>
-                  <Text style={styles.nodeText}>{pack.rank}</Text>
+                  {pack.trial
+                    ? <Text style={styles.nodeText}>{pack.rank}</Text>
+                    : <MaterialCommunityIcons name="check-bold" size={18} color={colors.purpleDeep} />}
                 </LinearGradient>
               ) : (
                 <View style={[styles.node, { backgroundColor: GREY.node }]}>
