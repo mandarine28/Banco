@@ -16,7 +16,7 @@ import { PACK_THEME_IDS, type ProductId } from '@/config/shop';
 import { questionsFor } from '@/data/questions';
 import type { Question } from '@/data/types';
 import { getAnswers, getSubject, hiddenAnswers, visibleAnswers } from '@/game/answers';
-import { type GameTeam, planQuestions, TURN_SECONDS } from '@/game/engine';
+import { type GameTeam, TURN_SECONDS } from '@/game/engine';
 import { CLASSIC_THEMES, dailyQuestion } from '@/lib/dailyQuestion';
 import { scheduleDailyReminders } from '@/lib/dailyReminder';
 import { playHaptic } from '@/lib/haptics';
@@ -59,18 +59,15 @@ export default function SoloScreen() {
   const lockedPackThemes = (Object.keys(PACK_THEME_IDS) as ProductId[]).filter((product) => !hasPurchased(product)).map((product) => PACK_THEME_IDS[product] ?? '');
   const [soloThemes, setSoloThemes] = useState(() => (settings.selectedThemes.length > 0 ? settings.selectedThemes : CLASSIC_THEMES));
 
-  const makePlan = (themeIds: readonly string[]): Question[] => {
-    if (isDaily) return [dailyQuestion(lang, today)];
-    const pool = questionsFor(lang, themeIds);
-    // Mêmes règles que les parties : catégories à tour de rôle, sans répétition
-    return planQuestions(pool.length > 0 ? pool : questionsFor(lang, CLASSIC_THEMES), settings.roundCount);
+  // Solo : une question à la fois, tirée dans les catégories choisies ; jamais deux fois la même d'affilée
+  const pickQuestion = (themeIds: readonly string[], previousId?: string): Question => {
+    if (isDaily) return dailyQuestion(lang, today);
+    const all = questionsFor(lang, themeIds);
+    const pool = all.length > 0 ? all : questionsFor(lang, CLASSIC_THEMES);
+    const fresh = pool.length > 1 ? pool.filter((q) => q.id !== previousId) : pool;
+    return fresh[Math.floor(Math.random() * fresh.length)];
   };
-  const [plan, setPlan] = useState<Question[]>(() => makePlan(soloThemes));
-  const [round, setRound] = useState(0);
-  const [roundScores, setRoundScores] = useState<number[]>([]);
-  const question = plan[round];
-  const isLastRound = round >= plan.length - 1;
-  const total = roundScores.reduce((sum, score) => sum + score, 0);
+  const [question, setQuestion] = useState<Question>(() => pickQuestion(soloThemes));
 
   // Comme une partie : packs datés pour l'ordre des paramètres, essai consommé dès le lancement
   const trialTheme = isDaily ? undefined : soloThemes.find((id) => lockedPackThemes.includes(id));
@@ -83,7 +80,7 @@ export default function SoloScreen() {
   const playedPacksKey = isDaily ? '' : soloThemes.filter((id) => Object.values(PACK_THEME_IDS).includes(id)).join(',');
   useEffect(() => {
     if (playedPacksKey) markPacksPlayed(playedPacksKey.split(','));
-  }, [plan, playedPacksKey]);
+  }, [question, playedPacksKey]);
   const [phase, setPhase] = useState<Phase>('intro');
   const [intro, setIntro] = useState<Overlay>(null);
   const [outro, setOutro] = useState<Overlay>(null);
@@ -131,8 +128,6 @@ export default function SoloScreen() {
       scheduleDailyReminders(next.streak);
       return;
     }
-    setRoundScores((scores) => [...scores, finalFound.length]);
-    // Record : meilleure manche, comparable quel que soit le nombre de manches choisi
     const beaten = finalFound.length > record;
     setNewRecord(beaten);
     if (beaten) {
@@ -185,19 +180,12 @@ export default function SoloScreen() {
     playHaptic('light');
   };
 
-  const nextRound = () => {
-    setRound((r) => r + 1);
-    setPhase('intro');
-  };
-
   // Nouvelle partie : un pack en essai ne valait que pour une partie
   const replay = () => {
     const kept = soloThemes.filter((id) => !lockedPackThemes.includes(id));
     const themeIds = kept.length > 0 ? kept : CLASSIC_THEMES;
     setSoloThemes(themeIds);
-    setPlan(makePlan(themeIds));
-    setRound(0);
-    setRoundScores([]);
+    setQuestion(pickQuestion(themeIds, question.id));
     setPhase('intro');
   };
 
@@ -252,9 +240,11 @@ export default function SoloScreen() {
         <View style={styles.fill}>
           <View style={styles.blueZone}>
             <View style={styles.pillRow}>
-              <View style={styles.pill}>
-                <Text style={styles.pillText}>{isDaily ? `Défi du ${shortDate(today)}` : `Manche ${round + 1}/${plan.length}`}</Text>
-              </View>
+              {isDaily ? (
+                <View style={styles.pill}>
+                  <Text style={styles.pillText}>{`Défi du ${shortDate(today)}`}</Text>
+                </View>
+              ) : null}
               <CategoryBadge themeId={question.theme} />
             </View>
             <View style={styles.questionCard}>
@@ -353,17 +343,14 @@ export default function SoloScreen() {
             <View style={styles.resultRows}>
               <ResultRow label="Réponses trouvées" value={String(isDaily ? (daily?.score ?? found.length) : found.length)} />
               {isDaily ? <ResultRow label="Série" value={`${daily?.streak ?? 1} 🔥`} /> : null}
-              {!isDaily && plan.length > 1 ? <ResultRow label={`Total après ${roundScores.length} manche${roundScores.length > 1 ? 's' : ''}`} value={String(total)} /> : null}
-              {isDaily ? null : <ResultRow label="Meilleure manche" value={String(record)} highlight={newRecord ? 'Nouveau !' : undefined} />}
+              {isDaily ? null : <ResultRow label="Record" value={String(record)} highlight={newRecord ? 'Nouveau !' : undefined} />}
             </View>
             {isDaily ? <Text style={styles.panelText}>Reviens demain pour un nouveau défi.</Text> : null}
             <View style={styles.buttons}>
               {isDaily ? (
                 <OrangeButton label="Partager mon score" onPress={shareDaily} />
-              ) : isLastRound ? (
-                <OrangeButton label="Rejouer" onPress={replay} />
               ) : (
-                <OrangeButton label="Manche suivante" onPress={nextRound} />
+                <OrangeButton label="Rejouer" onPress={replay} />
               )}
               <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Retour" style={styles.whiteWrap}>
                 <View style={styles.whiteInner}>

@@ -334,7 +334,9 @@ export default function MatchSettingsScreen() {
     return next;
   });
   // Solo (prototype, Outils de test) : titre en français seulement tant que le mode n'est pas validé
-  const settingsTitle = mode === 'survie' ? t.common.survieSettings : mode === 'solo' ? 'Paramètres du solo' : t.common.auctionSettings;
+  // Solo (prototype) : pas de titre ni de réglages de partie, seulement les catégories
+  const isSolo = mode === 'solo';
+  const settingsTitle = mode === 'survie' ? t.common.survieSettings : t.common.auctionSettings;
 
 
   // Par défaut, la partie d'essai ne pioche que dans ce pack ; le joueur peut en recocher d'autres
@@ -382,7 +384,7 @@ export default function MatchSettingsScreen() {
           <CreamPatternSvg width={width} height={height} opacity={0.04} fill="#ffffff" />
           {/* Titre fixe, sur fond bleu plein : reste lisible quand les réglages passent dessous */}
           <View style={[styles.stickyTitle, { paddingTop: insets.top + 60 }]}>
-            <Text style={styles.sectionTitle}>{settingsTitle}</Text>
+            {isSolo ? null : <Text style={styles.sectionTitle}>{settingsTitle}</Text>}
             {/* Fondu sous le titre : le contenu disparaît en douceur en passant dessous */}
             <Animated.View style={[styles.stickyFade, { opacity: fadeOpacity }]} pointerEvents="none">
               <LinearGradient colors={STICKY_FADE_COLORS} locations={STICKY_FADE_STOPS} style={StyleSheet.absoluteFill} />
@@ -400,6 +402,7 @@ export default function MatchSettingsScreen() {
             showsVerticalScrollIndicator={false}
           >
             {/* Paramètre de jeux */}
+            {isSolo ? null : (
             <View style={styles.settingsSection}>
               <View style={styles.rowList}>
                 {/* Le nombre d'équipes se règle à la création des équipes (bouton « Ajouter une équipe ») */}
@@ -416,6 +419,7 @@ export default function MatchSettingsScreen() {
                 ) : null}
               </View>
             </View>
+            )}
 
             {/* Catégories de questions */}
             <View style={styles.categoriesSection} onLayout={(e) => { categoriesY.current = e.nativeEvent.layout.y; }}>
