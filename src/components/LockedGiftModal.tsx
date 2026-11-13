@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Image, Modal, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Image, Modal, Platform, StyleSheet, Text, View } from 'react-native';
 
 import Svg, { Path } from 'react-native-svg';
 
@@ -73,15 +73,23 @@ export function LockedGiftModal({ themeId, onClose, onTrialGranted, lockedThemes
     );
   };
 
-  const watchAd = async () => {
-    const id = themeId;
-    const result = await showRewardedAd();
+  // Pack dont la pub attend la fermeture complète de cette fenêtre
+  const pendingAd = useRef<string | null>(null);
+  const runPendingAd = async () => {
+    const id = pendingAd.current;
+    pendingAd.current = null;
+    if (id && isRewardGranted(await showRewardedAd())) onTrialGranted(id);
+  };
+  // iOS : une pub par-dessus cette fenêtre, puis sa fermeture pendant que la pub se retire, figeait l'écran
+  const watchAd = () => {
+    pendingAd.current = themeId;
     onClose();
-    if (id && isRewardGranted(result)) onTrialGranted(id);
+    // onDismiss n'existe que sur iOS ; ailleurs la fenêtre ne gêne pas la pub
+    if (Platform.OS !== 'ios') runPendingAd();
   };
 
   return (
-    <Modal visible={product !== undefined} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose}>
+    <Modal visible={product !== undefined} transparent animationType="fade" statusBarTranslucent onRequestClose={onClose} onDismiss={runPendingAd}>
       <View style={styles.backdrop}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={t.shop.close} />
         <View style={styles.card} accessibilityViewIsModal>
