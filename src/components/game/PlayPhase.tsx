@@ -7,6 +7,7 @@ import { getSubject, hiddenAnswers, indexLetter, localizedQuestion, normalize, s
 import { contract, currentQuestion, type GameState, TURN_SECONDS } from '@/game/engine';
 import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
+import { ExpandIcon } from '@/components/ExpandIcon';
 import { colors, fonts } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 import { AlphabetIndex } from './AlphabetIndex';
@@ -243,7 +244,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onSkip, onTogglePause,
             style={styles.searchInput}
           />
           {query ? (
-            <Pressable onPress={() => setQuery('')} hitSlop={8} accessibilityRole="button" accessibilityLabel="Effacer">
+            <Pressable onPress={() => setQuery('')} hitSlop={8} accessibilityRole="button" accessibilityLabel={t.survie.clear}>
               <Text style={styles.clearBtn}>✕</Text>
             </Pressable>
           ) : null}
@@ -306,29 +307,7 @@ export function PlayPhase({ state, remainingMs, onToggle, onSkip, onTogglePause,
               accessibilityRole="button"
               accessibilityLabel={isCollapsed ? t.common.expandQuestion : t.common.collapseQuestion}
             >
-              <Svg width={24} height={24} viewBox="0 0 24 24">
-                {!isCollapsed ? (
-                  // Agrandir : flèche diagonale double, têtes vers ↖ et ↘ (vers l'extérieur)
-                  <Path
-                    d="M4 4 L20 20 M4 4 L10 4 M4 4 L4 10 M20 20 L14 20 M20 20 L20 14"
-                    stroke="rgba(254,246,215,0.85)"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                ) : (
-                  // Réduire : deux flèches diagonales, têtes vers l'intérieur
-                  <Path
-                    d="M4 4 L9 9 M9 9 L5 9 M9 9 L9 5 M20 20 L15 15 M15 15 L19 15 M15 15 L15 19"
-                    stroke="rgba(254,246,215,0.85)"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    fill="none"
-                  />
-                )}
-              </Svg>
+              <ExpandIcon collapse={isCollapsed} color="rgba(254,246,215,0.85)" />
             </Pressable>
           ) : null}
           </View>
@@ -384,7 +363,6 @@ export function PlayPhase({ state, remainingMs, onToggle, onSkip, onTogglePause,
                   onPress={() => handleToggle(label)}
                   sound={found ? false : 'correct'}
                   haptic={found ? undefined : 'light'}
-                  soundOnRelease
                   accessibilityRole="checkbox"
                   accessibilityState={{ checked: found }}
                   accessibilityLabel={label}

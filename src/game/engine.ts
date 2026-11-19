@@ -43,6 +43,8 @@ export type GameState = {
   found: string[];
   /** Réponses comptées pendant le tour (boutons et compteur manuel), de 0 à la mise. */
   progress: number;
+  /** Ajouts du tour dans l'ordre : libellé coché, ou null pour un point du « + » (annulés par « − »). */
+  adds: (string | null)[];
   scores: number[];
   endReason: EndReason | null;
 };
@@ -109,6 +111,7 @@ export function createGame(
     auction: openAuction(teams.length, 0),
     found: [],
     progress: 0,
+    adds: [],
     scores: teams.map(() => 0),
     endReason: null,
   };
@@ -203,21 +206,37 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'START_TURN':
       if (state.phase !== 'ready') return state;
-      return { ...state, phase: 'play', found: [], progress: 0, endReason: null };
+      return { ...state, phase: 'play', found: [], progress: 0, adds: [], endReason: null };
 
     case 'TOGGLE_ANSWER': {
       if (state.phase !== 'play') return state;
       const already = state.found.includes(action.label);
       const next = already
-        ? { ...state, found: state.found.filter((l) => l !== action.label), progress: Math.max(0, state.progress - 1) }
-        : { ...state, found: [...state.found, action.label], progress: state.progress + 1 };
+        ? {
+            ...state,
+            found: state.found.filter((l) => l !== action.label),
+            adds: state.adds.filter((l) => l !== action.label),
+            progress: Math.max(0, state.progress - 1),
+          }
+        : { ...state, found: [...state.found, action.label], adds: [...state.adds, action.label], progress: state.progress + 1 };
       return isSuccess(next) ? endTurn(next, 'reached') : next;
     }
 
     case 'ADJUST': {
       if (state.phase !== 'play') return state;
-      const progress = Math.min(contract(state).amount, Math.max(0, state.progress + action.delta));
-      const next = { ...state, progress };
+      if (action.delta < 0) {
+        // « − » annule le dernier ajout, dans l'ordre : réponse cochée (on la décoche) ou point du « + »
+        if (state.progress <= 0) return state;
+        const last = state.adds[state.adds.length - 1];
+        return {
+          ...state,
+          adds: state.adds.slice(0, -1),
+          found: typeof last === 'string' ? state.found.filter((l) => l !== last) : state.found,
+          progress: state.progress - 1,
+        };
+      }
+      if (state.progress >= contract(state).amount) return state;
+      const next = { ...state, progress: state.progress + 1, adds: [...state.adds, null] };
       return isSuccess(next) ? endTurn(next, 'reached') : next;
     }
 
@@ -236,6 +255,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         auction: openAuction(state.teams.length, round),
         found: [],
         progress: 0,
+        adds: [],
         endReason: null,
       };
     }

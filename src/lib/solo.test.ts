@@ -57,6 +57,23 @@ test('écart de saisie : une lettre ajoutée, retirée, remplacée ou deux inver
   assert.equal(editDistance('zodane', 'zidane'), 1);
 });
 
+test('correction plus stricte : première lettre juste, un seul mot presque exact', () => {
+  assert.equal(matchAnswer('gateau', ['Bateau', 'Avion'], []), null, 'première lettre différente');
+  assert.equal(matchAnswer('zadabe', ['Zinédine Zidane'], []), null, 'deux fautes sur un seul mot');
+  assert.equal(matchAnswer('moutn', ['Mouton'], []), 'Mouton', 'une faute sur un mot court reste tolérée');
+  assert.equal(matchAnswer('chevak', ['Cheval', 'Chèvre'], []), 'Cheval');
+  assert.equal(matchAnswer('chocolat', ['Chevalier', 'Château'], []), null);
+});
+
+test('pluriel et réponse entière : « fourmis » trouve Fourmi même avec Fourmi rouge dans la liste', () => {
+  const insects = ['FOURMI', 'ABEILLE', 'FOURMI ROUGE'];
+  assert.equal(matchAnswer('fourmis', insects, []), 'FOURMI');
+  assert.equal(matchAnswer('fourmi', insects, []), 'FOURMI');
+  assert.equal(matchAnswer('fourmie', insects, []), 'FOURMI', 'une faute : la réponse entière passe devant le mot');
+  assert.equal(matchAnswer('fourmi', insects, ['FOURMI']), 'FOURMI ROUGE');
+  assert.equal(matchAnswer('abeilles', insects, []), 'ABEILLE');
+});
+
 test('un mot trop court ne suffit pas', () => {
   assert.equal(matchAnswer('ky', ['Ky Lo'], []), null);
 });

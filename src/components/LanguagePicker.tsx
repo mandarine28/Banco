@@ -68,6 +68,7 @@ export function LanguagePicker({ showChevron = false }: { showChevron?: boolean 
           <Pressable
             style={[styles.dropdown, { top: dropdownTop, left: dropdownLeft }]}
             onPress={() => {}}
+            sound={false}
           >
             {LANGUAGES.map(({ code, label }, idx) => {
               const isActive = code === lang;

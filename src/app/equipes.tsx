@@ -18,13 +18,15 @@ import { HomeBackground } from '@/components/HomeBackground';
 import { ConfirmModal } from '@/components/InfoModal';
 import { Toast, useToast } from '@/components/Toast';
 import { useLang } from '@/lib/LangContext';
-import { getT } from '@/lib/i18n';
-import { TEAM_LIMITS, type Team, useGameSettings } from '@/state/gameSettings';
+import { getT, sideTexts } from '@/lib/i18n';
+import type { RosterKind } from '@/lib/teamList';
+import { PLAYER_LIMITS, TEAM_LIMITS, type Team, useGameSettings } from '@/state/gameSettings';
 import { useTutorialTarget } from '@/state/tutorial';
 import { colors, fonts, teamColors } from '@/theme';
 import { Pressable } from '@/components/Pressable';
 
 const MAX_WIDTH = 500;
+const EMPTY_TEAM: Team = { name: '', color: teamColors[0] };
 const NAME_MAX_LENGTH = 16;
 const ADD_BUTTON_HEIGHT = 51;
 // Écart entre « Ajouter une équipe » et le haut du clavier
@@ -60,52 +62,72 @@ function SettingIcon({ size }: { size: number }) {
   );
 }
 
-function availableAvatars(drafts: Team[], currentIndex: number): readonly string[] {
-  const taken = new Set(drafts.filter((_, i) => i !== currentIndex).map((t) => t.color).filter(Boolean));
-  return teamColors.filter((c) => !taken.has(c));
+/** Équipe : les 4 premières couleurs ; individuel : toute la palette (10 joueurs). */
+function paletteFor(individual: boolean): readonly string[] {
+  return teamColors.slice(0, (individual ? PLAYER_LIMITS : TEAM_LIMITS).max);
 }
 
-function initialAvatar(drafts: Team[], teamIndex: number): string {
-  const avail = availableAvatars(drafts, teamIndex);
+function availableAvatars(drafts: Team[], currentIndex: number, palette: readonly string[]): readonly string[] {
+  const taken = new Set(drafts.filter((_, i) => i !== currentIndex).map((t) => t.color).filter(Boolean));
+  return palette.filter((c) => !taken.has(c));
+}
+
+function initialAvatar(drafts: Team[], teamIndex: number, palette: readonly string[]): string {
+  const avail = availableAvatars(drafts, teamIndex, palette);
   const saved = drafts[teamIndex]?.color;
-  return saved && avail.includes(saved) ? saved : (avail[0] ?? teamColors[0]);
+  return saved && avail.includes(saved) ? saved : (avail[0] ?? palette[0]);
 }
 
 export default function TeamSetupScreen() {
   const { width: windowWidth, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const width = Math.min(windowWidth, MAX_WIDTH);
-  const { setTeamCount, teams: savedTeams, setTeams } = useGameSettings();
+  const { setTeamCount, setTeams, individual, setIndividual, rosters, setRoster } = useGameSettings();
+  const kind: RosterKind = individual ? 'players' : 'teams';
+  const savedTeams = rosters[kind];
   const { lang } = useLang();
   const t = getT(lang);
-  const defaultName = t.teams.defaultName;
+  // « Chacun pour soi » : mêmes fiches, mais on parle de joueurs
+  const tt = sideTexts(t, individual).teams;
+  const defaultName = tt.defaultName;
   const toast = useToast();
   const addTarget = useTutorialTarget('teams-add');
 
   // On part d'une équipe ; les suivantes s'ajoutent au fil de l'eau (plus de nombre d'équipes à choisir avant)
   const [index, setIndex] = useState(0);
-  const [drafts, setDrafts] = useState<Team[]>(() => [{ name: '', color: savedTeams[0]?.color ?? teamColors[0] }]);
-  const [name, setName] = useState('');
-  const [selectedColor, setSelectedColor] = useState<string>(() => initialAvatar(drafts, 0));
+  // Dernières équipes jouées reprises telles quelles ; la poubelle repart d'une équipe vide
+  const [drafts, setDrafts] = useState<Team[]>(() => (savedTeams.length > 0 ? savedTeams : [EMPTY_TEAM]));
+  const [name, setName] = useState(() => savedTeams[0]?.name ?? '');
+  const palette = paletteFor(individual);
+  const limits = individual ? PLAYER_LIMITS : TEAM_LIMITS;
+  const [selectedColor, setSelectedColor] = useState<string>(() => initialAvatar(drafts, 0, palette));
   // Fiche ouverte par « Ajouter une équipe » : elle ne devient une équipe que si on lui donne un nom
-  const [pending, setPending] = useState(true);
-  const dropsCurrent = pending && !name.trim();
+  const [pending, setPending] = useState(savedTeams.length === 0);
+  const [confirmClear, setConfirmClear] = useState(false);
+  // Seulement une fois une équipe ajoutée : un nom en cours de saisie ne compte pas
+  const canClear = drafts.length > 1 || !pending;
+  const clearTeams = () => {
+    setRoster(kind, []);
+    editTeam([EMPTY_TEAM], 0, true);
+  };
+  const maxTeams = Math.min(limits.max, palette.length);
+  // Dernière place prise (4e équipe, 10e joueur) : plus de bouton « Ajouter » pour la valider, elle compte d'office
+  const dropsCurrent = pending && !name.trim() && drafts.length < maxTeams;
 
   const takenColors = new Set(drafts.filter((_, i) => i !== index).map((team) => team.color).filter(Boolean));
-  const maxTeams = Math.min(TEAM_LIMITS.max, teamColors.length);
   const canAdd = drafts.length < maxTeams;
-  const canStart = drafts.length - (dropsCurrent ? 1 : 0) >= TEAM_LIMITS.min;
+  const canStart = drafts.length - (dropsCurrent ? 1 : 0) >= limits.min;
 
   /** Équipes avec la saisie en cours enregistrée. */
   const withCurrent = () => drafts.map((team, i) => (i === index ? { name: name.trim(), color: selectedColor } : team));
   /** Équipes réellement créées : sans la fiche en attente restée sans nom. */
   const createdTeams = () => withCurrent().filter((_, i) => !(dropsCurrent && i === index));
-  const editTeam = (list: Team[], i: number, isPending = false) => {
+  const editTeam = (list: Team[], i: number, isPending = false, pal = palette) => {
     setPending(isPending);
     setDrafts(list);
     setIndex(i);
     setName(list[i]?.name ?? '');
-    setSelectedColor(initialAvatar(list, i));
+    setSelectedColor(initialAvatar(list, i, pal));
   };
 
   const addTeam = () => {
@@ -113,8 +135,19 @@ export default function TeamSetupScreen() {
     editTeam(list, list.length - 1, true);
   };
 
+  // Onglet changé : la liste en cours est gardée telle quelle, l'autre reprend là où on l'avait laissée
+  const switchKind = (solo: boolean) => {
+    if (solo === individual) return;
+    setRoster(kind, createdTeams());
+    setIndividual(solo);
+    const other = rosters[solo ? 'players' : 'teams'];
+    editTeam(other.length > 0 ? other : [EMPTY_TEAM], 0, other.length === 0, paletteFor(solo));
+  };
+
   const start = () => {
     const list = createdTeams();
+    // Noms vides gardés vides : le nom par défaut sera réécrit dans la langue du moment
+    setRoster(kind, list);
     setTeams(list.map((team, i) => ({ ...team, name: team.name || defaultName(i) })));
     setTeamCount(list.length);
     router.push('/partie');
@@ -142,12 +175,12 @@ export default function TeamSetupScreen() {
       onPress={addTeam}
       disabled={!canAdd}
       accessibilityRole="button"
-      accessibilityLabel={t.teams.addTeam}
+      accessibilityLabel={tt.addTeam}
       accessibilityState={{ disabled: !canAdd }}
       style={[styles.btnAdd, !canAdd && styles.btnDisabled]}
     >
       <MaterialCommunityIcons name="plus" size={22} color={colors.cream} />
-      <Text style={styles.btnAddText}>{t.teams.addTeam}</Text>
+      <Text style={styles.btnAddText}>{tt.addTeam}</Text>
     </Pressable>
   );
 
@@ -176,14 +209,42 @@ export default function TeamSetupScreen() {
             <View style={styles.content}>
               <View style={styles.topSection}>
                 {/* Titre + compteur */}
-                <Text style={styles.sectionTitle}>{t.teams.setupTitle}</Text>
+                <Text style={styles.sectionTitle}>{tt.setupTitle}</Text>
+
+                {/* Équipes ou chacun pour soi : chacun sa liste gardée */}
+                <View style={styles.segment} accessibilityRole="radiogroup">
+                  {([false, true] as const).map((solo) => {
+                    const isSelected = individual === solo;
+                    const label = solo ? t.players.modeSolo : t.players.modeTeams;
+                    return (
+                      <Pressable
+                        key={label}
+                        onPress={() => switchKind(solo)}
+                        accessibilityRole="radio"
+                        accessibilityLabel={label}
+                        accessibilityState={{ selected: isSelected }}
+                        style={[styles.segmentItem, isSelected && styles.segmentItemSelected]}
+                      >
+                        <MaterialCommunityIcons
+                          name={solo ? 'account' : 'account-group'}
+                          size={20}
+                          color={isSelected ? colors.purpleDeep : colors.cream}
+                        />
+                        <Text style={[styles.segmentText, isSelected && styles.segmentTextSelected]} numberOfLines={1} adjustsFontSizeToFit>
+                          {label}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
 
                 <View style={styles.sections}>
-                  {/* Sélecteur de couleur */}
+                  {/* Sélecteur de couleur — en individuel, couleur attribuée d'office (10 pastilles prenaient trop de place) */}
+                  {individual ? null : (
                   <View style={styles.subsection}>
-                    <Text style={styles.label}>{t.teams.chooseColor(index + 1)}</Text>
+                    <Text style={styles.label}>{tt.chooseColor(index + 1)}</Text>
                     <View style={styles.colorRow}>
-                      {teamColors.map((color) => {
+                      {palette.map((color) => {
                         const isSelected = color === selectedColor;
                         const isTaken = takenColors.has(color);
                         return (
@@ -212,32 +273,48 @@ export default function TeamSetupScreen() {
                       })}
                     </View>
                   </View>
+                  )}
 
                   {/* Nom de l'équipe */}
                   <View style={styles.subsection}>
-                    <Text style={styles.label}>{t.teams.chooseName(index + 1)}</Text>
+                    <Text style={styles.label}>{tt.chooseName(index + 1)}</Text>
                     <TextInput
                       value={name}
                       onChangeText={setName}
-                      placeholder={t.teams.namePlaceholder(index + 1)}
+                      placeholder={tt.namePlaceholder(index + 1)}
                       placeholderTextColor="rgba(254,246,215,0.5)"
                       maxLength={NAME_MAX_LENGTH}
                       autoCapitalize="words"
                       autoCorrect={false}
                       returnKeyType="done"
-                      accessibilityLabel={t.teams.namePlaceholder(index + 1)}
+                      accessibilityLabel={tt.namePlaceholder(index + 1)}
                       style={styles.teamInput}
                     />
                   </View>
                 </View>
               </View>
 
+              <View style={styles.teamsBlock}>
+              {canClear ? (
+                <Pressable
+                  onPress={() => setConfirmClear(true)}
+                  accessibilityRole="button"
+                  accessibilityLabel={tt.resetBtn}
+                  hitSlop={10}
+                  style={styles.resetBtn}
+                >
+                  {/* Action secondaire, posée juste au-dessus de la liste qu'elle vide */}
+                  <Text style={styles.resetText}>{tt.resetBtn}</Text>
+                </Pressable>
+              ) : null}
+
               {/* Équipes déjà ajoutées : on en touche une pour la modifier, la croix la supprime */}
               <View style={[styles.progressRow, drafts.length < 2 && styles.hidden]} pointerEvents={drafts.length < 2 ? 'none' : 'auto'}>
                 {drafts.map((team, i) => {
                   const isCurrent = i === index;
-                  // L'équipe en cours de saisie n'est pas encore « ajoutée » : elle n'apparaît pas dans la liste
-                  if (isCurrent) return null;
+                  // Fiche en cours : affichée (en surbrillance) dès qu'elle compte, sinon la 4e équipe, sans bouton
+                  // « Ajouter » pour la valider, semblait impossible à ajouter
+                  if (isCurrent && dropsCurrent) return null;
                   const dotColor = isCurrent ? selectedColor : (team.color || teamColors[i]);
                   const label = (isCurrent ? name.trim() : team.name) || defaultName(i);
                   return (
@@ -259,14 +336,18 @@ export default function TeamSetupScreen() {
                           onPress={() => setPendingRemoval(i)}
                           hitSlop={10}
                           accessibilityRole="button"
-                          accessibilityLabel={t.teams.removeTeam(label)}
+                          accessibilityLabel={tt.removeTeam(label)}
                         >
-                          <MaterialCommunityIcons name="close" size={18} color={colors.cream} />
+                          {/* Pastille ronde : la croix ne se lit plus comme une lettre du nom */}
+                          <View style={styles.removeBtn}>
+                            <MaterialCommunityIcons name="close" size={14} color={colors.purpleDeep} />
+                          </View>
                         </Pressable>
                       ) : null}
                     </View>
                   );
                 })}
+              </View>
               </View>
             </View>
 
@@ -282,18 +363,18 @@ export default function TeamSetupScreen() {
                 {addButton}
               </View>
 
-              <Toast toast={toast} message={t.teams.minTeams} />
+              <Toast toast={toast} message={tt.minTeams} />
               {/* Grisé à une seule équipe ; reste pressable pour expliquer pourquoi */}
               <Pressable
                 onPress={canStart ? start : toast.show}
                 accessibilityRole="button"
-                accessibilityLabel={t.teams.nextBtn}
+                accessibilityLabel={tt.nextBtn}
                 accessibilityState={{ disabled: !canStart }}
-                accessibilityHint={canStart ? undefined : t.teams.minTeams}
+                accessibilityHint={canStart ? undefined : tt.minTeams}
                 style={!canStart && styles.btnDisabled}
               >
                 <View style={styles.btnSuivant}>
-                  <Text style={styles.btnSuivantText}>{t.teams.nextBtn}</Text>
+                  <Text style={styles.btnSuivantText}>{tt.nextBtn}</Text>
                 </View>
               </Pressable>
             </View>
@@ -317,9 +398,9 @@ export default function TeamSetupScreen() {
                   <Text style={[styles.removeBadgeText, team?.color === '#EF1ACC' && { color: colors.cream }]} numberOfLines={1}>{teamName}</Text>
                 </View>
               }
-              title={t.teams.removeTeamTitle}
+              title={tt.removeTeamTitle}
               titleLines={2}
-              confirmLabel={t.teams.removeTeamConfirm}
+              confirmLabel={tt.removeTeamConfirm}
               confirmIcon="delete"
               cancelLabel={t.common.cancel}
               onConfirm={() => {
@@ -330,6 +411,20 @@ export default function TeamSetupScreen() {
             />
           );
         })() : null}
+
+        <ConfirmModal
+          visible={confirmClear}
+          title={tt.clearTitle}
+          titleLines={2}
+          confirmLabel={tt.clearConfirm}
+          confirmIcon="restore"
+          cancelLabel={t.common.cancel}
+          onConfirm={() => {
+            setConfirmClear(false);
+            clearTeams();
+          }}
+          onCancel={() => setConfirmClear(false)}
+        />
 
         {/* En-tête */}
         <View
@@ -400,6 +495,47 @@ const styles = StyleSheet.create({
   subsection: {
     gap: 11,
   },
+  teamsBlock: {
+    gap: 28,
+  },
+  resetBtn: {
+    alignSelf: 'center',
+  },
+  resetText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 15,
+    color: colors.cream,
+    textDecorationLine: 'underline',
+  },
+  segment: {
+    flexDirection: 'row',
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: colors.cream,
+    padding: 3,
+    gap: 3,
+  },
+  segmentItem: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 6,
+    minHeight: 40,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  segmentItemSelected: {
+    backgroundColor: colors.cream,
+  },
+  segmentText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 18,
+    color: colors.cream,
+  },
+  segmentTextSelected: {
+    color: colors.purpleDeep,
+  },
   label: {
     fontFamily: fonts.displayMedium,
     fontSize: 20,
@@ -407,8 +543,10 @@ const styles = StyleSheet.create({
   },
   colorRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
-    gap: 24,
+    columnGap: 24,
+    rowGap: 12,
   },
   colorCircle: {
     width: 48,
@@ -493,6 +631,14 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
+  },
+  removeBtn: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: colors.cream,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   progressText: {
     fontFamily: fonts.displayMedium,

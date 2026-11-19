@@ -22,7 +22,7 @@ export function InfoModal({ content, onClose }: Props) {
   return (
     <Modal visible={content !== null} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose} accessibilityLabel={t.shop.close}>
-        <Pressable style={styles.card} onPress={() => {}}>
+        <Pressable style={styles.card} onPress={() => {}} sound={false}>
           <Text style={styles.title}>{content?.title}</Text>
           <Text style={styles.message}>{content?.message}</Text>
           <Pressable onPress={onClose} accessibilityRole="button" style={styles.button}>
@@ -89,7 +89,7 @@ export function ConfirmModal({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onDismiss}>
       <Pressable style={pauseStyles.backdrop} onPress={onDismiss} accessibilityLabel={cancelText}>
-        <Pressable style={pauseStyles.card} onPress={() => {}}>
+        <Pressable style={pauseStyles.card} onPress={() => {}} sound={false}>
           {onClose ? (
             <Pressable
               onPress={onClose}
@@ -108,16 +108,7 @@ export function ConfirmModal({
           {message ? <Text style={pauseStyles.message}>{message}</Text> : null}
           {children}
           <View style={confirmStyles.actions}>
-            {onCancel ? (
-              <Pressable onPress={onCancel} accessibilityRole="button" style={confirmStyles.cancelBtn}>
-                <View style={confirmStyles.labelRow}>
-                  {cancelIcon ? <MaterialCommunityIcons name={cancelIcon} size={26} color={colors.purpleDeep} /> : null}
-                  <Text style={[confirmStyles.cancelText, confirmStyles.labelText, labelSize]} numberOfLines={1} adjustsFontSizeToFit>
-                    {cancelText}
-                  </Text>
-                </View>
-              </Pressable>
-            ) : null}
+            {/* Toujours le bouton jaune en haut et le blanc en bas, dans toutes les fenêtres */}
             <Pressable onPress={onConfirm} accessibilityRole="button" style={pauseStyles.btnWrap}>
               <LinearGradient
                 colors={['#fb940e', '#f2c512']}
@@ -133,6 +124,16 @@ export function ConfirmModal({
                 </View>
               </LinearGradient>
             </Pressable>
+            {onCancel ? (
+              <Pressable onPress={onCancel} accessibilityRole="button" style={confirmStyles.cancelBtn}>
+                <View style={confirmStyles.labelRow}>
+                  {cancelIcon ? <MaterialCommunityIcons name={cancelIcon} size={26} color={colors.purpleDeep} /> : null}
+                  <Text style={[confirmStyles.cancelText, confirmStyles.labelText, labelSize]} numberOfLines={1} adjustsFontSizeToFit>
+                    {cancelText}
+                  </Text>
+                </View>
+              </Pressable>
+            ) : null}
           </View>
         </Pressable>
       </Pressable>

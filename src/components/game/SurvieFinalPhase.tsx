@@ -17,10 +17,11 @@ const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 type Props = {
   state: SurvieState;
   onReplay: () => void;
-  onHome: () => void;
+  /** Retour au choix du mode, équipes gardées. */
+  onOtherMode: () => void;
 };
 
-export function SurvieFinalPhase({ state, onReplay, onHome }: Props) {
+export function SurvieFinalPhase({ state, onReplay, onOtherMode }: Props) {
   const { lang } = useLang();
   const t = getT(lang);
 
@@ -87,9 +88,9 @@ export function SurvieFinalPhase({ state, onReplay, onHome }: Props) {
           </LinearGradient>
         </Pressable>
 
-        <Pressable onPress={onHome} accessibilityRole="button" accessibilityLabel={t.final.home} style={styles.btnWrapWhite}>
+        <Pressable onPress={onOtherMode} accessibilityRole="button" accessibilityLabel={t.final.otherMode} style={styles.btnWrapWhite}>
           <View style={styles.btnWhiteInner}>
-            <Text style={styles.btnWhiteText}>{t.final.home}</Text>
+            <Text style={styles.btnWhiteText}>{t.final.otherMode}</Text>
           </View>
         </Pressable>
       </View>

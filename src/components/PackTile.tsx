@@ -86,8 +86,6 @@ export function PackTile({ pack, width, labels, lockedOpacity, onPress }: Props)
     <Pressable
       style={[styles.tile, { width }]}
       onPress={() => onPress(pack)}
-      // Dans une liste qui défile : pas de son si le doigt ne fait que la faire glisser
-      soundOnRelease
       sound={!pack.playable || pack.selected ? 'tap' : 'correct'}
       accessibilityRole="checkbox"
       accessibilityState={{ checked: pack.selected, disabled: !pack.playable }}

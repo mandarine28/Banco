@@ -21,6 +21,75 @@ export function pickLang(preferred: readonly (string | null | undefined)[]): Lan
 }
 
 type Translations = {
+  /** Défi du jour et mode solo. */
+  daily: {
+    /** Pour les dates (toLocaleDateString). */
+    locale: string;
+    title: string;
+    titleDone: string;
+    dateLabel: (date: string) => string;
+    instructionDaily: (seconds: number) => string;
+    instructionSolo: (seconds: number) => string;
+    streakOn: (days: number) => string;
+    comeBackDaily: string;
+    record: (n: number) => string;
+    noRecord: string;
+    finished: string;
+    foundLabel: string;
+    foundCount: (n: number) => string;
+    miss: string;
+    placeholder: string;
+    inputA11y: string;
+    endA11y: string;
+    alreadyPlayed: string;
+    streak: string;
+    recordLabel: string;
+    newRecord: string;
+    comeBackTomorrow: string;
+    share: string;
+    replay: string;
+    shareMsg: (date: string, score: number, seconds: number, streak: number, url: string) => string;
+    cardPlayed: (n: number) => string;
+    cardStreak: (days: number) => string;
+    historyTitle: string;
+    played: string;
+    best: string;
+    empty: string;
+    sortBy: string;
+    sortDate: string;
+    sortScore: string;
+    /** Bouton qui déroule le choix du tri. */
+    filter: string;
+    recentTitle: string;
+    seeAll: string;
+    allTitle: string;
+    bestThemes: string;
+    themeCount: (n: number) => string;
+    average: (n: number) => string;
+    prevPeriod: string;
+    nextPeriod: string;
+    /** Bascule du calendrier : mois entier / deux dernières semaines. */
+    monthView: string;
+    weeksView: string;
+    /** Titre du choix rapide du mois (toucher le mois du calendrier). */
+    pickMonth: string;
+    notSaved: string;
+    noneFound: string;
+    reminderTitle: string;
+    reminderStreak: (days: number) => string;
+    reminderNew: (seconds: number) => string;
+    channel: string;
+  };
+  /** « Chacun pour soi » : les textes où « équipe » devient « joueur » (voir sideTexts). */
+  players: {
+    modeTeams: string;
+    modeSolo: string;
+    teams: Pick<
+      Translations['teams'],
+      'chooseColor' | 'chooseName' | 'removeTeamTitle' | 'clearTitle' | 'resetBtn' | 'namePlaceholder' | 'addTeam' | 'minTeams' | 'defaultName'
+    >;
+    survie: Pick<Translations['survie'], 'phoneMsg' | 'endRoundMsg' | 'elimPassMsg' | 'elimTimeoutMsg'>;
+  };
   tutorial: {
     next: string;
     skip: string;
@@ -97,6 +166,10 @@ type Translations = {
     /** Sous le mot introuvable : la liste n'est qu'un échantillon, on peut vérifier soi-même. */
     notInDatabaseHint: string;
     validateAnyway: string;
+    /** Chrono à zéro en Enchères : une réponse lancée in extremis reste à cocher. */
+    lastSecondMsg: string;
+    lastSecondYes: string;
+    lastSecondNo: string;
     answerAdded: string;
     pause: string;
     resume: string;
@@ -159,6 +232,11 @@ type Translations = {
     /** Fenêtre de confirmation avant de supprimer une équipe. */
     removeTeamTitle: string;
     removeTeamConfirm: string;
+    /** Poubelle de « Qui joue ? » : repartir d'équipes vides. */
+    clearTitle: string;
+    clearConfirm: string;
+    /** Bouton sous les onglets de « Comment on joue ? ». */
+    resetBtn: string;
     namePlaceholder: (n: number) => string;
     nextBtn: string;
     addTeam: string;
@@ -243,8 +321,15 @@ type Translations = {
     phoneTitle: string;
     phoneMsg: string;
     phoneGo: string;
+    /** Écran prêt après une élimination : équipes encore en jeu. */
+    stillIn: string;
   };
   final: {
+    leaveTitle: string;
+    /** Bandeau de l'écran final des Enchères. */
+    gameOver: string;
+    /** Fin de partie : retour au choix du mode, équipes gardées. */
+    otherMode: string;
     tie: string;
     victoryOf: string;
     rematch: string;
@@ -296,6 +381,81 @@ type Translations = {
 
 const translations: Record<Lang, Translations> = {
   fr: {
+    daily: {
+      locale: 'fr-FR',
+      title: 'Défi du jour',
+      titleDone: 'Défi du jour réussi',
+      dateLabel: (date) => `Défi du ${date}`,
+      instructionDaily: (s) => `${s} secondes pour en citer un maximum. Même question pour tout le monde aujourd’hui, une seule tentative.`,
+      instructionSolo: (s) => `${s} secondes pour en citer un maximum.`,
+      streakOn: (d) => `Série en cours : ${d} jours`,
+      comeBackDaily: 'Reviens chaque jour pour faire grimper ta série.',
+      record: (n) => `Ton record : ${n} réponses`,
+      noRecord: 'Pas encore de record',
+      finished: 'C’est terminé !',
+      foundLabel: 'Réponses trouvées',
+      foundCount: (n) => `${n} réponses trouvées`,
+      miss: 'Pas dans notre liste, ou déjà trouvée',
+      placeholder: 'Tape une réponse…',
+      inputA11y: 'Ta réponse',
+      endA11y: 'Terminer',
+      alreadyPlayed: 'Tu as déjà joué le défi d’aujourd’hui.',
+      streak: 'Série',
+      recordLabel: 'Record',
+      newRecord: 'Nouveau !',
+      comeBackTomorrow: 'Reviens demain pour un nouveau défi.',
+      share: 'Partager mon score',
+      replay: 'Rejouer',
+      shareMsg: (date, score, s, streak, url) => `Défi Bango du ${date} : ${score} réponses en ${s} s 🔥${streak > 1 ? ` · série de ${streak} jours` : ''}\nÀ toi de battre ça : ${url}`,
+      cardPlayed: (n) => `${n} réponses · reviens demain`,
+      cardStreak: (d) => `série de ${d} jours`,
+      historyTitle: 'Défis quotidiens',
+      played: 'Défis joués',
+      best: 'Meilleur score',
+      empty: 'Joue ton premier défi pour commencer ton suivi.',
+      sortBy: 'Trier par',
+      sortDate: 'Date',
+      sortScore: "Réussite",
+      filter: 'Filtrer',
+      recentTitle: "Défis réalisés",
+      seeAll: "Voir tout",
+      allTitle: "Tous mes défis",
+      bestThemes: "Thèmes les mieux réussis",
+      themeCount: (n) => `${n} ${n > 1 ? "défis" : "défi"}`,
+      average: (n) => `moyenne ${n}`,
+      prevPeriod: "Précédent",
+      nextPeriod: "Suivant",
+      monthView: "Voir le mois",
+      weeksView: "Voir 2 semaines",
+      pickMonth: "Choisir le mois",
+      notSaved: 'Réponses non enregistrées pour ce défi',
+      noneFound: 'Aucune réponse trouvée',
+      reminderTitle: 'Défi du jour 🔥',
+      reminderStreak: (d) => `Ta série de ${d} jours t’attend, ne la laisse pas filer !`,
+      reminderNew: (s) => `Un nouveau défi t’attend : combien de réponses en ${s} secondes ?`,
+      channel: 'Défi du jour',
+    },
+    players: {
+      modeTeams: "Équipe",
+      modeSolo: "Individuel",
+      teams: {
+        chooseColor: (n) => `Choisissez la couleur du joueur ${n}`,
+        chooseName: (n) => `Choisissez le nom du joueur ${n}`,
+        removeTeamTitle: "Retirer ce joueur ?",
+        clearTitle: "Réinitialiser les joueurs ?",
+        resetBtn: "Réinitialiser les joueurs",
+        namePlaceholder: (n) => `Nom du joueur ${n}`,
+        addTeam: "Ajouter un joueur",
+        minTeams: "Il faut au moins 2 joueurs pour jouer",
+        defaultName: (i) => `Joueur ${i + 1}`,
+      },
+      survie: {
+        phoneMsg: "Tous les joueurs doivent pouvoir voir l’écran.",
+        endRoundMsg: "Aucun joueur ne remporte les points en jeu.",
+        elimPassMsg: "Le joueur sera éliminé de cette manche.",
+        elimTimeoutMsg: "Le joueur a-t-il répondu à temps ?",
+      },
+    },
     tutorial: {
       next: 'Suivant',
       skip: 'Passer',
@@ -308,7 +468,7 @@ const translations: Record<Lang, Translations> = {
       play: 'Prêts ? Tout commence par ce bouton.',
       auction: 'Enchères : misez sur le nombre de réponses que vous pouvez citer. Une seule équipe répond, en 60 secondes.',
       survie: 'Survie : une réponse chacun son tour. L\'équipe qui n\'a plus d\'idée est éliminée !',
-      teams: 'Ici, on ajoute des équipes, pas des joueurs ! Réunissez autant de cerveaux que vous voulez dans chaque équipe : il n\'y a pas de limite. Bonne partie !',
+      teams: "Jouez en équipe ou en individuel (jusqu'à 10 joueurs). En équipe, réunissez autant de cerveaux que vous voulez dans chacune : il n'y a pas de limite. Bonne partie !",
     },
     common: {
       cancel: 'ANNULER',
@@ -369,6 +529,9 @@ const translations: Record<Lang, Translations> = {
       notInDatabase: (w) => `« ${w} » ? Pas dans notre liste !`,
       notInDatabaseHint: "Notre liste n'est pas une encyclopédie. Vérifiez : la partie vous attend.",
       validateAnyway: 'Valider quand même',
+      lastSecondMsg: "Une bonne réponse a-t-elle été donnée au dernier moment ?",
+      lastSecondYes: 'OUI, AJOUTER',
+      lastSecondNo: 'NON, TERMINER',
       answerAdded: '✓ Réponse ajoutée',
       pause: 'Pause',
       resume: 'Reprendre',
@@ -416,12 +579,15 @@ const translations: Record<Lang, Translations> = {
       pickCategoryFirst: 'Choisissez au moins une catégorie',
     },
     teams: {
-      setupTitle: 'Création des squads',
+      setupTitle: "Comment on joue ?",
       chooseColor: (n) => `Choisissez la couleur de l'équipe ${n}`,
       chooseName: (n) => `Choisissez le nom de l'équipe ${n}`,
       removeTeam: (team) => `Supprimer ${team}`,
       removeTeamTitle: 'Supprimer cette équipe ?',
       removeTeamConfirm: 'SUPPRIMER',
+      clearTitle: "Réinitialiser les équipes ?",
+      clearConfirm: "RÉINITIALISER",
+      resetBtn: "Réinitialiser les équipes",
       namePlaceholder: (n) => `Nom de l'équipe ${n}`,
       nextBtn: 'Suivant',
       addTeam: 'Ajouter une équipe',
@@ -447,7 +613,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} questions`,
       unlocked: 'Pack débloqué ✓',
       comingSoon: 'Bientôt disponible',
-      packTitles: { 'harry-potter': 'Poudlard Express', 'rap-francais': 'Rap français', dresseur: 'Meilleur dresseur', 'art-litterature': 'Art & littérature', 'retro-gaming': 'Rétro-gaming', anime: 'Anime & mangas', football: 'Football', 'dessins-animes': 'Dessins animés', 'jeux-video': 'Jeux vidéo' },
+      packTitles: { 'harry-potter': 'Poudlard Express', 'rap-francais': 'Rap français', dresseur: 'Meilleur dresseur', 'art-litterature': 'Art & littérature', 'retro-gaming': 'Rétro-gaming', anime: 'Anime & mangas', football: 'Football', 'dessins-animes': 'Dessins animés', 'jeux-video': 'Jeux vidéo', cuisine: 'Cuisine' },
       restore: 'Restaurer les achats',
       restoredTitle: 'Achats restaurés',
       restoredMsg: 'Vos packs sont de nouveau débloqués.',
@@ -492,7 +658,7 @@ const translations: Record<Lang, Translations> = {
       validateA11y: 'Bonne réponse',
       noAnswer: 'PAS DE RÉPONSE',
       timeoutNo: 'NON, ÉLIMINER',
-      timeoutYes: 'OUI, VALIDER',
+      timeoutYes: "OUI, BONNE RÉPONSE",
       passA11y: 'Pas de réponse — élimination',
       clear: 'Effacer',
       someAnswers: 'Quelques réponses qui étaient possibles',
@@ -505,8 +671,12 @@ const translations: Record<Lang, Translations> = {
       elimTimeoutMsg: "L'équipe a-t-elle répondu à temps ?",
       eliminate: 'ÉLIMINER',
       resume: 'REPRENDRE',
+      stillIn: "Encore en lice",
     },
     final: {
+      leaveTitle: "Retour au menu ?",
+      gameOver: "FIN DE LA PARTIE",
+      otherMode: "Autre mode",
       tie: 'ÉGALITÉ !',
       victoryOf: 'Victoire de',
       rematch: 'Revanche',
@@ -595,6 +765,81 @@ const translations: Record<Lang, Translations> = {
     },
   },
   en: {
+    daily: {
+      locale: 'en-GB',
+      title: 'Daily challenge',
+      titleDone: 'Daily challenge done',
+      dateLabel: (date) => `Challenge of ${date}`,
+      instructionDaily: (s) => `${s} seconds to name as many as you can. Same question for everyone today, one attempt only.`,
+      instructionSolo: (s) => `${s} seconds to name as many as you can.`,
+      streakOn: (d) => `Current streak: ${d} days`,
+      comeBackDaily: 'Come back every day to grow your streak.',
+      record: (n) => `Your record: ${n} answers`,
+      noRecord: 'No record yet',
+      finished: 'It’s over!',
+      foundLabel: 'Answers found',
+      foundCount: (n) => `${n} answers found`,
+      miss: 'Not in our list, or already found',
+      placeholder: 'Type an answer…',
+      inputA11y: 'Your answer',
+      endA11y: 'Finish',
+      alreadyPlayed: 'You’ve already played today’s challenge.',
+      streak: 'Streak',
+      recordLabel: 'Record',
+      newRecord: 'New!',
+      comeBackTomorrow: 'Come back tomorrow for a new challenge.',
+      share: 'Share my score',
+      replay: 'Play again',
+      shareMsg: (date, score, s, streak, url) => `Bango challenge of ${date}: ${score} answers in ${s} s 🔥${streak > 1 ? ` · ${streak}-day streak` : ''}\nCan you beat that? ${url}`,
+      cardPlayed: (n) => `${n} answers · come back tomorrow`,
+      cardStreak: (d) => `${d}-day streak`,
+      historyTitle: 'Daily challenges',
+      played: 'Challenges played',
+      best: 'Best score',
+      empty: 'Play your first challenge to start tracking.',
+      sortBy: 'Sort by',
+      sortDate: 'Date',
+      sortScore: "Success",
+      filter: 'Filter',
+      recentTitle: "Completed challenges",
+      seeAll: "See all",
+      allTitle: "All my challenges",
+      bestThemes: "Best themes",
+      themeCount: (n) => `${n} ${n > 1 ? "challenges" : "challenge"}`,
+      average: (n) => `average ${n}`,
+      prevPeriod: "Previous",
+      nextPeriod: "Next",
+      monthView: "Show month",
+      weeksView: "Show 2 weeks",
+      pickMonth: "Choose a month",
+      notSaved: 'Answers not saved for this challenge',
+      noneFound: 'No answers found',
+      reminderTitle: 'Daily challenge 🔥',
+      reminderStreak: (d) => `Your ${d}-day streak is waiting, don’t let it slip!`,
+      reminderNew: (s) => `A new challenge awaits: how many answers in ${s} seconds?`,
+      channel: 'Daily challenge',
+    },
+    players: {
+      modeTeams: "Team",
+      modeSolo: "Individual",
+      teams: {
+        chooseColor: (n) => `Choose player ${n}'s color`,
+        chooseName: (n) => `Choose player ${n}'s name`,
+        removeTeamTitle: "Remove this player?",
+        clearTitle: "Reset the players?",
+        resetBtn: "Reset the players",
+        namePlaceholder: (n) => `Player ${n} name`,
+        addTeam: "Add a player",
+        minTeams: "You need at least 2 players to play",
+        defaultName: (i) => `Player ${i + 1}`,
+      },
+      survie: {
+        phoneMsg: "Every player must be able to see the screen.",
+        endRoundMsg: "No player wins the points at stake.",
+        elimPassMsg: "The player will be out for this round.",
+        elimTimeoutMsg: "Did the player answer in time?",
+      },
+    },
     tutorial: {
       next: 'Next',
       skip: 'Skip',
@@ -607,7 +852,7 @@ const translations: Record<Lang, Translations> = {
       play: 'Ready? It all starts with this button.',
       auction: 'Auctions: bet on how many answers you can name. Only one team answers, in 60 seconds.',
       survie: 'Survival: one answer each, in turn. The team that runs out of ideas is out!',
-      teams: 'Here you add teams, not players! Gather as many brains as you like in each team: there\'s no limit. Have a great game!',
+      teams: "Play as a team or individually (up to 10 players). In teams, gather as many brains as you like in each one: there's no limit. Have a great game!",
     },
     common: {
       cancel: 'CANCEL',
@@ -668,6 +913,9 @@ const translations: Record<Lang, Translations> = {
       notInDatabase: (w) => `"${w}"? Not on our list!`,
       notInDatabaseHint: "Our list isn't an encyclopedia. Go check, the game will wait.",
       validateAnyway: 'Validate anyway',
+      lastSecondMsg: "Was a right answer given at the last second?",
+      lastSecondYes: 'YES, ADD IT',
+      lastSecondNo: 'NO, END TURN',
       answerAdded: '✓ Answer added',
       pause: 'Pause',
       resume: 'Resume',
@@ -715,12 +963,15 @@ const translations: Record<Lang, Translations> = {
       pickCategoryFirst: 'Choose at least one category',
     },
     teams: {
-      setupTitle: 'Team setup',
+      setupTitle: "How do we play?",
       chooseColor: (n) => `Choose team ${n}'s colour`,
       chooseName: (n) => `Choose team ${n}'s name`,
       removeTeam: (team) => `Remove ${team}`,
       removeTeamTitle: 'Remove this team?',
       removeTeamConfirm: 'REMOVE',
+      clearTitle: "Reset the teams?",
+      clearConfirm: "RESET",
+      resetBtn: "Reset the teams",
       namePlaceholder: (n) => `Team ${n} name`,
       nextBtn: 'Next',
       addTeam: 'Add a team',
@@ -746,7 +997,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} questions`,
       unlocked: 'Pack unlocked ✓',
       comingSoon: 'Coming soon',
-      packTitles: { 'harry-potter': 'Hogwarts Express', 'rap-francais': 'French Rap', dresseur: 'The Very Best Trainer', 'art-litterature': 'Art & Literature', 'retro-gaming': 'Retro gaming', anime: 'Anime & manga', football: 'Football', 'dessins-animes': 'Cartoons', 'jeux-video': 'Video games' },
+      packTitles: { 'harry-potter': 'Hogwarts Express', 'rap-francais': 'French Rap', dresseur: 'The Very Best Trainer', 'art-litterature': 'Art & Literature', 'retro-gaming': 'Retro gaming', anime: 'Anime & manga', football: 'Football', 'dessins-animes': 'Cartoons', 'jeux-video': 'Video games', cuisine: 'Cooking' },
       restore: 'Restore purchases',
       restoredTitle: 'Purchases restored',
       restoredMsg: 'Your packs are unlocked again.',
@@ -791,7 +1042,7 @@ const translations: Record<Lang, Translations> = {
       validateA11y: 'Right answer',
       noAnswer: 'NO ANSWER',
       timeoutNo: 'NO, ELIMINATE',
-      timeoutYes: 'YES, VALIDATE',
+      timeoutYes: "YES, RIGHT ANSWER",
       passA11y: 'No answer — elimination',
       clear: 'Clear',
       someAnswers: 'Some possible answers',
@@ -804,8 +1055,12 @@ const translations: Record<Lang, Translations> = {
       elimTimeoutMsg: 'Did the team answer in time?',
       eliminate: 'ELIMINATE',
       resume: 'RESUME',
+      stillIn: "Still in the game",
     },
     final: {
+      leaveTitle: "Back to the menu?",
+      gameOver: "GAME OVER",
+      otherMode: "Other mode",
       tie: 'IT\'S A TIE!',
       victoryOf: 'Victory for',
       rematch: 'Rematch',
@@ -894,6 +1149,81 @@ const translations: Record<Lang, Translations> = {
     },
   },
   de: {
+    daily: {
+      locale: 'de-DE',
+      title: 'Tages-Challenge',
+      titleDone: 'Tages-Challenge geschafft',
+      dateLabel: (date) => `Challenge vom ${date}`,
+      instructionDaily: (s) => `${s} Sekunden, um so viele wie möglich zu nennen. Heute dieselbe Frage für alle, nur ein Versuch.`,
+      instructionSolo: (s) => `${s} Sekunden, um so viele wie möglich zu nennen.`,
+      streakOn: (d) => `Aktuelle Serie: ${d} Tage`,
+      comeBackDaily: 'Komm jeden Tag wieder, damit deine Serie wächst.',
+      record: (n) => `Dein Rekord: ${n} Antworten`,
+      noRecord: 'Noch kein Rekord',
+      finished: 'Vorbei!',
+      foundLabel: 'Gefundene Antworten',
+      foundCount: (n) => `${n} Antworten gefunden`,
+      miss: 'Nicht in unserer Liste oder schon gefunden',
+      placeholder: 'Antwort eingeben…',
+      inputA11y: 'Deine Antwort',
+      endA11y: 'Beenden',
+      alreadyPlayed: 'Du hast die heutige Challenge schon gespielt.',
+      streak: 'Serie',
+      recordLabel: 'Rekord',
+      newRecord: 'Neu!',
+      comeBackTomorrow: 'Komm morgen für eine neue Challenge wieder.',
+      share: 'Meinen Score teilen',
+      replay: 'Nochmal spielen',
+      shareMsg: (date, score, s, streak, url) => `Bango-Challenge vom ${date}: ${score} Antworten in ${s} s 🔥${streak > 1 ? ` · Serie von ${streak} Tagen` : ''}\nSchaffst du mehr? ${url}`,
+      cardPlayed: (n) => `${n} Antworten · bis morgen`,
+      cardStreak: (d) => `Serie von ${d} Tagen`,
+      historyTitle: 'Tägliche Challenges',
+      played: 'Gespielte Challenges',
+      best: 'Bester Score',
+      empty: 'Spiel deine erste Challenge, um deinen Verlauf zu starten.',
+      sortBy: 'Sortieren nach',
+      sortDate: 'Datum',
+      sortScore: "Erfolg",
+      filter: 'Filtern',
+      recentTitle: "Gespielte Challenges",
+      seeAll: "Alle ansehen",
+      allTitle: "Alle meine Challenges",
+      bestThemes: "Beste Themen",
+      themeCount: (n) => `${n} ${n > 1 ? "Challenges" : "Challenge"}`,
+      average: (n) => `Schnitt ${n}`,
+      prevPeriod: "Zurück",
+      nextPeriod: "Weiter",
+      monthView: "Ganzen Monat zeigen",
+      weeksView: "2 Wochen zeigen",
+      pickMonth: "Monat wählen",
+      notSaved: 'Antworten für diese Challenge nicht gespeichert',
+      noneFound: 'Keine Antwort gefunden',
+      reminderTitle: 'Tages-Challenge 🔥',
+      reminderStreak: (d) => `Deine Serie von ${d} Tagen wartet, lass sie nicht abreißen!`,
+      reminderNew: (s) => `Eine neue Challenge wartet: Wie viele Antworten in ${s} Sekunden?`,
+      channel: 'Tages-Challenge',
+    },
+    players: {
+      modeTeams: "Team",
+      modeSolo: "Einzeln",
+      teams: {
+        chooseColor: (n) => `Farbe von Spieler ${n} wählen`,
+        chooseName: (n) => `Name von Spieler ${n} wählen`,
+        removeTeamTitle: "Diesen Spieler entfernen?",
+        clearTitle: "Spieler zurücksetzen?",
+        resetBtn: "Spieler zurücksetzen",
+        namePlaceholder: (n) => `Name Spieler ${n}`,
+        addTeam: "Spieler hinzufügen",
+        minTeams: "Ihr braucht mindestens 2 Spieler zum Spielen",
+        defaultName: (i) => `Spieler ${i + 1}`,
+      },
+      survie: {
+        phoneMsg: "Alle Spieler müssen den Bildschirm sehen können.",
+        endRoundMsg: "Kein Spieler gewinnt die Punkte im Spiel.",
+        elimPassMsg: "Der Spieler scheidet in dieser Runde aus.",
+        elimTimeoutMsg: "Hat der Spieler rechtzeitig geantwortet?",
+      },
+    },
     tutorial: {
       next: 'Weiter',
       skip: 'Überspringen',
@@ -906,7 +1236,7 @@ const translations: Record<Lang, Translations> = {
       play: 'Bereit? Alles beginnt mit diesem Button.',
       auction: 'Auktionen: Wettet, wie viele Antworten ihr nennen könnt. Nur ein Team antwortet, in 60 Sekunden.',
       survie: 'Überleben: Abwechselnd eine Antwort. Wem nichts mehr einfällt, der fliegt raus!',
-      teams: 'Hier fügt ihr Teams hinzu, keine Spieler! Holt so viele kluge Köpfe ins Team, wie ihr wollt: Es gibt kein Limit. Viel Spaß beim Spielen!',
+      teams: "Spielt im Team oder einzeln (bis zu 10 Spieler). Im Team holt ihr so viele kluge Köpfe dazu, wie ihr wollt: Es gibt kein Limit. Viel Spaß beim Spielen!",
     },
     common: {
       cancel: 'ABBRECHEN',
@@ -967,6 +1297,9 @@ const translations: Record<Lang, Translations> = {
       notInDatabase: (w) => `„${w}"? Nicht auf unserer Liste!`,
       notInDatabaseHint: 'Unsere Liste ist kein Lexikon. Schaut nach, das Spiel wartet.',
       validateAnyway: 'Trotzdem bestätigen',
+      lastSecondMsg: "Wurde in letzter Sekunde noch eine richtige Antwort gegeben?",
+      lastSecondYes: 'JA, HINZUFÜGEN',
+      lastSecondNo: 'NEIN, BEENDEN',
       answerAdded: '✓ Antwort hinzugefügt',
       pause: 'Pause',
       resume: 'Weiter',
@@ -1014,12 +1347,15 @@ const translations: Record<Lang, Translations> = {
       pickCategoryFirst: 'Wählen Sie mindestens eine Kategorie',
     },
     teams: {
-      setupTitle: 'Teams erstellen',
+      setupTitle: "Wie spielen wir?",
       chooseColor: (n) => `Farbe von Team ${n} wählen`,
       chooseName: (n) => `Name von Team ${n} wählen`,
       removeTeam: (team) => `${team} entfernen`,
       removeTeamTitle: 'Dieses Team entfernen?',
       removeTeamConfirm: 'ENTFERNEN',
+      clearTitle: "Teams zurücksetzen?",
+      clearConfirm: "ZURÜCKSETZEN",
+      resetBtn: "Teams zurücksetzen",
       namePlaceholder: (n) => `Team ${n} Name`,
       nextBtn: 'Weiter',
       addTeam: 'Team hinzufügen',
@@ -1045,7 +1381,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} Fragen`,
       unlocked: 'Paket freigeschaltet ✓',
       comingSoon: 'Demnächst verfügbar',
-      packTitles: { 'harry-potter': 'Hogwarts-Express', 'rap-francais': 'Französischer Rap', dresseur: 'Der allerbeste Trainer', 'art-litterature': 'Kunst & Literatur', 'retro-gaming': 'Retro-Gaming', anime: 'Anime & Manga', football: 'Fußball', 'dessins-animes': 'Zeichentrick', 'jeux-video': 'Videospiele' },
+      packTitles: { 'harry-potter': 'Hogwarts-Express', 'rap-francais': 'Französischer Rap', dresseur: 'Der allerbeste Trainer', 'art-litterature': 'Kunst & Literatur', 'retro-gaming': 'Retro-Gaming', anime: 'Anime & Manga', football: 'Fußball', 'dessins-animes': 'Zeichentrick', 'jeux-video': 'Videospiele', cuisine: 'Küche' },
       restore: 'Käufe wiederherstellen',
       restoredTitle: 'Käufe wiederhergestellt',
       restoredMsg: 'Deine Pakete sind wieder freigeschaltet.',
@@ -1090,7 +1426,7 @@ const translations: Record<Lang, Translations> = {
       validateA11y: 'Richtige Antwort',
       noAnswer: 'KEINE ANTWORT',
       timeoutNo: 'NEIN, AUSSCHEIDEN',
-      timeoutYes: 'JA, BESTÄTIGEN',
+      timeoutYes: "JA, RICHTIG",
       passA11y: 'Keine Antwort – Ausscheiden',
       clear: 'Löschen',
       someAnswers: 'Einige mögliche Antworten',
@@ -1103,8 +1439,12 @@ const translations: Record<Lang, Translations> = {
       elimTimeoutMsg: 'Hat das Team rechtzeitig geantwortet?',
       eliminate: 'AUSSCHEIDEN',
       resume: 'WEITER',
+      stillIn: "Noch im Spiel",
     },
     final: {
+      leaveTitle: "Zurück zum Menü?",
+      gameOver: "SPIELENDE",
+      otherMode: "Anderer Modus",
       tie: 'UNENTSCHIEDEN!',
       victoryOf: 'Sieg für',
       rematch: 'Revanche',
@@ -1193,6 +1533,81 @@ const translations: Record<Lang, Translations> = {
     },
   },
   es: {
+    daily: {
+      locale: 'es-ES',
+      title: 'Reto del día',
+      titleDone: 'Reto del día superado',
+      dateLabel: (date) => `Reto del ${date}`,
+      instructionDaily: (s) => `${s} segundos para decir el máximo. Hoy la misma pregunta para todos, un solo intento.`,
+      instructionSolo: (s) => `${s} segundos para decir el máximo.`,
+      streakOn: (d) => `Racha actual: ${d} días`,
+      comeBackDaily: 'Vuelve cada día para aumentar tu racha.',
+      record: (n) => `Tu récord: ${n} respuestas`,
+      noRecord: 'Aún no hay récord',
+      finished: '¡Se acabó!',
+      foundLabel: 'Respuestas encontradas',
+      foundCount: (n) => `${n} respuestas encontradas`,
+      miss: 'No está en nuestra lista, o ya la encontraste',
+      placeholder: 'Escribe una respuesta…',
+      inputA11y: 'Tu respuesta',
+      endA11y: 'Terminar',
+      alreadyPlayed: 'Ya has jugado el reto de hoy.',
+      streak: 'Racha',
+      recordLabel: 'Récord',
+      newRecord: '¡Nuevo!',
+      comeBackTomorrow: 'Vuelve mañana para un nuevo reto.',
+      share: 'Compartir mi puntuación',
+      replay: 'Jugar otra vez',
+      shareMsg: (date, score, s, streak, url) => `Reto Bango del ${date}: ${score} respuestas en ${s} s 🔥${streak > 1 ? ` · racha de ${streak} días` : ''}\n¿Puedes superarlo? ${url}`,
+      cardPlayed: (n) => `${n} respuestas · vuelve mañana`,
+      cardStreak: (d) => `racha de ${d} días`,
+      historyTitle: 'Retos diarios',
+      played: 'Retos jugados',
+      best: 'Mejor puntuación',
+      empty: 'Juega tu primer reto para empezar tu seguimiento.',
+      sortBy: 'Ordenar por',
+      sortDate: 'Fecha',
+      sortScore: "Éxito",
+      filter: 'Filtrar',
+      recentTitle: "Retos completados",
+      seeAll: "Ver todo",
+      allTitle: "Todos mis retos",
+      bestThemes: "Temas mejor superados",
+      themeCount: (n) => `${n} ${n > 1 ? "retos" : "reto"}`,
+      average: (n) => `media ${n}`,
+      prevPeriod: "Anterior",
+      nextPeriod: "Siguiente",
+      monthView: "Ver el mes",
+      weeksView: "Ver 2 semanas",
+      pickMonth: "Elegir el mes",
+      notSaved: 'Respuestas no guardadas para este reto',
+      noneFound: 'Ninguna respuesta encontrada',
+      reminderTitle: 'Reto del día 🔥',
+      reminderStreak: (d) => `Tu racha de ${d} días te espera, ¡no la pierdas!`,
+      reminderNew: (s) => `Te espera un nuevo reto: ¿cuántas respuestas en ${s} segundos?`,
+      channel: 'Reto del día',
+    },
+    players: {
+      modeTeams: "Equipo",
+      modeSolo: "Individual",
+      teams: {
+        chooseColor: (n) => `Elige el color del jugador ${n}`,
+        chooseName: (n) => `Elige el nombre del jugador ${n}`,
+        removeTeamTitle: "¿Quitar este jugador?",
+        clearTitle: "¿Reiniciar los jugadores?",
+        resetBtn: "Reiniciar los jugadores",
+        namePlaceholder: (n) => `Nombre jugador ${n}`,
+        addTeam: "Añadir un jugador",
+        minTeams: "Hacen falta al menos 2 jugadores para jugar",
+        defaultName: (i) => `Jugador ${i + 1}`,
+      },
+      survie: {
+        phoneMsg: "Todos los jugadores deben poder ver la pantalla.",
+        endRoundMsg: "Ningún jugador gana los puntos en juego.",
+        elimPassMsg: "El jugador quedará eliminado de esta ronda.",
+        elimTimeoutMsg: "¿Respondió el jugador a tiempo?",
+      },
+    },
     tutorial: {
       next: 'Siguiente',
       skip: 'Saltar',
@@ -1205,7 +1620,7 @@ const translations: Record<Lang, Translations> = {
       play: '¿Listos? Todo empieza con este botón.',
       auction: 'Subastas: apostad cuántas respuestas podéis decir. Solo un equipo responde, en 60 segundos.',
       survie: 'Supervivencia: una respuesta por turno. ¡El equipo que se queda sin ideas queda eliminado!',
-      teams: '¡Aquí se añaden equipos, no jugadores! Reunid en cada equipo todos los cerebros que queráis: no hay límite. ¡Buena partida!',
+      teams: "Jugad en equipo o de forma individual (hasta 10 jugadores). En equipo, reunid todos los cerebros que queráis: no hay límite. ¡Buena partida!",
     },
     common: {
       cancel: 'CANCELAR',
@@ -1266,6 +1681,9 @@ const translations: Record<Lang, Translations> = {
       notInDatabase: (w) => `¿"${w}"? ¡No está en nuestra lista!`,
       notInDatabaseHint: 'Nuestra lista no es una enciclopedia. Comprobadlo, la partida os espera.',
       validateAnyway: 'Validar de todos modos',
+      lastSecondMsg: "¿Se dio una respuesta correcta en el último segundo?",
+      lastSecondYes: 'SÍ, AÑADIR',
+      lastSecondNo: 'NO, TERMINAR',
       answerAdded: '✓ Respuesta añadida',
       pause: 'Pausa',
       resume: 'Reanudar',
@@ -1313,12 +1731,15 @@ const translations: Record<Lang, Translations> = {
       pickCategoryFirst: 'Elija al menos una categoría',
     },
     teams: {
-      setupTitle: 'Crear equipos',
+      setupTitle: "¿Cómo jugamos?",
       chooseColor: (n) => `Elige el color del equipo ${n}`,
       chooseName: (n) => `Elige el nombre del equipo ${n}`,
       removeTeam: (team) => `Quitar ${team}`,
       removeTeamTitle: '¿Quitar este equipo?',
       removeTeamConfirm: 'QUITAR',
+      clearTitle: "¿Reiniciar los equipos?",
+      clearConfirm: "REINICIAR",
+      resetBtn: "Reiniciar los equipos",
       namePlaceholder: (n) => `Nombre equipo ${n}`,
       nextBtn: 'Siguiente',
       addTeam: 'Añadir un equipo',
@@ -1344,7 +1765,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} preguntas`,
       unlocked: 'Pack desbloqueado ✓',
       comingSoon: 'Próximamente',
-      packTitles: { 'harry-potter': 'Expreso de Hogwarts', 'rap-francais': 'Rap francés', dresseur: 'El mejor entrenador', 'art-litterature': 'Arte y literatura', 'retro-gaming': 'Retro gaming', anime: 'Anime y manga', football: 'Fútbol', 'dessins-animes': 'Dibujos animados', 'jeux-video': 'Videojuegos' },
+      packTitles: { 'harry-potter': 'Expreso de Hogwarts', 'rap-francais': 'Rap francés', dresseur: 'El mejor entrenador', 'art-litterature': 'Arte y literatura', 'retro-gaming': 'Retro gaming', anime: 'Anime y manga', football: 'Fútbol', 'dessins-animes': 'Dibujos animados', 'jeux-video': 'Videojuegos', cuisine: 'Cocina' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Tus packs vuelven a estar desbloqueados.',
@@ -1389,7 +1810,7 @@ const translations: Record<Lang, Translations> = {
       validateA11y: 'Respuesta correcta',
       noAnswer: 'SIN RESPUESTA',
       timeoutNo: 'NO, ELIMINAR',
-      timeoutYes: 'SÍ, VALIDAR',
+      timeoutYes: "SÍ, RESPUESTA CORRECTA",
       passA11y: 'Sin respuesta — eliminación',
       clear: 'Borrar',
       someAnswers: 'Algunas respuestas posibles',
@@ -1402,8 +1823,12 @@ const translations: Record<Lang, Translations> = {
       elimTimeoutMsg: '¿Respondió el equipo a tiempo?',
       eliminate: 'ELIMINAR',
       resume: 'REANUDAR',
+      stillIn: "Siguen en juego",
     },
     final: {
+      leaveTitle: "¿Volver al menú?",
+      gameOver: "FIN DE LA PARTIDA",
+      otherMode: "Otro modo",
       tie: '¡EMPATE!',
       victoryOf: 'Victoria de',
       rematch: 'Revancha',
@@ -1492,6 +1917,81 @@ const translations: Record<Lang, Translations> = {
     },
   },
   it: {
+    daily: {
+      locale: 'it-IT',
+      title: 'Sfida del giorno',
+      titleDone: 'Sfida del giorno completata',
+      dateLabel: (date) => `Sfida del ${date}`,
+      instructionDaily: (s) => `${s} secondi per dirne il più possibile. Oggi la stessa domanda per tutti, un solo tentativo.`,
+      instructionSolo: (s) => `${s} secondi per dirne il più possibile.`,
+      streakOn: (d) => `Serie in corso: ${d} giorni`,
+      comeBackDaily: 'Torna ogni giorno per far crescere la tua serie.',
+      record: (n) => `Il tuo record: ${n} risposte`,
+      noRecord: 'Ancora nessun record',
+      finished: 'È finita!',
+      foundLabel: 'Risposte trovate',
+      foundCount: (n) => `${n} risposte trovate`,
+      miss: 'Non è nella nostra lista, o già trovata',
+      placeholder: 'Scrivi una risposta…',
+      inputA11y: 'La tua risposta',
+      endA11y: 'Termina',
+      alreadyPlayed: 'Hai già giocato la sfida di oggi.',
+      streak: 'Serie',
+      recordLabel: 'Record',
+      newRecord: 'Nuovo!',
+      comeBackTomorrow: 'Torna domani per una nuova sfida.',
+      share: 'Condividi il mio punteggio',
+      replay: 'Gioca ancora',
+      shareMsg: (date, score, s, streak, url) => `Sfida Bango del ${date}: ${score} risposte in ${s} s 🔥${streak > 1 ? ` · serie di ${streak} giorni` : ''}\nRiesci a battermi? ${url}`,
+      cardPlayed: (n) => `${n} risposte · torna domani`,
+      cardStreak: (d) => `serie di ${d} giorni`,
+      historyTitle: 'Sfide quotidiane',
+      played: 'Sfide giocate',
+      best: 'Miglior punteggio',
+      empty: 'Gioca la tua prima sfida per iniziare a tenerne traccia.',
+      sortBy: 'Ordina per',
+      sortDate: 'Data',
+      sortScore: "Riuscita",
+      filter: 'Filtra',
+      recentTitle: "Sfide completate",
+      seeAll: "Vedi tutto",
+      allTitle: "Tutte le mie sfide",
+      bestThemes: "Temi più riusciti",
+      themeCount: (n) => `${n} ${n > 1 ? "sfide" : "sfida"}`,
+      average: (n) => `media ${n}`,
+      prevPeriod: "Precedente",
+      nextPeriod: "Successivo",
+      monthView: "Vedi il mese",
+      weeksView: "Vedi 2 settimane",
+      pickMonth: "Scegli il mese",
+      notSaved: 'Risposte non salvate per questa sfida',
+      noneFound: 'Nessuna risposta trovata',
+      reminderTitle: 'Sfida del giorno 🔥',
+      reminderStreak: (d) => `La tua serie di ${d} giorni ti aspetta, non lasciarla scappare!`,
+      reminderNew: (s) => `Ti aspetta una nuova sfida: quante risposte in ${s} secondi?`,
+      channel: 'Sfida del giorno',
+    },
+    players: {
+      modeTeams: "Squadra",
+      modeSolo: "Individuale",
+      teams: {
+        chooseColor: (n) => `Scegli il colore del giocatore ${n}`,
+        chooseName: (n) => `Scegli il nome del giocatore ${n}`,
+        removeTeamTitle: "Rimuovere questo giocatore?",
+        clearTitle: "Azzerare i giocatori?",
+        resetBtn: "Azzera i giocatori",
+        namePlaceholder: (n) => `Nome giocatore ${n}`,
+        addTeam: "Aggiungi un giocatore",
+        minTeams: "Servono almeno 2 giocatori per giocare",
+        defaultName: (i) => `Giocatore ${i + 1}`,
+      },
+      survie: {
+        phoneMsg: "Tutti i giocatori devono poter vedere lo schermo.",
+        endRoundMsg: "Nessun giocatore vince i punti in palio.",
+        elimPassMsg: "Il giocatore sarà eliminato da questa manche.",
+        elimTimeoutMsg: "Il giocatore ha risposto in tempo?",
+      },
+    },
     tutorial: {
       next: 'Avanti',
       skip: 'Salta',
@@ -1504,7 +2004,7 @@ const translations: Record<Lang, Translations> = {
       play: 'Pronti? Tutto inizia da questo pulsante.',
       auction: 'Aste: scommettete quante risposte sapete dire. Risponde una sola squadra, in 60 secondi.',
       survie: 'Sopravvivenza: una risposta a turno. La squadra che resta senza idee è eliminata!',
-      teams: 'Qui si aggiungono squadre, non giocatori! Riunite in ogni squadra tutti i cervelli che volete: non c\'è limite. Buona partita!',
+      teams: "Giocate a squadre o individualmente (fino a 10 giocatori). A squadre, riunite tutti i cervelli che volete: non c'è limite. Buona partita!",
     },
     common: {
       cancel: 'ANNULLA',
@@ -1565,6 +2065,9 @@ const translations: Record<Lang, Translations> = {
       notInDatabase: (w) => `"${w}"? Non è nella nostra lista!`,
       notInDatabaseHint: "La nostra lista non è un'enciclopedia. Controllate, la partita vi aspetta.",
       validateAnyway: 'Convalida comunque',
+      lastSecondMsg: "È stata data una risposta giusta all'ultimo secondo?",
+      lastSecondYes: 'SÌ, AGGIUNGI',
+      lastSecondNo: 'NO, TERMINA',
       answerAdded: '✓ Risposta aggiunta',
       pause: 'Pausa',
       resume: 'Riprendi',
@@ -1612,12 +2115,15 @@ const translations: Record<Lang, Translations> = {
       pickCategoryFirst: 'Scegli almeno una categoria',
     },
     teams: {
-      setupTitle: 'Crea le squadre',
+      setupTitle: "Come giochiamo?",
       chooseColor: (n) => `Scegli il colore della squadra ${n}`,
       chooseName: (n) => `Scegli il nome della squadra ${n}`,
       removeTeam: (team) => `Rimuovi ${team}`,
       removeTeamTitle: 'Rimuovere questa squadra?',
       removeTeamConfirm: 'RIMUOVI',
+      clearTitle: "Azzerare le squadre?",
+      clearConfirm: "AZZERA",
+      resetBtn: "Azzera le squadre",
       namePlaceholder: (n) => `Nome squadra ${n}`,
       nextBtn: 'Avanti',
       addTeam: 'Aggiungi una squadra',
@@ -1643,7 +2149,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} domande`,
       unlocked: 'Pack sbloccato ✓',
       comingSoon: 'Prossimamente',
-      packTitles: { 'harry-potter': 'Espresso per Hogwarts', 'rap-francais': 'Rap francese', dresseur: 'Il miglior allenatore', 'art-litterature': 'Arte e letteratura', 'retro-gaming': 'Retro gaming', anime: 'Anime e manga', football: 'Calcio', 'dessins-animes': 'Cartoni animati', 'jeux-video': 'Videogiochi' },
+      packTitles: { 'harry-potter': 'Espresso per Hogwarts', 'rap-francais': 'Rap francese', dresseur: 'Il miglior allenatore', 'art-litterature': 'Arte e letteratura', 'retro-gaming': 'Retro gaming', anime: 'Anime e manga', football: 'Calcio', 'dessins-animes': 'Cartoni animati', 'jeux-video': 'Videogiochi', cuisine: 'Cucina' },
       restore: 'Ripristina acquisti',
       restoredTitle: 'Acquisti ripristinati',
       restoredMsg: 'I tuoi pack sono di nuovo sbloccati.',
@@ -1688,7 +2194,7 @@ const translations: Record<Lang, Translations> = {
       validateA11y: 'Risposta giusta',
       noAnswer: 'NESSUNA RISPOSTA',
       timeoutNo: 'NO, ELIMINA',
-      timeoutYes: 'SÌ, CONVALIDA',
+      timeoutYes: "SÌ, RISPOSTA GIUSTA",
       passA11y: 'Nessuna risposta — eliminazione',
       clear: 'Cancella',
       someAnswers: 'Alcune risposte possibili',
@@ -1701,8 +2207,12 @@ const translations: Record<Lang, Translations> = {
       elimTimeoutMsg: 'La squadra ha risposto in tempo?',
       eliminate: 'ELIMINA',
       resume: 'RIPRENDI',
+      stillIn: "Ancora in gara",
     },
     final: {
+      leaveTitle: "Tornare al menu?",
+      gameOver: "FINE DELLA PARTITA",
+      otherMode: "Altra modalità",
       tie: 'PAREGGIO!',
       victoryOf: 'Vittoria di',
       rematch: 'Rivincita',
@@ -1792,6 +2302,81 @@ const translations: Record<Lang, Translations> = {
   },
   // Portugais du Brésil
   pt: {
+    daily: {
+      locale: 'pt-BR',
+      title: 'Desafio do dia',
+      titleDone: 'Desafio do dia concluído',
+      dateLabel: (date) => `Desafio de ${date}`,
+      instructionDaily: (s) => `${s} segundos para dizer o máximo possível. Hoje a mesma pergunta para todos, uma única tentativa.`,
+      instructionSolo: (s) => `${s} segundos para dizer o máximo possível.`,
+      streakOn: (d) => `Sequência atual: ${d} dias`,
+      comeBackDaily: 'Volte todo dia para aumentar sua sequência.',
+      record: (n) => `Seu recorde: ${n} respostas`,
+      noRecord: 'Ainda sem recorde',
+      finished: 'Acabou!',
+      foundLabel: 'Respostas encontradas',
+      foundCount: (n) => `${n} respostas encontradas`,
+      miss: 'Não está na nossa lista, ou já foi encontrada',
+      placeholder: 'Digite uma resposta…',
+      inputA11y: 'Sua resposta',
+      endA11y: 'Encerrar',
+      alreadyPlayed: 'Você já jogou o desafio de hoje.',
+      streak: 'Sequência',
+      recordLabel: 'Recorde',
+      newRecord: 'Novo!',
+      comeBackTomorrow: 'Volte amanhã para um novo desafio.',
+      share: 'Compartilhar minha pontuação',
+      replay: 'Jogar de novo',
+      shareMsg: (date, score, s, streak, url) => `Desafio Bango de ${date}: ${score} respostas em ${s} s 🔥${streak > 1 ? ` · sequência de ${streak} dias` : ''}\nConsegue me superar? ${url}`,
+      cardPlayed: (n) => `${n} respostas · volte amanhã`,
+      cardStreak: (d) => `sequência de ${d} dias`,
+      historyTitle: 'Desafios diários',
+      played: 'Desafios jogados',
+      best: 'Melhor pontuação',
+      empty: 'Jogue seu primeiro desafio para começar o acompanhamento.',
+      sortBy: 'Ordenar por',
+      sortDate: 'Data',
+      sortScore: "Sucesso",
+      filter: 'Filtrar',
+      recentTitle: "Desafios concluídos",
+      seeAll: "Ver tudo",
+      allTitle: "Todos os meus desafios",
+      bestThemes: "Temas com mais sucesso",
+      themeCount: (n) => `${n} ${n > 1 ? "desafios" : "desafio"}`,
+      average: (n) => `média ${n}`,
+      prevPeriod: "Anterior",
+      nextPeriod: "Próximo",
+      monthView: "Ver o mês",
+      weeksView: "Ver 2 semanas",
+      pickMonth: "Escolher o mês",
+      notSaved: 'Respostas não salvas para este desafio',
+      noneFound: 'Nenhuma resposta encontrada',
+      reminderTitle: 'Desafio do dia 🔥',
+      reminderStreak: (d) => `Sua sequência de ${d} dias está esperando, não a perca!`,
+      reminderNew: (s) => `Um novo desafio te espera: quantas respostas em ${s} segundos?`,
+      channel: 'Desafio do dia',
+    },
+    players: {
+      modeTeams: "Time",
+      modeSolo: "Individual",
+      teams: {
+        chooseColor: (n) => `Escolha a cor do jogador ${n}`,
+        chooseName: (n) => `Escolha o nome do jogador ${n}`,
+        removeTeamTitle: "Remover este jogador?",
+        clearTitle: "Redefinir os jogadores?",
+        resetBtn: "Redefinir os jogadores",
+        namePlaceholder: (n) => `Nome do jogador ${n}`,
+        addTeam: "Adicionar um jogador",
+        minTeams: "É preciso pelo menos 2 jogadores para jogar",
+        defaultName: (i) => `Jogador ${i + 1}`,
+      },
+      survie: {
+        phoneMsg: "Todos os jogadores precisam ver a tela.",
+        endRoundMsg: "Nenhum jogador ganha os pontos em jogo.",
+        elimPassMsg: "O jogador será eliminado desta rodada.",
+        elimTimeoutMsg: "O jogador respondeu a tempo?",
+      },
+    },
     tutorial: {
       next: 'Próximo',
       skip: 'Pular',
@@ -1804,7 +2389,7 @@ const translations: Record<Lang, Translations> = {
       play: 'Prontos? Tudo começa por este botão.',
       auction: 'Leilão: apostem quantas respostas conseguem dizer. Só uma equipe responde, em 60 segundos.',
       survie: 'Sobrevivência: uma resposta por vez. A equipe que ficar sem ideias está eliminada!',
-      teams: 'Aqui você adiciona equipes, não jogadores! Juntem quantos cérebros quiserem em cada equipe: não tem limite. Boa partida!',
+      teams: "Joguem em time ou individualmente (até 10 jogadores). Em time, juntem quantos cérebros quiserem: não tem limite. Boa partida!",
     },
     common: {
       cancel: 'CANCELAR',
@@ -1865,6 +2450,9 @@ const translations: Record<Lang, Translations> = {
       notInDatabase: (w) => `"${w}"? Não está na nossa lista!`,
       notInDatabaseHint: 'Nossa lista não é uma enciclopédia. Confiram, a partida espera vocês.',
       validateAnyway: 'Validar mesmo assim',
+      lastSecondMsg: "Uma resposta certa foi dada no último segundo?",
+      lastSecondYes: 'SIM, ADICIONAR',
+      lastSecondNo: 'NÃO, ENCERRAR',
       answerAdded: '✓ Resposta adicionada',
       pause: 'Pausa',
       resume: 'Continuar',
@@ -1912,12 +2500,15 @@ const translations: Record<Lang, Translations> = {
       pickCategoryFirst: 'Escolha pelo menos uma categoria',
     },
     teams: {
-      setupTitle: 'Criar os times',
+      setupTitle: "Como vamos jogar?",
       chooseColor: (n) => `Escolha a cor do time ${n}`,
       chooseName: (n) => `Escolha o nome do time ${n}`,
       removeTeam: (team) => `Remover ${team}`,
       removeTeamTitle: 'Remover esta equipe?',
       removeTeamConfirm: 'REMOVER',
+      clearTitle: "Redefinir os times?",
+      clearConfirm: "REDEFINIR",
+      resetBtn: "Redefinir os times",
       namePlaceholder: (n) => `Nome do time ${n}`,
       nextBtn: 'Próximo',
       addTeam: 'Adicionar uma equipe',
@@ -1943,7 +2534,7 @@ const translations: Record<Lang, Translations> = {
       questionCount: (n) => `${n} perguntas`,
       unlocked: 'Pacote desbloqueado ✓',
       comingSoon: 'Em breve',
-      packTitles: { 'harry-potter': 'Expresso de Hogwarts', 'rap-francais': 'Rap francês', dresseur: 'O melhor treinador', 'art-litterature': 'Arte e literatura', 'retro-gaming': 'Retro gaming', anime: 'Anime e mangá', football: 'Futebol', 'dessins-animes': 'Desenhos animados', 'jeux-video': 'Videogames' },
+      packTitles: { 'harry-potter': 'Expresso de Hogwarts', 'rap-francais': 'Rap francês', dresseur: 'O melhor treinador', 'art-litterature': 'Arte e literatura', 'retro-gaming': 'Retro gaming', anime: 'Anime e mangá', football: 'Futebol', 'dessins-animes': 'Desenhos animados', 'jeux-video': 'Videogames', cuisine: 'Culinária' },
       restore: 'Restaurar compras',
       restoredTitle: 'Compras restauradas',
       restoredMsg: 'Seus pacotes estão desbloqueados de novo.',
@@ -1988,7 +2579,7 @@ const translations: Record<Lang, Translations> = {
       validateA11y: 'Resposta certa',
       noAnswer: 'SEM RESPOSTA',
       timeoutNo: 'NÃO, ELIMINAR',
-      timeoutYes: 'SIM, VALIDAR',
+      timeoutYes: "SIM, RESPOSTA CERTA",
       passA11y: 'Sem resposta — eliminação',
       clear: 'Apagar',
       someAnswers: 'Algumas respostas possíveis',
@@ -2001,8 +2592,12 @@ const translations: Record<Lang, Translations> = {
       elimTimeoutMsg: 'O time respondeu a tempo?',
       eliminate: 'ELIMINAR',
       resume: 'CONTINUAR',
+      stillIn: "Ainda no jogo",
     },
     final: {
+      leaveTitle: "Voltar ao menu?",
+      gameOver: "FIM DA PARTIDA",
+      otherMode: "Outro modo",
       tie: 'EMPATE!',
       victoryOf: 'Vitória de',
       rematch: 'Revanche',
@@ -2091,6 +2686,24 @@ const translations: Record<Lang, Translations> = {
     },
   },
 };
+
+/** Nom par défaut (« Équipe 2 », « Player 1 »…) dans n'importe quelle langue : à régénérer dans la langue en cours. */
+export function isDefaultTeamName(name: string): boolean {
+  const wanted = name.trim().toLocaleLowerCase();
+  if (!wanted) return false;
+  return LANGUAGES.some(({ code }) => {
+    const t = translations[code];
+    return Array.from({ length: 8 }, (_, i) => [t.teams.defaultName(i), t.players.teams.defaultName(i)])
+      .flat()
+      .some((label) => label.toLocaleLowerCase() === wanted);
+  });
+}
+
+/** Textes « équipe » ou « joueur » selon le choix de « Qui joue ? ». */
+export function sideTexts(t: Translations, individual: boolean) {
+  if (!individual) return { teams: t.teams, survie: t.survie };
+  return { teams: { ...t.teams, ...t.players.teams }, survie: { ...t.survie, ...t.players.survie } };
+}
 
 export function getT(lang: Lang): Translations {
   return translations[lang];

@@ -18,11 +18,13 @@ const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
 type Props = {
   teams: GameTeam[];
+  /** « Toutes les équipes… » ou « Tous les joueurs… » selon « Qui joue ? ». */
+  message: string;
   onDone: () => void;
 };
 
 /** Avant la première manche de survie : téléphone posé au centre, visible par toutes les équipes. */
-export function SurviePhoneIntro({ teams, onDone }: Props) {
+export function SurviePhoneIntro({ teams, message, onDone }: Props) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const { lang } = useLang();
@@ -37,10 +39,10 @@ export function SurviePhoneIntro({ teams, onDone }: Props) {
           <Path d={PHONE_PATH} fill={colors.cream} />
         </Svg>
         <Text style={styles.title} accessibilityRole="header">{t.survie.phoneTitle}</Text>
-        <Text style={styles.message}>{t.survie.phoneMsg}</Text>
+        <Text style={styles.message}>{message}</Text>
         <View style={styles.teams}>
           {teams.map((team) => (
-            <View key={team.name} style={[styles.badge, { backgroundColor: team.color }]}>
+            <View key={team.color} style={[styles.badge, { backgroundColor: team.color }]}>
               <Text style={[styles.badgeText, { color: BADGE_TEXT_COLOR[team.color] ?? colors.purpleDeep }]} numberOfLines={1}>
                 {team.name}
               </Text>

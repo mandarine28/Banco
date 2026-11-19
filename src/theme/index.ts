@@ -33,8 +33,11 @@ export const colors = {
   cream: '#FEF6D7',
 } as const;
 
-/** Couleurs proposées aux équipes, dans l'ordre d'attribution par défaut. */
-export const teamColors = ['#EFCC1A', '#1AEF84', '#32F1E4', '#EF1ACC'] as const;
+/**
+ * Couleurs proposées, dans l'ordre d'attribution par défaut : les 4 premières pour les équipes,
+ * toutes en individuel. Claires pour ressortir sur le bleu et porter un texte bleu nuit (sauf le rose).
+ */
+export const teamColors = ['#EFCC1A', '#1AEF84', '#32F1E4', '#EF1ACC', '#FFA53A', '#D4BBFF', '#C8F542', '#FFCBA4', '#FFFFFF', '#FF8A8A'] as const;
 
 export const fonts = {
   // Titres et gros boutons : M PLUS Rounded 1c ExtraBold.

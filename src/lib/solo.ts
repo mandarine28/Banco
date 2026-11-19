@@ -6,10 +6,13 @@ const MIN_WORD_MATCH = 4;
 /** Fautes de frappe tolérées selon la longueur du mot visé : aucune sur un mot très court, sinon il en accepte trop. */
 export function allowedTypos(length: number): number {
   if (length <= 3) return 0;
-  if (length <= 5) return 1;
-  if (length <= 9) return 2;
+  if (length <= 6) return 1;
+  if (length <= 10) return 2;
   return 3;
 }
+
+/** Un seul mot d'une réponse (« Mbappé ») : il doit être assez long et presque juste, sinon tout finit par coller. */
+const WORD_MAX_TYPOS = 1;
 
 /** Nombre de lettres à ajouter, retirer, remplacer ou intervertir pour passer de a à b. */
 export function editDistance(a: string, b: string): number {
@@ -42,17 +45,30 @@ export function soundKey(normalized: string): string {
     .replace(/(.)\1+/g, '$1');
 }
 
-/** Plus petit écart (orthographe ou son) entre la saisie et la réponse entière ou l'un de ses mots ; Infinity hors tolérance. */
+/**
+ * Écart (orthographe ou son) entre la saisie et la réponse entière ou l'un de ses mots ; Infinity hors tolérance.
+ * Compté en demi-points : à fautes égales, la réponse entière (« Fourmi ») passe devant un seul mot
+ * d'une autre (« Fourmi rouge »), sinon les deux se neutralisaient et la saisie était refusée.
+ */
 function closeness(q: string, answer: string): number {
-  const targets = [normalize(answer)];
+  const full = normalize(answer);
+  const targets = [{ text: full, budget: allowedTypos(full.length), word: false }];
   if (q.length >= MIN_WORD_MATCH) {
-    targets.push(...answer.split(/[\s'’-]+/).map(normalize).filter((word) => word.length >= MIN_WORD_MATCH));
+    for (const word of answer.split(/[\s'’-]+/).map(normalize)) {
+      if (word.length >= MIN_WORD_MATCH && word !== full) {
+        targets.push({ text: word, budget: Math.min(WORD_MAX_TYPOS, allowedTypos(word.length)), word: true });
+      }
+    }
   }
   const qSound = soundKey(q);
   let best = Infinity;
-  for (const target of targets) {
-    const distance = Math.min(editDistance(q, target), editDistance(qSound, soundKey(target)));
-    if (distance <= allowedTypos(target.length) && distance < best) best = distance;
+  for (const { text, budget, word } of targets) {
+    const sound = soundKey(text);
+    // La première lettre est rarement ratée : sans elle, « gâteau » passait pour « bateau »
+    const typed = q[0] === text[0] ? editDistance(q, text) : Infinity;
+    const heard = qSound[0] === sound[0] ? editDistance(qSound, sound) : Infinity;
+    const distance = Math.min(typed, heard);
+    if (distance <= budget) best = Math.min(best, distance * 2 + (word ? 1 : 0));
   }
   return best;
 }
@@ -65,13 +81,17 @@ function closeness(q: string, answer: string): number {
 export function matchAnswer(input: string, answers: readonly string[], found: readonly string[]): string | null {
   const q = normalize(input);
   if (!q) return null;
+  // Pluriel tapé (« fourmis ») : le singulier compte comme une saisie exacte
+  const variants = q.length > MIN_WORD_MATCH && /[sx]$/.test(q) ? [q, q.slice(0, -1)] : [q];
   const remaining = answers.filter((answer) => !found.includes(answer));
-  const exact = remaining.find((answer) => normalize(answer) === q);
-  if (exact) return exact;
+  for (const variant of variants) {
+    const exact = remaining.find((answer) => normalize(answer) === variant);
+    if (exact) return exact;
+  }
   let best = Infinity;
   let matches: string[] = [];
   for (const answer of remaining) {
-    const distance = closeness(q, answer);
+    const distance = Math.min(...variants.map((variant) => closeness(variant, answer)));
     if (distance < best) {
       best = distance;
       matches = [answer];

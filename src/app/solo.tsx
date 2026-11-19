@@ -20,6 +20,7 @@ import { type GameTeam, TURN_SECONDS } from '@/game/engine';
 import { CLASSIC_THEMES, dailyQuestion } from '@/lib/dailyQuestion';
 import { scheduleDailyReminders } from '@/lib/dailyReminder';
 import { playHaptic } from '@/lib/haptics';
+import { AnimatedFlame } from '@/components/AnimatedFlame';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { markPacksPlayed } from '@/lib/packHistory';
@@ -51,6 +52,8 @@ const shortDate = (day: string) => `${day.slice(8, 10)}/${day.slice(5, 7)}`;
 export default function SoloScreen() {
   const isDaily = useLocalSearchParams<{ daily?: string }>().daily === '1';
   const { lang } = useLang();
+  const t = getT(lang);
+  const d = t.daily;
   const insets = useSafeAreaInsets();
   const [today] = useState(() => dayKey(new Date()));
   const settings = useGameSettings();
@@ -61,7 +64,7 @@ export default function SoloScreen() {
 
   // Solo : une question à la fois, tirée dans les catégories choisies ; jamais deux fois la même d'affilée
   const pickQuestion = (themeIds: readonly string[], previousId?: string): Question => {
-    if (isDaily) return dailyQuestion(lang, today);
+    if (isDaily) return dailyQuestion(today);
     const all = questionsFor(lang, themeIds);
     const pool = all.length > 0 ? all : questionsFor(lang, CLASSIC_THEMES);
     const fresh = pool.length > 1 ? pool.filter((q) => q.id !== previousId) : pool;
@@ -125,7 +128,7 @@ export default function SoloScreen() {
       const entry = { day: today, questionId: question.id, found: finalFound, total: getAnswers(question, lang).length };
       setTodayEntry(entry);
       addDailyHistory(entry);
-      scheduleDailyReminders(next.streak);
+      scheduleDailyReminders(next.streak, d, TURN_SECONDS);
       return;
     }
     const beaten = finalFound.length > record;
@@ -191,8 +194,7 @@ export default function SoloScreen() {
 
   const shareDaily = () => {
     if (!daily) return;
-    const days = daily.streak > 1 ? ` · série de ${daily.streak} jours` : '';
-    const message = `Défi Bango du ${shortDate(daily.day)} : ${daily.score} réponses en ${TURN_SECONDS} s 🔥${days}\nÀ toi de battre ça : ${PUBLIC_STORE_URL}`;
+    const message = d.shareMsg(shortDate(daily.day), daily.score, TURN_SECONDS, daily.streak, PUBLIC_STORE_URL);
     Share.share({ message }).catch(() => {});
   };
 
@@ -228,8 +230,8 @@ export default function SoloScreen() {
           <TurnEndTransition
             kind={found.length > 0 ? 'madeBid' : 'missedBid'}
             count={found.length}
-            subtitle={remainingMs === 0 ? 'Temps écoulé !' : 'C’est terminé !'}
-            label="Réponses trouvées :"
+            subtitle={remainingMs === 0 ? t.survie.elimTimeoutTitle : d.finished}
+            label={`${d.foundLabel} :`}
             onReveal={() => setOutro('revealing')}
             onDone={() => setOutro(null)}
           />
@@ -242,7 +244,7 @@ export default function SoloScreen() {
             <View style={styles.pillRow}>
               {isDaily ? (
                 <View style={styles.pill}>
-                  <Text style={styles.pillText}>{`Défi du ${shortDate(today)}`}</Text>
+                  <Text style={styles.pillText}>{d.dateLabel(shortDate(today))}</Text>
                 </View>
               ) : null}
               <CategoryBadge themeId={question.theme} />
@@ -251,19 +253,22 @@ export default function SoloScreen() {
               <Text style={styles.questionCardText}>{subject}</Text>
             </View>
             <Text style={styles.instruction}>
-              {isDaily
-                ? `${TURN_SECONDS} secondes pour en citer un maximum. Même question pour tout le monde aujourd’hui, une seule tentative.`
-                : `${TURN_SECONDS} secondes pour en citer un maximum.`}
+              {isDaily ? d.instructionDaily(TURN_SECONDS) : d.instructionSolo(TURN_SECONDS)}
             </Text>
           </View>
 
           <View style={[styles.creamPanel, { paddingBottom: Math.max(insets.bottom + 30, 48) }]}>
-            <Text style={styles.panelText}>
-              {isDaily
-                ? daily && nextStreak(daily, today) > 1 ? `🔥 Série en cours : ${daily.streak} jours` : 'Reviens chaque jour pour faire grimper ta série.'
-                : record > 0 ? `Ton record : ${record} réponses` : 'Pas encore de record'}
-            </Text>
-            <OrangeButton label="Commencer" onPress={start} />
+            {isDaily && daily && nextStreak(daily, today) > 1 ? (
+              <View style={styles.streakRow}>
+                <AnimatedFlame size={28} />
+                <Text style={styles.panelText}>{d.streakOn(daily.streak)}</Text>
+              </View>
+            ) : (
+              <Text style={styles.panelText}>
+                {isDaily ? d.comeBackDaily : record > 0 ? d.record(record) : d.noRecord}
+              </Text>
+            )}
+            <OrangeButton label={t.ready.start} onPress={start} />
           </View>
         </View>
       ) : null}
@@ -275,14 +280,14 @@ export default function SoloScreen() {
               <View style={[styles.trackFill, { width: `${(1 - remainingMs / (TURN_SECONDS * 1000)) * 100}%`, backgroundColor: isWarning ? colors.pink : '#fb940e' }]} />
             </View>
             <Text style={[styles.seconds, isWarning && styles.secondsWarning]}>{seconds}</Text>
-            <Pressable onPress={() => finish(foundRef.current)} accessibilityRole="button" accessibilityLabel="Terminer" style={styles.skipBtn}>
+            <Pressable onPress={() => finish(foundRef.current)} accessibilityRole="button" accessibilityLabel={d.endA11y} style={styles.skipBtn}>
               <SkipIcon size={24} />
             </Pressable>
           </View>
           {/* Compteur en pastille à côté de la question : ne recouvre jamais les réponses */}
           <View style={styles.questionRow}>
             <Text style={[styles.questionText, styles.fill]}>{subject}</Text>
-            <View style={styles.counterBadge} accessibilityLabel={`${found.length} réponses trouvées`}>
+            <View style={styles.counterBadge} accessibilityLabel={d.foundCount(found.length)}>
               <Text style={styles.counterText} numberOfLines={1} adjustsFontSizeToFit>{found.length}</Text>
             </View>
           </View>
@@ -300,7 +305,7 @@ export default function SoloScreen() {
               </View>
             ))}
           </ScrollView>
-          {miss ? <Text style={styles.miss}>Pas dans notre liste, ou déjà trouvée</Text> : null}
+          {miss ? <Text style={styles.miss}>{d.miss}</Text> : null}
           <View style={[styles.inputRow, miss && styles.inputRowMiss]}>
             <TextInput
               value={input}
@@ -315,9 +320,9 @@ export default function SoloScreen() {
               spellCheck
               autoCapitalize="words"
               returnKeyType="send"
-              placeholder="Tape une réponse…"
+              placeholder={d.placeholder}
               placeholderTextColor="rgba(254,246,215,0.5)"
-              accessibilityLabel="Ta réponse"
+              accessibilityLabel={d.inputA11y}
               style={styles.input}
             />
           </View>
@@ -331,30 +336,30 @@ export default function SoloScreen() {
           {resultFound ? (
             <>
               {/* Listes pas encore exhaustives : on ne prétend pas tout montrer */}
-              <Text style={styles.answersTitle}>{getT(lang).play.someAnswers}</Text>
+              <Text style={styles.answersTitle}>{t.play.someAnswers}</Text>
               <AnswerChips answers={allAnswers} found={resultFound} />
             </>
           ) : (
             <View style={styles.fill}>
-              <Text style={styles.answersTitle}>Tu as déjà joué le défi d’aujourd’hui.</Text>
+              <Text style={styles.answersTitle}>{d.alreadyPlayed}</Text>
             </View>
           )}
           <View style={[styles.creamPanel, { paddingBottom: Math.max(insets.bottom + 30, 48) }]}>
             <View style={styles.resultRows}>
-              <ResultRow label="Réponses trouvées" value={String(isDaily ? (daily?.score ?? found.length) : found.length)} />
-              {isDaily ? <ResultRow label="Série" value={`${daily?.streak ?? 1} 🔥`} /> : null}
-              {isDaily ? null : <ResultRow label="Record" value={String(record)} highlight={newRecord ? 'Nouveau !' : undefined} />}
+              <ResultRow label={d.foundLabel} value={String(isDaily ? (daily?.score ?? found.length) : found.length)} />
+              {isDaily ? <ResultRow label={d.streak} value={String(daily?.streak ?? 1)} flame /> : null}
+              {isDaily ? null : <ResultRow label={d.recordLabel} value={String(record)} highlight={newRecord ? d.newRecord : undefined} />}
             </View>
-            {isDaily ? <Text style={styles.panelText}>Reviens demain pour un nouveau défi.</Text> : null}
+            {isDaily ? <Text style={styles.panelText}>{d.comeBackTomorrow}</Text> : null}
             <View style={styles.buttons}>
               {isDaily ? (
-                <OrangeButton label="Partager mon score" onPress={shareDaily} />
+                <OrangeButton label={d.share} onPress={shareDaily} />
               ) : (
-                <OrangeButton label="Rejouer" onPress={replay} />
+                <OrangeButton label={d.replay} onPress={replay} />
               )}
-              <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Retour" style={styles.whiteWrap}>
+              <Pressable onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t.comingSoon.back} style={styles.whiteWrap}>
                 <View style={styles.whiteInner}>
-                  <Text style={styles.whiteText}>Retour</Text>
+                  <Text style={styles.whiteText}>{t.comingSoon.back}</Text>
                 </View>
               </Pressable>
             </View>
@@ -375,13 +380,14 @@ function OrangeButton({ label, onPress }: { label: string; onPress: () => void }
   );
 }
 
-function ResultRow({ label, value, highlight }: { label: string; value: string; highlight?: string }) {
+function ResultRow({ label, value, highlight, flame = false }: { label: string; value: string; highlight?: string; flame?: boolean }) {
   return (
     <View style={styles.row}>
       <Text style={styles.rowLabel}>{label}</Text>
       <View style={styles.rowValueGroup}>
         {highlight ? <Text style={styles.rowHighlight}>{highlight}</Text> : null}
         <Text style={styles.rowValue}>{value}</Text>
+        {flame ? <AnimatedFlame size={26} /> : null}
       </View>
     </View>
   );
@@ -452,6 +458,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 28,
     alignItems: 'center',
+  },
+  streakRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
   },
   panelText: {
     fontFamily: fonts.displayMedium,

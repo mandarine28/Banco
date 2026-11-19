@@ -17,10 +17,11 @@ const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 type Props = {
   state: GameState;
   onReplay: () => void;
-  onHome: () => void;
+  /** Retour au choix du mode, équipes gardées. */
+  onOtherMode: () => void;
 };
 
-export function FinalPhase({ state, onReplay, onHome }: Props) {
+export function FinalPhase({ state, onReplay, onOtherMode }: Props) {
   const { lang } = useLang();
   const t = getT(lang);
 
@@ -97,15 +98,15 @@ export function FinalPhase({ state, onReplay, onHome }: Props) {
           </LinearGradient>
         </Pressable>
 
-        {/* Menu principal */}
+        {/* Autre mode */}
         <Pressable
-          onPress={onHome}
+          onPress={onOtherMode}
           accessibilityRole="button"
-          accessibilityLabel={t.final.home}
+          accessibilityLabel={t.final.otherMode}
           style={styles.btnWrapWhite}
         >
           <View style={styles.btnWhiteInner}>
-            <Text style={styles.btnWhiteText}>{t.final.home}</Text>
+            <Text style={styles.btnWhiteText}>{t.final.otherMode}</Text>
           </View>
         </Pressable>
       </View>

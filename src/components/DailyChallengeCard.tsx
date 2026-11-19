@@ -6,6 +6,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Pressable } from '@/components/Pressable';
 import { themeLabel } from '@/data/themes';
 import { dailyQuestion } from '@/lib/dailyQuestion';
+import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { type DailyRecord, dayKey, nextStreak } from '@/lib/solo';
 import { loadDailyRecord } from '@/lib/soloStorage';
@@ -14,9 +15,10 @@ import { colors, fonts } from '@/theme';
 /** Hauteur de la carte : l'accueil la réserve pour centrer le logo au-dessus du panneau. */
 export const DAILY_CARD_HEIGHT = 60;
 
-/** Défi du jour sur l'accueil (prototype, textes FR) : catégorie et série à jouer, ou score une fois joué. */
+/** Défi du jour sur l'accueil : catégorie et série à jouer, ou score une fois joué. */
 export function DailyChallengeCard() {
   const { lang } = useLang();
+  const d = getT(lang).daily;
   const [record, setRecord] = useState<DailyRecord | null>(null);
   const today = dayKey(new Date());
   // Relu à chaque retour sur l'accueil : la carte passe à « joué » juste après le défi
@@ -31,22 +33,22 @@ export function DailyChallengeCard() {
   // Série encore vivante (défi joué hier) : on la montre pour donner envie de la prolonger
   const streakAlive = record !== null && !played && streak > 1;
   const subtitle = played
-    ? `${record.score} réponses · reviens demain`
-    : `${themeLabel(dailyQuestion(lang, today).theme, lang)}${streakAlive ? ` · 🔥 série de ${record.streak} jours` : ''}`;
+    ? d.cardPlayed(record.score)
+    : `${themeLabel(dailyQuestion(today).theme, lang)}${streakAlive ? ` · 🔥 ${d.cardStreak(record.streak)}` : ''}`;
 
   return (
     <Pressable
       // Joué : le suivi des défis ; sinon le défi du jour
       onPress={() => router.push(played ? '/defis' : '/solo?daily=1')}
       accessibilityRole="button"
-      accessibilityLabel={`Défi du jour, ${subtitle}`}
+      accessibilityLabel={`${d.title}, ${subtitle}`}
       style={[styles.card, played ? styles.cardPlayed : styles.cardToPlay]}
     >
       <View style={[styles.icon, played && styles.iconPlayed]}>
         <MaterialCommunityIcons name={played ? 'check-bold' : 'fire'} size={22} color={colors.cream} />
       </View>
       <View style={styles.texts}>
-        <Text style={styles.title} numberOfLines={1}>{played ? 'Défi du jour réussi' : 'Défi du jour'}</Text>
+        <Text style={styles.title} numberOfLines={1}>{played ? d.titleDone : d.title}</Text>
         <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>
       </View>
       <MaterialCommunityIcons name="chevron-right" size={26} color={colors.purpleDeep} />

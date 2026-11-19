@@ -1,5 +1,7 @@
 import { createContext, type ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
+import { loadIndividual, loadRoster, saveIndividual, saveRoster } from '@/lib/savedTeams';
+import type { RosterKind } from '@/lib/teamList';
 import { withoutTrialPack, withTrialPack } from '@/lib/trialPacks';
 import { loadPendingTrials, savePendingTrials } from '@/lib/trials';
 
@@ -12,6 +14,8 @@ export type Team = {
 };
 
 export const TEAM_LIMITS = { min: 2, max: 4 } as const;
+/** Individuel : jusqu'à 10 joueurs, une couleur chacun. */
+export const PLAYER_LIMITS = { min: 2, max: 10 } as const;
 export const ROUND_LIMITS = { min: 3, max: 10 } as const;
 /** Chrono de survie : 'turbo' (temps qui baisse à chaque tour de table) ou durée fixe en secondes. */
 export const SURVIE_TIMER_OPTIONS = ['turbo', 10, 20, 30] as const;
@@ -27,6 +31,10 @@ export type GameSettings = {
   survieTimer: SurvieTimer | null;
   /** Packs débloqués pour une partie par une vidéo, tant que cette partie n'a pas été lancée. */
   trialPacks: string[];
+  /** « Chacun pour soi » : une « équipe » = un joueur, seuls les textes changent. */
+  individual: boolean;
+  /** Listes gardées de « Qui joue ? » (nom vide = nom par défaut, écrit dans la langue au lancement). */
+  rosters: Record<RosterKind, Team[]>;
 };
 
 type GameSettingsContextValue = GameSettings & {
@@ -34,6 +42,8 @@ type GameSettingsContextValue = GameSettings & {
   setTeamCount: (count: number) => void;
   setRoundCount: (count: number) => void;
   setTeams: (teams: Team[]) => void;
+  setIndividual: (individual: boolean) => void;
+  setRoster: (kind: RosterKind, teams: Team[]) => void;
   setSelectedThemes: (themes: string[]) => void;
   setSurvieTimer: (seconds: SurvieTimer | null) => void;
   addTrialPack: (themeId: string) => void;
@@ -49,6 +59,8 @@ const defaults: GameSettings = {
   selectedThemes: [],
   survieTimer: SURVIE_TIMER_OPTIONS[0],
   trialPacks: [],
+  individual: false,
+  rosters: { teams: [], players: [] },
 };
 
 const clamp = (value: number, { min, max }: { min: number; max: number }) => Math.min(max, Math.max(min, value));
@@ -65,6 +77,15 @@ export function GameSettingsProvider({ children }: { children: ReactNode }) {
       setSettings((s) => ({ ...s, trialPacks: [...new Set([...stored, ...s.trialPacks])] }));
       setTrialsLoaded(true);
     });
+    // Dernières équipes / derniers joueurs repris : plus besoin de les recréer en changeant de mode ou de catégorie
+    (['teams', 'players'] as const).forEach((kind) =>
+      loadRoster(kind, kind === 'players' ? PLAYER_LIMITS.max : TEAM_LIMITS.max).then((teams) => {
+        if (teams.length > 0) setSettings((s) => (s.rosters[kind].length > 0 ? s : { ...s, rosters: { ...s.rosters, [kind]: teams } }));
+      }),
+    );
+    loadIndividual().then((individual) => {
+      if (individual) setSettings((s) => ({ ...s, individual }));
+    });
   }, []);
   // Après la lecture seulement : sinon la liste vide du départ écraserait celle enregistrée
   useEffect(() => {
@@ -75,9 +96,17 @@ export function GameSettingsProvider({ children }: { children: ReactNode }) {
     () => ({
       ...settings,
       setMode: (mode) => setSettings((s) => ({ ...s, mode })),
-      setTeamCount: (count) => setSettings((s) => ({ ...s, teamCount: clamp(count, TEAM_LIMITS) })),
+      setTeamCount: (count) => setSettings((s) => ({ ...s, teamCount: clamp(count, s.individual ? PLAYER_LIMITS : TEAM_LIMITS) })),
       setRoundCount: (count) => setSettings((s) => ({ ...s, roundCount: clamp(count, ROUND_LIMITS) })),
       setTeams: (teams) => setSettings((s) => ({ ...s, teams })),
+      setRoster: (kind, teams) => {
+        saveRoster(kind, teams);
+        setSettings((s) => ({ ...s, rosters: { ...s.rosters, [kind]: teams } }));
+      },
+      setIndividual: (individual) => {
+        saveIndividual(individual);
+        setSettings((s) => ({ ...s, individual }));
+      },
       setSelectedThemes: (selectedThemes) => setSettings((s) => ({ ...s, selectedThemes })),
       setSurvieTimer: (survieTimer) => setSettings((s) => ({ ...s, survieTimer })),
       addTrialPack: (themeId) => setSettings((s) => ({ ...s, trialPacks: withTrialPack(s.trialPacks, themeId) })),

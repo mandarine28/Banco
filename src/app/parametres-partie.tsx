@@ -451,7 +451,6 @@ export default function MatchSettingsScreen() {
                         }}
                         // Cocher → son « bonne réponse », décocher → clic principal
                         sound={isActive ? 'tap' : 'correct'}
-                        soundOnRelease
                         accessibilityRole="checkbox"
                         accessibilityState={{ checked: isActive }}
                         accessibilityLabel={label}

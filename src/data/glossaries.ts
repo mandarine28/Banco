@@ -12,6 +12,7 @@ import { glossaryCultureG } from './glossaries/cultureg';
 import { glossaryDivertissement } from './glossaries/divertissement';
 import { glossaryGeographie } from './glossaries/geographie';
 import { glossarySport } from './glossaries/sport';
+import { glossaryCuisine } from './glossaries/cuisine';
 
 /** Glossaire de traduction des réponses, par identifiant de thème. */
 export const glossaries: Record<string, Glossary> = {
@@ -28,4 +29,5 @@ export const glossaries: Record<string, Glossary> = {
   musique: glossaryMusique,
   divertissement: glossaryDivertissement,
   marques: glossaryMarques,
+  cuisine: glossaryCuisine,
 };

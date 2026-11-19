@@ -19,7 +19,7 @@ import { useLang } from '@/lib/LangContext';
 import { getT } from '@/lib/i18n';
 import { playHaptic, setHapticsEnabled, useHapticsEnabled } from '@/lib/haptics';
 import { playSound, setSoundEnabled, useSoundEnabled } from '@/lib/sounds';
-import { resetPlayerProgress, setGamesCompleted } from '@/lib/testTools';
+import { fillDailyHistory, resetPlayerProgress, setGamesCompleted } from '@/lib/testTools';
 import { useGameSettings } from '@/state/gameSettings';
 import { usePurchases } from '@/state/purchases';
 import { colors, fonts, teamColors } from '@/theme';
@@ -243,6 +243,15 @@ export default function SettingsScreen() {
                   <Pressable onPress={() => router.push('/solo?daily=1')} accessibilityRole="button" accessibilityLabel="Défi du jour (prototype)">
                     <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btn}>
                       <Text style={styles.btnText}>Défi du jour (prototype)</Text>
+                    </LinearGradient>
+                  </Pressable>
+                  <Pressable onPress={() => {
+                    fillDailyHistory()
+                      .then(() => router.push('/defis'))
+                      .catch(() => Alert.alert('Outils de test', 'Remplissage des défis impossible.'));
+                  }} accessibilityRole="button" accessibilityLabel="Remplir « Mes défis du jour »">
+                    <LinearGradient colors={['#fb940e', '#f2c512']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.btn}>
+                      <Text style={styles.btnText}>Remplir « Mes défis » (6 semaines, avec trous)</Text>
                     </LinearGradient>
                   </Pressable>
                 </View>

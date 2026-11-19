@@ -7,17 +7,15 @@ import { playSound, type SoundName } from '@/lib/sounds';
 type Props = ComponentProps<typeof RNPressable> & {
   /** Son de l'action (« tap » par défaut) ; false pour aucun son. */
   sound?: SoundName | false;
-  /**
-   * Joue le son au relâchement plutôt qu'au contact. Pour les éléments dans une liste qui défile :
-   * sinon le simple fait de commencer un défilement déclencherait le son.
-   */
-  soundOnRelease?: boolean;
   /** Vibration jouée en même temps que le son (aucune par défaut). */
   haptic?: HapticKind;
 };
 
-/** Pressable de React Native + son joué dès le contact du doigt (onPressIn) pour éviter toute latence. */
-export function Pressable({ sound = 'tap', soundOnRelease = false, haptic, onPress, onPressIn, ...rest }: Props) {
+/**
+ * Pressable de React Native + son joué quand l'appui aboutit (onPress), jamais au simple contact :
+ * un doigt qui fait défiler une liste ou se pose à côté d'un bouton ne doit pas faire de bruit.
+ */
+export function Pressable({ sound = 'tap', haptic, onPress, ...rest }: Props) {
   const play = () => {
     if (rest.accessible === false) return;
     if (sound) playSound(sound);
@@ -26,15 +24,10 @@ export function Pressable({ sound = 'tap', soundOnRelease = false, haptic, onPre
   return (
     <RNPressable
       {...rest}
-      onPressIn={(event: GestureResponderEvent) => {
-        // Seulement pour une vraie action (onPress) : les zones à appui maintenu gèrent leur son
-        if (onPress && !soundOnRelease) play();
-        onPressIn?.(event);
-      }}
       onPress={
         onPress
           ? (event: GestureResponderEvent) => {
-              if (soundOnRelease) play();
+              play();
               onPress(event);
             }
           : undefined

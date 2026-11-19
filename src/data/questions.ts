@@ -14,6 +14,7 @@ import { questionsAnime } from './questions/anime';
 import { questionsFootball } from './questions/football';
 import { questionsDessinsAnimes } from './questions/dessins-animes';
 import { questionsJeuxVideo } from './questions/jeux-video';
+import { questionsCuisine } from './questions/cuisine';
 import type { Lang } from '../lib/i18n';
 import type { Question } from './types';
 
@@ -34,6 +35,7 @@ export const questions = [
   ...questionsFootball,
   ...questionsDessinsAnimes,
   ...questionsJeuxVideo,
+  ...questionsCuisine,
 ];
 
 /** Questions jouables dans cette langue, limitées aux thèmes choisis (aucun thème choisi : tous). */

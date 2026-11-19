@@ -33,7 +33,7 @@ import { usePauseOnBackground } from '@/hooks/usePauseOnBackground';
 import { preloadInterstitial, showInterstitial } from '@/lib/ads';
 import { shouldShowInterstitial } from '@/lib/adRule';
 import { maybeRequestReview, recordGameCompleted } from '@/lib/engagement';
-import { getT } from '@/lib/i18n';
+import { getT, sideTexts } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { markTrialUsed } from '@/lib/trials';
 import { type SurvieTimer, useGameSettings } from '@/state/gameSettings';
@@ -44,6 +44,8 @@ import { colors, fonts, teamColors } from '@/theme';
 const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 /** Laisse passer l'annonce du gagnant et les confettis avant la fenêtre d'avis. */
 const REVIEW_DELAY_MS = 2000;
+/** Au-delà (individuel, jusqu'à 10), les écrans de classement défilent. */
+const FIXED_LIST_MAX = 4;
 
 /** Appelle onFinished une seule fois quand la partie atteint l'écran final. */
 function useOnFinal(isFinal: boolean, onFinished: () => void) {
@@ -57,16 +59,19 @@ function useOnFinal(isFinal: boolean, onFinished: () => void) {
 
 export default function GameScreen() {
   const settings = useGameSettings();
+  // Textes « l'équipe » ou « le joueur » selon « Comment on joue ? »
+  const side = sideTexts(getT(useLang().lang), settings.individual);
+  const sideSurvie = side.survie;
   const teams: GameTeam[] =
     settings.teams.length > 0
       ? settings.teams
-      : Array.from({ length: settings.teamCount }, (_, i) => ({ name: `ÉQUIPE ${i + 1}`, color: teamColors[i] }));
+      : Array.from({ length: settings.teamCount }, (_, i) => ({ name: side.teams.defaultName(i).toUpperCase(), color: teamColors[i] }));
   const [gameId, setGameId] = useState(0);
   const { hasPurchased, purchase, prices, claimGiftedPack } = usePurchases();
   const { lang } = useLang();
   const t = getT(lang);
-  // Revanche : un pack en essai ne vaut que pour une partie, on le retire s'il n'a pas été acheté
-  const replay = () => {
+  // Revanche / Autre mode : un pack en essai ne vaut que pour une partie, on le retire s'il n'a pas été acheté
+  const dropTrialThemes = () => {
     const trialThemes = (Object.keys(PACK_THEME_IDS) as ProductId[])
       .filter((product) => !hasPurchased(product))
       .map((product) => PACK_THEME_IDS[product]);
@@ -74,7 +79,14 @@ export default function GameScreen() {
     if (kept.length !== settings.selectedThemes.length) {
       settings.setSelectedThemes(kept.length > 0 ? kept : themes.map((theme) => theme.id));
     }
+  };
+  const replay = () => {
+    dropTrialThemes();
     setGameId((id) => id + 1);
+  };
+  const otherMode = () => {
+    dropTrialThemes();
+    router.dismissTo('/parametres');
   };
 
   // Partie d'essai : on propose l'achat du pack une seule fois, au moment de quitter l'écran final
@@ -209,7 +221,9 @@ export default function GameScreen() {
           roundCount={settings.roundCount}
           selectedThemes={playableThemes}
           timer={settings.survieTimer}
+          sideSurvie={sideSurvie}
           onReplay={replay}
+          onOtherMode={otherMode}
           beforeLeave={beforeLeave}
           onFinished={onGameFinished}
         />
@@ -227,6 +241,7 @@ export default function GameScreen() {
         roundCount={settings.roundCount}
         selectedThemes={playableThemes}
         onReplay={replay}
+        onOtherMode={otherMode}
         beforeLeave={beforeLeave}
         onFinished={onGameFinished}
       />
@@ -241,6 +256,8 @@ type GameProps = {
   roundCount: number;
   selectedThemes: string[];
   onReplay: () => void;
+  /** Fin de partie : retour au choix du mode, équipes gardées. */
+  onOtherMode: () => void;
   /** Appelé avant Revanche / Menu depuis l'écran final (proposition d'achat après un essai). */
   beforeLeave: (next: () => void) => void;
   /** Partie menée jusqu'à l'écran final (compteur de parties, demande d'avis). */
@@ -249,7 +266,7 @@ type GameProps = {
 
 type Confirm = 'quit' | 'skip' | null;
 
-function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFinished }: GameProps) {
+function Game({ teams, roundCount, selectedThemes, onReplay, onOtherMode, beforeLeave, onFinished }: GameProps) {
   const showCategory = selectedThemes.length > 1;
   const { lang } = useLang();
   const t = getT(lang);
@@ -268,9 +285,13 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
   const paused = pauseSource !== null;
   // Dernière action d'enchère : seule une mise (pas un passe) déclenche le pulse chez l'équipe suivante
   const [lastAuctionAction, setLastAuctionAction] = useState<'bid' | 'pass' | null>(null);
-  const remainingMs = useCountdown(state.phase === 'play', paused || playIntro === 'covering', TURN_SECONDS, () =>
-    dispatch({ type: 'END_TURN', reason: 'time' }),
-  );
+  // Chrono à zéro avec une seule réponse manquante : on demande si elle est tombée au dernier moment
+  const [timeUp, setTimeUp] = useState(false);
+  const remainingMs = useCountdown(state.phase === 'play', paused || playIntro === 'covering', TURN_SECONDS, () => {
+    setConfirm((c) => (c === 'skip' ? null : c));
+    if (contract(state).amount - state.progress === 1) setTimeUp(true);
+    else dispatch({ type: 'END_TURN', reason: 'time' });
+  });
   useHapticWarning(remainingMs, 10);
   // App quittée en plein tour (vérifier une réponse ailleurs) : pause, avec la fenêtre « Reprendre » au retour
   usePauseOnBackground(state.phase === 'play', () => setPauseSource('search'));
@@ -283,18 +304,19 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
     if (phase === 'play' && state.phase === 'result') setTurnEnd('covering');
     setPhase(state.phase);
     setPauseSource(null);
+    setTimeUp(false);
     if (confirm === 'skip') setConfirm(null);
   }
 
   const goHome = () => router.dismissTo('/');
-  useBackToQuitConfirm(() => (state.phase === 'final' ? goHome() : setConfirm('quit')));
+  useBackToQuitConfirm(() => setConfirm('quit'));
 
   // Bandeau : l'équipe qui enchérit, puis celle qui a remporté l'enchère.
   const bannerTeam =
     state.phase === 'auction' || state.phase === 'final' ? state.teams[state.auction.current] : state.teams[contract(state).team];
   const banner =
     state.phase === 'final'
-      ? { label: 'FIN DE LA PARTIE', color: colors.pink }
+      ? { label: t.final.gameOver, color: colors.pink }
       : { label: bannerTeam.name, color: bannerTeam.color };
 
   const footer =
@@ -310,9 +332,10 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
     <GameLayout
       banner={banner}
       closeIcon
-      onHome={() => (state.phase === 'final' ? goHome() : setConfirm('quit'))}
+      onHome={() => setConfirm('quit')}
       footer={footer}
-      scrollDisabled={state.phase === 'play' || state.phase === 'result' || state.phase === 'final'}
+      // Plus de 4 joueurs : les classements du résultat et de la fin ne tiennent plus sur un écran fixe
+      scrollDisabled={state.phase === 'play' || ((state.phase === 'result' || state.phase === 'final') && state.teams.length <= FIXED_LIST_MAX)}
       overlay={
         pauseSource === 'search' && state.phase === 'play' ? (
           <PauseModal visible onResume={() => setPauseSource(null)} />
@@ -378,17 +401,19 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
           isLastRound={isLastRound(state)}
         />
       ) : null}
-      {state.phase === 'final' ? <FinalPhase state={state} onReplay={() => beforeLeave(onReplay)} onHome={() => beforeLeave(goHome)} /> : null}
+      {state.phase === 'final' ? <FinalPhase state={state} onReplay={() => beforeLeave(onReplay)} onOtherMode={() => beforeLeave(onOtherMode)} /> : null}
 
-      <ConfirmModal
+      <QuitModal
         visible={confirm === 'quit'}
-        title={t.common.quitTitle}
-        message={t.common.quitMsg}
-        confirmLabel={t.common.quit}
+        isFinal={state.phase === 'final'}
         onCancel={() => setConfirm(null)}
-        onConfirm={() => {
+        onQuit={() => {
           setConfirm(null);
           goHome();
+        }}
+        onLeaveFinal={() => {
+          setConfirm(null);
+          beforeLeave(goHome);
         }}
       />
       <ConfirmModal
@@ -402,11 +427,30 @@ function Game({ teams, roundCount, selectedThemes, onReplay, beforeLeave, onFini
           dispatch({ type: 'END_TURN', reason: 'skip' });
         }}
       />
+      <ConfirmModal
+        visible={timeUp && state.phase === 'play'}
+        title={t.survie.elimTimeoutTitle}
+        message={t.play.lastSecondMsg}
+        confirmLabel={t.play.lastSecondYes}
+        confirmIcon="plus-thick"
+        cancelLabel={t.play.lastSecondNo}
+        // +1 puis fin du tour : la mise atteinte termine déjà le tour, END_TURN est alors ignoré
+        onConfirm={() => {
+          dispatch({ type: 'ADJUST', delta: 1 });
+          dispatch({ type: 'END_TURN', reason: 'time' });
+        }}
+        onCancel={() => dispatch({ type: 'END_TURN', reason: 'time' })}
+        // Choix obligatoire : un tap à côté ne doit pas clore le tour
+        onDismiss={() => {}}
+      />
     </GameLayout>
   );
 }
 
-function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, beforeLeave, onFinished }: GameProps & { timer: SurvieTimer | null }) {
+function SurvieGame({ teams, roundCount, selectedThemes, timer, sideSurvie, onReplay, onOtherMode, beforeLeave, onFinished }: GameProps & {
+  timer: SurvieTimer | null;
+  sideSurvie: ReturnType<typeof sideTexts>['survie'];
+}) {
   const showCategory = selectedThemes.length > 1;
   const filteredQuestions = questionsFor(useLang().lang, selectedThemes);
   const [state, dispatch] = useReducer(survieReducer, null, () =>
@@ -453,7 +497,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
     setPauseSource((s) => (s === 'manual' ? null : s));
   };
   const goHome = () => router.dismissTo('/');
-  useBackToQuitConfirm(() => (state.phase === 'final' ? goHome() : setConfirmQuit(true)));
+  useBackToQuitConfirm(() => setConfirmQuit(true));
   const currentTeam = state.teams[state.currentTeam];
   const showBorder = (state.phase === 'play' || state.phase === 'ready') && elimination?.stage !== 'covering' && !phoneIntro;
 
@@ -461,11 +505,11 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
     <View style={{ flex: 1 }}>
     <GameLayout
       closeIcon
-      onHome={() => (state.phase === 'final' ? goHome() : setConfirmQuit(true))}
-      scrollDisabled={state.phase === 'play' || state.phase === 'ready' || state.phase === 'result'}
+      onHome={() => setConfirmQuit(true)}
+      scrollDisabled={state.phase === 'play' || state.phase === 'ready' || (state.phase === 'result' && state.teams.length <= FIXED_LIST_MAX)}
       overlay={
         phoneIntro && state.phase === 'ready' ? (
-          <SurviePhoneIntro teams={state.teams} onDone={() => setPhoneIntro(false)} />
+          <SurviePhoneIntro teams={state.teams} message={sideSurvie.phoneMsg} onDone={() => setPhoneIntro(false)} />
         ) : pauseSource === 'search' && state.phase === 'play' ? (
           <PauseModal visible onResume={() => setPauseSource(null)} />
         ) : state.phase === 'final' ? (
@@ -527,7 +571,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
         />
       ) : null}
       {state.phase === 'final' ? (
-        <SurvieFinalPhase state={state} onReplay={() => beforeLeave(onReplay)} onHome={() => beforeLeave(goHome)} />
+        <SurvieFinalPhase state={state} onReplay={() => beforeLeave(onReplay)} onOtherMode={() => beforeLeave(onOtherMode)} />
       ) : null}
 
       {/* Mêmes codes que l'écran de jeu : dégradé = on continue (comme VALIDER), contour = élimination (comme PASSER) */}
@@ -544,7 +588,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
           </View>
         }
         title={confirmElim === 'timeout' ? t.survie.elimTimeoutTitle : t.survie.elimPassTitle}
-        message={confirmElim === 'timeout' ? t.survie.elimTimeoutMsg : t.survie.elimPassMsg}
+        message={confirmElim === 'timeout' ? sideSurvie.elimTimeoutMsg : sideSurvie.elimPassMsg}
         cancelLabel={confirmElim === 'timeout' ? t.survie.timeoutNo : t.survie.eliminate}
         cancelIcon="skull"
         confirmLabel={confirmElim === 'timeout' ? t.survie.timeoutYes : t.survie.resume}
@@ -563,7 +607,7 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
       <ConfirmModal
         visible={confirmEndRound && state.phase === 'play'}
         title={t.survie.endRoundTitle}
-        message={t.survie.endRoundMsg}
+        message={sideSurvie.endRoundMsg}
         confirmLabel={t.survie.endRoundBtn}
         onCancel={() => setConfirmEndRound(false)}
         onConfirm={() => {
@@ -571,17 +615,38 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, onReplay, before
           dispatch({ type: 'END_ROUND' });
         }}
       />
-      <ConfirmModal
+      <QuitModal
         visible={confirmQuit}
-        title={t.common.quitTitle}
-        message={t.common.quitMsg}
-        confirmLabel={t.common.quit}
+        isFinal={state.phase === 'final'}
         onCancel={() => setConfirmQuit(false)}
-        onConfirm={() => { setConfirmQuit(false); goHome(); }}
+        onQuit={() => { setConfirmQuit(false); goHome(); }}
+        onLeaveFinal={() => { setConfirmQuit(false); beforeLeave(goHome); }}
       />
     </GameLayout>
     {showBorder && <SurviePulseBorder color={currentTeam.color} />}
     </View>
+  );
+}
+
+/** Croix / retour : en cours de partie on prévient de la perte, sur l'écran final on confirme le retour au menu. */
+function QuitModal({ visible, isFinal, onCancel, onQuit, onLeaveFinal }: {
+  visible: boolean;
+  isFinal: boolean;
+  onCancel: () => void;
+  onQuit: () => void;
+  /** Même chemin que le bouton Menu de l'écran final (proposition d'achat, pub). */
+  onLeaveFinal: () => void;
+}) {
+  const t = getT(useLang().lang);
+  return (
+    <ConfirmModal
+      visible={visible}
+      title={isFinal ? t.final.leaveTitle : t.common.quitTitle}
+      message={isFinal ? undefined : t.common.quitMsg}
+      confirmLabel={isFinal ? t.final.home : t.common.quit}
+      onCancel={onCancel}
+      onConfirm={isFinal ? onLeaveFinal : onQuit}
+    />
   );
 }
 

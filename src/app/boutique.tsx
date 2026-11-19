@@ -48,6 +48,7 @@ const PACKS: Pack[] = [
   { id: 'football', productId: 'packFootball', gift: true, image: require('../../assets/packs/football.png') },
   { id: 'dessins-animes', productId: 'packDessinsAnimes', gift: true, image: require('../../assets/packs/dessins-animes.png') },
   { id: 'jeux-video', productId: 'packJeuxVideo', gift: true, image: require('../../assets/packs/jeux-video.png') },
+  { id: 'cuisine', productId: 'packCuisine', gift: true, image: require('../../assets/packs/cuisine.png') },
 ];
 
 /** Nombre de questions par pack, compté dans les données (0 pour un pack à venir). */
@@ -79,7 +80,7 @@ function PackCard({ pack, price, purchased, purchasing, onPurchase, giftProgress
   const count = questionCount(pack.id);
 
   return (
-    <Pressable onLayout={onLayout} onPress={onLockedPress} disabled={!onLockedPress} soundOnRelease accessible={false}>
+    <Pressable onLayout={onLayout} onPress={onLockedPress} disabled={!onLockedPress} accessible={false}>
       <View
         ref={giftIndex === 0 ? tutorialTarget : undefined}
         collapsable={false}

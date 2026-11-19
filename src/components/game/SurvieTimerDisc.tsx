@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Rect } from 'react-native-svg';
 
+import { NAVY_MIN_CONTRAST, navyReadable } from '@/lib/contrast';
 import { colors, fonts } from '@/theme';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -15,34 +16,8 @@ const SHADOW = 0.035;
 // Secteur du temps restant : blanc cassé des boutons secondaires
 const WEDGE = '#fffbf5';
 
-/** Mélange une couleur #RRGGBB avec du blanc (0 = inchangée, 1 = blanc), en composantes 0-255. */
-function lighten(hex: string, amount: number): [number, number, number] {
-  const n = parseInt(hex.slice(1), 16);
-  const mix = (c: number) => Math.round(c + (255 - c) * amount);
-  return [mix((n >> 16) & 255), mix((n >> 8) & 255), mix(n & 255)];
-}
-
-/** Luminance relative (WCAG) d'une couleur 0-255. */
-function luminance(rgb: readonly number[]): number {
-  const [r, g, b] = rgb.map((c) => {
-    const v = c / 255;
-    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-// Contraste visé entre le chiffre bleu nuit et le cadran (le rose en manquait)
-const MIN_CONTRAST = 7;
-const NAVY_LUMINANCE = luminance([12, 45, 100]);
-
-/** Cadran : couleur de l'équipe éclaircie juste assez pour que le chiffre reste bien lisible. */
-function faceColor(team: string): string {
-  for (let amount = 0.25; amount < 1; amount += 0.05) {
-    const rgb = lighten(team, amount);
-    if ((luminance(rgb) + 0.05) / (NAVY_LUMINANCE + 0.05) >= MIN_CONTRAST) return `rgb(${rgb.join(',')})`;
-  }
-  return 'rgb(255,255,255)';
-}
+/** Cadran : couleur de l'équipe éclaircie (au moins un quart) juste assez pour que le chiffre reste bien lisible. */
+const faceColor = (team: string) => navyReadable(team, NAVY_MIN_CONTRAST, 0.25);
 
 type Props = {
   /** Diamètre du boîtier ; le bouton du haut s'ajoute au-dessus. */

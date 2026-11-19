@@ -1,4 +1,4 @@
-export type ProductId = 'streak' | 'jokers' | 'packFootball' | 'packJeuxVideo' | 'laTotale' | 'packHarryPotter' | 'packRap' | 'packDresseur' | 'packArt' | 'packRetro' | 'packAnime' | 'packDessinsAnimes';
+export type ProductId = 'streak' | 'jokers' | 'packFootball' | 'packJeuxVideo' | 'laTotale' | 'packHarryPotter' | 'packRap' | 'packDresseur' | 'packArt' | 'packRetro' | 'packAnime' | 'packDessinsAnimes' | 'packCuisine';
 
 export const offers: Record<ProductId, { label: string; price: string }> = {
   streak: { label: 'Mode Streak', price: '0,99 €' },
@@ -13,6 +13,7 @@ export const offers: Record<ProductId, { label: string; price: string }> = {
   packRetro: { label: 'Pack Rétro-gaming', price: '0,99 €' },
   packAnime: { label: 'Pack Anime & mangas', price: '0,99 €' },
   packDessinsAnimes: { label: 'Pack Dessins animés', price: '0,99 €' },
+  packCuisine: { label: 'Pack Cuisine', price: '0,99 €' },
 };
 
 // Identifiants produits tels que définis dans App Store Connect / Google Play
@@ -30,6 +31,7 @@ export const PRODUCT_IDS: Record<ProductId, string> = {
   packRetro: 'com.banco.pack_retro',
   packAnime: 'com.banco.pack_anime',
   packDessinsAnimes: 'com.banco.pack_dessins_animes',
+  packCuisine: 'com.banco.pack_cuisine',
 };
 
 
@@ -37,7 +39,7 @@ export const PRODUCT_IDS: Record<ProductId, string> = {
  * Packs offerts (jamais vendus), gagnés l'un après l'autre : chacun demande WELCOME_GAMES parties
  * terminées de plus que le précédent. Ajouter un pack à la fin ; ne jamais réordonner (progression des joueurs).
  */
-export const GIFT_PACKS: ProductId[] = ['packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime', 'packFootball', 'packDessinsAnimes', 'packJeuxVideo'];
+export const GIFT_PACKS: ProductId[] = ['packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime', 'packFootball', 'packDessinsAnimes', 'packJeuxVideo', 'packCuisine'];
 export const WELCOME_PACK: ProductId = GIFT_PACKS[0];
 export const WELCOME_GAMES = 1;
 
@@ -53,4 +55,5 @@ export const PACK_THEME_IDS: Partial<Record<ProductId, string>> = {
   packFootball: 'football',
   packDessinsAnimes: 'dessins-animes',
   packJeuxVideo: 'jeux-video',
+  packCuisine: 'cuisine',
 };

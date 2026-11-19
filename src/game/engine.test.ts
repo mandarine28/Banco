@@ -137,7 +137,8 @@ test('la recherche ignore accents, casse et ponctuation, préfixes en premier', 
 });
 
 test('les boutons affichent toutes les réponses + les saisies libres validées', () => {
-  const q = questions[0];
+  // Liste assez courte pour que toutes les réponses soient en puces (voir MAX_VISIBLE_ANSWERS)
+  const q = questions.find((item) => item.answers.length < MAX_VISIBLE_ANSWERS)!;
   const last = q.answers[q.answers.length - 1];
   const list = suggestions(q, [last, 'SAISIE LIBRE']);
   assert.equal(list.length, q.answers.length + 1); // SAISIE LIBRE ajoutée ; last déjà dans la liste
@@ -163,6 +164,21 @@ test('compteur manuel : décompte depuis la mise, sans dépasser la mise', () =>
   s = play(s, { type: 'ADJUST', delta: 1 }, { type: 'ADJUST', delta: 1 });
   assert.equal(s.phase, 'result');
   assert.equal(s.endReason, 'reached');
+});
+
+test('« − » annule le dernier ajout dans l\'ordre : réponse cochée ou point du +', () => {
+  let s = play(createGame(two, 1, questions, seeded(11)), { type: 'BID', amount: 6 }, { type: 'PASS' }, { type: 'START_TURN' });
+  // A coché, +, B coché
+  s = play(s, { type: 'TOGGLE_ANSWER', label: 'A' }, { type: 'ADJUST', delta: 1 }, { type: 'TOGGLE_ANSWER', label: 'B' });
+  s = play(s, { type: 'ADJUST', delta: -1 });
+  assert.deepEqual(s.found, ['A'], 'B, ajouté en dernier, est décoché');
+  assert.equal(s.progress, 2);
+  s = play(s, { type: 'ADJUST', delta: -1 });
+  assert.deepEqual(s.found, ['A'], 'puis le point du +');
+  assert.equal(s.progress, 1);
+  s = play(s, { type: 'TOGGLE_ANSWER', label: 'C' }, { type: 'TOGGLE_ANSWER', label: 'A' }, { type: 'ADJUST', delta: -1 });
+  assert.deepEqual(s.found, [], 'A décoché à la main ne compte plus dans l\'historique');
+  assert.equal(s.progress, 0);
 });
 
 test('une question par round, sans répétition tant que la base suffit', () => {

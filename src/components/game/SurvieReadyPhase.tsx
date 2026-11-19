@@ -24,6 +24,10 @@ export function SurvieReadyPhase({ state, onStart, showCategory = false }: Props
   const question = survieCurrentQuestion(state);
   const rawSubject = getSubject(question, lang);
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
+  // Après une élimination la manche continue : « Commencer » laissait croire à un redémarrage
+  const resuming = state.aliveTeams.includes(false);
+  const startLabel = resuming ? t.survie.resume : t.ready.start;
+  const aliveTeams = state.teams.filter((_, i) => state.aliveTeams[i]);
 
   return (
     <View style={[styles.wrapper, { paddingBottom: Math.max(insets.bottom + 20, 36) }]}>
@@ -41,12 +45,27 @@ export function SurvieReadyPhase({ state, onStart, showCategory = false }: Props
         <View style={styles.questionCard}>
           <Text style={styles.questionText}>{subject}</Text>
         </View>
+
+        {resuming ? (
+          <View style={styles.stillIn}>
+            <Text style={styles.stillInLabel}>{t.survie.stillIn}</Text>
+            <View style={styles.stillInRow}>
+              {aliveTeams.map((team) => (
+                <View key={team.color} style={[styles.teamBadge, { backgroundColor: team.color }]}>
+                  <Text style={[styles.teamBadgeText, { color: BADGE_TEXT_COLOR[team.color] ?? colors.purpleDeep }]} numberOfLines={1}>
+                    {team.name}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ) : null}
       </View>
 
       <Pressable
         onPress={onStart}
         accessibilityRole="button"
-        accessibilityLabel={t.ready.start}
+        accessibilityLabel={startLabel}
         style={({ pressed }) => [{ opacity: pressed ? 0.88 : 1 }]}
       >
         <LinearGradient
@@ -55,7 +74,7 @@ export function SurvieReadyPhase({ state, onStart, showCategory = false }: Props
           end={{ x: 1, y: 0 }}
           style={styles.jouerBtn}
         >
-          <Text style={styles.jouerText}>{t.ready.start}</Text>
+          <Text style={styles.jouerText}>{startLabel}</Text>
         </LinearGradient>
       </Pressable>
 
@@ -66,8 +85,34 @@ export function SurvieReadyPhase({ state, onStart, showCategory = false }: Props
 
 // Espace sous le bouton, relatif à la zone de la question (flex 1)
 const BUTTON_BOTTOM_SPACE = 0.45;
+const BADGE_TEXT_COLOR: Record<string, string> = { '#EF1ACC': '#FEF1CC' };
 
 const styles = StyleSheet.create({
+  stillIn: {
+    alignItems: 'center',
+    gap: 10,
+  },
+  stillInLabel: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 16,
+    color: '#fef6d7',
+  },
+  stillInRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  teamBadge: {
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    maxWidth: '100%',
+  },
+  teamBadgeText: {
+    fontFamily: fonts.displayMedium,
+    fontSize: 18,
+  },
   wrapper: {
     flex: 1,
     paddingHorizontal: 24,
