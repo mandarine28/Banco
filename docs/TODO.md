@@ -81,6 +81,12 @@ Le pack de bienvenue n'a besoin d'aucun réglage : il est enregistré sur le té
 - [ ] Mode « Gages » en survie : l'équipe qui sèche (PAS DE RÉPONSE ou temps écoulé) tire un gage à réaliser — liste de gages à écrire, option on/off dans les paramètres de la survie
 - [ ] ⚠️ Avant de lancer : ces contenus font passer **toute l'app** en 17+ sur l'App Store (et adaptent la classification Play Store) ; Apple refuse ce qui pousse à boire beaucoup (pas de gage « bois un verre ») ; vérifier aussi les règles AdMob sur les contenus adultes (sinon pas de pub sur ces packs) — envisager un avertissement « réservé aux adultes » à l'ouverture du pack
 
+## Prochaine mise à jour (après la 1.7.0)
+
+- [ ] 🤖 **Notifications push** pour les annonces (« Nouveau pack Cuisine ! », événements) : service Expo Push (gratuit), petit serveur pour garder les jetons des téléphones (Supabase ou Firebase, offre gratuite), envoi manuel quand il y a une nouveauté ; les rappels du défi du jour restent en notifications locales
+- [ ] 👤 Pour le push : activer la capacité « Push Notifications » sur l'identifiant Apple, déclarer le jeton de notification dans la confidentialité App Store et mettre à jour la page Confidentialité du site (RGPD)
+- [ ] 🤖 Mode solo libre dans l'écran Modes (label Multijoueur / Solo + carte), aujourd'hui seulement dans les outils de test
+
 ## Plus tard
 
 - [ ] 🤖 **Questions à moins de 30 réponses** (test `engine.test.ts` en échec) : 25 questions Jeux vidéo (rôles et raretés Brawl Stars, régions Genshin, Mario Switch, Resident Evil, sorts CoC/CR, armes Fortnite…) et 2 albums Rap (Bitume Caviar, Gims). La mise max reste 30 : plafonner la mise par question, compléter les listes ou retirer ces questions
