@@ -14,7 +14,6 @@ import { ConfirmModal } from '@/components/InfoModal';
 import { LanguagePicker } from '@/components/LanguagePicker';
 import { AnimatedLogo } from '@/components/Logo';
 import { PACK_THEME_IDS, WELCOME_GAMES, WELCOME_PACK } from '@/config/shop';
-import { TEST_TOOLS } from '@/config/testTools';
 import { afterAdsConsent } from '@/lib/ads';
 import { UpdateModal } from '@/components/UpdateModal';
 import { WhatsNewModal } from '@/components/WhatsNewModal';
@@ -187,7 +186,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Défi du jour sur le fond crème, entre le sous-titre et le panneau ; attend la mesure du panneau */}
-        {TEST_TOOLS && panelTop > 0 ? (
+        {panelTop > 0 ? (
           <View style={[styles.dailyCard, { top: panelTop - dailyCardGap - DAILY_CARD_HEIGHT }]}>
             <DailyChallengeCard />
           </View>
