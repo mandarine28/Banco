@@ -4,7 +4,7 @@ import { AccessibilityInfo, Animated, Easing, StyleSheet, Text, TextInput, View 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getSubject } from '@/game/answers';
-import { canPass, currentQuestion, type GameState, MAX_BID, minimumBid, passConcludesAuction } from '@/game/engine';
+import { canPass, currentQuestion, type GameState, MAX_BID, minimumBid } from '@/game/engine';
 import { playHaptic } from '@/lib/haptics';
 import { useLang } from '@/lib/LangContext';
 import { playSound } from '@/lib/sounds';
@@ -43,7 +43,7 @@ export function AuctionPhase({ state, onBid, onPass, justRaised = false, showCat
   const parsed = parseInt(bidText, 10);
   const amount = isNaN(parsed) ? min : Math.max(Math.min(parsed, MAX_BID), min);
   const passAllowed = canPass(state);
-  const passLabel = passConcludesAuction(state) ? t.auction.concludeAuction : t.auction.passTurn;
+  const passLabel = t.auction.passTurn;
   const rawSubject = getSubject(currentQuestion(state), lang);
   const subject = rawSubject.charAt(0).toUpperCase() + rawSubject.slice(1).toLowerCase();
 

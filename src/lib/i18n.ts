@@ -145,7 +145,6 @@ type Translations = {
     bid: (n: number) => string;
     pass: string;
     passTurn: string;
-    concludeAuction: string;
     max: (n: number) => string;
   };
   ready: {
@@ -509,7 +508,6 @@ const translations: Record<Lang, Translations> = {
       bid: (n) => `J'EN CITE ${n}`,
       pass: 'PASSER',
       passTurn: 'PASSER MON TOUR',
-      concludeAuction: 'CONCLURE L’ENCHÈRE',
       max: (n) => `Maximum : ${n}`,
     },
     ready: {
@@ -893,7 +891,6 @@ const translations: Record<Lang, Translations> = {
       bid: (n) => `I'LL NAME ${n}`,
       pass: 'PASS',
       passTurn: 'PASS MY TURN',
-      concludeAuction: 'CLOSE THE AUCTION',
       max: (n) => `Maximum: ${n}`,
     },
     ready: {
@@ -1277,7 +1274,6 @@ const translations: Record<Lang, Translations> = {
       bid: (n) => `ICH NENNE ${n}`,
       pass: 'PASSEN',
       passTurn: 'ICH PASSE',
-      concludeAuction: 'AUKTION BEENDEN',
       max: (n) => `Maximum: ${n}`,
     },
     ready: {
@@ -1661,7 +1657,6 @@ const translations: Record<Lang, Translations> = {
       bid: (n) => `DIGO ${n}`,
       pass: 'PASAR',
       passTurn: 'PASAR MI TURNO',
-      concludeAuction: 'CERRAR LA SUBASTA',
       max: (n) => `Máximo: ${n}`,
     },
     ready: {
@@ -2045,7 +2040,6 @@ const translations: Record<Lang, Translations> = {
       bid: (n) => `NE DICO ${n}`,
       pass: 'PASSO',
       passTurn: 'PASSO IL TURNO',
-      concludeAuction: "CHIUDI L'ASTA",
       max: (n) => `Massimo: ${n}`,
     },
     ready: {
@@ -2430,7 +2424,6 @@ const translations: Record<Lang, Translations> = {
       bid: (n) => `EU DIGO ${n}`,
       pass: 'PASSO',
       passTurn: 'PASSAR A VEZ',
-      concludeAuction: 'ENCERRAR O LEILÃO',
       max: (n) => `Máximo: ${n}`,
     },
     ready: {

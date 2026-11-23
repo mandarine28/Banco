@@ -28,7 +28,6 @@ import {
   gameReducer,
   minimumBid,
   opponent,
-  passConcludesAuction,
   planQuestions,
   ranking,
   remaining,
@@ -227,13 +226,10 @@ test('l’ouvreur doit miser, puis chacun surenchérit ou passe', () => {
   assert.equal(opponent(s), 0);
 });
 
-test('passer conclut l’enchère seulement quand il ne reste que deux équipes', () => {
-  assert.equal(passConcludesAuction(createGame(two, 1, questions, seeded(5))), true);
+test('passer clôt l’enchère seulement quand il ne reste que deux équipes', () => {
   let s = play(createGame(three, 1, questions, seeded(5)), { type: 'BID', amount: 3 });
-  assert.equal(passConcludesAuction(s), false, 'trois équipes en lice : on passe son tour');
   s = play(s, { type: 'PASS' });
   assert.equal(s.phase, 'auction');
-  assert.equal(passConcludesAuction(s), true, 'deux équipes restantes : passer conclut');
   s = play(s, { type: 'PASS' });
   assert.equal(s.phase, 'ready');
 });
