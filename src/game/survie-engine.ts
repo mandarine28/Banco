@@ -1,5 +1,5 @@
 import type { Question } from '../data/types';
-import { planQuestions, type GameTeam } from './engine.ts';
+import { planQuestions, type GameTeam, type QuestionHistory } from './engine.ts';
 
 export const SURVIE_TURN_SECONDS = 10;
 /** La cagnotte démarre à 1 : même si la 1re équipe sèche d'entrée, la manche rapporte un point. */
@@ -44,11 +44,12 @@ export function createSurvieGame(
   roundCount: number,
   questions: readonly Question[],
   random: Random = Math.random,
+  history: QuestionHistory = {},
 ): SurvieState {
   return {
     teams,
     roundCount,
-    plan: planQuestions(questions, roundCount, random),
+    plan: planQuestions(questions, roundCount, random, history),
     round: 0,
     phase: 'ready',
     aliveTeams: teams.map(() => true),

@@ -9,6 +9,7 @@ import { SplashScreenAnimator } from '@/components/SplashScreenAnimator';
 import { TutorialOverlay } from '@/components/TutorialOverlay';
 import { initAds } from '@/lib/ads';
 import { LangProvider } from '@/lib/LangContext';
+import { loadQuestionHistory } from '@/lib/questionHistory';
 import { preloadSounds } from '@/lib/sounds';
 import { GameSettingsProvider } from '@/state/gameSettings';
 import { PurchasesProvider } from '@/state/purchases';
@@ -19,6 +20,7 @@ export default function RootLayout() {
   // Sons chargés au démarrage : le premier déclenchement en partie est immédiat
   useEffect(() => {
     preloadSounds();
+    loadQuestionHistory();
   }, []);
 
   // Polices allégées aux caractères latins (scripts/subset-fonts.mjs) : ~0,9 Mo au lieu de ~13,6 Mo

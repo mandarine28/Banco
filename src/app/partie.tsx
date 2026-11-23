@@ -22,6 +22,7 @@ import { ConfirmModal, PauseModal } from '@/components/InfoModal';
 import { GIFT_PACKS, PACK_THEME_IDS, type ProductId, WELCOME_GAMES } from '@/config/shop';
 import { giftAfter, giftChain } from '@/lib/giftChain';
 import { markPacksPlayed } from '@/lib/packHistory';
+import { getQuestionHistory, markQuestionSeen } from '@/lib/questionHistory';
 import { questionsFor } from '@/data/questions';
 import { themes } from '@/data/themes';
 import { contract, createGame, gameReducer, type GameTeam, isLastRound, isSuccess, opponent, TURN_SECONDS } from '@/game/engine';
@@ -48,6 +49,13 @@ const REVIEW_DELAY_MS = 2000;
 const FIXED_LIST_MAX = 4;
 
 /** Appelle onFinished une seule fois quand la partie atteint l'écran final. */
+/** Chaque question qui tombe est datée : elle repassera après toutes les autres de son thème. */
+function useMarkSeen(questionId: string | undefined) {
+  useEffect(() => {
+    if (questionId) markQuestionSeen(questionId);
+  }, [questionId]);
+}
+
 function useOnFinal(isFinal: boolean, onFinished: () => void) {
   const done = useRef(false);
   useEffect(() => {
@@ -271,7 +279,8 @@ function Game({ teams, roundCount, selectedThemes, onReplay, onOtherMode, before
   const { lang } = useLang();
   const t = getT(lang);
   const filteredQuestions = questionsFor(lang, selectedThemes);
-  const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, filteredQuestions));
+  const [state, dispatch] = useReducer(gameReducer, null, () => createGame(teams, roundCount, filteredQuestions, Math.random, getQuestionHistory()));
+  useMarkSeen(state.plan[state.round]?.id);
   useOnFinal(state.phase === 'final', onFinished);
   const [confirm, setConfirm] = useState<Confirm>(null);
   // Transition « remporte les enchères » : 'covering' masque l'écran prêt, 'revealing' = fondu de sortie
@@ -454,8 +463,9 @@ function SurvieGame({ teams, roundCount, selectedThemes, timer, sideSurvie, onRe
   const showCategory = selectedThemes.length > 1;
   const filteredQuestions = questionsFor(useLang().lang, selectedThemes);
   const [state, dispatch] = useReducer(survieReducer, null, () =>
-    createSurvieGame(teams, roundCount, filteredQuestions),
+    createSurvieGame(teams, roundCount, filteredQuestions, Math.random, getQuestionHistory()),
   );
+  useMarkSeen(state.plan[state.round]?.id);
   useOnFinal(state.phase === 'final', onFinished);
   const [confirmQuit, setConfirmQuit] = useState(false);
   const [pauseSource, setPauseSource] = useState<'search' | 'manual' | null>(null);

@@ -16,7 +16,7 @@ import { PACK_THEME_IDS, type ProductId } from '@/config/shop';
 import { questionsFor } from '@/data/questions';
 import type { Question } from '@/data/types';
 import { getAnswers, getSubject, hiddenAnswers, visibleAnswers } from '@/game/answers';
-import { type GameTeam, TURN_SECONDS } from '@/game/engine';
+import { type GameTeam, planQuestions, TURN_SECONDS } from '@/game/engine';
 import { CLASSIC_THEMES, dailyQuestion } from '@/lib/dailyQuestion';
 import { scheduleDailyReminders } from '@/lib/dailyReminder';
 import { playHaptic } from '@/lib/haptics';
@@ -24,6 +24,7 @@ import { AnimatedFlame } from '@/components/AnimatedFlame';
 import { getT } from '@/lib/i18n';
 import { useLang } from '@/lib/LangContext';
 import { markPacksPlayed } from '@/lib/packHistory';
+import { getQuestionHistory, markQuestionSeen } from '@/lib/questionHistory';
 import { PUBLIC_STORE_URL } from '@/lib/shareResult';
 import { type DailyRecord, dayKey, matchAnswer, nextStreak } from '@/lib/solo';
 import { addDailyHistory, type DailyHistoryEntry, loadDailyHistory, loadDailyRecord, loadSoloRecord, saveDailyRecord, saveSoloRecord } from '@/lib/soloStorage';
@@ -62,15 +63,18 @@ export default function SoloScreen() {
   const lockedPackThemes = (Object.keys(PACK_THEME_IDS) as ProductId[]).filter((product) => !hasPurchased(product)).map((product) => PACK_THEME_IDS[product] ?? '');
   const [soloThemes, setSoloThemes] = useState(() => (settings.selectedThemes.length > 0 ? settings.selectedThemes : CLASSIC_THEMES));
 
-  // Solo : une question à la fois, tirée dans les catégories choisies ; jamais deux fois la même d'affilée
+  // Solo : une question à la fois, tirée dans les catégories choisies ; jamais vues et plus anciennes d'abord
   const pickQuestion = (themeIds: readonly string[], previousId?: string): Question => {
     if (isDaily) return dailyQuestion(today);
     const all = questionsFor(lang, themeIds);
     const pool = all.length > 0 ? all : questionsFor(lang, CLASSIC_THEMES);
     const fresh = pool.length > 1 ? pool.filter((q) => q.id !== previousId) : pool;
-    return fresh[Math.floor(Math.random() * fresh.length)];
+    return planQuestions(fresh, 1, Math.random, getQuestionHistory())[0];
   };
   const [question, setQuestion] = useState<Question>(() => pickQuestion(soloThemes));
+  useEffect(() => {
+    markQuestionSeen(question.id);
+  }, [question.id]);
 
   // Comme une partie : packs datés pour l'ordre des paramètres, essai consommé dès le lancement
   const trialTheme = isDaily ? undefined : soloThemes.find((id) => lockedPackThemes.includes(id));

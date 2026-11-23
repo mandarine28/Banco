@@ -188,6 +188,17 @@ test('une question par round, sans répétition tant que la base suffit', () => 
   assert.equal(planQuestions(questions.slice(0, 2), 5, seeded(2)).length, 5);
 });
 
+test('d’une partie à l’autre : jamais vues d’abord, puis les plus anciennes', () => {
+  const pool = questions.filter((q) => q.theme === questions[0].theme).slice(0, 6);
+  const [a, b, c, d, e, f] = pool.map((q) => q.id);
+  const history = { [a]: 5, [b]: 1, [c]: 3, [d]: 4 };
+  for (let seed = 1; seed <= 5; seed++) {
+    const plan = planQuestions(pool, 6, seeded(seed), history).map((q) => q.id);
+    assert.deepEqual(new Set(plan.slice(0, 2)), new Set([e, f]), 'les deux jamais vues tombent en premier');
+    assert.deepEqual(plan.slice(2), [b, c, d, a], 'puis de la plus ancienne à la plus récente');
+  }
+});
+
 test('plusieurs catégories : chacune tombe aussi souvent, quelle que soit sa taille', () => {
   const big = Array.from({ length: 150 }, (_, i) => ({ ...questions[0], id: `big-${i}`, theme: 'dresseur' }));
   const small = Array.from({ length: 3 }, (_, i) => ({ ...questions[0], id: `small-${i}`, theme: 'rap-francais' }));

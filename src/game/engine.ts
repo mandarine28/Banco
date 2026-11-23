@@ -69,11 +69,26 @@ function shuffle<T>(items: readonly T[], random: Random): T[] {
   return copy;
 }
 
+/** Dernière fois (horodatage) qu'une question est tombée sur cet appareil, par id. */
+export type QuestionHistory = Readonly<Record<string, number>>;
+
+/** Mélange puis range les plus récemment vues en tête : `pop()` sort les jamais vues, puis les plus anciennes. */
+function freshestLast(questions: readonly Question[], history: QuestionHistory, random: Random): Question[] {
+  const seenAt = (q: Question) => history[q.id] ?? -Infinity;
+  return shuffle(questions, random).sort((a, b) => seenAt(b) - seenAt(a));
+}
+
 /**
  * Une question par round, sans répétition tant que la base le permet.
  * Les catégories tombent à tour de rôle (ordre mélangé à chaque tour) : un gros pack ne prend pas le pas sur un petit.
+ * D'une partie à l'autre, `history` fait passer les questions jamais vues, puis les plus anciennes.
  */
-export function planQuestions(questions: readonly Question[], roundCount: number, random: Random = Math.random) {
+export function planQuestions(
+  questions: readonly Question[],
+  roundCount: number,
+  random: Random = Math.random,
+  history: QuestionHistory = {},
+) {
   if (questions.length === 0) throw new Error('Aucune question disponible');
   const byTheme = new Map<string, Question[]>();
   for (const q of questions) byTheme.set(q.theme, [...(byTheme.get(q.theme) ?? []), q]);
@@ -84,7 +99,7 @@ export function planQuestions(questions: readonly Question[], roundCount: number
     if (themeTurn.length === 0) themeTurn = shuffle([...byTheme.keys()], random);
     const theme = themeTurn.pop() as string;
     let pool = pools.get(theme) ?? [];
-    if (pool.length === 0) pool = shuffle(byTheme.get(theme) as Question[], random);
+    if (pool.length === 0) pool = freshestLast(byTheme.get(theme) as Question[], history, random);
     plan.push(pool.pop() as Question);
     pools.set(theme, pool);
   }
@@ -101,11 +116,12 @@ export function createGame(
   roundCount: number,
   questions: readonly Question[],
   random: Random = Math.random,
+  history: QuestionHistory = {},
 ): GameState {
   return {
     teams,
     roundCount,
-    plan: planQuestions(questions, roundCount, random),
+    plan: planQuestions(questions, roundCount, random, history),
     round: 0,
     phase: 'auction',
     auction: openAuction(teams.length, 0),
