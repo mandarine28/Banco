@@ -49,6 +49,7 @@ const PACKS: Pack[] = [
   { id: 'dessins-animes', productId: 'packDessinsAnimes', gift: true, image: require('../../assets/packs/dessins-animes.png') },
   { id: 'jeux-video', productId: 'packJeuxVideo', gift: true, image: require('../../assets/packs/jeux-video.png') },
   { id: 'cuisine', productId: 'packCuisine', gift: true, image: require('../../assets/packs/cuisine.png') },
+  { id: 'auto', productId: 'packAuto', gift: true, image: require('../../assets/packs/auto.png') },
 ];
 
 /** Nombre de questions par pack, compté dans les données (0 pour un pack à venir). */

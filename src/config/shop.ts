@@ -1,4 +1,4 @@
-export type ProductId = 'streak' | 'jokers' | 'packFootball' | 'packJeuxVideo' | 'laTotale' | 'packHarryPotter' | 'packRap' | 'packDresseur' | 'packArt' | 'packRetro' | 'packAnime' | 'packDessinsAnimes' | 'packCuisine';
+export type ProductId = 'streak' | 'jokers' | 'packFootball' | 'packJeuxVideo' | 'laTotale' | 'packHarryPotter' | 'packRap' | 'packDresseur' | 'packArt' | 'packRetro' | 'packAnime' | 'packDessinsAnimes' | 'packCuisine' | 'packAuto';
 
 export const offers: Record<ProductId, { label: string; price: string }> = {
   streak: { label: 'Mode Streak', price: '0,99 €' },
@@ -14,6 +14,7 @@ export const offers: Record<ProductId, { label: string; price: string }> = {
   packAnime: { label: 'Pack Anime & mangas', price: '0,99 €' },
   packDessinsAnimes: { label: 'Pack Dessins animés', price: '0,99 €' },
   packCuisine: { label: 'Pack Cuisine', price: '0,99 €' },
+  packAuto: { label: 'Pack Auto & mécanique', price: '0,99 €' },
 };
 
 // Identifiants produits tels que définis dans App Store Connect / Google Play
@@ -32,6 +33,7 @@ export const PRODUCT_IDS: Record<ProductId, string> = {
   packAnime: 'com.banco.pack_anime',
   packDessinsAnimes: 'com.banco.pack_dessins_animes',
   packCuisine: 'com.banco.pack_cuisine',
+  packAuto: 'com.banco.pack_auto',
 };
 
 
@@ -39,7 +41,7 @@ export const PRODUCT_IDS: Record<ProductId, string> = {
  * Packs offerts (jamais vendus), gagnés l'un après l'autre : chacun demande WELCOME_GAMES parties
  * terminées de plus que le précédent. Ajouter un pack à la fin ; ne jamais réordonner (progression des joueurs).
  */
-export const GIFT_PACKS: ProductId[] = ['packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime', 'packFootball', 'packDessinsAnimes', 'packJeuxVideo', 'packCuisine'];
+export const GIFT_PACKS: ProductId[] = ['packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime', 'packFootball', 'packDessinsAnimes', 'packJeuxVideo', 'packCuisine', 'packAuto'];
 export const WELCOME_PACK: ProductId = GIFT_PACKS[0];
 export const WELCOME_GAMES = 1;
 
@@ -56,4 +58,5 @@ export const PACK_THEME_IDS: Partial<Record<ProductId, string>> = {
   packDessinsAnimes: 'dessins-animes',
   packJeuxVideo: 'jeux-video',
   packCuisine: 'cuisine',
+  packAuto: 'auto',
 };

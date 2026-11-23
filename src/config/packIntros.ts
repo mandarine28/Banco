@@ -18,6 +18,7 @@ export const PACK_INTROS: Record<string, PackIntro> = {
   'dessins-animes': { image: require('../../assets/packs/full/dessins-animes.webp'), aspect: WIDE, from: 0.8, to: 0.44 },
   'jeux-video': { image: require('../../assets/packs/full/jeux-video.webp'), aspect: WIDE, from: 0.8, to: 0.48 },
   cuisine: { image: require('../../assets/packs/full/cuisine.webp'), aspect: WIDE, from: 0.8, to: 0.45 },
+  auto: { image: require('../../assets/packs/full/auto.webp'), aspect: WIDE, from: 0.8, to: 0.48 },
 };
 
 /**
@@ -35,4 +36,5 @@ export const PACK_THUMBS: Record<string, ImageSourcePropType> = {
   'dessins-animes': require('../../assets/packs/thumbs/dessins-animes.webp'),
   'jeux-video': require('../../assets/packs/thumbs/jeux-video.webp'),
   cuisine: require('../../assets/packs/thumbs/cuisine.webp'),
+  auto: require('../../assets/packs/thumbs/auto.webp'),
 };

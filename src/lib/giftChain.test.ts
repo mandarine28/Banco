@@ -15,7 +15,8 @@ test('chaîne de cadeaux : un pack offert à chaque partie terminée, dans l’o
   assert.deepEqual(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime', 'packFootball'), 8), { next: 'packDessinsAnimes', played: 1, floor: 7 });
   assert.deepEqual(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime', 'packFootball', 'packDessinsAnimes'), 8), { next: 'packJeuxVideo', played: 0, floor: 8 });
   assert.equal(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime', 'packFootball', 'packDessinsAnimes', 'packJeuxVideo'), 9).next, 'packCuisine');
-  assert.equal(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime', 'packFootball', 'packDessinsAnimes', 'packJeuxVideo', 'packCuisine'), 10).next, null);
+  assert.equal(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime', 'packFootball', 'packDessinsAnimes', 'packJeuxVideo', 'packCuisine'), 10).next, 'packAuto');
+  assert.equal(giftChain(owns('packHarryPotter', 'packRap', 'packDresseur', 'packArt', 'packRetro', 'packAnime', 'packFootball', 'packDessinsAnimes', 'packJeuxVideo', 'packCuisine', 'packAuto'), 11).next, null);
 });
 
 test('chaîne de cadeaux : un joueur de l’ancienne règle (3 parties par pack) ne gagne qu’un pack par partie', () => {
